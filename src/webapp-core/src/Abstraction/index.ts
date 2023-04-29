@@ -1,0 +1,10 @@
+export type * from "./IBehavoir";
+export type * from "./IBindable";
+export type * from "./IBinder";
+export type * from "./IHTMLContainer";
+export type * from "./IObservableArray";
+export type * from "./IObservableProperty";
+export type * from "./IProperty";
+export type * from "./ITemplate";
+export type * from "./ITemplateBuilder";
+export type * from "./ITemplateProvider";

@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "noEmitOnError": false,
+    "sourceMap": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "declaration": true,
+    "declarationDir": "types",
+    "moduleResolution": "Node",
+    "noEmit": true,
+    "incremental": true,
+    "jsx": "react",
+    "jsxFactory": "__createElement"
+  },
+  "include": ["src"]
+}
+ 

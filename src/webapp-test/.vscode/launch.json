@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "localhost (Chrome)",
+
+      "url": "http://localhost:4000",
+      "webRoot": "${workspaceFolder}",
+      "userDataDir": "${workspaceFolder}/.vscode/userdatadir",
+      "env": {
+        "PUBLIC_URL": "/public"
+      }
+    }
+  ]
+}

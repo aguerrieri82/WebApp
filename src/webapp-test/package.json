@@ -1,0 +1,28 @@
+{
+  "name": "webapp-test",
+  "version": "0.0.1",
+  "packageManager": "pnpm@8.3.1",
+  "type": "module",
+  "scripts": {
+    "start": "node server",
+    "build:dev": "rollup -c -w  --environment NODE_ENV:dev",
+    "install:pnpm": "pnpm install",
+    "upgrade": "ncu --upgrade && pnpm install"
+  },
+  "keywords": [],
+  "author": "Andrea Guerrieri",
+  "dependencies": {
+    "webapp-core": "../webapp-core/dist/webapp-core"
+  },
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.0",
+    "@rollup/plugin-node-resolve": "^15.0.2",
+    "rollup-plugin-delete": "2.0.0",
+    "rollup-plugin-sourcemaps": "0.6.3",
+    "rollup": "^3.21.0",
+    "tslib": "^2.5.0",
+    "typescript": "5.0.4",
+    "npm-check-updates": "16.10.9",
+    "express": "4.18.2"
+  }
+}
