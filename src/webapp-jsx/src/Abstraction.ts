@@ -1,4 +1,4 @@
-import type { BindValue, ITemplateProvider, ITemplateBuilder } from "webapp-core";
+import type { BindValue, ITemplateProvider, ITemplateBuilder } from "@eusoft/webapp-core";
 
 export interface ITemplateContext<TModel> {
     builder: ITemplateBuilder<TModel>;

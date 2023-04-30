@@ -1,0 +1,21 @@
+{
+  "name": "@eusoft/webapp-compiler-rollup",
+  "version": "0.0.1",
+  "packageManager": "pnpm@8.3.1",
+  "type": "module",
+  "scripts": {
+    "publish": "cd ../../dist/webapp-compiler-rollup/ && pnpm publish --access public --no-git-checks",
+    "build": "node build",
+    "install:pnpm": "pnpm install",
+    "upgrade": "ncu --upgrade && pnpm install"
+  },
+  "keywords": [],
+  "author": "Andrea Guerrieri",
+  "dependencies": {
+    "@eusoft/webapp-compiler": "../../dist/webapp-compiler"
+  },
+  "devDependencies": {
+    "@types/node": "18.16.3",
+    "fs-extra": "11.1.1"
+  }
+}

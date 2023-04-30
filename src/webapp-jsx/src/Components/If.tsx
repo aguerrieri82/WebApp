@@ -1,4 +1,4 @@
-import { BindValue } from "webapp-core";
+import type { BindValue } from "@eusoft/webapp-core";
 import type { JsxComponentProps, JsxElement, JsxNode, TemplateModel } from "./../Abstraction";
 import { isJsxElement, processElement } from "./../Runtime";
 

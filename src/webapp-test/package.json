@@ -12,10 +12,11 @@
   "keywords": [],
   "author": "Andrea Guerrieri",
   "dependencies": {
-    "webapp-core": "../../dist/webapp-core",
-    "webapp-jsx": "../../dist/webapp-jsx"
+    "@eusoft/webapp-core": "../../dist/webapp-core",
+    "@eusoft/webapp-jsx": "../../dist/webapp-jsx"
   },
   "devDependencies": {
+    "@eusoft/webapp-compiler-rollup": "../../dist/webapp-compiler-rollup",
     "@rollup/plugin-typescript": "^11.1.0",
     "@rollup/plugin-node-resolve": "^15.0.2",
     "rollup-plugin-delete": "2.0.0",

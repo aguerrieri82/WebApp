@@ -1,4 +1,4 @@
-import { stdin } from "process";
+import { stderr, stdin } from "process";
 import { TemplateCompiler } from "./TemplateCompiler";
 
 export * from "./Abstraction/ITemplateHandler";
@@ -6,13 +6,20 @@ export * from "./TemplateCompiler";
 
 async function run() {
 
-    const compiler = new TemplateCompiler();
+    try {
+        const compiler = new TemplateCompiler();
 
-    await compiler.compileAsync("../../src/webapp-compiler/test/Container.html", null, true);
+        await compiler.compileAsync("../../src/webapp-compiler/test/", null, true);
+    }
+    catch (ex) {
+
+        stderr.write(ex.toString());
+    }
 
     stdin.read();
+
     debugger;
 
 }
 
-run();
+//run();

@@ -1,6 +1,7 @@
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import sourcemaps from 'rollup-plugin-sourcemaps';
+import webapp from "webapp-compiler-rollup"
 import path from "path";
 
 const outPath = "public/build";
@@ -22,6 +23,7 @@ export default [
 
             resolve(),
             typescript(),
+            webapp(),
             sourcemaps()
         ]
     }

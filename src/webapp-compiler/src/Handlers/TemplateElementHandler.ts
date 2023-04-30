@@ -28,7 +28,7 @@ export default class TemplateElementHandler implements ITemplateHandler {
 
         ctx.writer.ensureNewLine();
         if (ctx.compiler.options.language == TemplateLanguage.Javascript)
-            ctx.writer.write("__defineTemplate(").writeJson(templateName).write(", ");
+            ctx.writer.write("export const ").write(templateName).write(" = ").write("__defineTemplate(").writeJson(templateName).write(", ");
         else
             ctx.writer.write(ctx.jsNamespace).write(".templateCatalog[").writeJson(templateName).write("] = ");
 

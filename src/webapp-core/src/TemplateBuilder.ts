@@ -21,6 +21,7 @@ export const BehavoirCatalog: { [key: string]: () => IBehavoir } = {}
 
 export function defineTemplate(name: string, template: ITemplate<any>) {
     TemplateCatalog[name] = template;
+    return template;
 }
 
 /****************************************/
@@ -392,7 +393,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             return this.loadTemplate<TModel>("Text");
 
         if (typeof value == "object" && "template" in value)
-            return this.loadTemplate<TModel>((value as unknown as IViewComponent).template);
+            return this.loadTemplate<TModel>((value as any).template);
 
         throw new Error("cannot determine template for model");
     }

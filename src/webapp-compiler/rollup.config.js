@@ -11,9 +11,11 @@ import fs from 'fs';
 
 const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
 
-const outPath = "../../dist/" + pkg.name;
+const name = pkg.name.substring(7);
 
-const typesPath = outPath + "/src/" + pkg.name + "/types";
+const outPath = "../../dist/" + name;
+
+const typesPath = outPath + "/src/" + name + "/types";
 
 const onwarn = (warning, warn) => {
     if (warning.code == "CIRCULAR_DEPENDENCY" || warning.code == "SOURCEMAP_BROKEN")
@@ -40,6 +42,7 @@ export default [
             generatePackageJson({
                 baseContents: {
                     name: pkg.name,
+                    version: pkg.version,
                     type: "module",
                     main: "index.js",
                     types: "index.d.ts",

@@ -1,7 +1,7 @@
 lockfileVersion: '6.0'
 
 dependencies:
-  webapp-core:
+  '@eusoft/webapp-core':
     specifier: ../../dist/webapp-core
     version: link:../../dist/webapp-core
 

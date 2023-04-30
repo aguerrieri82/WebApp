@@ -1,4 +1,4 @@
-import { defineTemplate } from "webapp-core";
+import { defineTemplate } from "@eusoft/webapp-core";
 import type { JsxComponentProps, JsxNode, TemplateModel } from "./../Abstraction";
 import { processElement } from "./../Runtime";
 

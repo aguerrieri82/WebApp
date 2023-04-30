@@ -1,10 +1,11 @@
 {
-  "name": "webapp-core",
+  "name": "@eusoft/webapp-core",
   "version": "0.0.1",
   "packageManager": "pnpm@8.3.1",
   "type": "module",
   "scripts": {
-    "clean": "rimraf dist/webapp-lib/",
+    "publish": "cd ../../dist/webapp-core/ && pnpm publish --access public --no-git-checks",
+    "clean": "rimraf ../../dist/webapp-core/",
     "build:dev": "rollup -c -w  --environment NODE_ENV:dev",
     "build:prod": "npm run clean && rollup -c --environment NODE_ENV:prod",
     "lint:fix": "eslint ./src/**/*.ts* --fix",

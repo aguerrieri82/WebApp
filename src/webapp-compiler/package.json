@@ -1,9 +1,10 @@
 {
-  "name": "webapp-compiler",
+  "name": "@eusoft/webapp-compiler",
   "version": "0.0.1",
   "packageManager": "pnpm@8.3.1",
   "type": "module",
   "scripts": {
+    "publish": "cd ../../dist/webapp-compiler/ && pnpm publish --access public --no-git-checks",
     "start": "node ../../dist/webapp-compiler/index.js",
     "clean": "rimraf ../../dist/webapp-compiler/",
     "build:dev": "rollup -c -w  --environment NODE_ENV:dev",

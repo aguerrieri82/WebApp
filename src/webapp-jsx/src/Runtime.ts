@@ -1,6 +1,6 @@
 import { ITemplateContext, JsxComponentProps, JsxElement, JsxElementType, JsxNode, TemplateModel } from "./Abstraction";
 import { Template } from "./Components/Template";
-import { IViewComponent } from "webapp-core";
+import { IViewComponent } from "@eusoft/webapp-core";
 export function isJsxElement(obj: any): obj is JsxElement<any, JsxComponentProps<any>> {
 
     return obj && typeof (obj) == "object" && "props" in obj && "type" in obj;

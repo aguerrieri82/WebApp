@@ -15,6 +15,14 @@ import TextNodeHandler from "./Handlers/TextNodeHandler";
 import ClassElementHandler from "./Handlers/ClassElementHandler";
 import OnAttributeHandler from "./Handlers/OnAttributeHandler";
 import FuncAttributeHandler from "./Handlers/FuncAttributeHandler";
+import ContentElementHandler from "./Handlers/ContentElementHandler";
+import BehavoirElementHandler from "./Handlers/BehavoirElementHandler";
+import ForeachElementHandler from "./Handlers/ForeachElementHandler";
+import BehavoirAttributeHandler from "./Handlers/BehavoirAttributeHandler";
+import BindingAttributeHandler from "./Handlers/BindingAttributeHandler";
+import HtmlElementHandler from "./Handlers/HtmlElementHandler";
+import NodeElementHandler from "./Handlers/NodeElementHandler";
+import StyleAttributeHandler from "./Handlers/StyleAttributeHandler";
 
 export enum TemplateOutputMode {
     Always,
@@ -50,13 +58,20 @@ export class TemplateCompiler {
 
         this.register(new TemplateElementHandler());
         this.register(new ElementHandler());
+        this.register(new BehavoirAttributeHandler());
         this.register(new AttributeHandler());
         this.register(new IfElementHandler());
         this.register(new TextNodeHandler());
         this.register(new ClassElementHandler());
         this.register(new OnAttributeHandler());
+        this.register(new BindingAttributeHandler());
+        this.register(new ContentElementHandler());
         this.register(new FuncAttributeHandler());
-        
+        this.register(new BehavoirElementHandler());
+        this.register(new ForeachElementHandler());
+        this.register(new HtmlElementHandler());
+        this.register(new NodeElementHandler());
+        this.register(new StyleAttributeHandler());
     }
 
     error(msg: string) {
@@ -98,15 +113,12 @@ export class TemplateCompiler {
         let files: string[];
          
         if (stats.isDirectory()) 
-            files = fs.readdirSync(inputDir).map(a => path.join(inputDir, a));
+            files = fs.readdirSync(input).map(a => path.join(input, a));
         else
             files = [input];
 
-        for (const file of files) {
-
+        for (const file of files) 
             await this.compileFileAsync(file, isStdOut ? null : path.join(outputDir, path.basename(file, ".ts")));
-        }
-
     }
 
     async compileFileAsync(input: string, output: string) {
@@ -118,10 +130,7 @@ export class TemplateCompiler {
         const inStream = fs.createReadStream(input);
 
         if (!output) {
-
-
             await this.compileStreamAsync(inStream, stdout);
-
         }
         else {
 
@@ -144,13 +153,17 @@ export class TemplateCompiler {
     async compileStreamAsync(input: ReadStream, output: IWriteable) {
 
         const html = await this.readAllTextAsync(input);
-        const root = JSDOM.fragment(html);
+
+        const root = new JSDOM(`<t:root xmlns:t="http://www.eusoftnet/webapp">${html}</t:root>`, {
+            contentType: "application/xhtml+xml",
+        });
+
         const ctx = new TemplateContext();
         ctx.compiler = this;
         ctx.jsNamespace = "WebApp";
         ctx.htmlNamespace = "t"; 
         ctx.writer = new TemplateWriter(output, ctx);
-        ctx.writer.writeChildElements(root);
+        ctx.writer.writeChildElements(root.window.document.documentElement);
     }
 
     register(handler: ITemplateHandler) {

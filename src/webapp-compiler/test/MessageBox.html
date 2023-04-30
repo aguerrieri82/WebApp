@@ -1,0 +1,17 @@
+﻿<t:template name="MessageBox">
+
+    <div t:class="$model.className">
+        <h5 class="title" t:text="$model.title"></h5>
+        <div class="body">
+            <t:if has="$model.icon">
+                <t:content src="$model.icon" template="Icon" />
+            </t:if>
+            <div class="text" t:text="$model.message"></div>
+        </div>
+        <div class="actions">
+            <t:foreach src="$model.actions">
+                <t:content src="$model" />
+            </t:foreach>
+        </div>
+    </div>
+</t:template> 

@@ -2,8 +2,11 @@ lockfileVersion: '6.0'
 
 dependencies:
   webapp-core:
-    specifier: ../webapp-core/dist/webapp-core
-    version: link:../webapp-core/dist/webapp-core
+    specifier: ../../dist/webapp-core
+    version: link:../../dist/webapp-core
+  webapp-jsx:
+    specifier: ../../dist/webapp-jsx
+    version: link:../../dist/webapp-jsx
 
 devDependencies:
   '@rollup/plugin-node-resolve':
@@ -33,6 +36,9 @@ devDependencies:
   typescript:
     specifier: 5.0.4
     version: 5.0.4
+  webapp-compiler-rollup:
+    specifier: ../../dist/webapp-compiler-rollup
+    version: link:../../dist/webapp-compiler-rollup
 
 packages:
 
