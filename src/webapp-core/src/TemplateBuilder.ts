@@ -1,3 +1,4 @@
+import { IViewComponent } from "./Abstraction";
 import type { IBehavoir } from "./Abstraction/IBehavoir";
 import type { BindValue } from "./Abstraction/IBinder";
 import { isHTMLContainer } from "./Abstraction/IHTMLContainer";
@@ -317,7 +318,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     protected replaceContent(nodes: Node[]) {
 
         if (this.isInline)
-            throw "'replaceContent' not supported in inline elements";
+            throw new Error("'replaceContent' not supported in inline elements");
 
         this.clear();
 
@@ -366,7 +367,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                         const template = this.templateFor(value);
 
                         if (!template)
-                            throw "Template '" + value.template + "' not found.";
+                            throw new Error("Template '" + value.template + "' not found.");
 
                         childBuilder.updateModel(value);
                         template(childBuilder);
@@ -391,9 +392,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             return this.loadTemplate<TModel>("Text");
 
         if (typeof value == "object" && "template" in value)
-            return this.loadTemplate<TModel>((value as any).template);
+            return this.loadTemplate<TModel>((value as unknown as IViewComponent).template);
 
-        throw "cannot determine template for model";
+        throw new Error("cannot determine template for model");
     }
 
     loadTemplate<TModel>(templateOrName: CatalogTemplate<TModel>): ITemplate<TModel> {
@@ -447,7 +448,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     beginChild<TKey extends keyof HTMLElementTagNameMap>(name: TKey, namespace?: string): ChildTemplateBuilder<TModel, HTMLElementTagNameMap[TKey] | TElement, this> {
 
         if (this.isInline && this._childCount > 0)
-            throw "In inline mode you must have a single root element for your template";
+            throw new Error("In inline mode you must have a single root element for your template");
 
         const childElement = this.isInline && name.toUpperCase() == this.element.tagName ? this.element : this.createElement(name, namespace);
 

@@ -12,7 +12,8 @@
   "keywords": [],
   "author": "Andrea Guerrieri",
   "dependencies": {
-    "webapp-core": "../webapp-core/dist/webapp-core"
+    "webapp-core": "../../dist/webapp-core",
+    "webapp-jsx": "../../dist/webapp-jsx"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.0",

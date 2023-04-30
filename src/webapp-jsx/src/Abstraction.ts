@@ -1,9 +1,8 @@
-import { BindValue, ITemplateProvider, TemplateBuilder } from "webapp-core";
+import type { BindValue, ITemplateProvider, ITemplateBuilder } from "webapp-core";
 
 export interface ITemplateContext<TModel> {
-    builder: TemplateBuilder<TModel>;
+    builder: ITemplateBuilder<TModel>;
 }
-
 
 export type TemplateModel = object | string | number | boolean;
 

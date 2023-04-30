@@ -9,6 +9,8 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "WebApp.Test", "webapp-test\
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "WebApp.Jsx", "webapp-jsx\WebApp.Jsx.esproj", "{A02C06E7-6460-4A55-AD3A-DA5213949B51}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "WebApp.Compiler", "webapp-compiler\WebApp.Compiler.esproj", "{C8934BF6-841C-4A32-86A3-EC4006DA1C0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,12 @@ Global
 		{A02C06E7-6460-4A55-AD3A-DA5213949B51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A02C06E7-6460-4A55-AD3A-DA5213949B51}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A02C06E7-6460-4A55-AD3A-DA5213949B51}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{C8934BF6-841C-4A32-86A3-EC4006DA1C0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8934BF6-841C-4A32-86A3-EC4006DA1C0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8934BF6-841C-4A32-86A3-EC4006DA1C0C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{C8934BF6-841C-4A32-86A3-EC4006DA1C0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8934BF6-841C-4A32-86A3-EC4006DA1C0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8934BF6-841C-4A32-86A3-EC4006DA1C0C}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

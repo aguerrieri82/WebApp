@@ -43,7 +43,7 @@ export default [
                     type: "module",
                     main: "index.js",
                     types: "index.d.ts",
-                    dependencies: pkg.dependencies ?? {}
+                    dependencies: pkg.dependencies
                 }
             }),
             commonjs(),
@@ -67,5 +67,5 @@ export default [
                 runOnce: true
             })
         ]
-    }
+    },
 ];

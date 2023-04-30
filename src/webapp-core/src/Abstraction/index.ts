@@ -8,3 +8,4 @@ export type * from "./IProperty";
 export type * from "./ITemplate";
 export type * from "./ITemplateBuilder";
 export type * from "./ITemplateProvider";
+export type * from "./IViewComponent";

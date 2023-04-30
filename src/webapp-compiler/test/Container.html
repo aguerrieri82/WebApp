@@ -1,0 +1,33 @@
+﻿<t:template name="Container">
+    <div t:class="$model.className" t:visible="$model.visible" t:enabled="$model.enabled">
+        <t:behavoir name="attach" />
+        <t:if has="$model.title">
+            <header>
+                <label t:text="$model.title"></label>
+            </header>
+        </t:if>
+        <div class="content">
+
+            <t:class name="expanded" condition="$model.isExpanded"></t:class>
+
+            <t:class name="expandible" condition="$model.canExpand"></t:class>
+
+            <t:if condition="$model.canExpand">
+                <div class="content-wrapper">
+                    <t:content src="$model.content" inline="true" />
+                </div>
+
+                <t:if condition="$model.isOverflow">
+                    <a class="base-button expand-collapse" t:on-click="$model.toggleExpand()" t:visible="$model.canExpand">
+                        <t:behavoir name="ripple" />
+                        <i class="fas fa-angle-down"></i>
+                    </a>
+
+                </t:if>
+                <t:else>
+                    <t:content src="$model.content" inline="true" />
+                </t:else>
+            </t:if>
+        </div>
+    </div>
+</t:template>

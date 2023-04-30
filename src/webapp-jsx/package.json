@@ -21,6 +21,7 @@
     "rollup-plugin-delete": "2.0.0",
     "rollup-plugin-sourcemaps": "0.6.3",
     "rollup-plugin-generate-package-json": "3.2.0",
+    "@rollup/plugin-commonjs": "24.1.0",
     "rollup": "^3.21.0",
     "tslib": "^2.5.0",
     "typescript": "5.0.4",
@@ -32,6 +33,6 @@
     "rimraf": "^5.0.0"
   },
   "peerDependencies": {
-    "webapp-core": "../webapp-core/dist/webapp-core"
+    "webapp-core": "../../dist/webapp-core"
   }
 }

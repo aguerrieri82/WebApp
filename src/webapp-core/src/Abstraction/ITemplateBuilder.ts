@@ -9,19 +9,19 @@ export type RefNodePosition = "after" | "before" | "inside";
 
 export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement> {
 
-    begin(refNode: Node, refNodePos: RefNodePosition, marker: string): this;
+    begin(refNode?: Node, refNodePos?: RefNodePosition, marker?: string): this;
 
     end(): this;
 
-    clear(remove: boolean): this;
+    clear(remove?: boolean): this;
 
     appendChild(node: Node): this;
 
     foreach<TItem>(selector: BindValue<TModel, TItem[]>, templateOrName: CatalogTemplate<TItem>): this;
 
-    if(condition: BindValue<TModel, boolean>, trueTemplate: ITemplate<TModel>, falseTemplate: ITemplate<TModel>): this;
+    if(condition: BindValue<TModel, boolean>, trueTemplate: ITemplate<TModel>, falseTemplate?: ITemplate<TModel>): this;
 
-    content<TInnerModel extends ITemplateProvider>(content: BindValue<TModel, TInnerModel>, inline: boolean): this;
+    content<TInnerModel extends ITemplateProvider>(content: BindValue<TModel, TInnerModel>, inline?: boolean): this;
 
     templateFor(value: TModel): ITemplate<TModel>;
 
@@ -31,17 +31,13 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
 
     template<TInnerModel>(templateOrName: CatalogTemplate<TInnerModel>, model: BindValue<TModel, TInnerModel>): this;
 
-    template(templateOrName: CatalogTemplate<any>, model: BindValue<TModel, any>): this;
-
     exec(action: (buidler: this) => void): this;
 
     beginChild<TKey extends keyof HTMLElementTagNameMap>(name: TKey, namespace?: string): IChildTemplateBuilder<TModel, HTMLElementTagNameMap[TKey] | TElement, this>;
 
-    child<TKey extends keyof HTMLElementTagNameMap>(name: TKey, attributes: TemplateValueMap<TModel, TElement>, namespace: string): this;
+    child<TKey extends keyof HTMLElementTagNameMap>(name: TKey, attributes?: TemplateValueMap<TModel, TElement>, namespace?: string): this;
 
     child<TKey extends keyof HTMLElementTagNameMap>(name: TKey, builder: (builder: ITemplateBuilder<TModel, HTMLElementTagNameMap[TKey]>, namespace?: string) => void): this;
-
-    child<TKey extends keyof HTMLElementTagNameMap>(name: TKey, builderOrAttributes: any, namespace: string): this;
 
     set(attribute: string, value: BindValue<TModel, string | number | boolean | Promise<string | number | boolean>>): this;
 
@@ -50,8 +46,6 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
     class(name: BindValue<TModel, string>): this;
 
     class(name: string, condition: BindValue<TModel, Boolean>): this;
-
-    class(name: any, condition: BindValue<TModel, Boolean>): this;
 
     visible(value: BindValue<TModel, boolean>): this;
 
@@ -68,8 +62,6 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
     behavoir(value: IBehavoir<TElement, TModel>): this;
 
     behavoir(name: string): this;
-
-    behavoir(nameOrValue: any): this;
 
     styles(value: TemplateValueMap<TModel, CSSStyleDeclaration>): this;
 
