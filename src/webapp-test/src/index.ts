@@ -27,8 +27,8 @@ async function runAsync() {
                 name: "Replace inner"
             }
         },
-        add() {
-            this.items.push({ name: "Luca" });
+        add() { 
+            this.items.push({ name: "Luca" }, {name: "Mario"});
         }
     }; 
      

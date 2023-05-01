@@ -14,6 +14,10 @@ export default function (options) {
 
                 const compiler = new TemplateCompiler();
 
+                compiler.error = msg => this.error(msg);
+
+                compiler.warning = msg => this.warn(msg);
+
                 const text = await compiler.compileTextAsync(code);
 
                 return text;

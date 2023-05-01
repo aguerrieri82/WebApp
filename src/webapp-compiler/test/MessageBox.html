@@ -9,8 +9,8 @@
             <div class="text" t:text="$model.message"></div>
         </div>
         <div class="actions">
-            <t:foreach src="$model.actions">
-                <t:content src="$model" />
+            <t:foreach src="$model.actions" as="c">
+                <t:content src="$c.xxx" />
             </t:foreach>
         </div>
     </div>

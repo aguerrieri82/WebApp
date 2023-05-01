@@ -33,13 +33,44 @@ function createObservableArray(value) {
         if (index != -1)
             handlers.splice(index, 1);
     };
-    value.push = function (items) {
+    value.push = function (...items) {
         const curIndex = this.length;
-        const retValue = Array.prototype.push.call(value, items);
+        const retValue = Array.prototype.push.call(this, ...items);
         for (let i = curIndex; i < this.length; i++)
             this.raise(a => a.onItemAdded && a.onItemAdded(this[i], i, "add"));
         this.raise(a => a.onChanged && a.onChanged());
         return retValue;
+    };
+    value.shift = function () {
+        const result = Array.prototype.shift.call(this);
+        if (result !== undefined) {
+            this.raise(a => a.onItemRemoved && a.onItemRemoved(result, 0, "remove"));
+            this.raise(a => a.onChanged && a.onChanged());
+        }
+        return result;
+    };
+    value.pop = function () {
+        const result = Array.prototype.pop.call(this);
+        if (result !== undefined) {
+            this.raise(a => a.onItemRemoved && a.onItemRemoved(result, this.length, "remove"));
+            this.raise(a => a.onChanged && a.onChanged());
+        }
+        return result;
+    };
+    value.splice = function (start, deleteCount, ...items) {
+        const result = Array.prototype.splice.call(this, start, deleteCount, ...items);
+        if (start == 0 && deleteCount >= this.length && (!items || items.length == 0))
+            this.raise(a => a.onClear && a.onClear());
+        if (deleteCount > 0) {
+            for (let i = 0; i < deleteCount; i++)
+                this.raise(a => a.onItemRemoved && a.onItemRemoved(result[i], i + start, "remove"));
+        }
+        if (items.length > 0) {
+            for (let i = 0; i < items.length; i++)
+                this.raise(a => a.onItemAdded && a.onItemAdded(items[i], i + start, "insert"));
+        }
+        this.raise(a => a.onChanged && a.onChanged());
+        return result;
     };
     return newValue;
 }
@@ -472,6 +503,12 @@ class TemplateBuilder extends Binder {
             onItemReplaced: (newItem, oldItem, index) => {
                 itemsBuilders[index].updateModel(newItem);
             },
+            onReorder: () => {
+                const value = this.getBindValue(selector);
+                handler.onClear();
+                for (let i = 0; i < value.length; i++)
+                    handler.onItemAdded(value[i], i, "add");
+            },
             onItemAdded: (item, index, reason) => {
                 if (reason == "replace")
                     return;
@@ -841,7 +878,7 @@ async function runAsync() {
             };
         },
         add() {
-            this.items.push({ name: "Luca" });
+            this.items.push({ name: "Luca" }, { name: "Mario" });
         }
     };
     window["root"] = rootModel;

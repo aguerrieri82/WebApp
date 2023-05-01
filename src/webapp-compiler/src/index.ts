@@ -10,10 +10,6 @@ async function run() {
     try {
         const compiler = new TemplateCompiler();
 
-        var xx = await compiler.compileTextAsync("<t:template name='MessageBox'/>");
-
-        console.log(xx);
-
         await compiler.compileAsync("../../src/webapp-compiler/test/", null, true);
     }
     catch (ex) {
@@ -24,4 +20,4 @@ async function run() {
     stdin.read();
 }
 
-//run();
+run();

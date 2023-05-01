@@ -235,6 +235,15 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 itemsBuilders[index].updateModel(newItem);
             },
 
+            onReorder: () => {
+
+                const value = this.getBindValue(selector);
+
+                handler.onClear();
+                for (let i = 0; i < value.length; i++)
+                    handler.onItemAdded(value[i], i, "add");
+            },
+
             onItemAdded: (item, index, reason) => {
 
                 if (reason == "replace")

@@ -13,6 +13,8 @@ export interface IObservableArrayHandler<T> {
 
     onItemSwap?(index: number, newIndex: number): void;
 
+    onReorder?(): void;
+
     onChanged?(): void;
 
     onClear?(): void;

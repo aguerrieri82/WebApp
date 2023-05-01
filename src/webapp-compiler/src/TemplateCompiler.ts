@@ -164,21 +164,28 @@ export class TemplateCompiler {
 
     async compileStreamAsync(input: ReadStream|string, output: IWriteable) {
 
-        const html = typeof input == "string" ? input : await this.readAllTextAsync(input);
+        try {
+            const html = typeof input == "string" ? input : await this.readAllTextAsync(input);
 
-        const root = new JSDOM(`<t:root xmlns:t="http://www.eusoftnet/webapp">${html}</t:root>`, {
-            contentType: "application/xhtml+xml",
-        });
+            const root = new JSDOM(`<t:root xmlns:t="http://www.eusoft.net/webapp">${html}</t:root>`, {
+                contentType: "application/xhtml+xml",
+            });
 
-        const ctx = new TemplateContext();
-        ctx.compiler = this;
-        ctx.jsNamespace = "WebApp";
-        ctx.htmlNamespace = "t"; 
-        ctx.writer = new TemplateWriter(output, ctx);
-        ctx.writer.writeChildElements(root.window.document.documentElement);
+            const ctx = new TemplateContext();
+            ctx.compiler = this;
+            ctx.jsNamespace = "WebApp";
+            ctx.htmlNamespace = "t";
+            ctx.writer = new TemplateWriter(output, ctx);
+            ctx.writer.writeChildElements(root.window.document.documentElement);
 
-        if (ctx.templates.length == 1)
-            ctx.writer.ensureNewLine().write("export default ").write(ctx.templates[0]).write(";");
+            if (ctx.templates.length == 1)
+                ctx.writer.ensureNewLine().write("export default ").write(ctx.templates[0]).write(";");
+        }
+        catch (ex) {
+            console.log(ex);
+            this.error(ex.toString());
+        }
+       
     }
 
     register(handler: ITemplateHandler) {
