@@ -1,7 +1,7 @@
 lockfileVersion: '6.0'
 
 dependencies:
-  webapp-compiler:
+  '@eusoft/webapp-compiler':
     specifier: ../../dist/webapp-compiler
     version: link:../../dist/webapp-compiler
 

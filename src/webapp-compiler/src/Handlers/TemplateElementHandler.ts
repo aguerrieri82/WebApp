@@ -15,6 +15,8 @@ export default class TemplateElementHandler implements ITemplateHandler {
         var modelType = node.getAttribute("for");
         var modelName = node.getAttribute("as");
 
+        ctx.templates.push(templateName);
+
         if (!modelType)
             modelType = "any";
 

@@ -1,6 +1,8 @@
-import type { ITemplate } from "./Abstraction";
+
 
 declare module "*.html" {
-    const template: ITemplate<any>;
-    export default template;
+    import { ITemplate } from "@eusoft/webapp-core";
+
+    const Template: ITemplate<any>;
+    export default Template;
 }

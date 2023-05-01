@@ -1,6 +1,5 @@
-/// <reference path="env.d.ts" />
-import { template } from "webapp-core";
-import { Index } from "./Index.html";
+import { template } from "@eusoft/webapp-core";
+import Index from "./Index.html";
 
 interface IItem {
     name: string;
@@ -35,7 +34,7 @@ async function runAsync() {
      
     (window as any)["root"] = rootModel;
 
-    template(document.body, Index, rootModel)
+    template(document.body, Index, rootModel);
 }
 
 window.addEventListener("load", runAsync);

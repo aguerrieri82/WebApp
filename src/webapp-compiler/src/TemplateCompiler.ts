@@ -23,6 +23,7 @@ import BindingAttributeHandler from "./Handlers/BindingAttributeHandler";
 import HtmlElementHandler from "./Handlers/HtmlElementHandler";
 import NodeElementHandler from "./Handlers/NodeElementHandler";
 import StyleAttributeHandler from "./Handlers/StyleAttributeHandler";
+import { StringBuilder } from "./StringBuilder";
 
 export enum TemplateOutputMode {
     Always,
@@ -64,9 +65,9 @@ export class TemplateCompiler {
         this.register(new TextNodeHandler());
         this.register(new ClassElementHandler());
         this.register(new OnAttributeHandler());
+        this.register(new FuncAttributeHandler());
         this.register(new BindingAttributeHandler());
         this.register(new ContentElementHandler());
-        this.register(new FuncAttributeHandler());
         this.register(new BehavoirElementHandler());
         this.register(new ForeachElementHandler());
         this.register(new HtmlElementHandler());
@@ -94,6 +95,8 @@ export class TemplateCompiler {
 
         return Buffer.concat(chunks).toString();
     }
+
+
 
     async compileAsync(input: string, outputDir?: string, isStdOut: boolean = false) {
 
@@ -150,9 +153,18 @@ export class TemplateCompiler {
         inStream.close();
     }
 
-    async compileStreamAsync(input: ReadStream, output: IWriteable) {
+    async compileTextAsync(input: string) {
 
-        const html = await this.readAllTextAsync(input);
+        const out = new StringBuilder();
+
+        await this.compileStreamAsync(input, out);
+
+        return out.toString();
+    }
+
+    async compileStreamAsync(input: ReadStream|string, output: IWriteable) {
+
+        const html = typeof input == "string" ? input : await this.readAllTextAsync(input);
 
         const root = new JSDOM(`<t:root xmlns:t="http://www.eusoftnet/webapp">${html}</t:root>`, {
             contentType: "application/xhtml+xml",
@@ -164,6 +176,9 @@ export class TemplateCompiler {
         ctx.htmlNamespace = "t"; 
         ctx.writer = new TemplateWriter(output, ctx);
         ctx.writer.writeChildElements(root.window.document.documentElement);
+
+        if (ctx.templates.length == 1)
+            ctx.writer.ensureNewLine().write("export default ").write(ctx.templates[0]).write(";");
     }
 
     register(handler: ITemplateHandler) {

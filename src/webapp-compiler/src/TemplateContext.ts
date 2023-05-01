@@ -145,6 +145,8 @@ export class TemplateContext {
         this.currentFrame = this.currentFrame.parent;
     }
 
+    templates: string[] = [];
+
     currentFrame: StackFrame 
 
     writer: TemplateWriter; 

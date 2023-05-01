@@ -12,6 +12,16 @@
       "env": {
         "PUBLIC_URL": "/public"
       }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Build",
+      "skipFiles": [ "<node_internals>/**" ],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [ "run-script", "build:dev" ],
+      "cwd": "${workspaceFolder}",
+      "console": "externalTerminal"
     }
   ]
 }
