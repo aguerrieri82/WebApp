@@ -43,6 +43,10 @@ async function runAsync() {
     }; 
 
 
+    setInterval(() => {
+        rootModel.msg = "Time is: " + new Date();
+    }, 1000);
+
 
     template(document.body, Index, rootModel);
 }

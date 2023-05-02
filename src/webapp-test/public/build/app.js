@@ -851,8 +851,7 @@ const Index = __defineTemplate("Index", t => { t
     .beginChild("button").on("click", m => m.add()).text("Add").endChild()
     .beginChild("button").on("click", m => m.replace()).text("Replace").endChild()
     .beginChild("button").on("click", m => m.change()).text("Change").endChild()
-    .beginChild("button").on("click", m => m.addMany()).text("Add Many").endChild()
-    .beginChild("BigList").endChild();
+    .beginChild("button").on("click", m => m.addMany()).text("Add Many").endChild();
 });
 
 async function runAsync() {
@@ -887,6 +886,9 @@ async function runAsync() {
             this.items.push(...newItems);
         }
     };
+    setInterval(() => {
+        rootModel.msg = "Time is: " + new Date();
+    }, 1000);
     template(document.body, Index, rootModel);
 }
 window.addEventListener("load", runAsync);
