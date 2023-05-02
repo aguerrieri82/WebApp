@@ -210,9 +210,10 @@ class Binder {
             return value(this.model);
         return value;
     }
-    getBindingValue(binding) {
+    getBindingValue(binding, subscribe = true) {
         return binding.value(this.createProxy(this.model, (obj, propName) => {
-            this.subscribe(obj, propName, binding);
+            if (subscribe)
+                this.subscribe(obj, propName, binding);
             return true;
         }));
     }
@@ -222,7 +223,8 @@ class Binder {
                 value: value,
                 action: action,
                 subscriptions: [],
-                lastValue: undefined
+                lastValue: undefined,
+                suspend: 0
             };
             this._bindings.push(binding);
             const bindValue = this.getBindingValue(binding);
@@ -270,17 +272,25 @@ class Binder {
         }
         const prop = getOrCreateProp(obj, propName);
         const handler = (value, oldValue) => {
-            const bindValue = binding.value(this.model);
-            if (bindValue == binding.lastValue)
+            if (binding.suspend > 0)
                 return;
-            this.unsubscribe(binding, false);
-            this.getBindingValue(binding);
-            binding.action(bindValue, binding.lastValue, true);
-            if (isObservableArray(obj)) {
-                obj.raise(a => a.onChanged && a.onChanged());
-                obj.raise(a => a.onItemReplaced && a.onItemReplaced(value, oldValue, parseInt(propName)));
+            binding.suspend++;
+            try {
+                const bindValue = this.getBindingValue(binding, false);
+                if (bindValue == binding.lastValue)
+                    return;
+                this.unsubscribe(binding, false);
+                this.getBindingValue(binding);
+                binding.action(bindValue, binding.lastValue, true);
+                if (isObservableArray(obj)) {
+                    obj.raise(a => a.onChanged && a.onChanged());
+                    obj.raise(a => a.onItemReplaced && a.onItemReplaced(value, oldValue, parseInt(propName)));
+                }
+                binding.lastValue = bindValue;
             }
-            binding.lastValue = bindValue;
+            finally {
+                binding.suspend--;
+            }
         };
         prop.subscribe(handler);
         binding.subscriptions.push({
@@ -304,6 +314,14 @@ class Binder {
         if (lastProp && lastProp.obj)
             return getOrCreateProp(lastProp.obj, lastProp.propName);
     }
+    findParentModel() {
+        let current = this.parent;
+        while (current) {
+            if (current.model != this.model)
+                return current.model;
+            current = current.parent;
+        }
+    }
     createProxy(obj, action) {
         if (!obj || typeof (obj) !== "object" || obj[IS_PROXY])
             return obj;
@@ -316,6 +334,8 @@ class Binder {
             get: (target, prop) => {
                 if (prop === IS_PROXY)
                     return true;
+                if (prop === "@parent")
+                    return this.createProxy(this.findParentModel(), action);
                 if (typeof prop === "symbol" || typeof target[prop] === "function" || (Array.isArray(obj) && prop === "length"))
                     return target[prop];
                 if (!(prop in innerProxies)) {
@@ -346,6 +366,7 @@ class Binder {
         forEachRev(this._modelBinders, binder => binder.updateModel(model));
     }
     model;
+    parent;
 }
 
 function isHTMLContainer(value) {
@@ -845,13 +866,17 @@ const Index = __defineTemplate("Index", t => { t
     .foreach(m => m.items, t1 => t1
         .beginChild("div")
             .beginChild("span").text(m => m.name).endChild()
-            .beginChild("button").on("click", m => m.name = 'asassa').text("Change").endChild()
+            .beginChild("button").on("click", m => m.name = m.name == 'cambiato' ? 'ripristinato' : 'cambiato').text("Change").endChild()
+            .if(m => m.name == 'cambiato', t3 => t3
+                .beginChild("img").set("width","50").set("src",m => m['@parent'].logo).endChild()
+            )
         .endChild()
     )
     .beginChild("button").on("click", m => m.add()).text("Add").endChild()
     .beginChild("button").on("click", m => m.replace()).text("Replace").endChild()
     .beginChild("button").on("click", m => m.change()).text("Change").endChild()
-    .beginChild("button").on("click", m => m.addMany()).text("Add Many").endChild();
+    .beginChild("button").on("click", m => m.addMany()).text("Add Many").endChild()
+    .beginChild("button").on("click", m => m.newImage()).text("New Image").endChild();
 });
 
 async function runAsync() {
@@ -861,6 +886,7 @@ async function runAsync() {
         innerObj: {
             name: "Inner"
         },
+        logo: "/logo.png",
         change() {
             this.msg = "Nuovo messaggio" + new Date().getTime();
             if (this.items.length > 0)
@@ -884,10 +910,13 @@ async function runAsync() {
             for (let i = 0; i < 10000; i++)
                 newItems.push({ name: "Item " + i });
             this.items.push(...newItems);
+        },
+        newImage() {
+            this.logo = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png";
         }
     };
     setInterval(() => {
-        rootModel.msg = "Time is: " + new Date();
+        //rootModel.msg = "Time is: " + new Date();
     }, 1000);
     template(document.body, Index, rootModel);
 }

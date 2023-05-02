@@ -20,6 +20,8 @@ export default function (options) {
 
                 const text = await compiler.compileTextAsync(code);
 
+                console.log(text);
+
                 return text;
 
             }

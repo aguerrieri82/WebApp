@@ -27,6 +27,8 @@ interface IBinding<TModel, TValue = any> {
     action(newValue: TValue, oldValue?: TValue, isUpdate?: boolean, isClear?: boolean): void;
 
     subscriptions: IBindingSubscription[];
+
+    suspend: number;
 }
 
 interface IPropertyAccess {
@@ -56,10 +58,11 @@ export class Binder<TModel> {
         return <TValue>value;
     }
 
-    protected getBindingValue<TValue>(binding: IBinding<TModel, TValue>) {
+    protected getBindingValue<TValue>(binding: IBinding<TModel, TValue>, subscribe = true) {
 
         return binding.value(this.createProxy(this.model, (obj, propName) => {
-            this.subscribe(obj, propName, binding);
+            if (subscribe) 
+                this.subscribe(obj, propName, binding);
             return true;
         }));
     }
@@ -72,7 +75,8 @@ export class Binder<TModel> {
                 value: value as IGetter<TModel, TValue>,
                 action: action,
                 subscriptions: [],
-                lastValue: undefined
+                lastValue: undefined,
+                suspend: 0
             };
 
             this._bindings.push(binding);
@@ -145,23 +149,32 @@ export class Binder<TModel> {
 
         const handler: IPropertyChangedHandler<any> = (value, oldValue) => {
 
-            const bindValue = binding.value(this.model);
-             
-            if (bindValue == binding.lastValue)
+            if (binding.suspend > 0)
                 return;
 
-            this.unsubscribe(binding, false);
-             
-            this.getBindingValue(binding);
+            binding.suspend++;
+            try {
+                const bindValue = this.getBindingValue(binding, false);
 
-            binding.action(bindValue, binding.lastValue, true);
+                if (bindValue == binding.lastValue)
+                    return;
 
-            if (isObservableArray(obj)) {
-                obj.raise(a => a.onChanged && a.onChanged());
-                obj.raise(a => a.onItemReplaced && a.onItemReplaced(value, oldValue, parseInt(propName)));
-            } 
+                this.unsubscribe(binding, false);
 
-            binding.lastValue = bindValue;
+                this.getBindingValue(binding);
+
+                binding.action(bindValue, binding.lastValue, true);
+
+                if (isObservableArray(obj)) {
+                    obj.raise(a => a.onChanged && a.onChanged());
+                    obj.raise(a => a.onItemReplaced && a.onItemReplaced(value, oldValue, parseInt(propName)));
+                }
+
+                binding.lastValue = bindValue;
+            }
+            finally {
+                binding.suspend--;
+            }
         };
 
         prop.subscribe(handler);
@@ -193,6 +206,15 @@ export class Binder<TModel> {
             return getOrCreateProp(lastProp.obj, lastProp.propName);
     }
 
+    protected findParentModel() {
+        let current = this.parent;
+        while (current) {
+            if (current.model != this.model)
+                return current.model;
+            current = current.parent;
+        }
+    }
+
     protected createProxy<TObj>(obj: TObj, action: (obj: any, propName: string) => boolean): TObj {
 
         if (!obj || typeof (obj) !== "object" || (obj as any)[IS_PROXY])
@@ -213,6 +235,8 @@ export class Binder<TModel> {
                 if (prop === IS_PROXY)
                     return true; 
 
+                if (prop === "@parent")
+                    return this.createProxy(this.findParentModel(), action);
 
                 if (typeof prop === "symbol" || typeof target[prop] === "function" || (Array.isArray(obj) && prop === "length")) 
                     return target[prop];
@@ -262,4 +286,6 @@ export class Binder<TModel> {
 
  
     model: TModel;
+
+    parent: Binder<any>;
 }

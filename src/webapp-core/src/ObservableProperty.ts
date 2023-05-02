@@ -19,8 +19,8 @@ export class ObservableProperty<TValue = any> implements IObservableProperty<TVa
 
     set(value: TValue) {
 
-        const oldValue = this.get();
-
+        const oldValue = this.get(); 
+         
         if (this._descriptor.set)
             this._descriptor.set(value);
         else

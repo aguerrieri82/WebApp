@@ -34,10 +34,9 @@ export class TemplateWriter extends JsWriter {
         if (!element)
             element = this.context.currentFrame.element;
 
-        this.context.setParameter("$parent", `${(!this.context.jsNamespace ? "" : this.context.jsNamespace + ".")}injectProxy($model, "$parent", ${this.context.currentFrame.builderNameJs}.model)`);
         this.context.currentFrame.builderNameJs = "t" + this.context.currentFrame.index;
         return this.beginInlineFunction(this.context.currentFrame.builderNameJs)
-            .write(this.context.currentFrame.builderNameJs)
+            .write(this.context.currentFrame.builderNameJs) 
             .indentAdd()
             .writeLine()
             .writeChildNodes(element)

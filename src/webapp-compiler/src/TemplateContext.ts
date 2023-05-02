@@ -83,7 +83,7 @@ export class TemplateContext {
                             isReplaced = true;
                         }
 
-                        if (c != '\0')
+                        if (c != '\0') 
                             result.append(c);
                         state = 0;
                     }
@@ -131,6 +131,7 @@ export class TemplateContext {
         else {
             newEntry.parameters = {};
             newEntry.parameters["$model"] = "m";
+            newEntry.parameters["$parent"] = "m['@parent']";
             newEntry.index = 0;
             newEntry.builderNameJs = "t";
         }

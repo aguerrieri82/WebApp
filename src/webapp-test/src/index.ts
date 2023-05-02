@@ -10,15 +10,16 @@ async function runAsync() {
         items: [] as IItem[],
         msg: "",
         innerObj: {
-            name:"Inner"
+            name:"Inner" 
         },
+        logo: "/logo.png",
         change() {
             this.msg = "Nuovo messaggio" + new Date().getTime();
             if (this.items.length > 0)
                 this.items[0].name = "Item change" + new Date().getTime();
             this.innerObj.name = "Inner change" + new Date().getTime()
         },
-        replace() {
+        replace() { 
             if (this.items.length > 0)
                 this.items[0] = {
                     name: "Pippo"
@@ -39,12 +40,15 @@ async function runAsync() {
 
             this.items.push(...newItems);
    
+        },
+        newImage() {
+            this.logo = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png";
         }
     }; 
-
+      
 
     setInterval(() => {
-        rootModel.msg = "Time is: " + new Date();
+        //rootModel.msg = "Time is: " + new Date();
     }, 1000);
 
 
