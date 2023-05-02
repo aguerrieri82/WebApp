@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "noEmitOnError": false,
     "sourceMap": true,
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Node",
     "noEmit": true,
+    "jsx": "react",
+    "jsxFactory": "__createElement",
     "incremental": true
   },
   "include": ["src"]

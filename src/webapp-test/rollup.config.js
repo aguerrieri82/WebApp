@@ -8,7 +8,7 @@ const outPath = "public/build";
 
 export default [
     {
-        input: "src/index.ts",
+        input: "src/index.tsx",
         output: [
             {
                 file: outPath + "/app.js",

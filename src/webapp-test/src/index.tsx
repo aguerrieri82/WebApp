@@ -1,4 +1,5 @@
-import { template } from "@eusoft/webapp-core";
+import { CatalogTemplate, template } from "@eusoft/webapp-core";
+import { Template } from "@eusoft/webapp-jsx";
 import Index from "./Index.html";
 
 interface IItem {
@@ -51,8 +52,14 @@ async function runAsync() {
         //rootModel.msg = "Time is: " + new Date();
     }, 1000);
 
+    const t  = <Template name="xxx">
+        <div text={m => m.innerObj.name}>
+            <button on-click={m => m.newImage() }>Miao</button>
+        </div>
+    </Template>;
 
-    template(document.body, Index, rootModel);
+
+    template(document.body, t, rootModel);
 }
 
 window.addEventListener("load", runAsync);

@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="urn:web-app"
+    elementFormDefault="qualified"
+	attributeFormDefault="unqualified"
+    xmlns="urn:web-app"
+    xmlns:mstns="http://tempuri.org/XMLSchema.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+	<xs:import namespace="http://www.w3.org/1999/xhtml"/>
+	
+	<xs:element name="template" type="template"/>
+	
+	<xs:attribute name="text" type="xs:string"/>
+	<xs:attribute name="class" type="xs:string"/>
+	<xs:attribute name="visible" type="xs:string"/>
+	<xs:attribute name="html" type="xs:string"/>
+	<xs:attribute name="focus" type="xs:string"/>
+	<xs:attribute name="value" type="xs:string"/>
+	<xs:attribute name="behavoir" type="xs:string"/>
+
+	<xs:attribute name="on-offline" type="xs:string"/>
+	<xs:attribute name="on-onabort" type="xs:string"/>
+	<xs:attribute name="on-onafterprint" type="xs:string"/>
+	<xs:attribute name="on-onbeforeonload" type="xs:string"/>
+	<xs:attribute name="on-onbeforeprint" type="xs:string"/>
+	<xs:attribute name="on-onblur" type="xs:string"/>
+	<xs:attribute name="on-oncanplay" type="xs:string"/>
+	<xs:attribute name="on-oncanplaythrough" type="xs:string"/>
+	<xs:attribute name="on-onchange" type="xs:string"/>
+	<xs:attribute name="on-onclick" type="xs:string"/>
+	<xs:attribute name="on-oncontextmenu" type="xs:string"/>
+	<xs:attribute name="on-ondblclick" type="xs:string"/>
+	<xs:attribute name="on-ondrag" type="xs:string"/>
+	<xs:attribute name="on-ondragend" type="xs:string"/>
+	<xs:attribute name="on-ondragenter" type="xs:string"/>
+	<xs:attribute name="on-ondragleave" type="xs:string"/>
+	<xs:attribute name="on-ondragover" type="xs:string"/>
+	<xs:attribute name="on-ondragstart" type="xs:string"/>
+	<xs:attribute name="on-ondrop" type="xs:string"/>
+	<xs:attribute name="on-ondurationchange" type="xs:string"/>
+	<xs:attribute name="on-onemptied" type="xs:string"/>
+	<xs:attribute name="on-onended" type="xs:string"/>
+	<xs:attribute name="on-onerror" type="xs:string"/>
+	<xs:attribute name="on-onfocus" type="xs:string"/>
+	<xs:attribute name="on-onformchange" type="xs:string"/>
+	<xs:attribute name="on-onforminput" type="xs:string"/>
+	<xs:attribute name="on-onhaschange" type="xs:string"/>
+	<xs:attribute name="on-oninput" type="xs:string"/>
+	<xs:attribute name="on-oninvalid" type="xs:string"/>
+	<xs:attribute name="on-onkeydown" type="xs:string"/>
+	<xs:attribute name="on-onkeypress" type="xs:string"/>
+	<xs:attribute name="on-onkeyup" type="xs:string"/>
+	<xs:attribute name="on-onload" type="xs:string"/>
+	<xs:attribute name="on-onloadeddata" type="xs:string"/>
+	<xs:attribute name="on-onloadedmetadata" type="xs:string"/>
+	<xs:attribute name="on-onloadstart" type="xs:string"/>
+	<xs:attribute name="on-onmessage" type="xs:string"/>
+	<xs:attribute name="on-onmousedown" type="xs:string"/>
+	<xs:attribute name="on-onmousemove" type="xs:string"/>
+	<xs:attribute name="on-onmouseout" type="xs:string"/>
+	<xs:attribute name="on-onmouseover" type="xs:string"/>
+	<xs:attribute name="on-onmouseup" type="xs:string"/>
+	<xs:attribute name="on-onmousewheel" type="xs:string"/>
+	<xs:attribute name="on-onoffline" type="xs:string"/>
+	<xs:attribute name="on-online" type="xs:string"/>
+	<xs:attribute name="on-ononline" type="xs:string"/>
+	<xs:attribute name="on-onpagehide" type="xs:string"/>
+	<xs:attribute name="on-onpageshow" type="xs:string"/>
+	<xs:attribute name="on-onpause" type="xs:string"/>
+	<xs:attribute name="on-onplay" type="xs:string"/>
+	<xs:attribute name="on-onplaying" type="xs:string"/>
+	<xs:attribute name="on-onpopstate" type="xs:string"/>
+	<xs:attribute name="on-onprogress" type="xs:string"/>
+	<xs:attribute name="on-onratechange" type="xs:string"/>
+	<xs:attribute name="on-onreadystatechange" type="xs:string"/>
+	<xs:attribute name="on-onredo" type="xs:string"/>
+	<xs:attribute name="on-onresize" type="xs:string"/>
+	<xs:attribute name="on-onscroll" type="xs:string"/>
+	<xs:attribute name="on-onseeked" type="xs:string"/>
+	<xs:attribute name="on-onseeking" type="xs:string"/>
+	<xs:attribute name="on-onselect" type="xs:string"/>
+	<xs:attribute name="on-onstalled" type="xs:string"/>
+	<xs:attribute name="on-onstorage" type="xs:string"/>
+	<xs:attribute name="on-onsubmit" type="xs:string"/>
+	<xs:attribute name="on-onsuspend" type="xs:string"/>
+	<xs:attribute name="on-ontimeupdate" type="xs:string"/>
+	<xs:attribute name="on-onundo" type="xs:string"/>
+	<xs:attribute name="on-onunload" type="xs:string"/>
+	<xs:attribute name="on-onvolumechange" type="xs:string"/>
+	<xs:attribute name="on-onwaiting" type="xs:string"/>
+
+	<xs:group name="block">
+		<xs:choice>
+			<xs:element name="if" type="if"/>
+			<xs:element name="foreach" type="foreach"/>
+			<xs:element name="class" type="class"/>
+			<xs:element name="content" type="class"/>
+			<xs:element name="html" type="html"/>
+			<xs:element name="node" type="node"/>
+			<xs:element name="behavoir" type="behavoir"/>
+			<xs:any namespace="http://www.w3.org/1999/xhtml" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xs:choice>
+	</xs:group>
+	<xs:complexType name="node">
+		<xs:attribute name="src" type="xs:string" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="behavoir">
+		<xs:attribute name="class" type="xs:string" use="optional"/>
+		<xs:attribute name="name" type="xs:string" use="optional"/>
+
+	</xs:complexType>
+	
+	<xs:complexType name="html">
+		<xs:sequence>
+			<xs:any namespace="http://www.w3.org/1999/xhtml" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	
+	<xs:complexType name="content">
+		<xs:attribute name="src" type="xs:string" use="required"/>
+		<xs:attribute name="template" type="xs:string" use="optional"/>
+		<xs:attribute name="inline" type="xs:boolean" default="false" use="optional"/>
+	</xs:complexType>
+
+	<xs:complexType name="class">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="condition" type="xs:string" use="optional"/>
+	</xs:complexType>
+
+	<xs:complexType name="foreach">
+		<xs:group ref="block" minOccurs="0" maxOccurs="unbounded"/>
+		<xs:attribute name="src" type="xs:string" use="required"/>
+		<xs:attribute name="as" type="xs:string" use="optional"/>
+	</xs:complexType>
+	
+	<xs:complexType name="if">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:group ref="block" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element minOccurs="0" maxOccurs="1" name="else">
+				<xs:complexType>
+					<xs:group ref="block" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="condition" type="xs:string" use="required" />
+	</xs:complexType>
+	
+	<xs:complexType name="template">
+		<xs:group ref="block" minOccurs="0" maxOccurs="unbounded"/>
+		<xs:attribute name="name" type="xs:string" use="required" />
+	</xs:complexType>
+</xs:schema>

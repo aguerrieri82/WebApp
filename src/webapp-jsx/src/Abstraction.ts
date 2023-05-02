@@ -1,4 +1,4 @@
-import type { BindValue, ITemplateProvider, ITemplateBuilder } from "@eusoft/webapp-core";
+import type { BindValue, ITemplateProvider, ITemplateBuilder, ITemplate } from "@eusoft/webapp-core";
 
 export interface ITemplateContext<TModel> {
     builder: ITemplateBuilder<TModel>;
@@ -12,6 +12,7 @@ export type JsxComponent<TModel extends TemplateModel, TProps extends JsxCompone
 
 export type JsxNode<TModel extends TemplateModel> =
     string |
+    ITemplate<TModel> |
     JsxElement<TModel, JsxComponentProps<TModel>> |
     JsxNode<TModel>[] |
     { (model: TModel) : string|number }
@@ -69,9 +70,8 @@ declare global {
 
         }
 
-        interface Element extends JsxElement<any, any> {
+        type Element = JsxElement<any, any> | ITemplate<any>;
 
-        }
 
         type IntrinsicElements = {
 

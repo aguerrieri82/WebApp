@@ -93,7 +93,7 @@ export function processElement<TModel extends TemplateModel>(context: ITemplateC
         }
     }
     else if (typeof (node) == "function") {
-        context.builder.text(node);
+        context.builder.text(node as any); //TODO fix
     }
 }
 
@@ -104,7 +104,7 @@ export function createElement<
     (type: JsxElementType<TModel, TProps>, props: TProps, ...children: TChildren[]): JsxElement<TModel, TProps> {
 
     if (typeof (type) == "function" && (type as Function) == Template)
-        type({
+        return type({
             ...props,
             children
         });

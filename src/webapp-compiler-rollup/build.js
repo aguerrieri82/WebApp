@@ -16,7 +16,7 @@ const newPkg = {
     type: "module",
     main: "index.js",
     dependencies: {
-        "@eusoft/webapp-compiler": "file:../webapp-compiler"
+        "@eusoft/webapp-compiler": "^0.0.4"
     }
 }
 

@@ -7,9 +7,7 @@ export interface ITemplateProps<TModel extends TemplateModel> extends JsxCompone
     children: JsxNode<TModel>
 }
 
-export function Template<TModel extends TemplateModel>(props: ITemplateProps<TModel>): JsxNode<any>  {
+export function Template<TModel extends TemplateModel>(props: ITemplateProps<TModel>) {
 
-    defineTemplate(props.name, t => processElement({builder: t} , props.children));
-
-    return null;
+    return defineTemplate(props.name, t => processElement({builder: t} , props.children));
 }
