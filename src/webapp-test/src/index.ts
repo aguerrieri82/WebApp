@@ -13,10 +13,10 @@ async function runAsync() {
             name:"Inner"
         },
         change() {
-            this.msg = "Nuovo messaggio";
+            this.msg = "Nuovo messaggio" + new Date().getTime();
             if (this.items.length > 0)
-                this.items[0].name = "Item change";
-            this.innerObj.name = "Inner change"
+                this.items[0].name = "Item change" + new Date().getTime();
+            this.innerObj.name = "Inner change" + new Date().getTime()
         },
         replace() {
             if (this.items.length > 0)
@@ -29,10 +29,20 @@ async function runAsync() {
         },
         add() { 
             this.items.push({ name: "Luca" }, {name: "Mario"});
+        },
+        addMany() {
+
+            const newItems = [];
+
+            for (let i = 0; i < 10000; i++)
+                newItems.push({ name: "Item " + i });
+
+            this.items.push(...newItems);
+   
         }
     }; 
-     
-    (window as any)["root"] = rootModel;
+
+
 
     template(document.body, Index, rootModel);
 }

@@ -1,12 +1,19 @@
+
 <t:template name="Index">
+
     <div t:text="$model.msg" />
     <div t:text="$model.msg" />
     <div t:text="'Primo: ' + $model.items[0]?.name" />
     <div t:text="'Primo: ' + $model.innerObj.name" />
-    <t:foreach src="$model.items" >
-        <div t:text="$model.name" /> 
+    <t:foreach src="$model.items">
+        <div>
+            <span t:text="$model.name" />
+            <button t:on-click="$model.name = 'asassa'">Change</button>
+        </div>
     </t:foreach>
     <button t:on-click="$model.add()">Add</button>
     <button t:on-click="$model.replace()">Replace</button>
     <button t:on-click="$model.change()">Change</button>
+    <button t:on-click="$model.addMany()">Add Many</button>
+
 </t:template>   

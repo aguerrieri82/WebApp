@@ -1,4 +1,3 @@
-import { IViewComponent } from "./Abstraction";
 import type { IBehavoir } from "./Abstraction/IBehavoir";
 import type { BindValue } from "./Abstraction/IBinder";
 import { isHTMLContainer } from "./Abstraction/IHTMLContainer";

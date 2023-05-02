@@ -26,7 +26,7 @@ export class ObservableProperty<TValue = any> implements IObservableProperty<TVa
         else
             this._descriptor.value = value;
 
-        if (oldValue != value && this._handlers) {
+        if (oldValue !== value && this._handlers) {
             forEachRev(this._handlers, handler =>
                 handler(value, oldValue));
         }

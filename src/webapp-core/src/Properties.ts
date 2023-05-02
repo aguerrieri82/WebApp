@@ -4,12 +4,11 @@ import type { IProperty } from "./Abstraction/IProperty";
 import { getTypeName } from "./ObjectUtils";
 import { ObservableProperty } from "./ObservableProperty";
 
-
 export function getOrCreateProp<TObj extends IBindable, TKey extends keyof TObj & string, TValue extends TObj[TKey]>(obj: TObj, propName: TKey, property?: IObservableProperty<TValue>, defValue?: TValue): IObservableProperty<TValue> {
 
     const prop = getProp(obj, propName);
     if (prop)
-        return <IObservableProperty<TValue>>prop;
+        return prop as IObservableProperty<TValue>;
 
     const newProp = createProp(obj, propName, property);
     if (defValue !== undefined && newProp.get() === undefined)
@@ -19,11 +18,8 @@ export function getOrCreateProp<TObj extends IBindable, TKey extends keyof TObj 
 
 export function getProp<TObj extends IBindable, TKey extends keyof TObj & string, TValue extends TObj[TKey]>(obj: TObj, propName: TKey): IProperty<TValue> {
 
-    if (PROPS in obj) { 
-        const prop = obj[PROPS][propName];
-        if (prop)
-            return prop;
-    }
+    if (PROPS in obj) 
+        return obj[PROPS][propName];
     return undefined;
 }
 
@@ -37,9 +33,9 @@ export function createProp<TObj extends IBindable, TKey extends (keyof TObj) & s
     }
 
     if (!property)
-        property = new ObservableProperty(desc, <string>propName);
+        property = new ObservableProperty(desc, propName);
 
-    if (!obj[PROPS]) {
+    if (!(PROPS in obj)) {
         Object.defineProperty(obj, PROPS, {
             value: {},
             enumerable: false,

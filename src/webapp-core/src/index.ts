@@ -5,7 +5,6 @@ export * from "./Binder";
 export * from "./TemplateBuilder";
 export * from "./Properties";
 export * from "./ObservableProperty";
-export * from "./ObjectUtils";
-export * from "./ArrayUtils";
+export * from "./ObservableArray";
 
 import "./Global"

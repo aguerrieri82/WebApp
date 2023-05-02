@@ -8,6 +8,7 @@ function forEachRev(items, action) {
     for (let i = items.length - 1; i >= 0; i--)
         action(items[i]);
 }
+
 function createObservableArray(value) {
     if (isObservableArray(value))
         return;
@@ -32,6 +33,16 @@ function createObservableArray(value) {
         const index = handlers.indexOf(handler);
         if (index != -1)
             handlers.splice(index, 1);
+    };
+    value.reverse = function () {
+        const retValue = Array.prototype.reverse.call(this);
+        this.raise(a => a.onReorder && a.onReorder());
+        return retValue;
+    };
+    value.sort = function (...args) {
+        const retValue = Array.prototype.sort.call(this, ...args);
+        this.raise(a => a.onReorder && a.onReorder());
+        return retValue;
     };
     value.push = function (...items) {
         const curIndex = this.length;
@@ -121,7 +132,7 @@ class ObservableProperty {
             this._descriptor.set(value);
         else
             this._descriptor.value = value;
-        if (oldValue != value && this._handlers) {
+        if (oldValue !== value && this._handlers) {
             forEachRev(this._handlers, handler => handler(value, oldValue));
         }
     }
@@ -157,11 +168,8 @@ function getOrCreateProp(obj, propName, property, defValue) {
     return newProp;
 }
 function getProp(obj, propName) {
-    if (PROPS in obj) {
-        const prop = obj[PROPS][propName];
-        if (prop)
-            return prop;
-    }
+    if (PROPS in obj)
+        return obj[PROPS][propName];
     return undefined;
 }
 function createProp(obj, propName, property) {
@@ -172,7 +180,7 @@ function createProp(obj, propName, property) {
     }
     if (!property)
         property = new ObservableProperty(desc, propName);
-    if (!obj[PROPS]) {
+    if (!(PROPS in obj)) {
         Object.defineProperty(obj, PROPS, {
             value: {},
             enumerable: false,
@@ -188,24 +196,14 @@ function createProp(obj, propName, property) {
 }
 
 const IS_PROXY = Symbol("isProxy");
-/****************************************/
 class Binder {
     _bindings = [];
     _modelBinders = [];
-    _depBinders = [];
     constructor(model) {
         this.updateModel(model);
     }
     register(binder) {
         this._modelBinders.push(binder);
-    }
-    registerDependant(binder) {
-        this._depBinders.push(binder);
-    }
-    unregisterDependant(binder) {
-        const index = this._depBinders.indexOf(binder);
-        if (index != -1)
-            this._depBinders.splice(index, 1);
     }
     getBindValue(value) {
         if (typeof value == "function")
@@ -261,13 +259,12 @@ class Binder {
                         return;
                     binding.action(bindValue, binding.lastValue, true);
                     binding.lastValue = bindValue;
-                    //this.subscribe(obj, propName, binding);
                 }
             };
             obj.subscribe(handler);
         }
         const propDesc = Object.getOwnPropertyDescriptor(obj, propName);
-        if (!propDesc || (!propDesc.writable && !propDesc.set)) {
+        if ((!propDesc && Array.isArray(obj)) || (!propDesc.writable && !propDesc.set)) {
             console.warn("Property ", propName, " for object ", obj, " not exists or is not writeable.");
             return;
         }
@@ -308,7 +305,7 @@ class Binder {
             return getOrCreateProp(lastProp.obj, lastProp.propName);
     }
     createProxy(obj, action) {
-        if (!obj || typeof (obj) != "object" || obj[IS_PROXY])
+        if (!obj || typeof (obj) !== "object" || obj[IS_PROXY])
             return obj;
         const innerProxies = {};
         if (Array.isArray(obj)) {
@@ -317,9 +314,9 @@ class Binder {
         }
         return new Proxy(obj, {
             get: (target, prop) => {
-                if (prop == IS_PROXY)
+                if (prop === IS_PROXY)
                     return true;
-                if (typeof prop == "symbol" || (Array.isArray(obj) && prop == "length"))
+                if (typeof prop === "symbol" || typeof target[prop] === "function" || (Array.isArray(obj) && prop === "length"))
                     return target[prop];
                 if (!(prop in innerProxies)) {
                     if (action(obj, prop))
@@ -334,10 +331,8 @@ class Binder {
     cleanBindings(cleanValue) {
         this._bindings.forEach(binding => this.unsubscribe(binding, cleanValue));
         this._modelBinders.forEach(binder => binder.cleanBindings(cleanValue));
-        this._depBinders.forEach(binder => binder.cleanBindings(cleanValue));
         this._modelBinders = [];
         this._bindings = [];
-        this._depBinders = [];
     }
     updateModel(model) {
         this.model = model;
@@ -848,11 +843,16 @@ const Index = __defineTemplate("Index", t => { t
     .beginChild("div").text(m => 'Primo: ' + m.items[0]?.name).endChild()
     .beginChild("div").text(m => 'Primo: ' + m.innerObj.name).endChild()
     .foreach(m => m.items, t1 => t1
-        .beginChild("div").text(m => m.name).endChild()
+        .beginChild("div")
+            .beginChild("span").text(m => m.name).endChild()
+            .beginChild("button").on("click", m => m.name = 'asassa').text("Change").endChild()
+        .endChild()
     )
     .beginChild("button").on("click", m => m.add()).text("Add").endChild()
     .beginChild("button").on("click", m => m.replace()).text("Replace").endChild()
-    .beginChild("button").on("click", m => m.change()).text("Change").endChild();
+    .beginChild("button").on("click", m => m.change()).text("Change").endChild()
+    .beginChild("button").on("click", m => m.addMany()).text("Add Many").endChild()
+    .beginChild("BigList").endChild();
 });
 
 async function runAsync() {
@@ -863,10 +863,10 @@ async function runAsync() {
             name: "Inner"
         },
         change() {
-            this.msg = "Nuovo messaggio";
+            this.msg = "Nuovo messaggio" + new Date().getTime();
             if (this.items.length > 0)
-                this.items[0].name = "Item change";
-            this.innerObj.name = "Inner change";
+                this.items[0].name = "Item change" + new Date().getTime();
+            this.innerObj.name = "Inner change" + new Date().getTime();
         },
         replace() {
             if (this.items.length > 0)
@@ -879,9 +879,14 @@ async function runAsync() {
         },
         add() {
             this.items.push({ name: "Luca" }, { name: "Mario" });
+        },
+        addMany() {
+            const newItems = [];
+            for (let i = 0; i < 10000; i++)
+                newItems.push({ name: "Item " + i });
+            this.items.push(...newItems);
         }
     };
-    window["root"] = rootModel;
     template(document.body, Index, rootModel);
 }
 window.addEventListener("load", runAsync);

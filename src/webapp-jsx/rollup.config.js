@@ -14,8 +14,10 @@ const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const name = pkg.name.substring(7);
 
 const outPath = "../../dist/" + name;
-
+ò
 const typesPath = outPath + "/src/" + name + "/types";
+
+const isProd = process.env.NODE_ENV == "prod";
 
 const onwarn = (warning, warn) => {
     if (warning.code == "CIRCULAR_DEPENDENCY" || warning.code == "SOURCEMAP_BROKEN")
@@ -48,7 +50,7 @@ export default [
                     types: "index.d.ts",
                     dependencies: pkg.dependencies ?? {},
                     peerDependencies: {
-                        "@eusoft/webapp-core": "^0.0.1"
+                        "@eusoft/webapp-core": isProd ? "^0.0.1" : "../webapp-core"
                     }
                 }
             }),
@@ -56,7 +58,7 @@ export default [
             resolve(),
             typescript(),
             sourcemaps(),
-            process.env.NODE_ENV == "prod" ? terser() : {}
+            isProd && terser()
         ]
     },
     {

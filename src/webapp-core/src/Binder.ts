@@ -1,12 +1,13 @@
 import type { BindValue, IGetter } from "./Abstraction/IBinder";
 import { IObservableArrayHandler, isObservableArray } from "./Abstraction/IObservableArray";
 import type { IObservableProperty, IPropertyChangedHandler } from "./Abstraction/IObservableProperty";
-import { createObservableArray, forEachRev } from "./ArrayUtils";
+import { forEachRev } from "./ArrayUtils";
+import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
 
 const IS_PROXY = Symbol("isProxy")
 
-interface IPropertySubscription<TValue = any> {
+interface IBindingSubscription<TValue = any> {
 
     source: any;
 
@@ -17,8 +18,6 @@ interface IPropertySubscription<TValue = any> {
     name: string;
 }
 
-/****************************************/
-
 interface IBinding<TModel, TValue = any> {
 
     lastValue: TValue;
@@ -27,23 +26,18 @@ interface IBinding<TModel, TValue = any> {
 
     action(newValue: TValue, oldValue?: TValue, isUpdate?: boolean, isClear?: boolean): void;
 
-    subscriptions: IPropertySubscription[];
+    subscriptions: IBindingSubscription[];
 }
 
-/****************************************/
-
-export interface IPropertyAccess {
+interface IPropertyAccess {
     obj: any;
     propName: string;
 }
-
-/****************************************/
 
 export class Binder<TModel> {
 
     private _bindings: IBinding<TModel>[] = [];
     private _modelBinders: Binder<TModel>[] = [];
-    private _depBinders: Binder<any>[] = [];
 
     constructor(model?: TModel) {
 
@@ -55,16 +49,6 @@ export class Binder<TModel> {
         this._modelBinders.push(binder);
     }
 
-    protected registerDependant(binder: Binder<any>) {
-
-        this._depBinders.push(binder);
-    }
-
-    protected unregisterDependant(binder: Binder<any>) {
-        const index = this._depBinders.indexOf(binder);
-        if (index != -1)
-            this._depBinders.splice(index, 1);
-    }
 
     protected getBindValue<TValue>(value: BindValue<TModel, TValue>): TValue {
         if (typeof value == "function")
@@ -84,8 +68,8 @@ export class Binder<TModel> {
 
         if (typeof value == "function") {
 
-            const binding = <IBinding<TModel, TValue>>{
-                value: <IGetter<TModel, TValue>>value,
+            const binding: IBinding<TModel, TValue> = {
+                value: value as IGetter<TModel, TValue>,
                 action: action,
                 subscriptions: [],
                 lastValue: undefined
@@ -143,27 +127,26 @@ export class Binder<TModel> {
                     binding.action(bindValue, binding.lastValue, true);
 
                     binding.lastValue = bindValue; 
-
-                    //this.subscribe(obj, propName, binding);
                 }
             };
 
             obj.subscribe(handler); 
-        } 
+        }  
+
 
         const propDesc = Object.getOwnPropertyDescriptor(obj, propName);
 
-        if (!propDesc || (!propDesc.writable && !propDesc.set)) {
+        if ((!propDesc && Array.isArray(obj)) || (!propDesc.writable && !propDesc.set)) {
             console.warn("Property ", propName, " for object ", obj, " not exists or is not writeable.");
             return;
-        } 
+        }
 
         const prop = getOrCreateProp(obj, propName);
 
         const handler: IPropertyChangedHandler<any> = (value, oldValue) => {
 
             const bindValue = binding.value(this.model);
-
+             
             if (bindValue == binding.lastValue)
                 return;
 
@@ -188,7 +171,7 @@ export class Binder<TModel> {
             property: prop,
             name: propName,
             handler: handler
-        });
+        }); 
     }
 
     protected getBindingProperty<TValue>(value: BindValue<TModel, TValue>): IObservableProperty<TValue> {
@@ -212,7 +195,7 @@ export class Binder<TModel> {
 
     protected createProxy<TObj>(obj: TObj, action: (obj: any, propName: string) => boolean): TObj {
 
-        if (!obj || typeof (obj) != "object" || (obj as any)[IS_PROXY])
+        if (!obj || typeof (obj) !== "object" || (obj as any)[IS_PROXY])
             return obj;
 
         const innerProxies: Record<PropertyKey, any> = {};
@@ -227,10 +210,11 @@ export class Binder<TModel> {
 
             get: (target, prop) => {
 
-                if (prop == IS_PROXY)
+                if (prop === IS_PROXY)
                     return true; 
 
-                if (typeof prop == "symbol" || (Array.isArray(obj) && prop == "length")) 
+
+                if (typeof prop === "symbol" || typeof target[prop] === "function" || (Array.isArray(obj) && prop === "length")) 
                     return target[prop];
 
                 if (!(prop in innerProxies)) {
@@ -256,12 +240,8 @@ export class Binder<TModel> {
         this._modelBinders.forEach(binder =>
             binder.cleanBindings(cleanValue));
 
-        this._depBinders.forEach(binder =>
-            binder.cleanBindings(cleanValue));
-
         this._modelBinders = [];
         this._bindings = [];
-        this._depBinders = [];
     }
 
     updateModel(model: TModel) { 
