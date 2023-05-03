@@ -5,4 +5,7 @@
   <ItemGroup>
     <None Include=".vscode\launch.json" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\Components\" />
+  </ItemGroup>
 </Project>

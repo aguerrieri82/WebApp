@@ -1,6 +1,5 @@
 import path from "path"
-import { TemplateCompiler } from "@eusoft/webapp-compiler"
-
+import { TemplateCompiler, JsxCompiler } from "@eusoft/webapp-compiler"
 
 export default function (options) {
 
@@ -10,9 +9,9 @@ export default function (options) {
         async transform (code, id) {
             const ext = path.extname(id);
 
-            if (ext == ".html") { 
+            if (ext == ".tsx" || ext == ".jsx") {
 
-                const compiler = new TemplateCompiler();
+                const compiler = new JsxCompiler();
 
                 compiler.error = msg => this.error(msg);
 
@@ -21,6 +20,19 @@ export default function (options) {
                 const text = await compiler.compileTextAsync(code);
 
                 console.log(text);
+
+                return text;
+            }
+
+            else if (ext == ".html") { 
+
+                const compiler = new TemplateCompiler();
+
+                compiler.error = msg => this.error(msg);
+
+                compiler.warning = msg => this.warn(msg);
+
+                const text = await compiler.compileTextAsync(code);
 
                 return text;
 

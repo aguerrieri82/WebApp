@@ -1,5 +1,5 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
-import { TemplateLanguage } from "../TemplateCompiler";
+import { CompilerLanguage } from "../BaseCompiler";
 import { TemplateContext } from "../TemplateContext";
 
 export default class TemplateElementHandler implements ITemplateHandler {
@@ -29,7 +29,7 @@ export default class TemplateElementHandler implements ITemplateHandler {
             ctx.setParameter("$" + modelName, `${ctx.currentFrame.builderNameJs}.model`);
 
         ctx.writer.ensureNewLine();
-        if (ctx.compiler.options.language == TemplateLanguage.Javascript)
+        if (ctx.compiler.options.language == CompilerLanguage.Javascript)
             ctx.writer.write("export const ").write(templateName).write(" = ").write("__defineTemplate(").writeJson(templateName).write(", ");
         else
             ctx.writer.write(ctx.jsNamespace).write(".templateCatalog[").writeJson(templateName).write("] = ");

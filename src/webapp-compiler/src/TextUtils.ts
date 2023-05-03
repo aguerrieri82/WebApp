@@ -1,3 +1,4 @@
+import { ReadStream } from "fs";
 import { StringBuilder } from "./StringBuilder";
 
 export function isLetterOrDigit(value: string) {
@@ -27,4 +28,15 @@ export function formatStyle(value: string)
         i++;
     }
     return builder.toString();
+}
+
+export async function readAllTextAsync(stream: ReadStream) {
+
+    const chunks: Buffer[] = [];
+
+    for await (let chunk of stream) {
+        chunks.push(chunk);
+    }
+
+    return Buffer.concat(chunks).toString();
 }

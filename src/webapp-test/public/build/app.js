@@ -101,11 +101,6 @@ function createElement(type, props, ...children) {
     }
 }
 
-function Foreach(props) {
-    props.context.builder.foreach(props.src, t => processElement({ builder: t }, props.children));
-    return null;
-}
-
 window.__createElement = createElement;
 
 async function runAsync() {
@@ -145,19 +140,10 @@ async function runAsync() {
         }
     };
     setInterval(() => {
-        //rootModel.msg = "Time is: " + new Date();
+        rootModel.msg = "Time is: " + new Date();
     }, 1000);
-    function Inner() {
-        return __createElement("div", null,
-            __createElement(Foreach, { src: m => m.items },
-                __createElement("div", { text: m => m.name })),
-            "Hello");
-    }
-    const test = __createElement(Template, { name: "xxx" },
-        __createElement("div", { text: m => m.innerObj.name },
-            __createElement("button", { "on-click": m => m.addMany() }, "Miao"),
-            __createElement(Inner, null)));
-    g(document.body, test, rootModel);
+    const t = null;
+    g(document.body, t, rootModel);
 }
 window.addEventListener("load", runAsync);
 //# sourceMappingURL=app.js.map

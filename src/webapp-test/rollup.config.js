@@ -20,9 +20,9 @@ export default [
             },
         ],
         plugins: [
-            webapp(),
             resolve(),
             typescript(),
+            webapp(),
             sourcemaps()
         ]
     }

@@ -31,10 +31,10 @@ type IfEquals<X, Y, A = X, B = never> =
     (<T>() => T extends X ? 1 : 2) extends
     (<T>() => T extends Y ? 1 : 2) ? A : B;
 
-type WritableKeys<T, TProp> = {
-    [P in keyof T]-?: IfEquals<{ [Q in P]: T[P] }, { -readonly [Q in P]: T[P] }, P> extends TProp ? P : never
-}[keyof T];
 
+type WritableKeys<T, TProp> = {
+    [P in keyof T]-?: T[P] extends TProp ? IfEquals<{ [Q in P]: T[P] }, { -readonly [Q in P]: T[P] }, P> : never
+}[keyof T];
 
 type ElementEvents<TModel> = {
     [K in keyof HTMLElementEventMap as K extends string ? `on-${K}` : never]?: { (model: TModel, e?: HTMLElementEventMap[K]) : void }
@@ -63,9 +63,9 @@ type ElementProps<TModel extends TemplateModel, TElement> =
 declare global {
     namespace JSX {
 
-        interface ElementChildrenAttribute { children: any }
+        interface ElementChildrenAttribute { children: {} }
 
-        interface ElementAttributesProperty { _config: any } 
+        interface ElementAttributesProperty { _config: {} } 
 
         interface ElementClass extends ITemplateProvider {
 
@@ -74,9 +74,9 @@ declare global {
         type Element = JsxElement<any, any> | ITemplate<any>;
 
 
-        type IntrinsicElements<TModel extends TemplateModel> = {
+        type IntrinsicElements = {
 
-            [P in keyof HTMLElementTagNameMap]: ElementProps<TModel, HTMLElementTagNameMap[P]>
+            [P in keyof HTMLElementTagNameMap]: ElementProps<any, HTMLElementTagNameMap[P]>
         }
     }
 }

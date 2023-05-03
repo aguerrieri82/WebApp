@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server",
     "build:dev": "rollup -c -w --environment NODE_ENV:dev",
+    "build": "rollup -c --environment NODE_ENV:dev",
     "install:pnpm": "pnpm install -f",
     "upgrade": "ncu --upgrade && pnpm install"
   },

@@ -1,5 +1,5 @@
 import { CatalogTemplate, template } from "@eusoft/webapp-core";
-import { Template } from "@eusoft/webapp-jsx";
+import { Foreach, Template } from "@eusoft/webapp-jsx";
 import Index from "./Index.html";
 
 interface IItem {
@@ -49,15 +49,21 @@ async function runAsync() {
       
 
     setInterval(() => {
-        //rootModel.msg = "Time is: " + new Date();
+        rootModel.msg = "Time is: " + new Date();
     }, 1000);
 
-    const t  = <Template name="xxx">
+    const t = <Template name="xxx">
         <div text={m => m.innerObj.name}>
-            <button on-click={m => m.newImage() }>Miao</button>
+            <button on-click={(m: typeof rootModel) => m.addMany() }>Add</button>
         </div>
+        <Foreach src={(m: typeof rootModel) => m.items}>
+            <div text={(m: IItem) => m.name}/>
+        </Foreach>
     </Template>;
 
+
+    const t2 = <Template name="yyy">
+    </Template>;
 
     template(document.body, t, rootModel);
 }
