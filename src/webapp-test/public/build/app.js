@@ -13,6 +13,8 @@ function isViewComponent(type) {
     return type.toString().startsWith("class ");
 }
 function processElement(context, node) {
+    if (node === null || node === undefined)
+        return;
     if (Array.isArray(node)) {
         for (const item of node)
             processElement(context, item);
@@ -70,10 +72,11 @@ function processElement(context, node) {
                 context.builder.content(content);
             }
             else {
-                node.type({
+                const result = node.type({
                     ...node.props,
                     context
                 });
+                processElement(context, result);
             }
         }
     }
@@ -96,6 +99,11 @@ function createElement(type, props, ...children) {
             }
         };
     }
+}
+
+function Foreach(props) {
+    props.context.builder.foreach(props.src, t => processElement({ builder: t }, props.children));
+    return null;
 }
 
 window.__createElement = createElement;
@@ -139,10 +147,17 @@ async function runAsync() {
     setInterval(() => {
         //rootModel.msg = "Time is: " + new Date();
     }, 1000);
-    const t = __createElement(Template, { name: "xxx" },
+    function Inner() {
+        return __createElement("div", null,
+            __createElement(Foreach, { src: m => m.items },
+                __createElement("div", { text: m => m.name })),
+            "Hello");
+    }
+    const test = __createElement(Template, { name: "xxx" },
         __createElement("div", { text: m => m.innerObj.name },
-            __createElement("button", { "on-click": m => m.newImage() }, "Miao")));
-    g(document.body, t, rootModel);
+            __createElement("button", { "on-click": m => m.addMany() }, "Miao"),
+            __createElement(Inner, null)));
+    g(document.body, test, rootModel);
 }
 window.addEventListener("load", runAsync);
 //# sourceMappingURL=app.js.map

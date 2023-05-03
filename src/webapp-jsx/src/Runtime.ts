@@ -18,6 +18,9 @@ export function isViewComponent<TModel extends TemplateModel = TemplateModel>(ty
 
 export function processElement<TModel extends TemplateModel>(context: ITemplateContext<TModel>, node: JsxNode<TModel>) {
 
+    if (node === null || node === undefined)
+        return;
+
     if (Array.isArray(node)) {
         for (const item of node)
             processElement(context, item);
@@ -84,12 +87,14 @@ export function processElement<TModel extends TemplateModel>(context: ITemplateC
                 context.builder.content(content)
             }
             else {
-                node.type({
+
+                const result = node.type({
                     ...node.props,
                     context
-                })
-            }
+                });
 
+                processElement(context, result);
+            }
         }
     }
     else if (typeof (node) == "function") {

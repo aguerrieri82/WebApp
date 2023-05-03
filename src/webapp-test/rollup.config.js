@@ -23,7 +23,6 @@ export default [
             webapp(),
             resolve(),
             typescript(),
-
             sourcemaps()
         ]
     }

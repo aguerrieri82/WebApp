@@ -5,7 +5,4 @@
   <ItemGroup>
     <None Remove="dist\**" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="src\" />
-  </ItemGroup>
 </Project>
