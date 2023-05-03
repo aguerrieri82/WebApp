@@ -120,7 +120,7 @@ async function runAsync() {
 
     for (const libName of libs) {
 
-        logColor(`PROCESS \n${libName}\n\n`, colours.fg.green);
+        logColor(`\nPROCESS '${libName}'\n\n`, colours.fg.green);
 
         const libSrcPath = path.join(srcPath, libName);
         const libDistPath = path.join(distPath, libName);

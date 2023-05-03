@@ -1,16 +1,17 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
+import { ITemplateElement, ITemplateNode } from "../Abstraction/ITemplateNode";
 import { TemplateContext } from "../TemplateContext";
 
 export class NodeElementHandler implements ITemplateHandler {
      
-    canHandle(ctx: TemplateContext, node: Node): boolean {
+    canHandle(ctx: TemplateContext, node: ITemplateNode): boolean {
 
         return ctx.isElement(node, "node");
     }
 
-    handle(ctx: TemplateContext, element: Element): HandleResult {
+    handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        const source = element.getAttribute("src");
+        const source = element.attributes.src?.value;
 
         if (!source) {
             ctx.error("Source not specified in node.");

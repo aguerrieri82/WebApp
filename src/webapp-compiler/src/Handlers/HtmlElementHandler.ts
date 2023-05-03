@@ -1,16 +1,19 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
+import { ITemplateElement, ITemplateNode } from "../Abstraction/ITemplateNode";
 import { TemplateContext } from "../TemplateContext";
 
-export class BehavoirElementHandler implements ITemplateHandler {
+export class HtmlElementHandler implements ITemplateHandler {
      
-    canHandle(ctx: TemplateContext, node: Node): boolean {
+    canHandle(ctx: TemplateContext, node: ITemplateNode): boolean {
 
         return ctx.isElement(node, "html");
     }
 
-    handle(ctx: TemplateContext, element: Element): HandleResult {
+    handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        ctx.writer.write(".html(").writeJson(element.innerHTML).write(")");
+        //TODO innerHTML?
+
+        //ctx.writer.write(".html(").writeJson(element.innerHTML).write(")");
         return HandleResult.SkipChildren;
     }
 

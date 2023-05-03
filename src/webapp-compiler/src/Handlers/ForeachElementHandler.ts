@@ -1,17 +1,18 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
+import { ITemplateElement, ITemplateNode } from "../Abstraction/ITemplateNode";
 import { TemplateContext } from "../TemplateContext";
 
 export class ForeachElementHandler implements ITemplateHandler {
      
-    canHandle(ctx: TemplateContext, node: Node): boolean {
+    canHandle(ctx: TemplateContext, node: ITemplateNode): boolean {
 
         return ctx.isElement(node, "foreach");
     }
 
-    handle(ctx: TemplateContext, element: Element): HandleResult {
+    handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        var source = element.getAttribute("src");
-        var modelName = element.getAttribute("as");
+        var source = element.attributes.src?.value;
+        var modelName = element.attributes.as?.value;
 
         if (!source) {
             ctx.error("Source not specified in foreach");

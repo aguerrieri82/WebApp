@@ -1,14 +1,15 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
+import { ITemplateAttribute } from "../Abstraction/ITemplateNode";
 import { TemplateContext } from "../TemplateContext";
 
 export class AttributeHandler implements ITemplateHandler {
      
-    canHandle(ctx: TemplateContext, node: Attr): boolean {
+    canHandle(ctx: TemplateContext, node: ITemplateAttribute): boolean {
 
-        return node.nodeType == 2 && !node.nodeName.toLowerCase().startsWith(ctx.htmlNamespace + ":"); 
+        return ctx.isAttr(node) && !node.name.toLowerCase().startsWith(ctx.htmlNamespace + ":"); 
     }
 
-    handle(ctx: TemplateContext, node: Attr): HandleResult {
+    handle(ctx: TemplateContext, node: ITemplateAttribute): HandleResult {
 
         ctx.writer.write(".set(").writeJson(node.name).write(",").writeJson(node.value).write(")");
 

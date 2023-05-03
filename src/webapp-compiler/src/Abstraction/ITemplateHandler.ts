@@ -1,4 +1,5 @@
 import type { TemplateContext } from "../TemplateContext";
+import { ITemplateNode } from "./ITemplateNode";
 
 export enum HandleResult {
     CompileChildren,
@@ -9,7 +10,7 @@ export enum HandleResult {
 
 export interface ITemplateHandler {
 
-    canHandle(ctx: TemplateContext, node: Node) : boolean;
+    canHandle(ctx: TemplateContext, node: ITemplateNode) : boolean;
 
-    handle(ctx: TemplateContext, node: Node): HandleResult;
+    handle(ctx: TemplateContext, node: ITemplateNode): HandleResult;
 }

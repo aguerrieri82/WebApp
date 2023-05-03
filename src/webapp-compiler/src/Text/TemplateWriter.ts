@@ -1,3 +1,4 @@
+import { ITemplateAttribute, ITemplateElement, ITemplateNode, TemplateNodeType } from "../Abstraction/ITemplateNode";
 import { IWriteable } from "../Abstraction/IWriteable";
 import type { TemplateContext } from "../TemplateContext";
 import { JsWriter } from "./JsWriter";
@@ -30,7 +31,8 @@ export class TemplateWriter extends JsWriter {
         return this.write(value.replaceAll("$model", `${this.context.currentFrame.builderNameJs}.model`));
     }
 
-    writeTemplate(element?: Node) {
+    writeTemplate(element?: ITemplateElement) {
+
         if (!element)
             element = this.context.currentFrame.element;
 
@@ -44,23 +46,23 @@ export class TemplateWriter extends JsWriter {
             .indentSub();
     }
 
-    writeElement(node: Node) {
+    writeElement(node: ITemplateNode) {
         this.context.compiler.compileElement(this.context, node);
         return this;
     }
 
-    writeAttribute(attr: Attr ) {
+    writeAttribute(attr: ITemplateAttribute ) {
         this.context.compiler.compileAttribute(this.context, attr);
         return this;
     }
      
-    writeChildElements(node: Node ) {
-        this.context.compiler.compileElements(this.context, Array.from(node.childNodes).filter(a => a.nodeType == 1));
+    writeChildElements(node: ITemplateElement ) {
+        this.context.compiler.compileElements(this.context, node.childNodes.filter(a => a.type == TemplateNodeType.Element));
         return this; 
     }
 
-    writeChildNodes(node: Node ) {
-        this.context.compiler.compileElements(this.context, Array.from(node.childNodes));
+    writeChildNodes(node: ITemplateElement ) {
+        this.context.compiler.compileElements(this.context, node.childNodes);
         return this;
     }
 

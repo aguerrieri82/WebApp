@@ -1,14 +1,15 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
+import { ITemplateAttribute } from "../Abstraction/ITemplateNode";
 import { TemplateContext } from "../TemplateContext";
 
 export class OnAttributeHandler implements ITemplateHandler {
      
-    canHandle(ctx: TemplateContext, node: Attr): boolean {
+    canHandle(ctx: TemplateContext, node: ITemplateAttribute): boolean {
 
-        return node.nodeType == 2 && node.name.toLowerCase().startsWith(ctx.htmlNamespace + ":on-");
+        return ctx.isAttr(node) && node.name.toLowerCase().startsWith(ctx.htmlNamespace + ":on-");
     }
 
-    handle(ctx: TemplateContext, node: Attr): HandleResult {
+    handle(ctx: TemplateContext, node: ITemplateAttribute): HandleResult {
 
         const eventName = node.name.substring(ctx.htmlNamespace.length + 4);
         ctx.writer.write(".on(").writeJson(eventName).write(", ").writeBinding(node.value).write(")");

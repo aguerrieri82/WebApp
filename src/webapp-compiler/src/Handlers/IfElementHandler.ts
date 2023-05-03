@@ -1,17 +1,18 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
+import { ITemplateElement, ITemplateNode } from "../Abstraction/ITemplateNode";
 import { TemplateContext } from "../TemplateContext";
 
 export class IfElementHandler implements ITemplateHandler {
      
-    canHandle(ctx: TemplateContext, node: Node): boolean {
+    canHandle(ctx: TemplateContext, node: ITemplateNode): boolean {
 
         return ctx.isElement(node, "if");
     }
 
-    handle(ctx: TemplateContext, element: Element): HandleResult {
+    handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        let condition = element.getAttribute("condition");
-        const has = element.getAttribute("has");
+        let condition = element.attributes.condition?.value;
+        const has = element.attributes.has?.value;
 
         if ((!has && !condition) ||
             (has && condition)) {
@@ -22,10 +23,14 @@ export class IfElementHandler implements ITemplateHandler {
         if (has)
             condition = has + " != null";
 
-        const elseBlock = element.querySelector(`${ctx.htmlNamespace}\\:else`);
+        const elseName = `${ctx.htmlNamespace}\\:else`;
 
-        if (elseBlock != null)
-            elseBlock.remove();
+        const elseIndex = element.childNodes?.findIndex(a => ctx.isElement(a, elseName));
+
+        let elseBlock: ITemplateElement;
+
+        if (elseIndex != -1)
+            elseBlock = element.childNodes.splice(elseIndex, 1)[0] as ITemplateElement;
 
         ctx.writer.ensureNewLine().write(".if(")
             .writeBinding(condition)

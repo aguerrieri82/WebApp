@@ -6,7 +6,7 @@ export class TextWriter {
     protected _isInNewLine: boolean = false;
 
     constructor(stream: IWriteable) {
-        this.stream = stream;
+        this.out = stream;
     }
 
     write(value: any) {
@@ -15,8 +15,8 @@ export class TextWriter {
 
         for (const c of text) {
             if (this._isInNewLine && this._indentLevel > 0)
-                this.stream.write(this._indentText); 
-            this.stream.write(c);
+                this.out.write(this._indentText); 
+            this.out.write(c);
             this._isInNewLine = c == '\n';
         }
         return this;
@@ -58,5 +58,5 @@ export class TextWriter {
         this._indentText = "    ".repeat(this._indentLevel);
     }
 
-    readonly stream: IWriteable;
+    readonly out: IWriteable;
 }

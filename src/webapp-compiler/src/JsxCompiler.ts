@@ -5,8 +5,17 @@ import traverse from "@babel/traverse";
 import { readAllTextAsync } from "./TextUtils";
 import { BaseCompiler } from "./BaseCompiler";
 import { JSXIdentifier, Node as BabelNode } from "@babel/types";
+import { TemplateContext } from "./TemplateContext";
+import { TemplateWriter } from "./Text/TemplateWriter";
+import { ITemplateElement, ITemplateNode } from "./Abstraction/ITemplateNode";
 
 export class JsxCompiler extends BaseCompiler {
+
+
+    protected parse(template: BabelNode) : ITemplateElement {
+
+        return null;
+    }
 
     async compileStreamAsync(input: ReadStream | string, output: IWriteable) {
 
@@ -33,17 +42,6 @@ export class JsxCompiler extends BaseCompiler {
             }
         });
 
-        let offset = 0;
-
-        let result = js;
-
-        const replaceNode = (node: BabelNode, newText: string) => {
-            const p1 = result.substring(0, node.start + offset);
-            const p2 = result.substring(node.end + offset);
-            result = p1 + newText + p2;
-            offset -= (node.end - node.start) - newText.length;
-        }
-
         const validate = (node: BabelNode) => {
 
             let isValid = true;
@@ -62,13 +60,25 @@ export class JsxCompiler extends BaseCompiler {
             return isValid;
         }
 
+
+        const ctx = new TemplateContext();
+        ctx.compiler = this;
+        ctx.jsNamespace = "WebApp";
+        ctx.htmlNamespace = "t";
+        ctx.writer = new TemplateWriter(output, ctx);
+
         for (const temp of templates) {
 
-            if (!validate(temp))
-                continue;
-            replaceNode(temp, "null");
-        } 
+            const tempNode = this.parse(temp);
 
-        output.write(result);
+            ctx.writer.out.write(js.substring(0, temp.start));
+            if (validate(temp)) {
+                ctx.writer.writeTemplate(tempNode);
+            }
+            else
+                ctx.writer.write("null");
+
+            ctx.writer.out.write(js.substring(temp.end));
+        } 
     }
 }

@@ -1,19 +1,20 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
+import { ITemplateAttribute } from "../Abstraction/ITemplateNode";
 import { TemplateContext } from "../TemplateContext";
 
 
 export class BindingAttributeHandler implements ITemplateHandler {
      
-    canHandle(ctx: TemplateContext, node: Attr): boolean {
+    canHandle(ctx: TemplateContext, node: ITemplateAttribute): boolean {
 
-        return node.nodeType == 2 && node.nodeName.toLowerCase().startsWith(ctx.htmlNamespace + ":") &&
-              !node.nodeName.toLowerCase().startsWith(ctx.htmlNamespace + ":set-");
+        return ctx.isAttr(node) && node.name.toLowerCase().startsWith(ctx.htmlNamespace + ":") &&
+            !node.name.toLowerCase().startsWith(ctx.htmlNamespace + ":set-");
     }
 
-    handle(ctx: TemplateContext, node: Attr): HandleResult {
+    handle(ctx: TemplateContext, node: ITemplateAttribute): HandleResult {
 
         ctx.writer.write(".set(")
-            .writeJson(node.nodeName.substring(ctx.htmlNamespace.length + 1))
+            .writeJson(node.name.substring(ctx.htmlNamespace.length + 1))
             .write(",").writeBinding(node.value).write(")");
 
         return HandleResult.Handled;

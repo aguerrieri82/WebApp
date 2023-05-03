@@ -8,7 +8,6 @@
     "clean": "rimraf ../../dist/webapp-jsx/",
     "build:watch": "rollup -c -w  --environment NODE_ENV:dev",
     "build:dev": "rollup -c --environment NODE_ENV:dev",
-    "build:prod": "rollup -c --environment NODE_ENV:prod",
     "lint:fix": "eslint ./src/**/*.ts* --fix",
     "install:pnpm": "pnpm install",
     "upgrade": "ncu --upgrade && pnpm install"

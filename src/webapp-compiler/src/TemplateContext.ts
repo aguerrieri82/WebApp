@@ -1,14 +1,14 @@
-import { strict } from "assert";
 import type { ITemplateHandler } from "./Abstraction/ITemplateHandler";
-import { TemplateCompiler } from "./TemplateCompiler";
 import { TemplateWriter } from "./Text/TemplateWriter";
 import { isLetterOrDigit } from "./TextUtils";
 import { StringBuilder } from "./StringBuilder";
+import { BaseCompiler } from "./BaseCompiler";
+import { ITemplateAttribute, ITemplateElement, ITemplateNode, TemplateNodeType } from "./Abstraction/ITemplateNode";
 
 class StackFrame {
     builderNameJs: string;
     handler: ITemplateHandler;
-    element: Node;
+    element: ITemplateElement;
     parent: StackFrame;
     index: number;
     parameters: Record<string, string>;
@@ -16,18 +16,31 @@ class StackFrame {
 
 export class TemplateContext {
 
-    isElement(node: Node, elementName: string ) {
-        return node.nodeType == 1 && node.nodeName.toUpperCase() == `${this.htmlNamespace}:${elementName}`.toUpperCase();
+    isElement(node: ITemplateNode, elementName?: string): node is ITemplateElement {
+
+        if (node.type != TemplateNodeType.Element)
+            return false;
+
+        if (elementName)
+            return (node as ITemplateElement).name.toUpperCase() == `${this.htmlNamespace}:${elementName}`.toUpperCase();
+
+        return true;
     }
 
-    isAttr(node: Node, elementName: string) {
-        return node.nodeType == 2 && node.nodeName.toUpperCase() == `${this.htmlNamespace}:${elementName}`.toUpperCase();
+    isAttr(node: ITemplateNode, elementName?: string) : node is ITemplateAttribute {
+
+        if (node.type != TemplateNodeType.Attribute)
+            return false;
+
+        if (elementName)
+            return (node as ITemplateAttribute).name.toUpperCase() == `${this.htmlNamespace}:${elementName}`.toUpperCase();
+
+        return true;
     }
 
     error(text: string) {
         this.compiler.error(text);
     }
-
 
     setParameter(htmlName: string, jsName: string ) {
         if (!this.currentFrame.parameters)
@@ -118,7 +131,7 @@ export class TemplateContext {
         }
     }
 
-    enter(handler: ITemplateHandler, element: Node) {
+    enter(handler: ITemplateHandler, element: ITemplateElement) {
 
         const newEntry = new StackFrame();
         newEntry.parent = this.currentFrame;
@@ -152,7 +165,7 @@ export class TemplateContext {
 
     writer: TemplateWriter; 
 
-    compiler: TemplateCompiler;
+    compiler: BaseCompiler;
 
     htmlNamespace: string;
 

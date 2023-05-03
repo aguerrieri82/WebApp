@@ -1,17 +1,18 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
+import { ITemplateElement } from "../Abstraction/ITemplateNode";
 import { TemplateContext } from "../TemplateContext";
 
 export class BehavoirElementHandler implements ITemplateHandler {
      
-    canHandle(ctx: TemplateContext, node: Node): boolean {
+    canHandle(ctx: TemplateContext, node: ITemplateElement): boolean {
 
         return ctx.isElement(node, "behavoir");
     }
 
-    handle(ctx: TemplateContext, element: Element): HandleResult {
+    handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        var className = element.getAttribute("class");
-        var name = element.getAttribute("name");
+        var className = element.attributes.class?.value;
+        var name = element.attributes.name?.value;
 
         if ((name && className) ||
             (!name && !className)) {

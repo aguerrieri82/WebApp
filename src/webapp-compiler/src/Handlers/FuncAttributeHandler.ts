@@ -1,4 +1,5 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
+import { ITemplateAttribute } from "../Abstraction/ITemplateNode";
 import { TemplateContext } from "../TemplateContext";
 
 const validFunctions = [
@@ -12,18 +13,18 @@ const validFunctions = [
 
 export class FuncAttributeHandler implements ITemplateHandler {
      
-    canHandle(ctx: TemplateContext, node: Attr): boolean {
+    canHandle(ctx: TemplateContext, node: ITemplateAttribute): boolean {
 
-        if (node.nodeType == 2 && node.nodeName.toLowerCase().startsWith(ctx.htmlNamespace + ":")) {
-            const funcName = node.nodeName.substring(ctx.htmlNamespace.length + 1);
+        if (ctx.isAttr(node) && node.name.toLowerCase().startsWith(ctx.htmlNamespace + ":")) {
+            const funcName = node.name.substring(ctx.htmlNamespace.length + 1);
             return validFunctions.indexOf(funcName) != -1;
         }
         return false;
     }
 
-    handle(ctx: TemplateContext, node: Attr): HandleResult {
+    handle(ctx: TemplateContext, node: ITemplateAttribute): HandleResult {
 
-        const funcName = node.nodeName.substring(ctx.htmlNamespace.length + 1);
+        const funcName = node.name.substring(ctx.htmlNamespace.length + 1);
 
         ctx.writer.write(".").write(funcName).write("(").writeBinding(node.value).write(")");
 

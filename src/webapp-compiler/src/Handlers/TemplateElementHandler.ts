@@ -1,19 +1,20 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
+import { ITemplateElement, ITemplateNode } from "../Abstraction/ITemplateNode";
 import { CompilerLanguage } from "../BaseCompiler";
 import { TemplateContext } from "../TemplateContext";
 
 export class TemplateElementHandler implements ITemplateHandler {
 
-    canHandle(ctx: TemplateContext, node: Node): boolean {
+    canHandle(ctx: TemplateContext, node: ITemplateNode): boolean {
 
         return ctx.isElement(node, "template");
     }
 
-    handle(ctx: TemplateContext, node: Element): HandleResult {
+    handle(ctx: TemplateContext, node: ITemplateElement): HandleResult {
 
-        var templateName = node.getAttribute("name");
-        var modelType = node.getAttribute("for");
-        var modelName = node.getAttribute("as");
+        var templateName = node.attributes.name?.value;
+        var modelType = node.attributes.for?.value;
+        var modelName = node.attributes.as?.value;
 
         ctx.templates.push(templateName);
 
@@ -39,7 +40,7 @@ export class TemplateElementHandler implements ITemplateHandler {
             .writeChildElements(node)
             .endBlock();
 
-        if (ctx.compiler.options.language == TemplateLanguage.Javascript)
+        if (ctx.compiler.options.language == CompilerLanguage.Javascript)
             ctx.writer.write(");");
 
         return HandleResult.SkipChildren;

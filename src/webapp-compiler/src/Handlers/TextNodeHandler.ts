@@ -1,16 +1,17 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
+import { ITemplateText, TemplateNodeType } from "../Abstraction/ITemplateNode";
 import { TemplateContext } from "../TemplateContext";
 export class TextNodeHandler implements ITemplateHandler {
      
-    canHandle(ctx: TemplateContext, node: Node): boolean {
+    canHandle(ctx: TemplateContext, node: ITemplateText): boolean {
 
-        return node.nodeType == 3;
+        return node.type == TemplateNodeType.Text;
     }
 
-    handle(ctx: TemplateContext, element: Node): HandleResult {
+    handle(ctx: TemplateContext, element: ITemplateText): HandleResult {
 
-        if (element.nodeValue.trim().length > 0 || ctx.compiler.options.includeWhitespace)
-            ctx.writer.write(".text(").writeJson(element.nodeValue).write(")");
+        if (element.value.trim().length > 0 || ctx.compiler.options.includeWhitespace)
+            ctx.writer.write(".text(").writeJson(element.value).write(")");
 
         return HandleResult.SkipChildren;
     }

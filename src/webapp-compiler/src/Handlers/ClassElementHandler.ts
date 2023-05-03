@@ -1,17 +1,19 @@
 ﻿import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
+import { ITemplateElement } from "../Abstraction/ITemplateNode";
 import { TemplateContext } from "../TemplateContext";
 
 export class ClassElementHandler implements ITemplateHandler {
 
-    canHandle(ctx: TemplateContext, node: Element): boolean {
+    canHandle(ctx: TemplateContext, node: ITemplateElement): boolean {
 
         return ctx.isElement(node, "class");
     }
 
-    handle(ctx: TemplateContext, element: Element): HandleResult {
+    handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        const condition = element.getAttribute("condition");
-        const name = element.getAttribute("name");
+        const condition = element.attributes.condition?.value;
+        const name = element.attributes.name?.value;
+
         if (!name) {
             ctx.error("Name not specified in class.");
             return HandleResult.Error;

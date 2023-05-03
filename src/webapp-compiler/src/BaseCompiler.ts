@@ -3,6 +3,9 @@ import * as fs from "fs";
 import { StringBuilder } from "./StringBuilder";
 import { IWriteable } from "./Abstraction/IWriteable";
 import { stderr, stdout } from "process";
+import { TemplateContext } from "./TemplateContext";
+import type { ITemplateAttribute, ITemplateElement, ITemplateNode } from "./Abstraction/ITemplateNode";
+import { HandleResult, ITemplateHandler } from "./Abstraction/ITemplateHandler";
 
 export enum CompilerOutMode {
     Always,
@@ -23,6 +26,8 @@ export interface ICompilerOptions {
 
 export abstract class BaseCompiler<TOptions extends ICompilerOptions = ICompilerOptions>  {
 
+    protected _handlers: ITemplateHandler[] = [];
+
     constructor(options?: TOptions) {
 
         this.options = options ?? {
@@ -30,7 +35,7 @@ export abstract class BaseCompiler<TOptions extends ICompilerOptions = ICompiler
             emitWarning: true,
             generateOutput: CompilerOutMode.Always,
             includeWhitespace: false
-        };
+        } as TOptions;
     }
 
     error(msg: string) {
@@ -108,6 +113,48 @@ export abstract class BaseCompiler<TOptions extends ICompilerOptions = ICompiler
     }
 
     abstract compileStreamAsync(input: fs.ReadStream | string, output: IWriteable): Promise<void>;
+
+    register(handler: ITemplateHandler) {
+
+        this._handlers.push(handler);
+    }
+
+    getHandler(ctx: TemplateContext, node: ITemplateNode) {
+        return this._handlers.find(a => a.canHandle(ctx, node));
+    }
+
+    compileAttribute(ctx: TemplateContext, attr: ITemplateAttribute) {
+
+        const handler = this.getHandler(ctx, attr);
+        if (!handler)
+            this.warning(`no handler for attribute ${attr.name} in ${attr.owner.name}.`);
+        else
+            handler.handle(ctx, attr);
+    }
+
+    compileElements(ctx: TemplateContext, nodes: Iterable<ITemplateNode>) {
+        for (const node of nodes)
+            this.compileElement(ctx, node);
+    }
+
+    compileElement(ctx: TemplateContext, node: ITemplateNode) {
+
+        const handler = this.getHandler(ctx, node);
+
+        if (!handler) {
+            this.warning(`no handler for '${(node as ITemplateElement).name}'`);
+        }
+        else {
+   
+            const result = handler.handle(ctx, node);
+            if (result == HandleResult.CompileChildren && ctx.isElement(node)) {
+                ctx.enter(handler, node);
+                this.compileElements(ctx, node.childNodes);
+                ctx.exit();
+            }
+  
+        }
+    }
 
     readonly options: TOptions;
 

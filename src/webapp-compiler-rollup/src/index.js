@@ -1,5 +1,5 @@
 import path from "path"
-import { TemplateCompiler, JsxCompiler } from "@eusoft/webapp-compiler"
+import { HtmlCompiler, JsxCompiler } from "@eusoft/webapp-compiler"
 
 export default function (options) {
 
@@ -26,7 +26,7 @@ export default function (options) {
 
             else if (ext == ".html") { 
 
-                const compiler = new TemplateCompiler();
+                const compiler = new HtmlCompiler();
 
                 compiler.error = msg => this.error(msg);
 
