@@ -4,24 +4,9 @@ import { TemplateContext } from "./TemplateContext";
 import { TemplateWriter } from "./Text/TemplateWriter";
 import type { IWriteable } from "./Abstraction/IWriteable";
 import { JSDOM } from 'jsdom'
-import TemplateElementHandler from "./Handlers/TemplateElementHandler";
-import ElementHandler from "./Handlers/ElementHandler";
-import AttributeHandler from "./Handlers/AttributeHandler";
-import IfElementHandler from "./Handlers/IfElementHandler";
-import TextNodeHandler from "./Handlers/TextNodeHandler";
-import ClassElementHandler from "./Handlers/ClassElementHandler";
-import OnAttributeHandler from "./Handlers/OnAttributeHandler";
-import FuncAttributeHandler from "./Handlers/FuncAttributeHandler";
-import ContentElementHandler from "./Handlers/ContentElementHandler";
-import BehavoirElementHandler from "./Handlers/BehavoirElementHandler";
-import ForeachElementHandler from "./Handlers/ForeachElementHandler";
-import BehavoirAttributeHandler from "./Handlers/BehavoirAttributeHandler";
-import BindingAttributeHandler from "./Handlers/BindingAttributeHandler";
-import HtmlElementHandler from "./Handlers/HtmlElementHandler";
-import NodeElementHandler from "./Handlers/NodeElementHandler";
-import StyleAttributeHandler from "./Handlers/StyleAttributeHandler";
 import { readAllTextAsync } from "./TextUtils";
 import { BaseCompiler, ICompilerOptions } from "./BaseCompiler";
+import * as handlers from "./Handlers";
 
 export class TemplateCompiler extends BaseCompiler {
 
@@ -30,22 +15,11 @@ export class TemplateCompiler extends BaseCompiler {
 
         super(options);
 
-        this.register(new TemplateElementHandler());
-        this.register(new ElementHandler());
-        this.register(new BehavoirAttributeHandler());
-        this.register(new AttributeHandler());
-        this.register(new IfElementHandler());
-        this.register(new TextNodeHandler());
-        this.register(new ClassElementHandler());
-        this.register(new OnAttributeHandler());
-        this.register(new FuncAttributeHandler());
-        this.register(new BindingAttributeHandler());
-        this.register(new ContentElementHandler());
-        this.register(new BehavoirElementHandler());
-        this.register(new ForeachElementHandler());
-        this.register(new HtmlElementHandler());
-        this.register(new NodeElementHandler());
-        this.register(new StyleAttributeHandler());
+        const activeHandlers = handlers as Record<string, { new(): ITemplateHandler }>;
+
+        for (const name in activeHandlers) {
+            this.register(new activeHandlers[name]());
+        }
     }
 
     async compileStreamAsync(input: ReadStream|string, output: IWriteable) {

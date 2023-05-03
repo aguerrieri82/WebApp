@@ -2,7 +2,7 @@ import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler"
 import { TemplateContext } from "../TemplateContext";
 
 
-export default class BindingAttributeHandler implements ITemplateHandler {
+export class BindingAttributeHandler implements ITemplateHandler {
      
     canHandle(ctx: TemplateContext, node: Attr): boolean {
 

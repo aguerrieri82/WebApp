@@ -18,6 +18,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{B688
 		..\web-app.xsd = ..\web-app.xsd
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build-utils", "build-utils", "{2FFF3986-C3EE-4E66-95A6-91989280F860}"
+	ProjectSection(SolutionItems) = preProject
+		..\scripts\build-utils\dist.js = ..\scripts\build-utils\dist.js
+		..\scripts\build-utils\index.js = ..\scripts\build-utils\index.js
+		..\scripts\build-utils\package.json = ..\scripts\build-utils\package.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +64,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2FFF3986-C3EE-4E66-95A6-91989280F860} = {B688CA83-7B86-4E71-B87F-2CDBAD31A638}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {95BD1C36-C315-41E2-BFF6-1EB582145BD3}

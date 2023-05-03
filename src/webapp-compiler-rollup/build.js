@@ -1,25 +1,15 @@
 import fs from "fs";
 import extra from "fs-extra";
 import path from "path";
-
-const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+import { createDistPackage, outPath } from "build-utils";
 
 const srcDir = "src";
-const outDir = "../../dist/webapp-compiler-rollup/";
 
-if (!fs.existsSync(outDir))
-    fs.mkdirSync(outDir);
+if (!fs.existsSync(outPath))
+    fs.mkdirSync(outPath);
 
-const newPkg = {
-    name: pkg.name,
-    version: pkg.version,
-    type: "module",
-    main: "index.js",
-    dependencies: {
-        "@eusoft/webapp-compiler": "../webapp-compiler" //"^0.0.4"
-    }
-}
+const newPkg = createDistPackage();
 
-extra.copySync(path.join(srcDir, "index.js"), path.join(outDir, "index.js"));
+extra.copySync(path.join(srcDir, "index.js"), path.join(outPath, "index.js"));
 
-fs.writeFileSync(path.join(outDir, "package.json"), JSON.stringify(newPkg, null, 4));
+fs.writeFileSync(path.join(outPath, "package.json"), JSON.stringify(newPkg, null, 4));

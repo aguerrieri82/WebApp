@@ -1,21 +1,12 @@
 lockfileVersion: '6.0'
 
 devDependencies:
-  '@rollup/plugin-commonjs':
-    specifier: 24.1.0
-    version: 24.1.0(rollup@3.21.0)
-  '@rollup/plugin-node-resolve':
-    specifier: ^15.0.2
-    version: 15.0.2(rollup@3.21.0)
-  '@rollup/plugin-terser':
-    specifier: 0.4.1
-    version: 0.4.1(rollup@3.21.0)
-  '@rollup/plugin-typescript':
-    specifier: ^11.1.0
-    version: 11.1.0(rollup@3.21.0)(tslib@2.5.0)(typescript@5.0.4)
   '@typescript-eslint/parser':
     specifier: 5.59.1
     version: 5.59.1(eslint@8.39.0)(typescript@5.0.4)
+  build-utils:
+    specifier: file://../../scripts/build-utils
+    version: file:../../scripts/build-utils(rollup@3.21.0)(tslib@2.5.0)(typescript@5.0.4)
   eslint:
     specifier: ^8.39.0
     version: 8.39.0
@@ -34,18 +25,6 @@ devDependencies:
   rollup:
     specifier: ^3.21.0
     version: 3.21.0
-  rollup-plugin-delete:
-    specifier: 2.0.0
-    version: 2.0.0
-  rollup-plugin-dts:
-    specifier: 5.3.0
-    version: 5.3.0(rollup@3.21.0)(typescript@5.0.4)
-  rollup-plugin-generate-package-json:
-    specifier: 3.2.0
-    version: 3.2.0(rollup@3.21.0)
-  rollup-plugin-sourcemaps:
-    specifier: 0.6.3
-    version: 0.6.3(rollup@3.21.0)
   tslib:
     specifier: ^2.5.0
     version: 2.5.0
@@ -324,6 +303,19 @@ packages:
       glob: 8.1.0
       is-reference: 1.2.1
       magic-string: 0.27.0
+      rollup: 3.21.0
+    dev: true
+
+  /@rollup/plugin-json@6.0.0(rollup@3.21.0):
+    resolution: {integrity: sha512-i/4C5Jrdr1XUarRhVu27EEwjt4GObltD7c+MkCIpO2QIbojw8MUs+CCTqOphQi3Qtg1FLmYt+l+6YeoIf51J7w==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      '@rollup/pluginutils': 5.0.2(rollup@3.21.0)
       rollup: 3.21.0
     dev: true
 
@@ -3966,4 +3958,26 @@ packages:
   /yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+    dev: true
+
+  file:../../scripts/build-utils(rollup@3.21.0)(tslib@2.5.0)(typescript@5.0.4):
+    resolution: {directory: ../../scripts/build-utils, type: directory}
+    id: file:../../scripts/build-utils
+    name: build-utils
+    version: 0.0.1
+    dependencies:
+      '@rollup/plugin-commonjs': 24.1.0(rollup@3.21.0)
+      '@rollup/plugin-json': 6.0.0(rollup@3.21.0)
+      '@rollup/plugin-node-resolve': 15.0.2(rollup@3.21.0)
+      '@rollup/plugin-terser': 0.4.1(rollup@3.21.0)
+      '@rollup/plugin-typescript': 11.1.0(rollup@3.21.0)(tslib@2.5.0)(typescript@5.0.4)
+      rollup-plugin-delete: 2.0.0
+      rollup-plugin-dts: 5.3.0(rollup@3.21.0)(typescript@5.0.4)
+      rollup-plugin-generate-package-json: 3.2.0(rollup@3.21.0)
+      rollup-plugin-sourcemaps: 0.6.3(rollup@3.21.0)
+    transitivePeerDependencies:
+      - '@types/node'
+      - rollup
+      - tslib
+      - typescript
     dev: true

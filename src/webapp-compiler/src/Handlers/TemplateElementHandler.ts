@@ -2,7 +2,7 @@ import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler"
 import { CompilerLanguage } from "../BaseCompiler";
 import { TemplateContext } from "../TemplateContext";
 
-export default class TemplateElementHandler implements ITemplateHandler {
+export class TemplateElementHandler implements ITemplateHandler {
 
     canHandle(ctx: TemplateContext, node: Node): boolean {
 

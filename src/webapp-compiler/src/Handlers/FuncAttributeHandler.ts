@@ -10,7 +10,7 @@ const validFunctions = [
     "visible"
 ]
 
-export default class FuncAttributeHandler implements ITemplateHandler {
+export class FuncAttributeHandler implements ITemplateHandler {
      
     canHandle(ctx: TemplateContext, node: Attr): boolean {
 

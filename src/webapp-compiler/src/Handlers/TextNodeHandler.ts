@@ -1,7 +1,6 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
 import { TemplateContext } from "../TemplateContext";
-
-export default class TextNodeHandler implements ITemplateHandler {
+export class TextNodeHandler implements ITemplateHandler {
      
     canHandle(ctx: TemplateContext, node: Node): boolean {
 

@@ -2,8 +2,7 @@ import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler"
 import { TemplateContext } from "../TemplateContext";
 import { formatStyle } from "../TextUtils";
 
-
-export default class StyleAttributeHandler implements ITemplateHandler {
+export class StyleAttributeHandler implements ITemplateHandler {
      
     canHandle(ctx: TemplateContext, node: Attr): boolean {
 

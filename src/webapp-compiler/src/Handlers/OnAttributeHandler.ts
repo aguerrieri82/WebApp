@@ -1,7 +1,7 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
 import { TemplateContext } from "../TemplateContext";
 
-export default class OnAttributeHandler implements ITemplateHandler {
+export class OnAttributeHandler implements ITemplateHandler {
      
     canHandle(ctx: TemplateContext, node: Attr): boolean {
 
