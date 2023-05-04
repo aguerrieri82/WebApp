@@ -73,7 +73,7 @@ export class ViewComponent<TOptions extends IComponentOptions = IComponentOption
     }
 
     protected updateClass() {
-        debugger;
+
         this.className = [toKebabCase(getTypeName(this)), ...this.style ?? []].flat().join(" ");
     }
 

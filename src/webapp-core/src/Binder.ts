@@ -217,7 +217,7 @@ export class Binder<TModel> {
 
     protected createProxy<TObj>(obj: TObj, action: (obj: any, propName: string) => boolean): TObj {
 
-        if (!obj || typeof (obj) !== "object" || (obj as any)[IS_PROXY])
+        if (!obj || typeof (obj) !== "object"/* || (obj as any)[IS_PROXY]*/)
             return obj;
 
         const innerProxies: Record<PropertyKey, any> = {};

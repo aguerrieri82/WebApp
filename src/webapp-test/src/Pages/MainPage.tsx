@@ -1,8 +1,7 @@
-
 import { Action, Page } from "@eusoft/webapp-ui";
-import { SecondPage } from "./SecondPage";
+import { secondPage } from "./SecondPage";
 import { app } from "../";
-export class MainPage extends Page {
+class MainPage extends Page {
     constructor() {
         super({
             name: "main",
@@ -11,9 +10,12 @@ export class MainPage extends Page {
             content: new Action({
                 content: "Click Me",
                 executeAsync: async () => {
-                    app.pageHost.push(new SecondPage());
+                    app.pageHost.push(secondPage);
                 }
             })
         });
     }
 }
+
+
+export const mainPage = new MainPage();

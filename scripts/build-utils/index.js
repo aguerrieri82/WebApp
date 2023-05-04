@@ -6,6 +6,7 @@ import generatePackageJson from 'rollup-plugin-generate-package-json'
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import webapp from "@eusoft/webapp-compiler-rollup"
 import scss from 'rollup-plugin-scss'
+import json from 'rollup-plugin-json'
 import del from "rollup-plugin-delete";
 import path from "path";
 import commonjs from '@rollup/plugin-commonjs';
@@ -98,6 +99,7 @@ export function configureRollup(options) {
                 commonjs(),
                 resolve(),
                 typescript(),
+                json(),
                 options?.components && scss({
                     fileName: 'style.css'
                 }),

@@ -1,6 +1,6 @@
 {
   "name": "@eusoft/webapp-compiler",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "packageManager": "pnpm@8.3.1",
   "type": "module",
   "scripts": {

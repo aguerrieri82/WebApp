@@ -28,6 +28,9 @@ dependencies:
   rollup-plugin-generate-package-json:
     specifier: 3.2.0
     version: 3.2.0
+  rollup-plugin-json:
+    specifier: 4.0.0
+    version: 4.0.0
   rollup-plugin-scss:
     specifier: 4.0.0
     version: 4.0.0
@@ -1231,6 +1234,13 @@ packages:
       write-pkg: 4.0.0
     dev: false
 
+  /rollup-plugin-json@4.0.0:
+    resolution: {integrity: sha512-hgb8N7Cgfw5SZAkb3jf0QXii6QX/FOkiIq2M7BAQIEydjHvTyxXHQiIzZaTFgx1GK0cRCHOCBHIyEkkLdWKxow==}
+    deprecated: This module has been deprecated and is no longer maintained. Please use @rollup/plugin-json.
+    dependencies:
+      rollup-pluginutils: 2.8.2
+    dev: false
+
   /rollup-plugin-scss@4.0.0:
     resolution: {integrity: sha512-wxasNXDYC2m+fDxCMgK00WebVWYmeFvShyNABmjvSJZ6D1/SepwqFeaMFMQromveI79gfvb64yJjiZZxSZxEIA==}
     dependencies:
@@ -1567,7 +1577,7 @@ packages:
   file:../../dist/webapp-compiler:
     resolution: {directory: ../../dist/webapp-compiler, type: directory}
     name: '@eusoft/webapp-compiler'
-    version: 0.0.6
+    version: 0.0.7
     dependencies:
       '@babel/parser': 7.21.8
       '@babel/traverse': 7.21.5
@@ -1582,7 +1592,7 @@ packages:
   file:../../dist/webapp-compiler-rollup:
     resolution: {directory: ../../dist/webapp-compiler-rollup, type: directory}
     name: '@eusoft/webapp-compiler-rollup'
-    version: 0.0.6
+    version: 0.0.7
     dependencies:
       '@eusoft/webapp-compiler': file:../../dist/webapp-compiler
     transitivePeerDependencies:
