@@ -1,6 +1,6 @@
 {
   "name": "@eusoft/webapp-jsx",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "packageManager": "pnpm@8.3.1",
   "type": "module",
   "scripts": {
@@ -8,6 +8,7 @@
     "clean": "rimraf ../../dist/webapp-jsx/",
     "build:watch": "rollup -c -w  --environment NODE_ENV:dev",
     "build:dev": "rollup -c --environment NODE_ENV:dev",
+    "build:prod": "rollup -c --environment NODE_ENV:prod",
     "lint:fix": "eslint ./src/**/*.ts* --fix",
     "install:pnpm": "pnpm install",
     "upgrade": "ncu --upgrade && pnpm install"

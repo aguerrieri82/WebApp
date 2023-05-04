@@ -20,4 +20,5 @@ export class BindingAttributeHandler implements ITemplateHandler {
         return HandleResult.Handled;
     }
 
+    readonly priority = 10;
 }

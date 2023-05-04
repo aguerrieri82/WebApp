@@ -1,6 +1,7 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
 import { ITemplateElement, ITemplateNode } from "../Abstraction/ITemplateNode";
 import { CompilerLanguage } from "../BaseCompiler";
+import { HtmlCompiler } from "../HtmlCompiler";
 import { TemplateContext } from "../TemplateContext";
 
 export class TemplateElementHandler implements ITemplateHandler {
@@ -29,9 +30,16 @@ export class TemplateElementHandler implements ITemplateHandler {
         if (modelName)
             ctx.setParameter("$" + modelName, `${ctx.currentFrame.builderNameJs}.model`);
 
-        ctx.writer.ensureNewLine();
-        if (ctx.compiler.options.language == CompilerLanguage.Javascript)
-            ctx.writer.write("export const ").write(templateName).write(" = ").write("__defineTemplate(").writeJson(templateName).write(", ");
+        if (ctx.compiler instanceof HtmlCompiler)
+            ctx.writer.ensureNewLine();
+
+        if (ctx.compiler.options.language == CompilerLanguage.Javascript) {
+
+            if (ctx.compiler instanceof HtmlCompiler)
+                ctx.writer.write("export const ").write(templateName).write(" = ");
+
+            ctx.writer.write("__defineTemplate(").writeJson(templateName).write(", ");
+        }
         else
             ctx.writer.write(ctx.jsNamespace).write(".templateCatalog[").writeJson(templateName).write("] = ");
 
@@ -40,8 +48,13 @@ export class TemplateElementHandler implements ITemplateHandler {
             .writeChildElements(node)
             .endBlock();
 
-        if (ctx.compiler.options.language == CompilerLanguage.Javascript)
-            ctx.writer.write(");");
+        if (ctx.compiler.options.language == CompilerLanguage.Javascript) {
+            ctx.writer.write(")");
+
+            if (ctx.compiler instanceof HtmlCompiler)
+                ctx.writer.write(";");
+        }
+
 
         return HandleResult.SkipChildren;
     }

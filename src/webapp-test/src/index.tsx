@@ -1,4 +1,4 @@
-import { CatalogTemplate, template } from "@eusoft/webapp-core";
+import { CatalogTemplate, ITemplate, template } from "@eusoft/webapp-core";
 import { Foreach, Template } from "@eusoft/webapp-jsx";
 import Index from "./Index.html";
 
@@ -65,7 +65,7 @@ async function runAsync() {
     const t2 = <Template name="yyy">
     </Template>;
 
-    template(document.body, t, rootModel);
+    template(document.body, t as ITemplate<any>, rootModel);
 }
 
 window.addEventListener("load", runAsync);

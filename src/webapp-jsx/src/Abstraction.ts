@@ -71,7 +71,7 @@ declare global {
 
         }
 
-        type Element = JsxElement<any, any> | ITemplate<any>;
+        type Element = JsxNode<any>;
 
 
         type IntrinsicElements = {

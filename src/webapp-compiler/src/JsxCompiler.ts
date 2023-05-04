@@ -9,7 +9,6 @@ import { TemplateContext } from "./TemplateContext";
 import { TemplateWriter } from "./Text/TemplateWriter";
 import { ITemplateAttribute, ITemplateElement, ITemplateText, TemplateNodeType } from "./Abstraction/ITemplateNode";
 import { FuncAttributes, TemplateElements } from "./Consts";
-import { it } from "node:test";
 
 const trav = (traverse as any).default as typeof traverse;
 
@@ -28,6 +27,17 @@ export class JsxCompiler extends BaseCompiler {
 
         template.shouldSkip = false;
 
+        const createAttribute = (name: string, value: string, owner: ITemplateElement) => {
+            const result = {
+                name,
+                owner: owner,
+                type: TemplateNodeType.Attribute,
+                value
+            };
+            owner.attributes[name] = result;
+            return result;
+        }
+
         template.parentPath.traverse({
 
             exit: path => {
@@ -37,8 +47,6 @@ export class JsxCompiler extends BaseCompiler {
 
                 if (path.isJSXElement()) {
 
-                    console.log("End: " + path.get("openingElement").get("name").toString());
- 
                     if (curElement.name == "t:template")
                         result = curElement;
 
@@ -57,12 +65,14 @@ export class JsxCompiler extends BaseCompiler {
 
                 if (path.isJSXElement()) {
 
-                    console.log("Start: " + path.get("openingElement").get("name").toString());
+
                 }
 
                 else if (path.isJSXOpeningElement()) {
 
                     const elName = (path.node.name as JSXIdentifier).name;
+
+                    const bindig = path.scope.getBinding(elName);
 
                     const isTempEl = TemplateElements.indexOf(elName) != -1;
 
@@ -71,6 +81,11 @@ export class JsxCompiler extends BaseCompiler {
                         name: isTempEl ? "t:" + elName.toLowerCase() : elName,
                         attributes: {},
                         childNodes: []
+                    }
+
+                    if (bindig && !isTempEl) {
+                        item.name = "t:component";
+                        createAttribute("t:type", elName, item);
                     }
 
                     if (curElement)
@@ -87,13 +102,7 @@ export class JsxCompiler extends BaseCompiler {
                     if (name.startsWith("on-") || name.startsWith("style-") || FuncAttributes.indexOf(name) != -1)
                         name = "t:" + name;
 
-                    curAttribute = {
-                        name,
-                        owner: curElement,
-                        type: TemplateNodeType.Attribute,
-                        value: null
-                    };
-                    curElement.attributes[name] = curAttribute;
+                    curAttribute = createAttribute(name, null, curElement);
                 }
                 else if (path.isJSXText()) {
 
@@ -160,15 +169,20 @@ export class JsxCompiler extends BaseCompiler {
         ctx.htmlNamespace = "t";
         ctx.writer = new TemplateWriter(output, ctx);
 
+        let curPos = 0;
+
         for (const temp of templates) {
+
+            if (temp.node.start != curPos)
+                ctx.writer.out.write(js.substring(curPos, temp.node.start));
 
             const tempNode = this.parse(temp);
 
-            ctx.writer.out.write(js.substring(0, temp.node.start));
-
             this.compileElement(ctx, tempNode);
 
-            ctx.writer.out.write(js.substring(temp.node.end));
+            curPos = temp.node.end;
         } 
+
+        ctx.writer.out.write(js.substring(curPos));
     }
 }

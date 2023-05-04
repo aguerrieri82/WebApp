@@ -13,4 +13,6 @@ export interface ITemplateHandler {
     canHandle(ctx: TemplateContext, node: ITemplateNode) : boolean;
 
     handle(ctx: TemplateContext, node: ITemplateNode): HandleResult;
+
+    readonly priority?: number;
 }

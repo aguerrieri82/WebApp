@@ -43,6 +43,8 @@ export abstract class BaseCompiler<TOptions extends ICompilerOptions = ICompiler
         for (const name in activeHandlers) {
             this.register(new activeHandlers[name]());
         }
+
+
     }
 
     error(msg: string) {
@@ -124,6 +126,8 @@ export abstract class BaseCompiler<TOptions extends ICompilerOptions = ICompiler
     register(handler: ITemplateHandler) {
 
         this._handlers.push(handler);
+
+        this._handlers.sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
     }
 
     getHandler(ctx: TemplateContext, node: ITemplateNode) {

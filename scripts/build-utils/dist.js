@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from "path";
 import { exec } from 'child_process';
+import { stderr } from 'process';
 
 const colours = {
     reset: "\x1b[0m",
@@ -46,9 +47,11 @@ let isNewVer = false;
 for (let i = 0; i < process.argv.length; i++) {
     if (process.argv[i] == "-prod")
         mode = "prod";
-    if (process.argv[i] == "-publish")
+    if (process.argv[i] == "-publish" || process.argv[i] == "-p") {
         isPublish = true;
-    if (process.argv[i] == "-new")
+        mode = "prod";
+    }
+    if (process.argv[i] == "-new" || process.argv[i] == "-n")
         isNewVer = true;
 }
 
@@ -70,7 +73,7 @@ function loadJson(filePath) {
     return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 function saveJson(filePath, data) {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 4));
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
 
 function pnpmExec(libPath, script) {
@@ -114,12 +117,9 @@ function incVersion(libPath) {
     logColor(`New version: ${pkg.version}\n`, colours.fg.blue);
 }
 
-async function runAsync() {
+async function processLib(libName) {
 
-    logColor(`DISTRIBUTE: ${mode}\n\n`, colours.fg.green);
-
-    for (const libName of libs) {
-
+    try {
         logColor(`\nPROCESS '${libName}'\n\n`, colours.fg.green);
 
         const libSrcPath = path.join(srcPath, libName);
@@ -146,8 +146,17 @@ async function runAsync() {
             await pnpm(libDistPath, "publish --access public --no-git-checks");
         }
     }
-
+    catch (ex) {
+        process.stderr.write(ex.toString());
+    }
 }
 
+async function runAsync() {
+
+    logColor(`DISTRIBUTE: ${mode}\n\n`, colours.fg.green);
+
+    for (const libName of libs)
+        await processLib(libName);
+}
 
 runAsync();

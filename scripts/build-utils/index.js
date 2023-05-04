@@ -80,7 +80,7 @@ export function configureRollup() {
                 {
                     file: outPath + "/index.js",
                     format: "esm",
-                    sourcemap: true,
+                    sourcemap: !isProd,
                     sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
                         return path.resolve(path.dirname(sourcemapPath), relativeSourcePath)
                     },
@@ -93,7 +93,7 @@ export function configureRollup() {
                 commonjs(),
                 resolve(),
                 typescript(),
-                sourcemaps(),
+                !isProd && sourcemaps(),
                 isProd && terser()
             ]
         },
