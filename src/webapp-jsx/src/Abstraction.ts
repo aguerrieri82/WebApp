@@ -65,7 +65,7 @@ declare global {
 
         interface ElementChildrenAttribute { children: {} }
 
-        interface ElementAttributesProperty { _config: {} } 
+        interface ElementAttributesProperty { options: {} } 
 
         interface ElementClass extends ITemplateProvider {
 

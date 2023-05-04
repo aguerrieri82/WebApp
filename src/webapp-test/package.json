@@ -14,8 +14,7 @@
   "keywords": [],
   "author": "Andrea Guerrieri",
   "dependencies": {
-    "@eusoft/webapp-core": "file://../../dist/webapp-core",
-    "@eusoft/webapp-jsx": "file://../../dist/webapp-jsx"
+    "@eusoft/webapp-ui": "file://../../dist/webapp-ui"
   },
   "devDependencies": {
     "@eusoft/webapp-compiler-rollup": "../../dist/webapp-compiler-rollup",

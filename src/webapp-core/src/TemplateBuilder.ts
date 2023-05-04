@@ -734,9 +734,17 @@ class ChildTemplateBuilder<TModel, TElement extends HTMLElement, TParent extends
 
 
 /****************************************/
-export function template<TModel>(root: HTMLElement, template: CatalogTemplate<TModel>, model: TModel) {
+
+export function mount<TModel>(root: HTMLElement, template: CatalogTemplate<TModel>, model: TModel) : void;
+export function mount(root: HTMLElement, component: ITemplateProvider): void;
+export function mount<TModel>(root: HTMLElement, templateOrProvider: CatalogTemplate<TModel> | ITemplateProvider, model?: TModel) : void {
 
     root.innerHTML = "";
+
+    const template = model === undefined ? (templateOrProvider as ITemplateProvider).template : templateOrProvider as CatalogTemplate<TModel>;
+
+    if (!model)
+        model = templateOrProvider as TModel;
 
     const builder = new TemplateBuilder(model, root);
 

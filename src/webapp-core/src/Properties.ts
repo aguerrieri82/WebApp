@@ -4,7 +4,7 @@ import type { IProperty } from "./Abstraction/IProperty";
 import { getTypeName } from "./ObjectUtils";
 import { ObservableProperty } from "./ObservableProperty";
 
-export function getOrCreateProp<TObj extends IBindable, TKey extends keyof TObj & string, TValue extends TObj[TKey]>(obj: TObj, propName: TKey, property?: IObservableProperty<TValue>, defValue?: TValue): IObservableProperty<TValue> {
+export function getOrCreateProp<TObj extends object, TKey extends keyof TObj & string, TValue extends TObj[TKey]>(obj: TObj, propName: TKey, property?: IObservableProperty<TValue>, defValue?: TValue): IObservableProperty<TValue> {
 
     const prop = getProp(obj, propName);
     if (prop)
@@ -16,14 +16,23 @@ export function getOrCreateProp<TObj extends IBindable, TKey extends keyof TObj 
     return newProp;
 }
 
-export function getProp<TObj extends IBindable, TKey extends keyof TObj & string, TValue extends TObj[TKey]>(obj: TObj, propName: TKey): IProperty<TValue> {
+export function getProp<TObj extends object, TKey extends keyof TObj & string, TValue extends TObj[TKey]>(obj: TObj, propName: TKey): IProperty<TValue> {
 
     if (PROPS in obj) 
-        return obj[PROPS][propName];
+        return (obj as IBindable)[PROPS][propName];
     return undefined;
 }
 
-export function createProp<TObj extends IBindable, TKey extends (keyof TObj) & string, TValue extends TObj[TKey]>(obj: TObj, propName: TKey, property?: IObservableProperty<TValue>): IObservableProperty<TValue> {
+export function bindTwoWay<TValue>(dst: IObservableProperty<TValue>, src: IObservableProperty<TValue>) {
+
+    dst.set(src.get());
+
+    src.subscribe(v => dst.set(v));
+
+    dst.subscribe(v => src.set(v));
+}
+
+export function createProp<TObj extends object, TKey extends (keyof TObj) & string, TValue extends TObj[TKey]>(obj: TObj, propName: TKey, property?: IObservableProperty<TValue>): IObservableProperty<TValue> {
 
     let desc = Object.getOwnPropertyDescriptor(obj, propName);
 
@@ -43,7 +52,7 @@ export function createProp<TObj extends IBindable, TKey extends (keyof TObj) & s
         });
     }
 
-    obj[PROPS][propName] = property;
+    (obj as IBindable)[PROPS][propName] = property;
 
     Object.defineProperty(obj, propName, {
 

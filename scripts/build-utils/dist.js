@@ -38,7 +38,7 @@ const colours = {
     }
 };
 
-const libs = ["webapp-compiler", "webapp-compiler-rollup", "webapp-core", "webapp-jsx"];
+const libs = ["webapp-compiler", "webapp-compiler-rollup", "webapp-core", "webapp-jsx", "webapp-ui"];
 
 let mode = "dev";
 let isPublish = false;
@@ -131,11 +131,15 @@ async function processLib(libName) {
             incVersion(libSrcPath);
         }
 
+        logColor(`Install\n`, colours.fg.blue);
+
+        await pnpm(libSrcPath, "install");
+
         logColor(`Build\n`, colours.fg.blue);
 
         await pnpmExec(libSrcPath, "build:" + mode);
 
-        logColor(`Install\n`, colours.fg.blue);
+        logColor(`Install dist\n`, colours.fg.blue);
 
         await pnpm(libDistPath, "install");
 

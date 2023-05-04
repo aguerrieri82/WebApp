@@ -1,11 +1,11 @@
 {
-  "name": "@eusoft/webapp-jsx",
-  "version": "0.0.9",
+  "name": "@eusoft/webapp-ui",
+  "version": "0.0.2",
   "packageManager": "pnpm@8.3.1",
   "type": "module",
   "scripts": {
-    "publish": "cd ../../dist/webapp-jsx/ && pnpm publish --access public --no-git-checks",
-    "clean": "rimraf ../../dist/webapp-jsx/",
+    "publish": "cd ../../dist/webapp-ui/ && pnpm publish --access public --no-git-checks",
+    "clean": "rimraf ../../dist/webapp-ui/",
     "build:watch": "rollup -c -w  --environment NODE_ENV:dev",
     "build:dev": "rollup -c --environment NODE_ENV:dev",
     "build:prod": "rollup -c --environment NODE_ENV:prod",
@@ -26,6 +26,7 @@
     "rimraf": "^5.0.0"
   },
   "peerDependencies": {
-    "@eusoft/webapp-core": "file://../../dist/webapp-core"
+    "@eusoft/webapp-core": "../../dist/webapp-core",
+    "@eusoft/webapp-jsx": "../../dist/webapp-jsx"
   }
 }

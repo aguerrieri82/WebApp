@@ -1,4 +1,6 @@
 
+const TYPE_NAME = Symbol("@typeName");
+
 export function getFunctionName(func: Function): string {
 
     let curName = func.name;
@@ -15,20 +17,26 @@ export function getTypeName(obj: any) : string {
     if (!obj)
         return undefined;
 
-    let name = obj["@typeName"];
+    const type = typeof obj;
+
+    let name = type == "object" ? obj[TYPE_NAME] : undefined;
 
     if (!name) {
-        name = typeof obj;
 
         if (name == "function")
-            return getFunctionName(obj);
+            name = getFunctionName(obj);
 
-        if (name == "object") {
+        else if (name == "object") {
 
             const constFunc = obj.constructor;
             if (constFunc)
-                return getTypeName(constFunc);
+                name = getTypeName(constFunc);
         }
+        else
+            name = type
+
+        if (type == "object")
+            obj[TYPE_NAME] = name;
     }
     return name;
 }

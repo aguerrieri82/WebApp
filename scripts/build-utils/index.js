@@ -4,6 +4,8 @@ import terser from '@rollup/plugin-terser';
 import dts from 'rollup-plugin-dts';
 import generatePackageJson from 'rollup-plugin-generate-package-json'
 import sourcemaps from 'rollup-plugin-sourcemaps';
+import webapp from "@eusoft/webapp-compiler-rollup"
+import scss from 'rollup-plugin-scss'
 import del from "rollup-plugin-delete";
 import path from "path";
 import commonjs from '@rollup/plugin-commonjs';
@@ -61,7 +63,7 @@ export function createDistPackage() {
     }
 }
 
-export function configureRollup() {
+export function configureRollup(options) {
 
     const typesPath = outPath + "/src/" + libName + "/types";
 
@@ -75,7 +77,10 @@ export function configureRollup() {
         {
             input: "src/index.ts",
             onwarn,
-            external: Object.keys(libPkg.dependencies ?? {}),
+            external: [
+                ...Object.keys(libPkg.dependencies ?? {}),
+                ...Object.keys(libPkg.peerDependencies ?? {})
+            ],
             output: [
                 {
                     file: outPath + "/index.js",
@@ -93,6 +98,10 @@ export function configureRollup() {
                 commonjs(),
                 resolve(),
                 typescript(),
+                options?.components && scss({
+                    fileName: 'style.css'
+                }),
+                options?.components && webapp(),
                 !isProd && sourcemaps(),
                 isProd && terser()
             ]

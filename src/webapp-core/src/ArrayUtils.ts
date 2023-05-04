@@ -1,5 +1,3 @@
-import { IObservableArray, IObservableArrayHandler, isObservableArray } from "./Abstraction/IObservableArray";
-
 export function forEachRev<T>(items: T[], action: (item: T) => void) {
 
     if (!items || items.length == 0)
