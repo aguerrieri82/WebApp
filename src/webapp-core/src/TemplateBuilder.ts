@@ -754,3 +754,7 @@ export function mount<TModel>(root: HTMLElement, templateOrProvider: CatalogTemp
 
     builder.end();
 }
+
+/****************************************/
+
+defineTemplate("Text", t => t.text(m => m));

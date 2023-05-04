@@ -23,10 +23,10 @@ export function getTypeName(obj: any) : string {
 
     if (!name) {
 
-        if (name == "function")
+        if (type == "function")
             name = getFunctionName(obj);
 
-        else if (name == "object") {
+        else if (type == "object") {
 
             const constFunc = obj.constructor;
             if (constFunc)

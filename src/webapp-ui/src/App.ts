@@ -1,4 +1,4 @@
-import PageHost from "./Components/PageHost";
+import { PageHost } from "./Components/PageHost";
 import { mount } from "@eusoft/webapp-core";
 export interface IAppOptions {
 
@@ -6,7 +6,7 @@ export interface IAppOptions {
 
 export class App {
 
-    constructor(options: IAppOptions) {
+    constructor(options?: IAppOptions) {
 
     }
 

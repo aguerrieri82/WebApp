@@ -1,17 +1,21 @@
 import { getTypeName, CatalogTemplate, IObservableProperty, IViewComponent, getOrCreateProp, bindTwoWay, isObservableProperty, IPropertyChangedHandler } from "@eusoft/webapp-core";
+import { toKebabCase } from "../Utils";
 
 export type ComputedValue<TValue> = { (): TValue }
 
 export type ComponentStyle = string | ComponentStyle[];
 
-export type Bindable<TValue> = TValue | IObservableProperty<TValue> | ComputedValue<TValue>;
+export type Bindable<TValue> = TValue | IObservableProperty<TValue>/* | ComputedValue<TValue>*/;
 
 type CommonKeys<TSrc, TDst> = {
     [K in (keyof TSrc & keyof TDst & string) /*as TSrc[K] extends Bindable<TDst[K]> ? K : never*/]: TSrc[K]
 };
 
 export interface IComponentOptions {
-    style: Bindable<ComponentStyle>;
+
+    style?: Bindable<ComponentStyle>;
+
+    template?: CatalogTemplate<any>;
 }
 
 function isComputedValue(value: any): value is ComputedValue<any> {
@@ -24,9 +28,11 @@ export class ViewComponent<TOptions extends IComponentOptions = IComponentOption
 
         this.options = options;   
 
-        this.bindOptions("style");
+        this.bindOptions("style", "template");
 
         this.onChanged("style", () => this.updateClass());
+
+        this.updateClass();
     }
 
     onChanged<TKey extends keyof this & string>(prop: TKey, handler: IPropertyChangedHandler<this[TKey]>) {
@@ -37,9 +43,12 @@ export class ViewComponent<TOptions extends IComponentOptions = IComponentOption
 
     protected bindOptions<TKey extends keyof CommonKeys<TOptions, this>>(...keys: TKey[]) {
 
+        if (!this.options)
+            return; 
+
         for (const key of keys) {
 
-            const value = this.options[key] as unknown as this[TKey];
+            const value = (key in this.options ? this.options[key] : undefined) as unknown as this[TKey];
 
             this.bind(key, value);
         }
@@ -54,16 +63,18 @@ export class ViewComponent<TOptions extends IComponentOptions = IComponentOption
 
             bindTwoWay(getOrCreateProp(this, key), value);
         }
+        /* //TODO compueedValue vs function
         else if (isComputedValue(value)) {
 
             this[key] = value();
-        }
+        }*/
         else
             this[key] = value;
     }
 
     protected updateClass() {
-        this.className = [getTypeName(this), ...this.style ?? []].flat().join(" ");
+        debugger;
+        this.className = [toKebabCase(getTypeName(this)), ...this.style ?? []].flat().join(" ");
     }
 
     className: string;

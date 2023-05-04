@@ -25,7 +25,7 @@
     "npm-check-updates": "16.10.9",
     "rimraf": "^5.0.0"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@eusoft/webapp-core": "../../dist/webapp-core",
     "@eusoft/webapp-jsx": "../../dist/webapp-jsx"
   }

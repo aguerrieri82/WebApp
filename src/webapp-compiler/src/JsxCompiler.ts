@@ -102,6 +102,9 @@ export class JsxCompiler extends BaseCompiler {
                     if (name.startsWith("on-") || name.startsWith("style-") || FuncAttributes.indexOf(name) != -1)
                         name = "t:" + name;
 
+                    else if (name == "className")
+                        name = "t:class";
+
                     curAttribute = createAttribute(name, null, curElement);
                 }
                 else if (path.isJSXText()) {
@@ -117,7 +120,7 @@ export class JsxCompiler extends BaseCompiler {
 
                 else if (path.isStringLiteral() && curAttribute) {
 
-                    curAttribute.value = path.node.value;
+                    curAttribute.value = JSON.stringify(path.node.value);
                 }
        
                 else if (path.isJSXExpressionContainer()) {

@@ -8,8 +8,6 @@ interface IActionOptions extends IComponentOptions {
     content?: Bindable<string | IViewComponent>;
 
     executeAsync?: () => Promise<any>;
-
-    template: number;
 }
 
 export const ActionTemplates = {
@@ -21,7 +19,7 @@ export const ActionTemplates = {
     </Template>) as ITemplate<Action>
 
 }
-export default class Action extends ViewComponent<IActionOptions> {
+export class Action extends ViewComponent<IActionOptions> {
 
     constructor(options?: IActionOptions) {
 

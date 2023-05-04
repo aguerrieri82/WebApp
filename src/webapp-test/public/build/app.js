@@ -1,3 +1,117 @@
+/****************************************/
+function defineTemplate$1(name, template) {
+    return template;
+}
+
+window.__defineTemplate = defineTemplate$1;
+
+function Template(props) {
+    return defineTemplate$1(props.name, t => processElement({ builder: t }, props.children));
+}
+
+function isJsxElement(obj) {
+    return obj && typeof (obj) == "object" && "props" in obj && "type" in obj;
+}
+function isViewComponent(type) {
+    return type.toString().startsWith("class ");
+}
+function processElement(context, node) {
+    if (node === null || node === undefined)
+        return;
+    if (Array.isArray(node)) {
+        for (const item of node)
+            processElement(context, item);
+    }
+    else if (typeof (node) == "string") {
+        context.builder.text(node);
+    }
+    else if (isJsxElement(node)) {
+        if (typeof (node.type) == "string") {
+            const childBuilder = context.builder.beginChild(node.type);
+            for (const prop in node.props) {
+                if (prop == "children")
+                    continue;
+                const value = node.props[prop]; //TODO force any
+                if (prop == "style") {
+                    if (value)
+                        childBuilder.styles(value);
+                }
+                else if (prop == "value") {
+                    childBuilder.value(value);
+                }
+                else if (prop == "text") {
+                    childBuilder.text(value);
+                }
+                else if (prop == "visible") {
+                    childBuilder.visible(value);
+                }
+                else if (prop == "html") {
+                    childBuilder.html(value);
+                }
+                else if (prop == "focus") {
+                    childBuilder.focus(value);
+                }
+                else if (prop == "class") {
+                    childBuilder.class(value);
+                }
+                else if (prop == "behavoir") {
+                    const arrayValue = Array.isArray(value) ? value : [value];
+                    for (const item of arrayValue)
+                        childBuilder.behavoir(item);
+                }
+                else if (prop.startsWith("on-")) {
+                    childBuilder.on(prop.substring(3), value);
+                }
+                else {
+                    childBuilder.set(prop, value);
+                }
+            }
+            processElement({ builder: childBuilder }, node.props.children);
+            childBuilder.endChild();
+        }
+        else {
+            if (isViewComponent(node.type)) {
+                const content = new node.type(node.props);
+                context.builder.content(content);
+            }
+            else {
+                const result = node.type({
+                    ...node.props,
+                    context
+                });
+                processElement(context, result);
+            }
+        }
+    }
+    else if (typeof (node) == "function") {
+        context.builder.text(node); //TODO fix
+    }
+}
+function createElement(type, props, ...children) {
+    if (typeof (type) == "function" && type == Template)
+        return type({
+            ...props,
+            children
+        });
+    else {
+        return {
+            type: type,
+            props: {
+                ...props,
+                children
+            }
+        };
+    }
+}
+
+window.__createElement = createElement;
+
+function isObservableProperty(value) {
+    return value && typeof value == "object" &&
+        typeof (value["get"]) == "function" &&
+        typeof (value["subscribe"]) == "function";
+}
+
 function isObservableArray(value) {
     return Array.isArray(value) && "subscribe" in value && typeof (value["subscribe"]) == "function";
 }
@@ -88,6 +202,7 @@ function createObservableArray(value) {
 
 const PROPS = Symbol("Props");
 
+const TYPE_NAME = Symbol("@typeName");
 function getFunctionName(func) {
     let curName = func.name;
     if (!curName) {
@@ -100,16 +215,20 @@ function getFunctionName(func) {
 function getTypeName(obj) {
     if (!obj)
         return undefined;
-    let name = obj["@typeName"];
+    const type = typeof obj;
+    let name = type == "object" ? obj[TYPE_NAME] : undefined;
     if (!name) {
-        name = typeof obj;
-        if (name == "function")
-            return getFunctionName(obj);
-        if (name == "object") {
+        if (type == "function")
+            name = getFunctionName(obj);
+        else if (type == "object") {
             const constFunc = obj.constructor;
             if (constFunc)
-                return getTypeName(constFunc);
+                name = getTypeName(constFunc);
         }
+        else
+            name = type;
+        if (type == "object")
+            obj[TYPE_NAME] = name;
     }
     return name;
 }
@@ -171,6 +290,11 @@ function getProp(obj, propName) {
     if (PROPS in obj)
         return obj[PROPS][propName];
     return undefined;
+}
+function bindTwoWay(dst, src) {
+    dst.set(src.get());
+    src.subscribe(v => dst.set(v));
+    dst.subscribe(v => src.set(v));
 }
 function createProp(obj, propName, property) {
     let desc = Object.getOwnPropertyDescriptor(obj, propName);
@@ -377,7 +501,7 @@ function isHTMLContainer(value) {
 const TemplateCatalog = {};
 const BehavoirCatalog = {};
 /****************************************/
-function defineTemplate$1(name, template) {
+function defineTemplate(name, template) {
     TemplateCatalog[name] = template;
     return template;
 }
@@ -847,174 +971,225 @@ class ChildTemplateBuilder extends TemplateBuilder {
         return this.parent;
     }
 }
-/****************************************/
-function template(root, template, model) {
+function mount(root, templateOrProvider, model) {
     root.innerHTML = "";
+    const template = model === undefined ? templateOrProvider.template : templateOrProvider;
+    if (!model)
+        model = templateOrProvider;
     const builder = new TemplateBuilder(model, root);
     builder.begin();
     builder.loadTemplate(template)(builder);
     builder.end();
 }
-
-window.__defineTemplate = defineTemplate$1;
-
 /****************************************/
-function defineTemplate(name, template) {
-    return template;
-}
+defineTemplate("Text", t => t.text(m => m));
 
 window.__defineTemplate = defineTemplate;
 
-function Template(props) {
-    return defineTemplate(props.name, t => processElement({ builder: t }, props.children));
+function isUpperCase(value) {
+    return value.toUpperCase() === value;
+}
+function toKebabCase(name) {
+    let s = 0;
+    let result = "";
+    for (let i = 0; i < name.length; i++) {
+        const c = name.charAt(i);
+        switch (s) {
+            //upper mode or begin 
+            case 0:
+                result += c.toLowerCase();
+                if (!isUpperCase(c) || c == "-")
+                    s = 1;
+                break;
+            //first-mode
+            case 1:
+                if (isUpperCase(c) && c != "-") {
+                    result += "-";
+                    s = 0;
+                }
+                result += c.toLowerCase();
+                break;
+        }
+    }
+    return result;
 }
 
-function isJsxElement(obj) {
-    return obj && typeof (obj) == "object" && "props" in obj && "type" in obj;
-}
-function isViewComponent(type) {
-    return type.toString().startsWith("class ");
-}
-function processElement(context, node) {
-    if (node === null || node === undefined)
-        return;
-    if (Array.isArray(node)) {
-        for (const item of node)
-            processElement(context, item);
+class ViewComponent {
+    constructor(options) {
+        this.options = options;
+        this.bindOptions("style", "template");
+        this.onChanged("style", () => this.updateClass());
+        this.updateClass();
     }
-    else if (typeof (node) == "string") {
-        context.builder.text(node);
+    onChanged(prop, handler) {
+        getOrCreateProp(this, prop).subscribe(handler);
     }
-    else if (isJsxElement(node)) {
-        if (typeof (node.type) == "string") {
-            const childBuilder = context.builder.beginChild(node.type);
-            for (const prop in node.props) {
-                if (prop == "children")
-                    continue;
-                const value = node.props[prop]; //TODO force any
-                if (prop == "style") {
-                    if (value)
-                        childBuilder.styles(value);
-                }
-                else if (prop == "value") {
-                    childBuilder.value(value);
-                }
-                else if (prop == "text") {
-                    childBuilder.text(value);
-                }
-                else if (prop == "visible") {
-                    childBuilder.visible(value);
-                }
-                else if (prop == "html") {
-                    childBuilder.html(value);
-                }
-                else if (prop == "focus") {
-                    childBuilder.focus(value);
-                }
-                else if (prop == "class") {
-                    childBuilder.class(value);
-                }
-                else if (prop == "behavoir") {
-                    const arrayValue = Array.isArray(value) ? value : [value];
-                    for (const item of arrayValue)
-                        childBuilder.behavoir(item);
-                }
-                else if (prop.startsWith("on-")) {
-                    childBuilder.on(prop.substring(3), value);
-                }
-                else {
-                    childBuilder.set(prop, value);
-                }
-            }
-            processElement({ builder: childBuilder }, node.props.children);
-            childBuilder.endChild();
-        }
-        else {
-            if (isViewComponent(node.type)) {
-                const content = new node.type(node.props);
-                context.builder.content(content);
-            }
-            else {
-                const result = node.type({
-                    ...node.props,
-                    context
-                });
-                processElement(context, result);
-            }
+    bindOptions(...keys) {
+        if (!this.options)
+            return;
+        for (const key of keys) {
+            const value = (key in this.options ? this.options[key] : undefined);
+            this.bind(key, value);
         }
     }
-    else if (typeof (node) == "function") {
-        context.builder.text(node); //TODO fix
+    bind(key, value) {
+        if (value === null && value === undefined)
+            return;
+        if (isObservableProperty(value)) {
+            bindTwoWay(getOrCreateProp(this, key), value);
+        }
+        /* //TODO compueedValue vs function
+        else if (isComputedValue(value)) {
+
+            this[key] = value();
+        }*/
+        else
+            this[key] = value;
     }
+    updateClass() {
+        debugger;
+        this.className = [toKebabCase(getTypeName(this)), ...this.style ?? []].flat().join(" ");
+    }
+    className;
+    template;
+    style;
+    options;
 }
-function createElement(type, props, ...children) {
-    if (typeof (type) == "function" && type == Template)
-        return type({
-            ...props,
-            children
+
+const ActionTemplates = {
+    "Button": (__defineTemplate("\"Action\"", t => { t
+    .beginChild("button").class(m => m.className).on("click", m => m.executeAsync()).content(m => m.content).endChild();
+}))
+};
+class Action extends ViewComponent {
+    constructor(options) {
+        super(options);
+        this.bindOptions("content", "executeAsync");
+    }
+    async executeAsync() {
+    }
+    content;
+    template = ActionTemplates.Button;
+}
+
+const PageHostTemplates = {
+    "Single": (__defineTemplate("\"PageHost\"", t => { t
+    .beginChild("main").class(m => m.className)
+        .beginChild("section").class("content").content(m => m.current).endChild()
+    .endChild();
+}))
+};
+class PageHost extends ViewComponent {
+    _stack = [];
+    _index;
+    constructor(options) {
+        super(options);
+        this.onChanged("current", async (value, old) => {
+            if (old?.onClose)
+                old.onClose();
+            if (value.loadAsync)
+                await this.loadPageAsync(value);
+            if (value?.onOpen)
+                value.onOpen();
         });
-    else {
-        return {
-            type: type,
-            props: {
-                ...props,
-                children
+    }
+    async loadPageAsync(page) {
+        await page.loadAsync();
+    }
+    push(page) {
+        this._stack.push(this.current);
+        this.current = page;
+    }
+    pop() {
+        this.current = this._stack.pop();
+    }
+    canGoBack() {
+    }
+    current;
+    template = PageHostTemplates.Single;
+}
+
+const PageTemplates = {
+    "Simple": (__defineTemplate("\"PageHost\"", t => { t
+    .beginChild("div").class(m => m.className)
+        .beginChild("header")
+            .beginChild("h1").text(m => m.title).endChild()
+        .endChild()
+        .beginChild("section").class("body").content(m => m.content).endChild()
+    .endChild();
+}))
+};
+class Page extends ViewComponent {
+    constructor(options) {
+        super(options);
+        this.bindOptions("title", "content", "route", "name");
+    }
+    async loadAsync() {
+    }
+    onOpen() {
+    }
+    onClose() {
+    }
+    title;
+    content;
+    route;
+    name;
+    template = PageTemplates.Simple;
+}
+
+class App {
+    constructor(options) {
+    }
+    runAsync(root) {
+        if (typeof root == "string")
+            root = document.querySelector(root);
+        else if (!root)
+            root = document.body;
+        mount(root, this.pageHost);
+    }
+    pageHost = new PageHost();
+}
+function runApp(app) {
+    window.addEventListener("load", () => {
+        app.runAsync();
+    });
+    return app;
+}
+
+class SecondPage extends Page {
+    constructor() {
+        super({
+            name: "second",
+            title: "Seconda Pagina",
+            route: "/second",
+            content: {
+                template: (__defineTemplate("\"SecondPage\"", t => { t
+    .beginChild("input").set("type","\"text\"").endChild()
+    .beginChild("button").on("click", m => app.pageHost.pop()).text("Back").endChild();
+}))
             }
-        };
+        });
     }
 }
 
-window.__createElement = createElement;
-
-async function runAsync() {
-    const rootModel = {
-        items: [],
-        msg: "",
-        innerObj: {
-            name: "Inner"
-        },
-        logo: "/logo.png",
-        change() {
-            this.msg = "Nuovo messaggio" + new Date().getTime();
-            if (this.items.length > 0)
-                this.items[0].name = "Item change" + new Date().getTime();
-            this.innerObj.name = "Inner change" + new Date().getTime();
-        },
-        replace() {
-            if (this.items.length > 0)
-                this.items[0] = {
-                    name: "Pippo"
-                };
-            this.innerObj = {
-                name: "Replace inner"
-            };
-        },
-        add() {
-            this.items.push({ name: "Luca" }, { name: "Mario" });
-        },
-        addMany() {
-            const newItems = [];
-            for (let i = 0; i < 10000; i++)
-                newItems.push({ name: "Item " + i });
-            this.items.push(...newItems);
-        },
-        newImage() {
-            this.logo = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png";
-        }
-    };
-    setInterval(() => {
-        rootModel.msg = "Time is: " + new Date();
-    }, 1000);
-    const t = __defineTemplate("xxx", t => { t
-    .beginChild("div").text(m => m.innerObj.name)
-        .beginChild("button").on("click", m => m.addMany()).text("Add").endChild()
-    .endChild()
-    .foreach(m => m.items, t1 => t1
-        .beginChild("div").text(m => m.name).endChild()
-    );
-});
-    __defineTemplate("yyy", t => {});
-    template(document.body, t, rootModel);
+class MainPage extends Page {
+    constructor() {
+        super({
+            name: "main",
+            title: "Pagna Principale",
+            route: "/",
+            content: new Action({
+                content: "Click Me",
+                executeAsync: async () => {
+                    app.pageHost.push(new SecondPage());
+                }
+            })
+        });
+    }
 }
-window.addEventListener("load", runAsync);
+
+const app = runApp(new App());
+app.pageHost.push(new MainPage());
+
+export { app };
 //# sourceMappingURL=app.js.map

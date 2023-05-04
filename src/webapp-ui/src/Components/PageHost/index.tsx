@@ -1,8 +1,8 @@
 import { ITemplate } from "@eusoft/webapp-core";
-import "./index.scss";
 import { Content, Template } from "@eusoft/webapp-jsx";
 import { IComponentOptions, ViewComponent } from "../ViewComponent";
 import { IPage } from "../../Abstraction/IPage";
+import "./index.scss";
 
 interface IPageHostOptions extends IComponentOptions {
 
@@ -20,7 +20,7 @@ export const PageHostTemplates = {
     </Template>) as ITemplate<PageHost>
 
 }
-export default class PageHost extends ViewComponent<IPageHostOptions> {
+export class PageHost extends ViewComponent<IPageHostOptions> {
 
     protected _stack: IPage[] = [];
     protected _index: number;
@@ -49,7 +49,7 @@ export default class PageHost extends ViewComponent<IPageHostOptions> {
     }
 
     push(page: IPage) {
-        this._stack.push(page);
+        this._stack.push(this.current);
         this.current = page;
     }
 
