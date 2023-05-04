@@ -1,0 +1,33 @@
+<t:template name="SpellListTable" xmlns:t="urn:web-app">
+    <div class="spell-list__filter-form">
+        <div>
+<!--            <div class="spell-list__filter-form__input-container">-->
+<!--                <label for="name">Nome</label>-->
+<!--                <input type="text" id="name" name="query" t:value="$model.filter.query" t:on-change="$model.onFilterValueChange(event)"/>-->
+<!--            </div>-->
+<!--            <div class="spell-list__filter-form__input-container">-->
+<!--                <label for="level">Livello</label>-->
+<!--                <input type="number" id="level" name="level" t:value="$model.filter.level"/>-->
+<!--            </div>-->
+<!--            <div class="spell-list__filter-form__input-container">-->
+<!--                <label for="classes">Classe</label>-->
+<!--                <input id="classes" name="classes" t:value="$model.filter.classes"/>-->
+<!--            </div>-->
+
+            <t:content src="$model.queryInput"/>
+            <t:content src="$model.levelInput"/>
+            <t:content src="$model.classesInput"/>
+
+            <div class="spell-list__filter-form__button-container">
+                <t:content src="$model.filterButton"/>
+            </div>
+<!--            <div class="spell-list__filter-form__button-container">-->
+<!--                <button type="button" t:on-click="$model.applyFilter()">Applica</button>-->
+<!--            </div>-->
+        </div>
+
+    </div>
+    <div class="spell-list__table-container">
+        <t:content src="$model.table"/>
+    </div>
+</t:template>

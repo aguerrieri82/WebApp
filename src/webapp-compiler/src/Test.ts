@@ -5,7 +5,7 @@ export async function runTest1(){
 
     const compiler = new HtmlCompiler();
 
-    await compiler.compileAsync("../../src/webapp-compiler/test/", null, true); 
+    await compiler.compileAsync("../../src/webapp-compiler/test/spellListTable.html", null, true); 
 
     debugger;
 
@@ -23,4 +23,4 @@ export async function runTest2() {
     stdin.read();
 }
 
-runTest2();
+runTest1();

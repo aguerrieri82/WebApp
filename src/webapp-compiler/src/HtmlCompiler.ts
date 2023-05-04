@@ -33,7 +33,7 @@ export class HtmlCompiler extends BaseCompiler {
                     type: TemplateNodeType.Element,
                     name: node.nodeName,
                     attributes: {},
-                    childNodes: Array.from(node.childNodes).map(a => visitNode(a))
+                    childNodes: Array.from(node.childNodes).map(a => visitNode(a)).filter(a=> a !== undefined)
                 }
 
                 for (const attr of (node as Element).attributes)

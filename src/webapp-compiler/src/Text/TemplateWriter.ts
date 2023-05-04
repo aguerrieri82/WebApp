@@ -11,6 +11,12 @@ export class TemplateWriter extends JsWriter {
         this.context = context;
     }
 
+    writeStringAttr(data: any) {
+        if (this.context.compiler instanceof HtmlCompiler)
+            return this.write(JSON.stringify(data));
+        return this.write(data);
+    }
+
     writeIdentifier(name: string ) {
         return this.write(this.context.jsNamespace).write(".").write(name);
     }

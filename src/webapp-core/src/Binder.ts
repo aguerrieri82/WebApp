@@ -241,16 +241,34 @@ export class Binder<TModel> {
                 if (typeof prop === "symbol" || typeof target[prop] === "function" || (Array.isArray(obj) && prop === "length")) 
                     return target[prop];
 
-                if (!(prop in innerProxies)) {
+                //TODO investigate cache
+                //if (!(prop in innerProxies)) {
 
                     if (action(obj, prop))
                         innerProxies[prop] = this.createProxy(target[prop], action);
                     else
                         innerProxies[prop] = target[prop];
-                }
+               // }
 
                 return innerProxies[prop];
+            },
 
+            set: (target, prop, value) => {
+
+                if (target[prop] == value)
+                    return;
+
+                if (typeof prop === "symbol") 
+                    return target[prop];
+
+                if (action(obj, prop))
+                    innerProxies[prop] = this.createProxy(target[prop], action);
+                else
+                    innerProxies[prop] = target[prop];
+                
+                target[prop] = value;
+
+                return true;
             }
         }) as TObj;
 

@@ -10,10 +10,9 @@ export class BehavoirAttributeHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, node: ITemplateAttribute): HandleResult {
 
-        for (const item in node.value.split(','))
-            ctx.writer.write(".behavoir(").writeJson(item.trim()).write(")");
+        for (const item of node.value.split(','))
+            ctx.writer.write(".behavoir(").writeStringAttr(item.trim()).write(")");
 
         return HandleResult.Handled;
     }
-
 }

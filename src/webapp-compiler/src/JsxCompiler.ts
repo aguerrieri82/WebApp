@@ -99,7 +99,10 @@ export class JsxCompiler extends BaseCompiler {
 
                     let name = (path.node.name as JSXIdentifier).name;
 
-                    if (name.startsWith("on-") || name.startsWith("style-") || FuncAttributes.indexOf(name) != -1)
+                    if (name.startsWith("on-") ||
+                        name.startsWith("style-") ||
+                        name == "behavoir" ||
+                        FuncAttributes.indexOf(name) != -1)
                         name = "t:" + name;
 
                     else if (name == "className")

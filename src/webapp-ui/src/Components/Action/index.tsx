@@ -1,6 +1,6 @@
 import { ITemplate, IViewComponent } from "@eusoft/webapp-core";
 import "./index.scss";
-import { Content, Template } from "@eusoft/webapp-jsx";
+import { Behavoir, Content, Template } from "@eusoft/webapp-jsx";
 import { Bindable, IComponentOptions, ViewComponent } from "../ViewComponent";
 
 interface IActionOptions extends IComponentOptions {
@@ -13,7 +13,7 @@ interface IActionOptions extends IComponentOptions {
 export const ActionTemplates = {
 
     "Button": (<Template name="Action">
-        <button className={m => m.className} on-click={m => m.executeAsync()}>
+        <button behavoir="Ripple" className={m => m.className} on-click={m => m.executeAsync()}>
             <Content src={m => m.content} />
         </button>
     </Template>) as ITemplate<Action>

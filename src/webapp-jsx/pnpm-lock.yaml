@@ -3397,5 +3397,5 @@ packages:
   file:../../dist/webapp-core:
     resolution: {directory: ../../dist/webapp-core, type: directory}
     name: '@eusoft/webapp-core'
-    version: 0.0.7
+    version: 0.0.8
     dev: false

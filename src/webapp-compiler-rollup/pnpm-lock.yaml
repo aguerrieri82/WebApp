@@ -666,7 +666,7 @@ packages:
   file:../../dist/webapp-compiler:
     resolution: {directory: ../../dist/webapp-compiler, type: directory}
     name: '@eusoft/webapp-compiler'
-    version: 0.0.8
+    version: 0.0.9
     dependencies:
       '@babel/parser': 7.21.8
       '@babel/traverse': 7.21.5
