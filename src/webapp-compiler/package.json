@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "publish": "cd ../../dist/webapp-compiler/ && pnpm publish --access public --no-git-checks",
-    "start": "node ../../dist/webapp-compiler/index.js",
+    "start": "node ../../dist/webapp-compiler/index.js -test xxx sdsdsd",
     "clean": "rimraf ../../dist/webapp-compiler/",
     "build:watch": "rollup -c -w  --environment NODE_ENV:dev",
     "build:dev": "rollup -c --environment NODE_ENV:dev",

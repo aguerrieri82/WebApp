@@ -1,15 +1,7 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
 import { ITemplateAttribute } from "../Abstraction/ITemplateNode";
+import { FuncAttributes } from "../Consts";
 import { TemplateContext } from "../TemplateContext";
-
-const validFunctions = [
-    "class",
-    "value",
-    "text",
-    "focus",
-    "html",
-    "visible"
-]
 
 export class FuncAttributeHandler implements ITemplateHandler {
      
@@ -17,7 +9,7 @@ export class FuncAttributeHandler implements ITemplateHandler {
 
         if (ctx.isAttr(node) && node.name.toLowerCase().startsWith(ctx.htmlNamespace + ":")) {
             const funcName = node.name.substring(ctx.htmlNamespace.length + 1);
-            return validFunctions.indexOf(funcName) != -1;
+            return FuncAttributes.indexOf(funcName) != -1;
         }
         return false;
     }

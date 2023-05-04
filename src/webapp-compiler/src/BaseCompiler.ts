@@ -6,6 +6,7 @@ import { stderr, stdout } from "process";
 import { TemplateContext } from "./TemplateContext";
 import type { ITemplateAttribute, ITemplateElement, ITemplateNode } from "./Abstraction/ITemplateNode";
 import { HandleResult, ITemplateHandler } from "./Abstraction/ITemplateHandler";
+import * as handlers from "./Handlers";
 
 export enum CompilerOutMode {
     Always,
@@ -36,6 +37,12 @@ export abstract class BaseCompiler<TOptions extends ICompilerOptions = ICompiler
             generateOutput: CompilerOutMode.Always,
             includeWhitespace: false
         } as TOptions;
+
+        const activeHandlers = handlers as Record<string, { new(): ITemplateHandler }>;
+
+        for (const name in activeHandlers) {
+            this.register(new activeHandlers[name]());
+        }
     }
 
     error(msg: string) {
@@ -145,14 +152,17 @@ export abstract class BaseCompiler<TOptions extends ICompilerOptions = ICompiler
             this.warning(`no handler for '${(node as ITemplateElement).name}'`);
         }
         else {
-   
-            const result = handler.handle(ctx, node);
-            if (result == HandleResult.CompileChildren && ctx.isElement(node)) {
+
+            if (ctx.isElement(node))
                 ctx.enter(handler, node);
-                this.compileElements(ctx, node.childNodes);
+
+            const result = handler.handle(ctx, node);
+
+            if (result == HandleResult.CompileChildren) 
+                this.compileElements(ctx, (node as ITemplateElement).childNodes);
+       
+            if (ctx.isElement(node))
                 ctx.exit();
-            }
-  
         }
     }
 

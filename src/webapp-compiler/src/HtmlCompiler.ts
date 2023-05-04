@@ -6,9 +6,7 @@ import type { IWriteable } from "./Abstraction/IWriteable";
 import { JSDOM } from 'jsdom'
 import { readAllTextAsync } from "./TextUtils";
 import { BaseCompiler, ICompilerOptions } from "./BaseCompiler";
-import * as handlers from "./Handlers";
-import { ITemplateElement, ITemplateNode, ITemplateText, TemplateNodeType } from "./Abstraction/ITemplateNode";
-import { it } from "node:test";
+import { ITemplateElement, ITemplateText, TemplateNodeType } from "./Abstraction/ITemplateNode";
 
 export class HtmlCompiler extends BaseCompiler {
 
@@ -16,11 +14,7 @@ export class HtmlCompiler extends BaseCompiler {
 
         super(options);
 
-        const activeHandlers = handlers as Record<string, { new(): ITemplateHandler }>;
-
-        for (const name in activeHandlers) {
-            this.register(new activeHandlers[name]());
-        }
+   
     }
 
     protected parse(text: string) {
@@ -88,6 +82,8 @@ export class HtmlCompiler extends BaseCompiler {
 
             if (ctx.templates.length == 1)
                 ctx.writer.ensureNewLine().write("export default ").write(ctx.templates[0]).write(";");
+
+    
         }
         catch (ex) {
             console.log(ex);
