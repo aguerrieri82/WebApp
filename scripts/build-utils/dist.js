@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from "path";
 import { exec } from 'child_process';
-import { stderr } from 'process';
 
 const colours = {
     reset: "\x1b[0m",

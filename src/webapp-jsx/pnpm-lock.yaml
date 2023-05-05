@@ -2,15 +2,15 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@eusoft/webapp-core':
-    specifier: file://../../dist/webapp-core
-    version: file:../../dist/webapp-core
+    specifier: link:../webapp-core
+    version: link:../webapp-core
 
 devDependencies:
   '@typescript-eslint/parser':
     specifier: 5.59.1
     version: 5.59.1(eslint@8.39.0)(typescript@5.0.4)
   build-utils:
-    specifier: ../../scripts/build-utils
+    specifier: link:../../scripts/build-utils
     version: link:../../scripts/build-utils
   eslint:
     specifier: ^8.39.0
@@ -3393,9 +3393,3 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
-
-  file:../../dist/webapp-core:
-    resolution: {directory: ../../dist/webapp-core, type: directory}
-    name: '@eusoft/webapp-core'
-    version: 0.0.8
-    dev: false

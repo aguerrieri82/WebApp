@@ -1,7 +1,7 @@
 import { Page } from "@eusoft/webapp-ui";
 import { Template } from "@eusoft/webapp-jsx";
+import { CatalogTemplate } from "@eusoft/webapp-core";
 import { app } from "../";
-import { CatalogTemplate } from "../../../../dist/webapp-core";
 
 class SecondPage extends Page {
     constructor() {

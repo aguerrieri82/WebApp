@@ -12,6 +12,15 @@ import { FuncAttributes, TemplateElements } from "./Consts";
 
 const trav = (traverse as any).default as typeof traverse;
 
+interface ITextBlock {
+    start: number;
+    end: number;
+}
+
+interface ITextReplacement {
+    src: ITextBlock;
+    dst: ITextBlock;
+}
 
 export class JsxCompiler extends BaseCompiler {
 
@@ -146,6 +155,10 @@ export class JsxCompiler extends BaseCompiler {
         return result;
     }
 
+    onReplaces(replaces: ITextReplacement[]) {
+
+    }
+
     async compileStreamAsync(input: ReadStream | string, output: IWriteable) {
 
         const js = typeof input == "string" ? input : await readAllTextAsync(input);
@@ -177,18 +190,35 @@ export class JsxCompiler extends BaseCompiler {
 
         let curPos = 0;
 
+        const replaces: ITextReplacement[] = [];
+
         for (const temp of templates) {
 
             if (temp.node.start != curPos)
-                ctx.writer.out.write(js.substring(curPos, temp.node.start));
+                ctx.writer.writeRaw(js.substring(curPos, temp.node.start));
 
             const tempNode = this.parse(temp);
 
+            const curLen = ctx.writer.length;
+          
             this.compileElement(ctx, tempNode);
+
+            replaces.push({
+                src: {
+                    start: temp.node.start,
+                    end: temp.node.end
+                },
+                dst: {
+                    start: curLen,
+                    end: ctx.writer.length
+                }
+            });
 
             curPos = temp.node.end;
         } 
 
-        ctx.writer.out.write(js.substring(curPos));
+        ctx.writer.writeRaw(js.substring(curPos));
+
+        this.onReplaces(replaces);
     }
 }

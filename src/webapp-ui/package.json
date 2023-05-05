@@ -3,6 +3,7 @@
   "version": "0.0.4",
   "packageManager": "pnpm@8.3.1",
   "type": "module",
+  "main": "src/index.ts",
   "scripts": {
     "publish": "cd ../../dist/webapp-ui/ && pnpm publish --access public --no-git-checks",
     "clean": "rimraf ../../dist/webapp-ui/",
@@ -16,7 +17,8 @@
   "keywords": [],
   "author": "Andrea Guerrieri",
   "devDependencies": {
-    "build-utils": "../../scripts/build-utils",
+    "@eusoft/webapp-compiler-rollup": "link:../../dist/webapp-compiler-rollup",
+    "build-utils": "link:../../scripts/build-utils",
     "rollup": "^3.21.0",
     "eslint": "^8.39.0",
     "eslint-plugin-unused-imports": "^2.0.0",
@@ -26,7 +28,7 @@
     "rimraf": "^5.0.0"
   },
   "dependencies": {
-    "@eusoft/webapp-core": "../../dist/webapp-core",
-    "@eusoft/webapp-jsx": "../../dist/webapp-jsx"
+    "@eusoft/webapp-core": "link:../webapp-core",
+    "@eusoft/webapp-jsx": "link:../webapp-jsx"
   }
 }

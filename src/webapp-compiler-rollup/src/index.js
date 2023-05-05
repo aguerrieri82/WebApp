@@ -1,6 +1,6 @@
 import path from "path"
 import { HtmlCompiler, JsxCompiler } from "@eusoft/webapp-compiler"
-
+import MagicString from "magic-string";
 export default function (options) {
 
     return {
@@ -11,17 +11,29 @@ export default function (options) {
 
             if (ext == ".tsx" || ext == ".jsx") {
 
+                const srcMap = new MagicString(code);
+
                 const compiler = new JsxCompiler();
+
+                let replace = [];
 
                 compiler.error = msg => this.error(msg);
 
                 compiler.warning = msg => this.warn(msg);
 
+                compiler.onReplaces = v => replace = v;
+
                 const text = await compiler.compileTextAsync(code);
 
-                console.log(text);
+                for (const rep of replace) {
+                    srcMap.update(rep.src.start, rep.src.end, text.substring(rep.dst.start, rep.dst.end));
+                }
 
-                return text;
+                return {
+                    code: text,
+                    map: srcMap.generateMap({ hires: true })
+                }
+;
             }
 
             else if (ext == ".html") { 

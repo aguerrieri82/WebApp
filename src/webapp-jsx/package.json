@@ -2,6 +2,7 @@
   "name": "@eusoft/webapp-jsx",
   "version": "0.0.11",
   "packageManager": "pnpm@8.3.1",
+  "main": "src/index.ts",
   "type": "module",
   "scripts": {
     "publish": "cd ../../dist/webapp-jsx/ && pnpm publish --access public --no-git-checks",
@@ -16,7 +17,7 @@
   "keywords": [],
   "author": "Andrea Guerrieri",
   "devDependencies": {
-    "build-utils": "../../scripts/build-utils",
+    "build-utils": "link:../../scripts/build-utils",
     "rollup": "^3.21.0",
     "eslint": "^8.39.0",
     "eslint-plugin-unused-imports": "^2.0.0",
@@ -25,7 +26,7 @@
     "npm-check-updates": "16.10.9",
     "rimraf": "^5.0.0"
   },
-  "peerDependencies": {
-    "@eusoft/webapp-core": "file://../../dist/webapp-core"
+  "dependencies": {
+    "@eusoft/webapp-core": "link:../webapp-core"
   }
 }

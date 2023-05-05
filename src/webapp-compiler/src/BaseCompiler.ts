@@ -104,6 +104,7 @@ export abstract class BaseCompiler<TOptions extends ICompilerOptions = ICompiler
 
             if (fs.existsSync(output))
                 fs.rmSync(output);
+
             const outStream = fs.createWriteStream(output);
             this.compileStreamAsync(inStream, outStream);
             outStream.close();

@@ -1,32 +1,36 @@
 {
   "name": "webapp-test",
   "version": "0.0.1",
-  "packageManager": "pnpm@8.3.1",
+  "packageManager": "pnpm@8.4.0",
+  "main": "src/index.ts",
   "type": "module",
   "scripts": {
     "start": "node server",
-    "build:watch": "rollup -c -w  --environment NODE_ENV:dev",
+    "dist:dev": "cd ../../scripts/build-utils/ && node dist",
+    "build:watch": "rollup -c -w --environment NODE_ENV:dev",
     "build:dev": "rollup -c --environment NODE_ENV:dev",
     "build:prod": "rollup -c --environment NODE_ENV:prod",
     "install:pnpm": "pnpm install -f",
-    "upgrade": "ncu --upgrade && pnpm install"
+    "upgrade": "pnpm up -latest"
   },
   "keywords": [],
   "author": "Andrea Guerrieri",
   "dependencies": {
-    "@eusoft/webapp-jsx": "../../dist/webapp-jsx",
-    "@eusoft/webapp-ui": "../../dist/webapp-ui"
+    "@eusoft/webapp-core": "link:../webapp-core",
+    "@eusoft/webapp-jsx": "link:../webapp-jsx",
+    "@eusoft/webapp-ui": "link:../webapp-ui"
   },
   "devDependencies": {
     "@eusoft/webapp-compiler-rollup": "../../dist/webapp-compiler-rollup",
-    "@rollup/plugin-typescript": "^11.1.0",
     "@rollup/plugin-node-resolve": "^15.0.2",
+    "@rollup/plugin-typescript": "^11.1.0",
+    "rollup-plugin-scss": "4.0.0",
+    "sass": "1.62.1",
+    "express": "4.18.2",
+    "rollup": "^3.21.4",
     "rollup-plugin-delete": "2.0.0",
     "rollup-plugin-sourcemaps": "0.6.3",
-    "rollup": "^3.21.0",
     "tslib": "^2.5.0",
-    "typescript": "5.0.4",
-    "npm-check-updates": "16.10.9",
-    "express": "4.18.2"
+    "typescript": "5.0.4"
   }
 }

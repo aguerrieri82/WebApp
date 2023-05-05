@@ -4,7 +4,6 @@ import terser from '@rollup/plugin-terser';
 import dts from 'rollup-plugin-dts';
 import generatePackageJson from 'rollup-plugin-generate-package-json'
 import sourcemaps from 'rollup-plugin-sourcemaps';
-import webapp from "@eusoft/webapp-compiler-rollup"
 import scss from 'rollup-plugin-scss'
 import json from 'rollup-plugin-json'
 import del from "rollup-plugin-delete";
@@ -26,8 +25,8 @@ export function loadJson(path) {
 
 export function getPkgVersion(pkgPath) {
 
-    if (pkgPath.startsWith("file://"))
-        pkgPath = pkgPath.substring(7);
+    if (pkgPath.startsWith("link:"))
+        pkgPath = pkgPath.substring(5);
 
     const curPkg = loadJson(path.join(pkgPath, "package.json"));
     return curPkg.version;
@@ -40,7 +39,7 @@ export function processDeps(deps) {
     if (deps) {
         for (let name in deps) {
             const value = deps[name];
-            if (value.startsWith("file://") && isProd)
+            if (value.startsWith("link:") && isProd)
                 newDeps[name] = "^" + getPkgVersion(value);
             else
                 newDeps[name] = value;
@@ -103,7 +102,7 @@ export function configureRollup(options) {
                 options?.components && scss({
                     fileName: 'style.css'
                 }),
-                options?.components && webapp(),
+                ...options?.plugins ?? [],
                 !isProd && sourcemaps(),
                 isProd && terser()
             ]

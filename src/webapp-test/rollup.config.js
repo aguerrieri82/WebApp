@@ -3,6 +3,7 @@ import typescript from '@rollup/plugin-typescript';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import webapp from "@eusoft/webapp-compiler-rollup"
 import path from "path";
+import scss from 'rollup-plugin-scss'
 
 const outPath = "public/build";
 
@@ -15,13 +16,24 @@ export default [
                 format: "esm",
                 sourcemap: true,
                 sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
-                    return path.resolve(path.dirname(sourcemapPath), relativeSourcePath)
+  
+                    if (relativeSourcePath.startsWith("..\\..\\..\\..\\..\\"))
+                        relativeSourcePath = relativeSourcePath.substring(6);
+                    else if (relativeSourcePath.startsWith("..\\..\\..\\"))
+                        relativeSourcePath = "..\\..\\src\\" + relativeSourcePath.substring(9);
+                    const result = path.resolve(path.dirname(sourcemapPath), relativeSourcePath)
+                    return result;
                 },
             },
         ],
         plugins: [
             resolve(),
-            typescript(),
+            typescript({
+                filterRoot: "../" 
+            }),
+            scss({
+                fileName: 'style.css'
+            }),
             webapp(),
             sourcemaps()
         ]

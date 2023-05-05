@@ -20,7 +20,6 @@
     "rollup-plugin-json": "4.0.0",
     "sass": "1.62.1",
     "tslib": "^2.5.0",
-    "typescript": "5.0.4",
-    "@eusoft/webapp-compiler-rollup": "file://../../dist/webapp-compiler-rollup"
+    "typescript": "5.0.4"
   }
 }

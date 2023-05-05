@@ -5,7 +5,7 @@ export class ObservableProperty<TValue = any> implements IObservableProperty<TVa
 
     private _handlers: IPropertyChangedHandler<TValue>[];
     private _descriptor: PropertyDescriptor;
-
+     
     constructor(desc: PropertyDescriptor, name: string) {
         this._descriptor = desc;
         this.name = name;
