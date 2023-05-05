@@ -1,7 +1,6 @@
-import { IViewComponent } from "@eusoft/webapp-core";
+import { IComponent } from "@eusoft/webapp-core";
 
-
-export interface IPage extends IViewComponent {
+export interface IPage extends IComponent {
 
     loadAsync(): Promise<any>;
 

@@ -1,4 +1,4 @@
-import { Bindable, IComponentOptions, ITemplate, IComponent, Component } from "@eusoft/webapp-core";
+import { Bindable, IComponentOptions, ITemplate, IComponent, Component, ITemplateProvider } from "@eusoft/webapp-core";
 import { Content, Template } from "@eusoft/webapp-jsx";
 import "./index.scss";
 
@@ -39,5 +39,5 @@ export class Action extends Component<IActionOptions> {
 
     }
 
-    content: string | IViewComponent;
+    content: string | ITemplateProvider;
 }

@@ -1,4 +1,4 @@
-import { Bindable, IComponentOptions, ITemplate, Component } from "@eusoft/webapp-core";
+import { Bindable, IComponentOptions, ITemplate, Component, IComponent, ITemplateProvider } from "@eusoft/webapp-core";
 import { Content, Template } from "@eusoft/webapp-jsx";
 import { IPage } from "../../Abstraction/IPage";
 import "./index.scss";
@@ -7,7 +7,7 @@ interface IPageOptions extends IComponentOptions {
 
     title?: Bindable<string>;
 
-    content?: Bindable<IViewComponent>;
+    content?: Bindable<ITemplateProvider>;
 
     route?: string;
 
@@ -59,7 +59,7 @@ export class Page<TOptions extends IPageOptions = IPageOptions> extends Componen
 
     title: string;
 
-    content: IViewComponent;
+    content: ITemplateProvider;
 
     route: string;
 

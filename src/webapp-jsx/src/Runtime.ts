@@ -1,6 +1,6 @@
+import { IComponent } from "@eusoft/webapp-core";
 import { ITemplateContext, JsxComponentProps, JsxElement, JsxElementType, JsxNode, TemplateModel } from "./Abstraction";
 import { Template } from "./Components/Template";
-import { IViewComponent } from "@eusoft/webapp-core";
 export function isJsxElement(obj: any): obj is JsxElement<any, JsxComponentProps<any>> {
 
     return obj && typeof (obj) == "object" && "props" in obj && "type" in obj;
@@ -10,7 +10,7 @@ export function isEventProp(name: string) {
 
     return name.startsWith("on-");
 }
-export function isViewComponent<TModel extends TemplateModel = TemplateModel>(type: any): type is { new(props: TModel): IViewComponent } {
+export function isComponent<TModel extends TemplateModel = TemplateModel>(type: any): type is { new(props: TModel): IComponent } {
 
     return type.toString().startsWith("class ");
 }
@@ -82,8 +82,8 @@ export function processElement<TModel extends TemplateModel>(context: ITemplateC
             childBuilder.endChild()
         }
         else {
-            if (isViewComponent(node.type)) {
-                const content = new node.type(node.props) as IViewComponent;
+            if (isComponent(node.type)) {
+                const content = new node.type(node.props) as IComponent;
                 context.builder.content(content)
             }
             else {
