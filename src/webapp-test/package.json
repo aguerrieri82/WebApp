@@ -7,10 +7,11 @@
   "scripts": {
     "start": "node server",
     "dist:dev": "cd ../../scripts/build-utils/ && node dist",
+    "dist:pub": "cd ../../scripts/build-utils/ && node dist -n -p",
     "build:watch": "rollup -c -w --environment NODE_ENV:dev",
     "build:dev": "rollup -c --environment NODE_ENV:dev",
     "build:prod": "rollup -c --environment NODE_ENV:prod",
-    "install:pnpm": "pnpm install -f",
+    "install:pnpm": "pnpm install",
     "upgrade": "pnpm up -latest"
   },
   "keywords": [],
@@ -24,12 +25,12 @@
     "@eusoft/webapp-compiler-rollup": "../../dist/webapp-compiler-rollup",
     "@rollup/plugin-node-resolve": "^15.0.2",
     "@rollup/plugin-typescript": "^11.1.0",
-    "rollup-plugin-scss": "4.0.0",
-    "sass": "1.62.1",
     "express": "4.18.2",
-    "rollup": "^3.21.4",
+    "rollup": "^3.21.5",
     "rollup-plugin-delete": "2.0.0",
+    "rollup-plugin-scss": "4.0.0",
     "rollup-plugin-sourcemaps": "0.6.3",
+    "sass": "1.62.1",
     "tslib": "^2.5.0",
     "typescript": "5.0.4"
   }

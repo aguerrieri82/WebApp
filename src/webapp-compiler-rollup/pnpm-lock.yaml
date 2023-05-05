@@ -10,8 +10,8 @@ dependencies:
 
 devDependencies:
   '@types/node':
-    specifier: 18.16.3
-    version: 18.16.3
+    specifier: 20.0.0
+    version: 20.0.0
   build-utils:
     specifier: link:../../scripts/build-utils
     version: link:../../scripts/build-utils
@@ -25,8 +25,8 @@ packages:
     resolution: {integrity: sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg==}
     dev: false
 
-  /@types/node@18.16.3:
-    resolution: {integrity: sha512-OPs5WnnT1xkCBiuQrZA4+YAV4HEJejmHneyraIaxsbev5yCEr6KMwINNFP9wQeFIw8FWcoTqF3vQsa5CDaI+8Q==}
+  /@types/node@20.0.0:
+    resolution: {integrity: sha512-cD2uPTDnQQCVpmRefonO98/PPijuOnnEy5oytWJFPY1N9aJCz2wJ5kSGWO+zJoed2cY2JxQh6yBuUq4vIn61hw==}
     dev: true
 
   /fs-extra@11.1.1:

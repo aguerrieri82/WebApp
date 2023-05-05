@@ -5,10 +5,4 @@
   <ItemGroup>
     <None Include=".vscode\launch.json" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="public\build\" />
-  </ItemGroup>
-  <ItemGroup>
-    <TypeScriptConfiguration Include=".gitignore" />
-  </ItemGroup>
 </Project>

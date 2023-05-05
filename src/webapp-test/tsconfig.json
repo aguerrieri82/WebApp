@@ -8,7 +8,6 @@
     "moduleResolution": "Node",
     "noEmit": true,
     "jsx": "preserve",
-    "outDir": "build",
     "incremental": true
   },
   "include": [
