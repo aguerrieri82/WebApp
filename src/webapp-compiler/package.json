@@ -1,6 +1,6 @@
 {
   "name": "@eusoft/webapp-compiler",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "packageManager": "pnpm@8.4.0",
   "type": "module",
   "main": "src/index.ts",

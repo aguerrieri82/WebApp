@@ -51,12 +51,23 @@ function test() {
         rootModel.msg = "Time is: " + new Date();
     }, 1000);
 
+   const ActionTemplates = {
+
+        "Button": forModel(a => <Template name="Action">
+            <button behavoir="Ripple" className={a.className} on-click={a.executeAsync()}>
+                <Content src={a.content} />
+            </button>
+        </Template>)
+
+    }
+
     const t = <Template name="xxx">
         <div text={m => m.innerObj.name}>
             <button on-click={m => m.addMany()}>Add</button>
         </div>
         <Foreach src={m => m.items}>
             <div text={m => m.name} />
+            {m => m.cazzo}
         </Foreach>
     </Template>;
 

@@ -1,10 +1,10 @@
 import { ReadStream } from "fs";
 import { IWriteable } from "./Abstraction/IWriteable";
 import * as parser from "@babel/parser";
-import traverse, { NodePath } from "@babel/traverse";
+import traverse, { NodePath, Node } from "@babel/traverse";
 import { readAllTextAsync } from "./TextUtils";
 import { BaseCompiler } from "./BaseCompiler";
-import { JSXIdentifier, Node as BabelNode, JSXElement } from "@babel/types";
+import { JSXIdentifier, Node as BabelNode, JSXElement, Expression, JSXEmptyExpression, TemplateElement, Identifier } from "@babel/types";
 import { TemplateContext } from "./TemplateContext";
 import { TemplateWriter } from "./Text/TemplateWriter";
 import { ITemplateAttribute, ITemplateElement, ITemplateText, TemplateNodeType } from "./Abstraction/ITemplateNode";
@@ -36,6 +36,11 @@ export class JsxCompiler extends BaseCompiler {
 
         template.shouldSkip = false;
 
+        let defModel: Identifier;
+
+        if (template.parentPath.isArrowFunctionExpression())
+            defModel =  template.parentPath.node.params[0] as Identifier;
+
         const createAttribute = (name: string, value: string, owner: ITemplateElement) => {
             const result = {
                 name,
@@ -45,6 +50,14 @@ export class JsxCompiler extends BaseCompiler {
             };
             owner.attributes[name] = result;
             return result;
+        }
+
+        const isBinding = (path: NodePath<Expression | JSXEmptyExpression>) => {
+
+            if (path.isArrowFunctionExpression())
+                return path.node.params.length == 1;
+
+            return false;
         }
 
         template.parentPath.traverse({
@@ -67,9 +80,8 @@ export class JsxCompiler extends BaseCompiler {
             enter: path => {
 
                 if (curAttribute && (path.isJSXElement() || path.isJSXFragment())) {
-                    path.shouldStop = true;
-                    const error = path.buildCodeFrameError("Jsx element or fragment in attribute not supported");
-                    throw error;
+
+                    throw path.buildCodeFrameError("Jsx element or fragment in attribute not supported");
                 }
 
                 if (path.isJSXElement()) {
@@ -121,13 +133,17 @@ export class JsxCompiler extends BaseCompiler {
                 }
                 else if (path.isJSXText()) {
 
-                    const item: ITemplateText = {
-                        type: TemplateNodeType.Text,
-                        value: path.node.value
+                    if (this.options.includeWhitespace || path.node.value.trim().length > 0) {
+
+                        const item: ITemplateText = {
+                            type: TemplateNodeType.Text,
+                            value: path.node.value
+                        }
+
+                        if (curElement)
+                            curElement.childNodes.push(item);
                     }
 
-                    if (curElement)
-                        curElement.childNodes.push(item);
                 }
 
                 else if (path.isStringLiteral() && curAttribute) {
@@ -137,8 +153,29 @@ export class JsxCompiler extends BaseCompiler {
        
                 else if (path.isJSXExpressionContainer()) {
 
+                    const exp = path.get("expression");
+
+                    let value = exp.toString();
+
+                    if (defModel && !isBinding(exp)) {
+                        value = defModel.name + " => " + value;
+                    }
+
                     if (curAttribute)
-                        curAttribute.value = path.get("expression").toString();
+                        curAttribute.value = value;
+                    else {
+
+                        const contentElement = {
+                            type: TemplateNodeType.Element,
+                            name: "t:content",
+                            attributes: {},
+                            childNodes: []
+                        } as ITemplateElement;
+
+                        createAttribute("src", value, contentElement);
+
+                        curElement.childNodes.push(contentElement);
+                    }
                     path.shouldSkip = true;
                 }
                 else if (path.isJSXFragment()) {
@@ -146,8 +183,7 @@ export class JsxCompiler extends BaseCompiler {
                 }
                 else if (path.isJSXSpreadAttribute() || path.isJSXSpreadChild()) {
 
-                    const error = path.buildCodeFrameError("Spread operator not supported in tsx/jsx (es. <div {...props}/>");
-                    throw error;
+                    throw path.buildCodeFrameError("Spread operator not supported in tsx/jsx (es. <div {...props}/>");
                 }
             }
         });

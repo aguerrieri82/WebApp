@@ -37,7 +37,7 @@ type WritableKeys<T, TProp> = {
 }[keyof T];
 
 type ElementEvents<TModel> = {
-    [K in keyof HTMLElementEventMap as K extends string ? `on-${K}` : never]?: { (model: TModel, e?: HTMLElementEventMap[K]) : void }
+    [K in keyof HTMLElementEventMap as K extends string ? `on-${K}` : never]?:{ (model: TModel, e?: HTMLElementEventMap[K]) : void } | object | number | boolean | void
 }
 
 type ElementAttributes<TModel, TElement> = {

@@ -526,6 +526,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     class(name: string | BindValue<TModel, string>, condition?: BindValue<TModel, Boolean>): this {
         if (condition && typeof(name) == "string") {
             const nameParts: string[] = name ? name.split(" ") : [];
+            debugger;
             this.bind(condition, value => {
                 if (value)
                     nameParts.forEach(a => this.element.classList.add(a));

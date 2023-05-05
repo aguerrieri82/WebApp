@@ -1,6 +1,7 @@
-import { Bindable, IComponentOptions, ITemplate, IComponent, Component, ITemplateProvider } from "@eusoft/webapp-core";
+import { Bindable, IComponentOptions, ITemplate, IComponent, Component, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
 import { Content, Template } from "@eusoft/webapp-jsx";
 import "./index.scss";
+import { forModel } from "@eusoft/webapp-jsx/src/Runtime";
 
 interface IActionOptions extends IComponentOptions {
 
@@ -9,13 +10,13 @@ interface IActionOptions extends IComponentOptions {
     executeAsync?: () => Promise<any>;
 }
 
-export const ActionTemplates = {
+export const ActionTemplates: TemplateMap<Action> = {
 
-    "Button": (<Template name="Action">
-        <button behavoir="Ripple" className={m => m.className} on-click={m => m.executeAsync()}>
-            <Content src={m => m.content} />
+    "Button": forModel(a => <Template name="Action">
+        <button behavoir="Ripple" className={a.className} on-click={a.executeAsync()}>
+            <Content src={a.content} />
         </button>
-    </Template>) as ITemplate<Action>
+    </Template>)
 
 }
 export class Action extends Component<IActionOptions> {

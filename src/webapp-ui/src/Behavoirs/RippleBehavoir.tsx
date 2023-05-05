@@ -9,6 +9,7 @@ export class RippleBehavoir implements IBehavoir {
     detach(element: HTMLElement, model?: any): void {
 
     }
+
 }
 
 defineBehavoir("Ripple", () => new RippleBehavoir());

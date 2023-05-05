@@ -22,6 +22,4 @@ export class StringBuilder implements IWriteable {
     toString() {
         return this._parts.join("");
     }
-
-    pos
 }

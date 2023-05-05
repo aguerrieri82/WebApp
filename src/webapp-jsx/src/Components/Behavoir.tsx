@@ -1,9 +1,8 @@
-import type { BindValue } from "@eusoft/webapp-core";
 import type { JsxComponentProps, JsxNode, TemplateModel } from "../Abstraction";
 
 export interface IBehavoirProps<TModel extends TemplateModel> extends JsxComponentProps<TModel> {
     name: string;
-    children: undefined;
+    children?: undefined;
 }
 
 export function Behavoir<TModel extends TemplateModel>(props: IBehavoirProps<TModel>): JsxNode<any> {

@@ -101,12 +101,6 @@ export class Component<TOptions extends IComponentOptions = IComponentOptions> i
                 this._bounds.push(bindTwoWay(dst, value));
             }
         }
-
-        /* //TODO compueedValue vs function
-        else if (isComputedValue(value)) {
-
-            this[key] = value();
-        }*/
         else
             this[key] = value;
     }
