@@ -2,7 +2,7 @@
 
 export type CatalogTemplate<TModel> = ITemplate<TModel> | string;
 
-export interface ITemplateProvider {
+export interface ITemplateProvider<TModel = any> {
 
-    template: CatalogTemplate<any>;
+    template: CatalogTemplate<TModel>;
 }

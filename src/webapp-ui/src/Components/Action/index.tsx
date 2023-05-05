@@ -1,11 +1,10 @@
-import { ITemplate, IViewComponent } from "@eusoft/webapp-core";
+import { Bindable, IComponentOptions, ITemplate, IComponent, Component } from "@eusoft/webapp-core";
+import { Content, Template } from "@eusoft/webapp-jsx";
 import "./index.scss";
-import { Behavoir, Content, Template } from "@eusoft/webapp-jsx";
-import { Bindable, IComponentOptions, ViewComponent } from "../ViewComponent";
 
 interface IActionOptions extends IComponentOptions {
 
-    content?: Bindable<string | IViewComponent>;
+    content?: Bindable<string | IComponent>;
 
     executeAsync?: () => Promise<any>;
 }
@@ -19,11 +18,19 @@ export const ActionTemplates = {
     </Template>) as ITemplate<Action>
 
 }
-export class Action extends ViewComponent<IActionOptions> {
+export class Action extends Component<IActionOptions> {
 
     constructor(options?: IActionOptions) {
 
-        super(options);
+        super();
+
+        this.configure({
+            ...options,
+            template: ActionTemplates.Button
+        });
+    }
+
+    protected updateOptions() {
 
         this.bindOptions("content", "executeAsync");
     }
@@ -33,6 +40,4 @@ export class Action extends ViewComponent<IActionOptions> {
     }
 
     content: string | IViewComponent;
-
-    template = ActionTemplates.Button;
 }

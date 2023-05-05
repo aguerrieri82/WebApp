@@ -16,11 +16,6 @@ export default [
                 format: "esm",
                 sourcemap: true,
                 sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
-  
-                    if (relativeSourcePath.startsWith("..\\..\\..\\..\\..\\"))
-                        relativeSourcePath = relativeSourcePath.substring(6);
-                    else if (relativeSourcePath.startsWith("..\\..\\..\\"))
-                        relativeSourcePath = "..\\..\\src\\" + relativeSourcePath.substring(9);
                     const result = path.resolve(path.dirname(sourcemapPath), relativeSourcePath)
                     return result;
                 },

@@ -1,6 +1,12 @@
 
 const TYPE_NAME = Symbol("@typeName");
 
+type Type<T> = new (...args: any[]) => T;
+
+type KeyOfType<TObj, TKey> = {
+    [P in keyof TObj & string]: TObj[P] extends TKey ? P : never
+}[keyof TObj & string];
+
 export function getFunctionName(func: Function): string {
 
     let curName = func.name;
@@ -39,4 +45,35 @@ export function getTypeName(obj: any) : string {
             obj[TYPE_NAME] = name;
     }
     return name;
+}
+
+export function getBaseType(ctr: Type<any>): Type<any>;
+export function getBaseType(obj: object): Type<any>;
+export function getBaseType(objOrFun: object | Type<any>): Type<any> {
+
+    let proto: any;
+
+    if (typeof objOrFun == "function")
+        proto = objOrFun.prototype;
+    else
+        proto = Object.getPrototypeOf(objOrFun);
+
+    return Object.getPrototypeOf(proto).constructor;
+}
+
+export function enumOverrides<TObj extends {}, TFunc extends Function, TKey extends KeyOfType<TObj, TFunc>>(obj: TObj, func: TKey): TFunc[] {
+
+    let curType = Object.getPrototypeOf(obj);
+
+    const result: TFunc[] = [];
+
+    while (curType) {
+
+        if (Object.hasOwn(curType, func))
+            result.push(curType[func]);
+
+        curType = Object.getPrototypeOf(curType);
+    }
+
+    return result;
 }

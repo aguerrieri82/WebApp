@@ -1,4 +1,3 @@
-
 export function isUpperCase(value: string): boolean {
     return value.toUpperCase() === value;
 }

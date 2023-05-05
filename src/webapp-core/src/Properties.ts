@@ -4,8 +4,9 @@ import type { IProperty } from "./Abstraction/IProperty";
 import { getTypeName } from "./ObjectUtils";
 import { ObservableProperty } from "./ObservableProperty";
 
-interface IBound {
-    unbind(): void;
+export function propOf<TObj extends object, TKey extends keyof TObj & string>(obj: TObj, propName: TKey) {
+
+    return getOrCreateProp(obj, propName);
 }
 
 export function getOrCreateProp<TObj extends object, TKey extends keyof TObj & string, TValue extends TObj[TKey]>(obj: TObj, propName: TKey, property?: IObservableProperty<TValue>, defValue?: TValue): IObservableProperty<TValue> {
@@ -45,11 +46,13 @@ export function bindTwoWay(dst: any, src: any, propName?: string) {
 
     dstProp.set(srcProp.get());
 
-    const srcHandler = srcProp.subscribe(v => dstProp.set(v));
+    const srcHandler = srcProp.subscribe((v: any) => dstProp.set(v));
 
-    const dstHandler = dstProp.subscribe(v => srcProp.set(v));
+    const dstHandler = dstProp.subscribe((v: any) => srcProp.set(v));
 
     return {
+        dst,
+        src,
         unbind() {
             srcProp.unsubscribe(srcHandler);
             dstProp.unsubscribe(dstHandler);

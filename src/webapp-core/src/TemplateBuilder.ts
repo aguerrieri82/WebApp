@@ -10,20 +10,18 @@ import { getTypeName } from "./ObjectUtils";
 
 type TemplateInlineMode = "never" | "always" | "auto" | "explicit" | "replace-parent" | "embed-child" | "inherit";
 
-/****************************************/
-
 export const TemplateCatalog: { [key: string]: ITemplate<any> } = {};
 
 export const BehavoirCatalog: { [key: string]: () => IBehavoir } = {}
-
-/****************************************/
 
 export function defineTemplate(name: string, template: ITemplate<any>) {
     TemplateCatalog[name] = template;
     return template;
 }
 
-/****************************************/
+export function defineBehavoir(name: string, factory: () => IBehavoir) {
+    BehavoirCatalog[name] = factory;
+}
 
 export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     extends Binder<TModel>
@@ -369,10 +367,12 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                     childBuilder.updateModel(value);
                 else {
 
-           
                     if (isUpdate)
                         childBuilder.clear();
-
+                    /*
+                    if (isViewComponent(oldValue) && oldValue.unmount)
+                        oldValue.unmount();
+                    */
                     if (value) {
 
                         const template = this.templateFor(value);

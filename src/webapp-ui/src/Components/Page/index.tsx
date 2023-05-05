@@ -1,6 +1,5 @@
-import { ITemplate, IViewComponent } from "@eusoft/webapp-core";
+import { Bindable, IComponentOptions, ITemplate, Component } from "@eusoft/webapp-core";
 import { Content, Template } from "@eusoft/webapp-jsx";
-import { Bindable, IComponentOptions, ViewComponent } from "../ViewComponent";
 import { IPage } from "../../Abstraction/IPage";
 import "./index.scss";
 
@@ -29,14 +28,21 @@ export const PageTemplates = {
     </Template>) as ITemplate<Page>
 
 }
-export class Page extends ViewComponent<IPageOptions> implements IPage {
+export class Page<TOptions extends IPageOptions = IPageOptions> extends Component<TOptions> implements IPage {
 
-    constructor(options?: IPageOptions) {
+    constructor(options?: TOptions) {
 
-        super(options);
+        super();
+
+        this.configure({
+            template: PageTemplates.Simple,
+            ...options
+        });
+    }
+
+    protected updateOptions() {
 
         this.bindOptions("title", "content", "route", "name");
-
     }
 
     async loadAsync()  {
@@ -58,6 +64,4 @@ export class Page extends ViewComponent<IPageOptions> implements IPage {
     route: string;
 
     name: string;
-
-    template = PageTemplates.Simple;
 }

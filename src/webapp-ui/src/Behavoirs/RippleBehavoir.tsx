@@ -1,5 +1,4 @@
-import { BehavoirCatalog, IBehavoir } from "@eusoft/webapp-core";
-
+import { IBehavoir, defineBehavoir } from "@eusoft/webapp-core";
 
 export class RippleBehavoir implements IBehavoir {
 
@@ -12,4 +11,4 @@ export class RippleBehavoir implements IBehavoir {
     }
 }
 
-BehavoirCatalog["Ripple"] = () => new RippleBehavoir();
+defineBehavoir("Ripple", () => new RippleBehavoir());
