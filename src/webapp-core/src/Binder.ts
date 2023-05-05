@@ -5,7 +5,7 @@ import { forEachRev } from "./ArrayUtils";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
 
-const IS_PROXY = Symbol("isProxy")
+const PROXY_TRAGET = Symbol("@proxyTarget")
 
 interface IBindingSubscription<TValue = any> {
 
@@ -36,6 +36,80 @@ interface IPropertyAccess {
     propName: string;
 }
 
+function cleanProxy<TObj>(obj: TObj): TObj{
+
+    if (obj && typeof obj === "object") {
+        const target = (obj as any)[PROXY_TRAGET];
+        if (target)
+            return target as TObj;
+    }
+
+    return obj;
+}
+
+export function createProxy<TObj>(obj: TObj, action: (obj: any, propName: string) => boolean, customProps?: Record<string | symbol, { () : any }>): TObj {
+
+    if (!obj || typeof (obj) !== "object")
+        return obj;
+
+    obj = cleanProxy(obj);
+
+    const innerProxies: Record<PropertyKey, any> = {};
+
+    if (Array.isArray(obj)) {
+
+        if (!isObservableArray(obj))
+            createObservableArray(obj);
+    }
+
+    return new Proxy(obj as Record<PropertyKey, any>, {
+
+        get: (target, prop) => {
+
+            if (prop === PROXY_TRAGET)
+                return target;
+
+            if (customProps && prop in customProps)
+                return createProxy(customProps[prop](), action);
+  
+            const value = target[prop];
+
+            if (typeof prop === "symbol" || typeof value === "function" || (Array.isArray(obj) && prop === "length"))
+                return value;
+
+            if (!(prop in innerProxies)) {
+
+                if (action(obj, prop))
+                    innerProxies[prop] = createProxy(value, action);
+                else
+                    innerProxies[prop] = value;
+            }
+
+            return innerProxies[prop];
+        },
+
+        set: (target, prop, value) => {
+
+            value = cleanProxy(value);
+
+            if (target[prop] === value)
+                return;
+
+            target[prop] = value;
+
+            if (typeof prop === "symbol")
+                return true;
+
+            if (action(obj, prop))
+                innerProxies[prop] = createProxy(value, action);
+            else
+                innerProxies[prop] = value;
+
+            return true;
+        }
+    }) as TObj;
+}
+
 export class Binder<TModel> {
 
     private _bindings: IBinding<TModel>[] = [];
@@ -43,14 +117,22 @@ export class Binder<TModel> {
 
     constructor(model?: TModel) {
 
-        this.updateModel(model);
+        this.updateModel(cleanProxy(model));
+    }
+
+    protected createProxy<TObj>(obj: TObj, action: (obj: any, propName: string) => boolean) {
+
+        return createProxy(obj, action, {
+
+            "@parent": () => this.findParentModel()
+
+        });
     }
 
     protected register(binder: Binder<TModel>) {
 
         this._modelBinders.push(binder);
     }
-
 
     protected getBindValue<TValue>(value: BindValue<TModel, TValue>): TValue {
         if (typeof value == "function")
@@ -60,11 +142,13 @@ export class Binder<TModel> {
 
     protected getBindingValue<TValue>(binding: IBinding<TModel, TValue>, subscribe = true) {
 
-        return binding.value(this.createProxy(this.model, (obj, propName) => {
+        const result = binding.value(this.createProxy(this.model, (obj, propName) => {
             if (subscribe) 
                 this.subscribe(obj, propName, binding);
             return true;
         }));
+
+        return cleanProxy(result);
     }
 
     bind<TValue>(value: BindValue<TModel, TValue>, action: (newValue: TValue, oldValue?: TValue, isUpdate?: boolean, isClear?: boolean) => void) {
@@ -213,65 +297,6 @@ export class Binder<TModel> {
                 return current.model;
             current = current.parent;
         }
-    }
-
-    protected createProxy<TObj>(obj: TObj, action: (obj: any, propName: string) => boolean): TObj {
-
-        if (!obj || typeof (obj) !== "object"/* || (obj as any)[IS_PROXY]*/)
-            return obj;
-
-        const innerProxies: Record<PropertyKey, any> = {};
-
-        if (Array.isArray(obj)) {
-
-            if (!isObservableArray(obj))
-                createObservableArray(obj);
-        }
-
-        return new Proxy(obj as Record<PropertyKey, any>, {
-
-            get: (target, prop) => {
-
-                if (prop === IS_PROXY)
-                    return true; 
-
-                if (prop === "@parent")
-                    return this.createProxy(this.findParentModel(), action);
-
-                if (typeof prop === "symbol" || typeof target[prop] === "function" || (Array.isArray(obj) && prop === "length")) 
-                    return target[prop];
-
-                //TODO investigate cache
-                //if (!(prop in innerProxies)) {
-
-                    if (action(obj, prop))
-                        innerProxies[prop] = this.createProxy(target[prop], action);
-                    else
-                        innerProxies[prop] = target[prop];
-               // }
-
-                return innerProxies[prop];
-            },
-
-            set: (target, prop, value) => {
-
-                if (target[prop] == value)
-                    return;
-
-                if (typeof prop === "symbol") 
-                    return target[prop];
-
-                if (action(obj, prop))
-                    innerProxies[prop] = this.createProxy(target[prop], action);
-                else
-                    innerProxies[prop] = target[prop];
-                
-                target[prop] = value;
-
-                return true;
-            }
-        }) as TObj;
-
     }
 
     protected cleanBindings(cleanValue: boolean) {

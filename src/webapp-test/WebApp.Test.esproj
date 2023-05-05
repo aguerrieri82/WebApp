@@ -8,4 +8,7 @@
   <ItemGroup>
     <Folder Include="public\build\" />
   </ItemGroup>
+  <ItemGroup>
+    <TypeScriptConfiguration Include=".gitignore" />
+  </ItemGroup>
 </Project>

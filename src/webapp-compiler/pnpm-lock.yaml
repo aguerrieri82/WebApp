@@ -28,7 +28,7 @@ devDependencies:
     specifier: 5.59.1
     version: 5.59.1(eslint@8.39.0)(typescript@5.0.4)
   build-utils:
-    specifier: link:../../scripts/build-utils
+    specifier: ../../scripts/build-utils
     version: link:../../scripts/build-utils
   eslint:
     specifier: ^8.39.0

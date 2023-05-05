@@ -35,6 +35,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     protected _childCount = 0;
     protected _updateCount = 0;
     protected _updateNode: Node = null;
+    protected _shadowUpdate = false;
 
     constructor(model: TModel, element: TElement, parent?: TemplateBuilder<any>) {
 
@@ -76,7 +77,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     protected beginUpdate() {
 
-        if (this._updateCount == 0 && this.element.parentNode) {
+        if (this._updateCount == 0 && this.element.parentNode && this._shadowUpdate) {
 
             this._updateNode = document.createTextNode("");
             this.element.parentNode.replaceChild(this._updateNode, this.element)
@@ -88,7 +89,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         this._updateCount--;
 
-        if (this._updateCount == 0 && this._updateNode) {
+        if (this._updateCount == 0 && this._updateNode && this._shadowUpdate) {
 
             this._updateNode.parentNode.replaceChild(this.element, this._updateNode)
             this._updateNode = null;
@@ -368,6 +369,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                     childBuilder.updateModel(value);
                 else {
 
+           
                     if (isUpdate)
                         childBuilder.clear();
 
@@ -379,6 +381,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                             throw new Error("Template '" + value.template + "' not found.");
 
                         childBuilder.updateModel(value);
+
+                        //console.debug("Rebuild", this.model);
+
                         template(childBuilder);
                     }
                 }

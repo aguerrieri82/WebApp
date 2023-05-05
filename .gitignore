@@ -366,3 +366,4 @@ FodyWeavers.xsd
 .rollup.cache/
 dist/
 userdatadir/
+tsconfig.tsbuildinfo

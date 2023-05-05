@@ -35,10 +35,22 @@ export class ViewComponent<TOptions extends IComponentOptions = IComponentOption
         this.updateClass();
     }
 
-    onChanged<TKey extends keyof this & string>(prop: TKey, handler: IPropertyChangedHandler<this[TKey]>) {
+    prop<TKey extends keyof this & string>(prop: TKey) {
 
-        getOrCreateProp(this, prop).subscribe(handler);
+        return getOrCreateProp(this, prop);
+    }
 
+    onChanged<TKey extends keyof this & string>(propName: TKey, handler: IPropertyChangedHandler<this[TKey]>) {
+
+        const prop = this.prop(propName);
+
+        prop.subscribe(handler);
+
+        return {
+            remove() {
+                prop.unsubscribe(handler)
+            }
+        }
     }
 
     protected bindOptions<TKey extends keyof CommonKeys<TOptions, this>>(...keys: TKey[]) {
