@@ -9,8 +9,24 @@ export class JsWriter extends TextWriter {
         return this.indentSub().ensureNewLine().write("}");
     }
 
+    writeImport(module: string, ...symbols: string[]) {
+        return this.write("import {").write(symbols.join(", ")).write("} from ").writeJson(module).write(";");
+    }
+
     writeJson(data: any) {
         return this.write(JSON.stringify(data));
+    }
+
+    writeObject(obj: Record<string, string>) {
+        this.write("{");
+        let i = 0;
+        for (const prop in obj) {
+            if (i > 0)
+                this.write(", ");
+            this.writeJson(prop).write(":").write(obj[prop]);
+            i++;
+        }
+        return this.write("}");
     }
 
     beginInlineFunction(paramName: string, paramType?: string, paramTypeNs?: string) {

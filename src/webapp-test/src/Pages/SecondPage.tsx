@@ -1,7 +1,12 @@
-import { Page } from "@eusoft/webapp-ui";
+import { Action, ActionTemplates, Page } from "@eusoft/webapp-ui";
 import { Template } from "@eusoft/webapp-jsx";
-import { CatalogTemplate } from "@eusoft/webapp-core";
+import { ITemplateProvider } from "@eusoft/webapp-core";
 import { app } from "../";
+import { forModel } from "@eusoft/webapp-jsx/src/Runtime";
+
+interface IContentModel extends ITemplateProvider<IContentModel> {
+    text: string;
+}
 
 class SecondPage extends Page {
 
@@ -14,11 +19,11 @@ class SecondPage extends Page {
             route: "/second",
             content: {
                 text: "cazzo",
-                template: (<Template name="SecondPage">
-                    <input value={m => m.text} type="text" />
-                    <button on-click={m => app.pageHost.pop()}>Back</button>
-                </Template>) as CatalogTemplate<this>
-            } as any
+                template: forModel(m => <Template name="SecondPage">
+                    <input value={m.text} type="text" />
+                    <Action executeAsync={async () => app.pageHost.pop()} content={"Back " + (m.text)}/>
+                </Template>)
+            } as IContentModel
         });
     }
 

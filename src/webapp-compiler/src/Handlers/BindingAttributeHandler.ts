@@ -7,8 +7,7 @@ export class BindingAttributeHandler implements ITemplateHandler {
      
     canHandle(ctx: TemplateContext, node: ITemplateAttribute): boolean {
 
-        return ctx.isAttr(node) && node.name.toLowerCase().startsWith(ctx.htmlNamespace + ":") &&
-            !node.name.toLowerCase().startsWith(ctx.htmlNamespace + ":set-");
+        return ctx.isAttr(node) && node.name.toLowerCase().startsWith(ctx.htmlNamespace + ":");
     }
 
     handle(ctx: TemplateContext, node: ITemplateAttribute): HandleResult {

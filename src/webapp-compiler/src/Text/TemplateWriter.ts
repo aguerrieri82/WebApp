@@ -1,6 +1,5 @@
 import { ITemplateAttribute, ITemplateElement, ITemplateNode, TemplateNodeType } from "../Abstraction/ITemplateNode";
 import { IWriteable } from "../Abstraction/IWriteable";
-import { HtmlCompiler } from "../HtmlCompiler";
 import { JsxCompiler } from "../JsxCompiler";
 import type { TemplateContext } from "../TemplateContext";
 import { JsWriter } from "./JsWriter";
@@ -11,18 +10,13 @@ export class TemplateWriter extends JsWriter {
         this.context = context;
     }
 
-    writeStringAttr(data: any) {
-        if (this.context.compiler instanceof HtmlCompiler)
-            return this.write(JSON.stringify(data));
-        return this.write(data);
-    }
 
     writeIdentifier(name: string ) {
         return this.write(this.context.jsNamespace).write(".").write(name);
     }
 
     writeJsObject(className: string) {
-        return this.writeIdentifier("apply(").write("new ").write(className).write("(), ")
+        return this.writeIdentifier("apply").write("(new ").write(className).write("(), ")
         .beginInlineFunction("obj")
         .beginBlock()
         .endBlock()
@@ -31,12 +25,19 @@ export class TemplateWriter extends JsWriter {
 
     writeBinding(value: string) {
 
-        if (this.context.compiler instanceof JsxCompiler)
+        if (this.context.compiler instanceof JsxCompiler) 
             return this.write(value);
+        
 
         return this.beginInlineFunction(this.context.getParameter("$model"))
             .write(this.context.replaceExpression(value))
             .endInlineFunction();
+    }
+
+    writeString(value: string) {
+        if (this.context.compiler instanceof JsxCompiler)
+            return this.write(value);
+        return this.writeJson(value);
     }
 
     writeExpression(value: string) {

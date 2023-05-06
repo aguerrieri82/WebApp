@@ -30,32 +30,21 @@ export class TemplateElementHandler implements ITemplateHandler {
         if (modelName)
             ctx.setParameter("$" + modelName, `${ctx.currentFrame.builderNameJs}.model`);
 
-        if (ctx.compiler instanceof HtmlCompiler)
-            ctx.writer.ensureNewLine();
-
-        if (ctx.compiler.options.language == CompilerLanguage.Javascript) {
-
-            if (ctx.compiler instanceof HtmlCompiler)
-                ctx.writer.write("export const ").write(templateName).write(" = ");
-
-            ctx.writer.write("__defineTemplate(").writeJson(templateName).write(", ");
+        if (ctx.compiler instanceof HtmlCompiler) {
+            ctx.writer.ensureNewLine()
+                .write("export const ").write(templateName).write(" = ");
         }
-        else
-            ctx.writer.write(ctx.jsNamespace).write(".templateCatalog[").writeJson(templateName).write("] = ");
 
-        ctx.writer.beginInlineFunction(ctx.currentFrame.builderNameJs)
+        ctx.writer.write("__defineTemplate(").writeString(templateName).write(", ")
+            .beginInlineFunction(ctx.currentFrame.builderNameJs)
             .beginBlock().write(" ").write(ctx.currentFrame.builderNameJs).writeLine()
             .writeChildElements(node)
-            .endBlock();
+            .endBlock()
+            .write(")");
 
-        if (ctx.compiler.options.language == CompilerLanguage.Javascript) {
-            ctx.writer.write(")");
-
-            if (ctx.compiler instanceof HtmlCompiler)
-                ctx.writer.write(";");
-        }
-
-
+        if (ctx.compiler instanceof HtmlCompiler)
+            ctx.writer.write(";");
+        
         return HandleResult.SkipChildren;
     }
 

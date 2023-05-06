@@ -23,17 +23,21 @@ export default function (options) {
 
                 compiler.onReplaces = v => replace = v;
 
-                const text = await compiler.compileTextAsync(code);
+                try {
+                    const text = await compiler.compileTextAsync(code);
 
-                for (const rep of replace) {
-                    srcMap.update(rep.src.start, rep.src.end, text.substring(rep.dst.start, rep.dst.end));
-                }
+                    for (const rep of replace) {
+                        srcMap.update(rep.src.start, rep.src.end, text.substring(rep.dst.start, rep.dst.end));
+                    }
 
-                return {
-                    code: text,
-                    map: srcMap.generateMap({ hires: true })
+                    return {
+                        code: text,
+                        map: srcMap.generateMap({ hires: true })
+                    }
                 }
-;
+                catch (ex) {
+                    this.error(ex);
+                }
             }
 
             else if (ext == ".html") { 

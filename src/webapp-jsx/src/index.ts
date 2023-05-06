@@ -4,7 +4,7 @@ export type * from "./Abstraction";
 export * from "./Components";
 
 declare global {
-    var __createElement : typeof createElement
+    var _jsx : typeof createElement
 }
 
-window.__createElement = createElement;
+window._jsx = createElement;

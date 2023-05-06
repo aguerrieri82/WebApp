@@ -1,11 +1,13 @@
 ﻿import type { IBehavoir } from "./IBehavoir";
-import type { BindValue } from "./IBinder";
+import type { BindValue, BoundObject } from "./IBinder";
+import { IComponent } from "./IComponent";
 import type { ITemplate } from "./ITemplate";
 import type { CatalogTemplate, ITemplateProvider } from "./ITemplateProvider";
 
 export type TemplateValueMap<TModel, TObj extends { [key: string]: any }> = { [TKey in keyof TObj]?: BindValue<TModel, TObj[TKey]> }
 
 export type RefNodePosition = "after" | "before" | "inside";
+
 
 export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement> {
 
@@ -17,9 +19,13 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
 
     appendChild(node: Node): this;
 
-    foreach<TItem>(selector: BindValue<TModel, TItem[]>, templateOrName: CatalogTemplate<TItem>): this;
+    foreach<TItem>(selector: BindValue<TModel, TItem[]>, templateOrName?: CatalogTemplate<TItem>): this;
 
     if(condition: BindValue<TModel, boolean>, trueTemplate: ITemplate<TModel>, falseTemplate?: ITemplate<TModel>): this;
+
+    component<TComp extends IComponent, TProps extends TComp>(constructor: { new(props?: TProps): TComp }, props: BoundObject<TProps>): this;
+
+    content<TInnerModel extends ITemplateProvider>(content: Iterable<BindValue<TModel, TInnerModel>>, inline?: boolean): this;
 
     content<TInnerModel extends ITemplateProvider>(content: BindValue<TModel, TInnerModel>, inline?: boolean): this;
 

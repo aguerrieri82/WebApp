@@ -62,6 +62,11 @@ function test() {
     }
 
     const t = <Template name="xxx">
+        <Class name="test" />
+        <Class name={"test 2"} />
+        <Class name={12} />
+        <Class name="test 3" condition={true} />
+        <input type="text"/>
         <div text={m => m.innerObj.name}>
             <button on-click={m => m.addMany()}>Add</button>
         </div>

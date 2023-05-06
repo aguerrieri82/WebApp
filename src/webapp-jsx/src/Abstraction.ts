@@ -12,7 +12,10 @@ export type JsxComponent<TModel extends TemplateModel, TProps extends JsxCompone
 
 export type JsxNode<TModel extends TemplateModel> =
     string |
+    number |
+    null |
     ITemplate<TModel> |
+    ITemplateProvider<TModel> |
     JsxElement<TModel, JsxComponentProps<TModel>> |
     JsxNode<TModel>[] |
     { (model: TModel) : string|number }

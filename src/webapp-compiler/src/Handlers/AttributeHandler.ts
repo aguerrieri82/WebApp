@@ -11,7 +11,7 @@ export class AttributeHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, node: ITemplateAttribute): HandleResult {
 
-        ctx.writer.write(".set(").writeJson(node.name).write(",").writeJson(node.value).write(")");
+        ctx.writer.write(".set(").writeJson(node.name).write(",").writeString(node.value).write(")");
 
         return HandleResult.Handled;
     }

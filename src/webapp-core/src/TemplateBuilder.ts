@@ -1,10 +1,11 @@
 import type { IBehavoir } from "./Abstraction/IBehavoir";
-import type { BindValue } from "./Abstraction/IBinder";
+import type { BindValue, BoundObject } from "./Abstraction/IBinder";
+import { IComponent } from "./Abstraction/IComponent";
 import { isHTMLContainer } from "./Abstraction/IHTMLContainer";
 import { IObservableArrayHandler, isObservableArray } from "./Abstraction/IObservableArray";
-import type { ITemplate } from "./Abstraction/ITemplate";
+import { ITemplate, isTemplate } from "./Abstraction/ITemplate";
 import type { IChildTemplateBuilder, ITemplateBuilder, RefNodePosition, TemplateValueMap } from "./Abstraction/ITemplateBuilder";
-import type { CatalogTemplate, ITemplateProvider } from "./Abstraction/ITemplateProvider";
+import { CatalogTemplate, ITemplateProvider, isTemplateProvider } from "./Abstraction/ITemplateProvider";
 import { Binder } from "./Binder";
 import { getTypeName } from "./ObjectUtils";
 
@@ -198,11 +199,12 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this;
     }
 
-    foreach<TItem>(selector: BindValue<TModel, TItem[]>, templateOrName: CatalogTemplate<TItem>): this {
+
+    foreach<TItem>(selector: BindValue<TModel, TItem[]>, templateOrName?: CatalogTemplate<TItem>): this {
 
         let itemsBuilders: TemplateBuilder<TItem>[] = [];
 
-        const template = this.loadTemplate(templateOrName);
+        let template = templateOrName ? this.loadTemplate(templateOrName) : undefined;
 
         const marker = document.createTextNode("");
 
@@ -264,7 +266,12 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
                 itemBuilder.index = index;
 
-                template(itemBuilder);
+                let itemTemplate = template;
+
+                if (!itemTemplate) 
+                    itemTemplate = this.templateFor(item);
+
+                itemTemplate(itemBuilder);
 
                 this.endTemplate(itemBuilder);
             }
@@ -344,7 +351,22 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return result;
     }
 
-    content<TInnerModel extends ITemplateProvider>(content: BindValue<TModel, TInnerModel>, inline: boolean = false): this {
+    component<TComp extends IComponent, TProps extends TComp>(constructor: { new (props?: TProps): TComp }, props: BoundObject<TProps>) { 
+
+        const instance = new constructor();
+
+        if (props) {
+            for (let prop in props) 
+                this.bind(props[prop], value => instance[prop] = value);
+        }
+
+        return this.content(instance);
+    }
+
+    content<TInnerModel extends ITemplateProvider>(content: BindValue<TModel, TInnerModel> | BindValue<TModel, TInnerModel>[], inline: boolean = false): this {
+
+        if (Array.isArray(content))
+            return this.foreach(content);
 
         const childBuilder = this.beginTemplate<TInnerModel>(undefined, undefined, undefined, this.createMarker(content));
 
@@ -405,8 +427,11 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         if (typeof value == "string" || typeof value == "number")
             return this.loadTemplate<TModel>("Text");
 
-        if (typeof value == "object" && "template" in value)
-            return this.loadTemplate<TModel>((value as any).template);
+        if (isTemplateProvider(value))
+            return this.loadTemplate<TModel>(value.template);
+
+        if (isTemplate(value))
+            return value;
 
         throw new Error("cannot determine template for model");
     }

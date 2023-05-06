@@ -1,7 +1,8 @@
-import { Bindable, IComponentOptions, ITemplate, Component, IComponent, ITemplateProvider } from "@eusoft/webapp-core";
+import { Bindable, IComponentOptions, ITemplate, Component, IComponent, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
 import { Content, Template } from "@eusoft/webapp-jsx";
 import { IPage } from "../../Abstraction/IPage";
 import "./index.scss";
+import { forModel } from "@eusoft/webapp-jsx/src/Runtime";
 
 interface IPageOptions extends IComponentOptions {
 
@@ -14,15 +15,15 @@ interface IPageOptions extends IComponentOptions {
     name: string;
 }
 
-export const PageTemplates = {
+export const PageTemplates: TemplateMap<Page> = {
 
-    "Simple": (<Template name="PageHost">
-        <div className={m => m.className}>
+    "Simple": forModel(m => <Template name="PageHost">
+        <div className={m.className}>
             <header>
-                <h1 text={m => m.title} />
+                <h1 text={m.title} />
             </header>
             <section className="body">
-                <Content src={m => m.content}/>
+                {m.content}
             </section>
         </div>
     </Template>) as ITemplate<Page>

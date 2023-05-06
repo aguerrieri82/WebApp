@@ -24,9 +24,8 @@ export class ComponentElementHandler implements ITemplateHandler {
             if (!attr.startsWith(`${ctx.htmlNamespace}:`))
                 props[attr] = element.attributes[attr].value;
         }
-   
 
-        ctx.writer.write(".").write("component").write("(").write(type).write(",").writeJson(props).write(")");
+        ctx.writer.write(".").write("component").write("(").write(type).write(",").writeObject(props).write(")");
 
         return HandleResult.SkipChildren;
     }

@@ -1,18 +1,19 @@
-import { IComponentOptions, ITemplate, Component } from "@eusoft/webapp-core";
+import { IComponentOptions, ITemplate, Component, TemplateMap } from "@eusoft/webapp-core";
 import { Content, Template } from "@eusoft/webapp-jsx";
 import { IPage } from "../../Abstraction/IPage";
 import "./index.scss";
+import { forModel } from "@eusoft/webapp-jsx/src/Runtime";
 
 interface IPageHostOptions extends IComponentOptions {
 
 }
 
-export const PageHostTemplates = {
+export const PageHostTemplates: TemplateMap<PageHost> = {
 
-    "Single": (<Template name="PageHost">
-        <main className={m => m.className}>
+    "Single": forModel(m => <Template name="PageHost">
+        <main className={m.className}>
             <section className="content">
-                <Content src={m => m.current}/>
+                {m.current}
             </section>
         </main>
     </Template>) as ITemplate<PageHost>

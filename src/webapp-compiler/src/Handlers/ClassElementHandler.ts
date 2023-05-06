@@ -20,7 +20,7 @@ export class ClassElementHandler implements ITemplateHandler {
         }
 
         if (condition)
-            ctx.writer.write(".class(").writeJson(name).write(", ").writeBinding(condition).write(")");
+            ctx.writer.write(".class(").writeString(name).write(", ").writeBinding(condition).write(")");
         else
             ctx.writer.write(".class(").writeBinding(name).write(")");
 

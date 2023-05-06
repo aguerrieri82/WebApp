@@ -12,12 +12,11 @@ interface IActionOptions extends IComponentOptions {
 
 export const ActionTemplates: TemplateMap<Action> = {
 
-    "Button": forModel(a => <Template name="Action">
+    "Button": forModel(a => <Template name="Action"> 
         <button behavoir="Ripple" className={a.className} on-click={a.executeAsync()}>
-            <Content src={a.content} />
+            {a.content}
         </button>
     </Template>)
-
 }
 export class Action extends Component<IActionOptions> {
 
