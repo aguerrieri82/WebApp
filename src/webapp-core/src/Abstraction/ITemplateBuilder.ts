@@ -12,6 +12,7 @@ export type ComponentType<TComp, TProps> =
     { new (props?: TProps): TComp } |
     { (props?: TProps) : ITemplate<TProps> | null | undefined | void }
 
+export type InputValueMode = "focus" | "change" | "keyup" | "pool";
 
 export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement> {
 
@@ -65,7 +66,7 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
 
     focus(value: BindValue<TModel, boolean>): this;
 
-    value(value: BindValue<TModel, string | boolean>): this;
+    value(value: BindValue<TModel, string | boolean>, mode?: InputValueMode, poolTime?: number): this;
 
     style<TKey extends keyof CSSStyleDeclaration>(name: TKey, value: BindValue<TModel, CSSStyleDeclaration[TKey]>): this;
 

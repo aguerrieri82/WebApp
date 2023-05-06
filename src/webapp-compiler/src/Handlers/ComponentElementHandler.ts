@@ -1,5 +1,5 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
-import { ITemplateElement, ITemplateNode } from "../Abstraction/ITemplateNode";
+import { BindMode, ITemplateElement, ITemplateNode } from "../Abstraction/ITemplateNode";
 import { TemplateContext } from "../TemplateContext";
 
 export class ComponentElementHandler implements ITemplateHandler {
@@ -18,14 +18,24 @@ export class ComponentElementHandler implements ITemplateHandler {
             return HandleResult.Error;
         }
 
-        const props : Record<string, any> = {};
+        const props: Record<string, any> = {};
 
-        for (const attr in element.attributes) {
-            if (!attr.startsWith(`${ctx.htmlNamespace}:`))
-                props[attr] = element.attributes[attr].value;
+        const modes: Record<string, string> = {};
+
+        for (const name in element.attributes) {
+            if (!name.startsWith(`${ctx.htmlNamespace}:`)) {
+                const attr = element.attributes[name];
+                props[name] = attr.value;
+                if (attr.bindMode)
+                    modes[name] = JSON.stringify(attr.bindMode);
+            }
+ 
         }
 
-        ctx.writer.write(".").write("component").write("(").write(type).write(",").writeObject(props).write(")");
+        ctx.writer.ensureNewLine().write(".").write("component").write("(")
+            .write(type).write(",")
+            .writeObject(props).write(",")
+            .writeObject(modes).write(")");
 
         return HandleResult.SkipChildren;
     }

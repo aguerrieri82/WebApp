@@ -1,7 +1,6 @@
-import { Bindable, IComponentOptions, ITemplate, IComponent, Component, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
-import { Content, Template } from "@eusoft/webapp-jsx";
+import { Bindable, IComponentOptions, IComponent, Component, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
+import { Template, forModel } from "@eusoft/webapp-jsx";
 import "./index.scss";
-import { forModel } from "@eusoft/webapp-jsx/src/Runtime";
 
 interface IActionOptions extends IComponentOptions {
 

@@ -1,8 +1,7 @@
 import { IComponentOptions, ITemplate, Component, TemplateMap } from "@eusoft/webapp-core";
-import { Content, Template } from "@eusoft/webapp-jsx";
+import { forModel, Template } from "@eusoft/webapp-jsx";
 import { IPage } from "../../Abstraction/IPage";
 import "./index.scss";
-import { forModel } from "@eusoft/webapp-jsx/src/Runtime";
 
 interface IPageHostOptions extends IComponentOptions {
 

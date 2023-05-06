@@ -1,9 +1,7 @@
 import { Action, Page } from "@eusoft/webapp-ui";
-import { Template } from "@eusoft/webapp-jsx";
+import { Template, forModel, twoWay } from "@eusoft/webapp-jsx";
 import { ITemplateProvider } from "@eusoft/webapp-core";
 import { app } from "../";
-import { forModel } from "@eusoft/webapp-jsx/src/Runtime";
-
 interface IContentModel extends ITemplateProvider<IContentModel> {
     text: string;
     goBack: () => Promise<any>;
@@ -16,6 +14,11 @@ function Log(props: { message: string }) {
 function Bold(props: { text: string }) {
 
     return <strong text={props.text} />;
+}
+
+function Text(props: { text: string }) {
+
+    return <input value={props.text} value-pool={500} type="text" />
 }
 
 class SecondPage extends Page {
@@ -36,8 +39,8 @@ class SecondPage extends Page {
                 },
                 template: forModel(m => <Template name="SecondPage">
                     <div>
-                        <input value={m.text} type="text" />
-                        <input value={this.text} type="text" />
+                        <Text text={twoWay(m.text)} />
+                        <Text text={twoWay(this.text)} />
                         <Log message={m.text} />
                         <Action executeAsync={() => m.goBack()} content={"Back " + (m.text)} />
                         <Action executeAsync={() => this.showText()} content="Show text" />

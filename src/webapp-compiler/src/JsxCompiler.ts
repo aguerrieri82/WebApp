@@ -4,12 +4,11 @@ import * as parser from "@babel/parser";
 import traverse, { NodePath, Visitor } from "@babel/traverse";
 import { readAllTextAsync } from "./TextUtils";
 import { BaseCompiler } from "./BaseCompiler";
-import { JSXIdentifier, JSXElement, Expression, JSXEmptyExpression, Identifier } from "@babel/types";
-import { types } from "@babel/core";
+import { JSXIdentifier, JSXElement, Expression, JSXEmptyExpression, Identifier, ImportDeclaration } from "@babel/types";
 import { TemplateContext } from "./TemplateContext";
 import { TemplateWriter } from "./Text/TemplateWriter";
-import { ITemplateAttribute, ITemplateElement, ITemplateText, TemplateNodeType } from "./Abstraction/ITemplateNode";
-import { FuncAttributes, TemplateElements } from "./Consts";
+import { BindMode, ITemplateAttribute, ITemplateElement, ITemplateText, TemplateNodeType } from "./Abstraction/ITemplateNode";
+import {  TemplateAttributes, TemplateElements } from "./Consts";
 
 const trav = (traverse as any).default as typeof traverse;
 
@@ -38,6 +37,7 @@ function traverseFromRoot<TNode>(path: NodePath<TNode>, visitor: Visitor & Recor
     if (expVisitor.exit?.length > 0)
         expVisitor.exit[0].call(state, path, state);
 }
+
 
 export class JsxCompiler extends BaseCompiler {
 
@@ -104,8 +104,27 @@ export class JsxCompiler extends BaseCompiler {
 
             let expModel: Identifier;
 
+            let result: BindMode;
+
             if (exp.isArrowFunctionExpression())
                 expModel = exp.node.params[0] as Identifier;
+
+            if (exp.isCallExpression()) {
+                const callee = exp.get("callee");
+                if (callee.isIdentifier()) {
+                    const resolve = exp.scope.getBinding(callee.node.name);
+                    if (resolve && resolve.kind == "module") {
+                        const parentModule = (resolve.path.parent as ImportDeclaration).source.value;
+                        if (parentModule == "@eusoft/webapp-jsx") {
+                            if (callee.node.name == "twoWay") {
+                                exp.replaceWith(exp.node.arguments[0]);
+                                result = "two-ways";
+                            }
+                        }
+                    }
+                }
+        
+            }
 
             traverseFromRoot(exp, {
                 enter: path => {
@@ -127,6 +146,8 @@ export class JsxCompiler extends BaseCompiler {
                     }
                 }
             });
+
+            return result;
         }
          
         traverseFromRoot(template.parentPath, {
@@ -156,7 +177,7 @@ export class JsxCompiler extends BaseCompiler {
 
                     const elName = path.get("name").toString();
 
-                    const bindig = path.scope.getBinding(elName);
+                    const binding = path.scope.getBinding(elName);
 
                     const isTempEl = TemplateElements.indexOf(elName) != -1;
 
@@ -167,7 +188,7 @@ export class JsxCompiler extends BaseCompiler {
                         childNodes: []
                     }
 
-                    if (bindig && !isTempEl) {
+                    if (binding && !isTempEl) {
                         item.name = "t:component";
                         createAttribute("t:type", elName, item);
                     }
@@ -187,8 +208,7 @@ export class JsxCompiler extends BaseCompiler {
 
                         if (name.startsWith("on-") ||
                             name.startsWith("style-") ||
-                            name == "behavoir" ||
-                            FuncAttributes.indexOf(name) != -1)
+                            TemplateAttributes.indexOf(name) != -1)
                             name = "t:" + name;
 
                         else if (name == "className")
@@ -222,15 +242,18 @@ export class JsxCompiler extends BaseCompiler {
 
                     const exp = path.get("expression");
 
-                    transformExpression(exp);
+                    const bindMode = transformExpression(exp);
 
                     let value = exp.toString();
 
-                    if (!isBinding(exp)) 
+                    if (!isBinding(exp) && curAttribute?.name != "t:value-pool") 
                         value = defModel.name + " => " + value;
                     
-                    if (curAttribute)
+                    if (curAttribute) {
+
                         curAttribute.value = value;
+                        curAttribute.bindMode = bindMode;
+                    }
                     else {
 
                         const contentElement = {

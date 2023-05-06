@@ -1,13 +1,14 @@
 import type { IBehavoir } from "./Abstraction/IBehavoir";
-import type { BindValue, BoundObject } from "./Abstraction/IBinder";
+import type { BindValue, BoundObject, BoundObjectModes } from "./Abstraction/IBinder";
 import { IComponent } from "./Abstraction/IComponent";
 import { isHTMLContainer } from "./Abstraction/IHTMLContainer";
 import { IObservableArrayHandler, isObservableArray } from "./Abstraction/IObservableArray";
 import { ITemplate, isTemplate } from "./Abstraction/ITemplate";
-import type { ComponentType, IChildTemplateBuilder, ITemplateBuilder, RefNodePosition, TemplateValueMap } from "./Abstraction/ITemplateBuilder";
+import type { ComponentType, IChildTemplateBuilder, ITemplateBuilder, InputValueMode, RefNodePosition, TemplateValueMap } from "./Abstraction/ITemplateBuilder";
 import { CatalogTemplate, ITemplateProvider, isTemplateProvider } from "./Abstraction/ITemplateProvider";
 import { Binder } from "./Binder";
 import { getTypeName, isClass } from "./ObjectUtils";
+import { propOf } from "./Properties";
 
 type TemplateInlineMode = "never" | "always" | "auto" | "explicit" | "replace-parent" | "embed-child" | "inherit";
 
@@ -35,11 +36,12 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     protected _updateCount = 0;
     protected _updateNode: Node = null;
     protected _shadowUpdate = false;
+    protected _isRemoved = false;
 
     constructor(model: TModel, element: TElement, parent?: TemplateBuilder<any>) {
 
         super(model);
-         
+
         this.parent = parent;
 
         this.element = element;
@@ -173,6 +175,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             this._endElement = null;
             this._startElement = null;
             this._lastElement = null;
+            this._isRemoved = true;
         }
         else
             this._lastElement = this._startElement;
@@ -180,6 +183,16 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         this.cleanBindings(true);
 
         return this;
+    }
+
+    isRemoved() {
+        let curBuilder = this as TemplateBuilder<any>;
+        while (curBuilder) {
+            if (curBuilder._isRemoved)
+                return true;
+            curBuilder = curBuilder.parent;
+        }
+        return false;
     }
 
     appendChild(node: Node): this {
@@ -268,7 +281,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
                 let itemTemplate = template;
 
-                if (!itemTemplate) 
+                if (!itemTemplate)
                     itemTemplate = this.templateFor(item);
 
                 itemTemplate(itemBuilder);
@@ -351,42 +364,50 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return result;
     }
 
-    component<TComp extends IComponent, TProps extends TComp>(constructor: ComponentType<TComp, TProps>, props: BoundObject<TProps>): this { 
+    component<TComp extends IComponent, TProps extends TComp>(constructor: ComponentType<TComp, TProps>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): this {
 
-        if (isClass(constructor)) {
+        let model: TProps;
+        let callOnChange = false;
 
-            const instance = new constructor();
+        if (isClass(constructor))
+            model = new constructor() as TProps;
+        else
+            model = {} as TProps
 
-            if (props) {
-                for (let prop in props)
-                    this.bind(props[prop], value => instance[prop] = value);
-            }
+        if (props) {
 
-            return this.content(instance);
-        }
+            props = props as any;
 
-        else {
-            const model = {} as TProps;
-            let callOnChange = false;
-            if (props) {
-                for (let prop in props) {
-                    this.bind(props[prop], value => {
-                        model[prop] = value;
-                        if (callOnChange)
-                            constructor(model);
-                    });
+            for (const prop in props) {
+
+                this.bind((props as any)[prop], value => {
+                    (model as any)[prop] = value;
+                    if (callOnChange && !isClass(constructor))
+                        constructor(model);
+                });
+
+                const mode = modes ? (modes as any)[prop] : undefined;
+                if (mode == "two-ways") {
+                    const bindProp = this.getBindingProperty((props as any)[prop]);
+                    if (bindProp) {
+                        const modelProp = propOf(model, prop as any);
+                        modelProp.subscribe(v => bindProp.set(v));
+                    }
                 }
             }
-
-            const result = constructor(model);
-
-            if (isTemplate(result))
-                return this.template(result, model);
-
-            callOnChange = true;
-
-            return this;
         }
+
+        if (isClass(constructor))
+            return this.content(model);
+
+        const result = constructor(model);
+
+        if (isTemplate(result))
+            return this.template(result, model);
+
+        callOnChange = true;
+
+        return this;
 
     }
 
@@ -576,7 +597,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     class(name: string, condition: BindValue<TModel, Boolean>): this;
 
     class(name: string | BindValue<TModel, string>, condition?: BindValue<TModel, Boolean>): this {
-        if (condition && typeof(name) == "string") {
+        if (condition && typeof (name) == "string") {
             const nameParts: string[] = name ? name.split(" ") : [];
             debugger;
             this.bind(condition, value => {
@@ -649,33 +670,64 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this;
     }
 
-    value(value: BindValue<TModel, string | boolean>): this {
+    value(value: BindValue<TModel, string | boolean>, mode: InputValueMode = "change", poolTime: number = 500): this {
 
         const element = <HTMLInputElement><any>this.element;
 
         const valueProp = this.getBindingProperty(value);
 
         if (valueProp) {
-            if (element.tagName == "INPUT" || element.tagName == "TEXTAREA") {
 
-                if (element.type == "checkbox" || element.type == "radio")
-                    element.addEventListener("change", ev => {
-                        valueProp.set(element.checked);
-                    });
-                else {
-                    element.addEventListener("keyup", ev => {
-                        valueProp.set(element.value);
-                    });
+            if (mode == "change" || mode == "keyup") {
+
+                if (element.tagName == "INPUT" || element.tagName == "TEXTAREA") {
+
+                    if (element.type == "checkbox" || element.type == "radio")
+                        element.addEventListener("change", ev => {
+                            valueProp.set(element.checked);
+                        });
+                    else {
+                        if (mode == "change") {
+                            element.addEventListener("change", ev => {
+                                valueProp.set(element.value);
+                            });
+                        }
+                        else {
+                            element.addEventListener("keyup", ev => {
+                                valueProp.set(element.value);
+                            });
+                        }
+                    }
+                }
+                else if (element.tagName == "SELECT") {
                     element.addEventListener("change", ev => {
                         valueProp.set(element.value);
                     });
                 }
             }
-            else if (element.tagName == "SELECT") {
-                element.addEventListener("change", ev => {
+            else if (mode == "focus") {
+                element.addEventListener("blur", ev => {
                     valueProp.set(element.value);
                 });
             }
+            else {
+                let lastValue: string;
+
+                const check = () => {
+                    if (!element.isConnected || this.isRemoved())
+                        return;
+
+                    if (lastValue !== undefined && lastValue != element.value)
+                        valueProp.set(element.value);
+
+                    lastValue = element.value;
+
+                    setTimeout(check, poolTime);
+                };
+
+                setTimeout(check, poolTime);
+            }
+
 
         }
         if (element.tagName == "INPUT" || element.tagName == "TEXTAREA" || element.tagName == "SELECT") {
@@ -751,7 +803,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this.createMarker(getTypeName(obj), baseName);
     }
 
-
     namespace: string = null;
 
     element: TElement = null;
@@ -793,9 +844,9 @@ class ChildTemplateBuilder<TModel, TElement extends HTMLElement, TParent extends
 
 /****************************************/
 
-export function mount<TModel>(root: HTMLElement, template: CatalogTemplate<TModel>, model: TModel) : void;
+export function mount<TModel>(root: HTMLElement, template: CatalogTemplate<TModel>, model: TModel): void;
 export function mount(root: HTMLElement, component: ITemplateProvider): void;
-export function mount<TModel>(root: HTMLElement, templateOrProvider: CatalogTemplate<TModel> | ITemplateProvider, model?: TModel) : void {
+export function mount<TModel>(root: HTMLElement, templateOrProvider: CatalogTemplate<TModel> | ITemplateProvider, model?: TModel): void {
 
     root.innerHTML = "";
 

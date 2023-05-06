@@ -1,4 +1,4 @@
-import type { BindValue, ITemplateProvider, ITemplateBuilder, ITemplate } from "@eusoft/webapp-core";
+import type { BindValue, ITemplateProvider, ITemplateBuilder, ITemplate, InputValueMode } from "@eusoft/webapp-core";
 
 export interface ITemplateContext<TModel> {
     builder: ITemplateBuilder<TModel>;
@@ -63,6 +63,13 @@ type ElementProps<TModel extends TemplateModel, TElement> =
         behavoir?: string | string[];
     }
 
+type InputProps<TModel extends TemplateModel, TElement> =
+    ElementProps<TModel, TElement> &
+    {
+        "value"?: BindValue<TModel, string>;
+        "value-mode"?: InputValueMode;
+        "value-pool"?: number;
+    }
 
 declare global {
     namespace JSX {
@@ -77,10 +84,18 @@ declare global {
 
         type Element = JsxNode<any>;
 
+        type IntrinsicAttributes = {
+
+        }
 
         type IntrinsicElements = {
 
             [P in keyof HTMLElementTagNameMap]: ElementProps<any, HTMLElementTagNameMap[P]>
+        } & {
+
+            ["input"]: InputProps<any, HTMLElementTagNameMap["input"]>
+            ["select"]: InputProps<any, HTMLElementTagNameMap["select"]>
+            ["textarea"]: InputProps<any, HTMLElementTagNameMap["textarea"]>
         }
     }
 }

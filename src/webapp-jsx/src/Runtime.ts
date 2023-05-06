@@ -1,4 +1,4 @@
-import { IComponent, ITemplate, getFunctionType } from "@eusoft/webapp-core";
+import { IComponent, getFunctionType } from "@eusoft/webapp-core";
 import { ITemplateContext, JsxComponentProps, JsxElement, JsxElementType, JsxNode, TemplateModel } from "./Abstraction";
 import { Template } from "./Components/Template";
 export function isJsxElement(obj: any): obj is JsxElement<any, JsxComponentProps<any>> {
@@ -124,7 +124,3 @@ export function createElement<
     }
 }
 
-export function forModel<TModel>(action: { (t: TModel): JSX.Element }): ITemplate<TModel> {
-    const result = action(null);
-    return result as ITemplate<TModel>;
-}

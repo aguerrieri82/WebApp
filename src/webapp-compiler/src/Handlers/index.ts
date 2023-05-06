@@ -17,3 +17,4 @@ export * from "./TextNodeHandler";
 export * from "./ComponentElementHandler";
 export * from "./BindingAttributeHandler";
 export * from "./TextElementHandler"; 
+export * from "./ValueAttributeHandler";

@@ -27,6 +27,13 @@ export class TemplateContext {
         return true;
     }
 
+    attrValue(element: ITemplateElement, name: string, isTemp = true) {
+        if (isTemp)
+            name = `${this.htmlNamespace}:${name}`;
+        if (name in element.attributes)
+            return element.attributes[name].value;
+    }
+
     isAttr(node: ITemplateNode, elementName?: string) : node is ITemplateAttribute {
 
         if (node.type != TemplateNodeType.Attribute)
