@@ -15,7 +15,7 @@ function Log(props: { message: string }) {
 }
 function Bold(props: { text: string }) {
 
-    return forModel<typeof props>(m => <strong text={m.text} />);
+    return <strong text={props.text} />;
 }
 
 class SecondPage extends Page {

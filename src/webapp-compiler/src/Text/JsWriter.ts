@@ -10,7 +10,7 @@ export class JsWriter extends TextWriter {
     }
 
     writeImport(module: string, ...symbols: string[]) {
-        return this.write("import {").write(symbols.join(", ")).write("} from ").writeJson(module).write(";");
+        return this.write("import { ").write(symbols.join(", ")).write(" } from ").writeJson(module).write(";\n");
     }
 
     writeJson(data: any) {

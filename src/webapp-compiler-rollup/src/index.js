@@ -27,7 +27,10 @@ export default function (options) {
                     const text = await compiler.compileTextAsync(code);
 
                     for (const rep of replace) {
-                        srcMap.update(rep.src.start, rep.src.end, text.substring(rep.dst.start, rep.dst.end));
+                        if (rep.src.end == rep.src.start)
+                            srcMap.prependLeft(rep.src.start, text.substring(rep.dst.start, rep.dst.end));
+                        else
+                            srcMap.update(rep.src.start, rep.src.end, text.substring(rep.dst.start, rep.dst.end));
                     }
 
                     return {

@@ -15,13 +15,15 @@ function Log(props: { message: string }) {
 }
 function Bold(props: { text: string }) {
 
-    return forModel<typeof props>(m => <strong text={m.text} />);
+    return <strong text={props.text} />;
 }
 
 class SecondPage extends Page {
 
     constructor() {
         super();
+
+        this.text = "class text";
 
         this.configure({
             name: "second",
@@ -35,9 +37,10 @@ class SecondPage extends Page {
                 template: forModel(m => <Template name="SecondPage">
                     <div>
                         <input value={m.text} type="text" />
-                        <input value={this.text[2][m.call.my[2]].test(this.yyy)} type="text" />
+                        <input value={this.text} type="text" />
                         <Log message={m.text} />
-                        <Action executeAsync={m.goBack} content={"Back " + (m.text)} />
+                        <Action executeAsync={() => m.goBack()} content={"Back " + (m.text)} />
+                        <Action executeAsync={() => this.showText()} content="Show text" />
                     </div>
                     <Bold text={m.text} />
                 </Template>)
@@ -45,13 +48,16 @@ class SecondPage extends Page {
         });
     }
 
+    showText() {
+        alert(this.text);
+    }
 
     protected updateOptions() {
 
         this.bindOptions();
     }
 
-    text: string = "class text";
+    text: string;
 }
 
 export const secondPage = new SecondPage();

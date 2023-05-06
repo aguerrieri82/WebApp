@@ -1,10 +1,11 @@
 import { ReadStream } from "fs";
 import { IWriteable } from "./Abstraction/IWriteable";
 import * as parser from "@babel/parser";
-import traverse, { NodePath, Node, Visitor } from "@babel/traverse";
+import traverse, { NodePath, Visitor } from "@babel/traverse";
 import { readAllTextAsync } from "./TextUtils";
 import { BaseCompiler } from "./BaseCompiler";
-import { JSXIdentifier, Node as BabelNode, JSXElement, Expression, JSXEmptyExpression, TemplateElement, Identifier } from "@babel/types";
+import { JSXIdentifier, JSXElement, Expression, JSXEmptyExpression, Identifier } from "@babel/types";
+import { types } from "@babel/core";
 import { TemplateContext } from "./TemplateContext";
 import { TemplateWriter } from "./Text/TemplateWriter";
 import { ITemplateAttribute, ITemplateElement, ITemplateText, TemplateNodeType } from "./Abstraction/ITemplateNode";
@@ -68,7 +69,17 @@ export class JsxCompiler extends BaseCompiler {
         }
 
         if (template.parentPath.isArrowFunctionExpression())
-            defModel =  template.parentPath.node.params[0] as Identifier;
+            defModel = template.parentPath.node.params[0] as Identifier;
+        else {
+            const func = template.getFunctionParent();
+            const params = func.get("params");
+            if (params.length == 1 && params[0].isIdentifier()) {
+
+                defModel = params[0].node as Identifier;
+            }
+           
+        }
+           
 
         const createAttribute = (name: string, value: string, owner: ITemplateElement) => {
             const result = {
@@ -102,11 +113,13 @@ export class JsxCompiler extends BaseCompiler {
                         const obj = path.get("object");
 
                         if (obj.isIdentifier() || obj.isThisExpression()) {
+
                             const bindig = path.scope.getBinding(obj.toString());
+
                             if (bindig && bindig?.identifier == expModel || bindig?.identifier == defModel)
                                 return;
                             const curModel = expModel ?? defModel;
-                            obj.replaceWithSourceString(`${curModel.name}[Symbol.for("@use")](${obj})`);
+                            obj.replaceWithSourceString(`${curModel.name}[USE](${obj})`);
 
                             path.shouldSkip = true;
                         }
@@ -213,10 +226,9 @@ export class JsxCompiler extends BaseCompiler {
 
                     let value = exp.toString();
 
-                    if (defModel && !isBinding(exp)) {
+                    if (!isBinding(exp)) 
                         value = defModel.name + " => " + value;
-                    }
-
+                    
                     if (curAttribute)
                         curAttribute.value = value;
                     else {
@@ -279,6 +291,19 @@ export class JsxCompiler extends BaseCompiler {
         let curPos = 0;
 
         const replaces: ITextReplacement[] = [];
+
+        ctx.writer.writeImport("@eusoft/webapp-core", "USE");
+
+        replaces.push({
+            src: {
+                start: 0,
+                end: 0
+            },
+            dst: {
+                start: 0,
+                end: ctx.writer.length
+            }
+        });
 
         for (const temp of templates) {
 
