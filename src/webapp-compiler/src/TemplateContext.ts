@@ -151,7 +151,7 @@ export class TemplateContext {
         else {
             newEntry.parameters = {};
             newEntry.parameters["$model"] = "m";
-            newEntry.parameters["$parent"] = "m['@parent']";
+            newEntry.parameters["$parent"] = "m[PARENT]";
             newEntry.index = 0;
             newEntry.builderNameJs = "t";
         }

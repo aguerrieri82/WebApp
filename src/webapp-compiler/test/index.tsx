@@ -1,9 +1,10 @@
 import { Action, Page } from "@eusoft/webapp-ui";
-import { Template, forModel, twoWay } from "@eusoft/webapp-jsx";
+import { Foreach, Template, forModel, twoWay } from "@eusoft/webapp-jsx";
 import { ITemplateProvider } from "@eusoft/webapp-core";
 import { app } from "../";
 interface IContentModel extends ITemplateProvider<IContentModel> {
     text: string;
+    items: { name: string }[];
     goBack: () => Promise<any>;
 }
 
@@ -34,6 +35,10 @@ class SecondPage extends Page {
             route: "/second",
             content: {
                 text: "cazzo",
+                items: [
+                    { name: "Luca" },
+                    { name: "Mario" },
+                ],
                 goBack() {
                     app.pageHost.pop();
                 },
@@ -43,7 +48,11 @@ class SecondPage extends Page {
                         <Text text={twoWay(this.text)} />
                         <Log message={m.text} />
                         <Action executeAsync={() => m.goBack()} content={"Back " + (m.text)} />
+                        <Foreach src={m.items}>
+                            {x => <span>{x.name}</span>}
+                        </Foreach>
                         <Action executeAsync={() => this.showText()} content="Show text" />
+   
                     </div>
                     <Bold text={m.text} />
                 </Template>)

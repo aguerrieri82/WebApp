@@ -78,6 +78,8 @@ export class HtmlCompiler extends BaseCompiler {
             ctx.htmlNamespace = "t";
             ctx.writer = new TemplateWriter(output, ctx);
 
+            ctx.writer.writeImport("@eusoft/webapp-core", "USE", "PARENT");
+
             this.compileElements(ctx, templates);
 
             if (ctx.templates.length == 1)

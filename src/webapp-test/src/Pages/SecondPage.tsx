@@ -1,12 +1,13 @@
 import { Action, Page } from "@eusoft/webapp-ui";
-import { Template, forModel, twoWay } from "@eusoft/webapp-jsx";
+import { Foreach, Template, forModel, twoWay } from "@eusoft/webapp-jsx";
 import { ITemplateProvider } from "@eusoft/webapp-core";
 import { app } from "../";
 interface IContentModel extends ITemplateProvider<IContentModel> {
     text: string;
-    goBack: ()=> Promise<any>;
-} 
- 
+    items: { name: string }[];
+    goBack: () => Promise<any>;
+}
+
 function Log(props: { message: string }) {
 
     console.log(props.message);
@@ -15,7 +16,7 @@ function Bold(props: { text: string }) {
 
     return <strong text={props.text} />;
 }
- 
+
 function Text(props: { text: string }) {
 
     return <input value={props.text} value-pool={500} type="text" />
@@ -34,18 +35,25 @@ class SecondPage extends Page {
             route: "/second",
             content: {
                 text: "cazzo",
+                items: [
+                    { name: "Luca" },
+                    { name: "Mario" },
+                ],
                 goBack() {
                     app.pageHost.pop();
                 },
-                    template: forModel(m => <Template name="SecondPage">
+                template: forModel(m => <Template name="SecondPage">
                     <div>
                         <Text text={twoWay(m.text)} />
                         <Text text={twoWay(this.text)} />
-                        <Log message={m.text}/>
+                        <Log message={m.text} />
                         <Action executeAsync={() => m.goBack()} content={"Back " + (m.text)} />
                         <Action executeAsync={() => this.showText()} content="Show text" />
+                        <Foreach src={m.items}>
+                            {i => <span>{i.name}</span>}
+                        </Foreach>
                     </div>
-                    <Bold text={m.text }/>
+                    <Bold text={m.text} />
                 </Template>)
             } as IContentModel
         });

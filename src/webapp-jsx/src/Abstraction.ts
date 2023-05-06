@@ -4,11 +4,14 @@ export interface ITemplateContext<TModel> {
     builder: ITemplateBuilder<TModel>;
 }
 
+
 export type TemplateModel = object | string | number | boolean;
 
 export type JsxElementType<TModel extends TemplateModel, TProps extends JsxComponentProps<TModel>> = keyof HTMLElementTagNameMap | JsxComponent<TModel, TProps> ;
 
 export type JsxComponent<TModel extends TemplateModel, TProps extends JsxComponentProps<TModel>> = (props: TProps) => (JsxElement<TModel, TProps> | null);
+
+export type ModelBuilder<TModel extends TemplateModel> = { (t: TModel): JSX.Element };
 
 export type JsxNode<TModel extends TemplateModel> =
     string |
@@ -19,7 +22,7 @@ export type JsxNode<TModel extends TemplateModel> =
     ITemplateProvider<TModel> |
     JsxElement<TModel, JsxComponentProps<TModel>> |
     JsxNode<TModel>[] |
-    { (model: TModel) : string|number }
+    ModelBuilder<TModel> 
 
 export type JsxComponentProps<TModel extends TemplateModel, TChildrenModel extends TemplateModel = TModel, TChildren extends JsxNode<TChildrenModel> = JsxNode<TChildrenModel>> = {
     children?: TChildren;

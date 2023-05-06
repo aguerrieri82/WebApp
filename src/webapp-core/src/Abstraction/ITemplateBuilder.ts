@@ -79,6 +79,8 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
     attribs(value: { [key: string]: BindValue<TModel, string | number | boolean> }): this;
 
     debugger(): this;
+
+    readonly model: TModel;
 }
 
 export interface IChildTemplateBuilder<TModel, TElement extends HTMLElement, TParent extends ITemplateBuilder<TModel>> extends ITemplateBuilder<TModel, TElement> {

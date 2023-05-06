@@ -4,7 +4,7 @@ import * as parser from "@babel/parser";
 import traverse, { NodePath, Visitor } from "@babel/traverse";
 import { readAllTextAsync } from "./TextUtils";
 import { BaseCompiler } from "./BaseCompiler";
-import { JSXIdentifier, JSXElement, Expression, JSXEmptyExpression, Identifier, ImportDeclaration } from "@babel/types";
+import { JSXIdentifier, JSXElement, Expression, JSXEmptyExpression, Identifier, ImportDeclaration, JSXFragment } from "@babel/types";
 import { TemplateContext } from "./TemplateContext";
 import { TemplateWriter } from "./Text/TemplateWriter";
 import { BindMode, ITemplateAttribute, ITemplateElement, ITemplateText, TemplateNodeType } from "./Abstraction/ITemplateNode";
@@ -41,19 +41,24 @@ function traverseFromRoot<TNode>(path: NodePath<TNode>, visitor: Visitor & Recor
 
 export class JsxCompiler extends BaseCompiler {
 
-    protected parse(template: NodePath<JSXElement>) : ITemplateElement {
+    protected parse(template: NodePath<JSXElement|JSXFragment>) : ITemplateElement {
+
+        interface IStack {
+            element: ITemplateElement;
+            defModel: Identifier;
+        };
+
+        const stack: IStack[] = [];
 
         let curElement: ITemplateElement;
 
         let curAttribute: ITemplateAttribute;
 
-        const stack: ITemplateElement[] = [];
-
         let result: ITemplateElement;
 
-        template.shouldSkip = false;
-
         let defModel: Identifier;
+
+        template.shouldSkip = false;
 
         const rootName = template.get("openingElement").get("name").toString();
 
@@ -77,10 +82,8 @@ export class JsxCompiler extends BaseCompiler {
 
                 defModel = params[0].node as Identifier;
             }
-           
         }
            
-
         const createAttribute = (name: string, value: string, owner: ITemplateElement) => {
             const result = {
                 name,
@@ -123,7 +126,6 @@ export class JsxCompiler extends BaseCompiler {
                         }
                     }
                 }
-        
             }
 
             traverseFromRoot(exp, {
@@ -162,7 +164,9 @@ export class JsxCompiler extends BaseCompiler {
                     if (curElement.name == "t:template")
                         result = curElement;
 
-                    curElement = stack.pop(); 
+                    const pop = stack.pop();
+                    curElement = pop.element;
+                    defModel = pop.defModel;
                 }
             },
 
@@ -196,7 +200,10 @@ export class JsxCompiler extends BaseCompiler {
                     if (curElement)
                         curElement.childNodes.push(item);
 
-                    stack.push(curElement);
+                    stack.push({
+                        element: curElement,
+                        defModel
+                    });
 
                     curElement = item;
                 }
@@ -242,13 +249,22 @@ export class JsxCompiler extends BaseCompiler {
 
                     const exp = path.get("expression");
 
+                    if (exp.isArrowFunctionExpression()) {
+                        const body = exp.get("body");
+                        if (body.isJSXFragment() || body.isJSXElement()) {
+                            defModel = exp.node.params[0] as Identifier;
+                            return;
+                        }
+                      
+                    }
+
                     const bindMode = transformExpression(exp);
 
                     let value = exp.toString();
 
-                    if (!isBinding(exp) && curAttribute?.name != "t:value-pool") 
+                    if (!isBinding(exp) && curAttribute?.name != "t:value-pool")
                         value = defModel.name + " => " + value;
-                    
+
                     if (curAttribute) {
 
                         curAttribute.value = value;
@@ -295,9 +311,14 @@ export class JsxCompiler extends BaseCompiler {
             plugins: ["jsx", "typescript"]
         });
 
-        const templates: NodePath<JSXElement>[] = [];
+        const templates: NodePath<JSXElement | JSXFragment>[] = [];
 
         trav(ast, {
+
+            JSXFragment(path) {
+                templates.push(path);
+                path.shouldSkip = true;
+            },
 
             JSXElement(path) {
                 templates.push(path);
@@ -315,7 +336,7 @@ export class JsxCompiler extends BaseCompiler {
 
         const replaces: ITextReplacement[] = [];
 
-        ctx.writer.writeImport("@eusoft/webapp-core", "USE");
+        ctx.writer.writeImport("@eusoft/webapp-core", "USE", "PARENT");
 
         replaces.push({
             src: {

@@ -1,6 +1,7 @@
 import { ITemplate } from "@eusoft/webapp-core";
+import { ModelBuilder, TemplateModel } from "./Abstraction";
 
-export function forModel<TModel>(action: { (t: TModel): JSX.Element }): ITemplate<TModel> {
+export function forModel<TModel extends TemplateModel>(action: ModelBuilder<TModel>): ITemplate<TModel> {
     const result = action(null);
     return result as ITemplate<TModel>;
 }
