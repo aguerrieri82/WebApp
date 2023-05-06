@@ -1,7 +1,7 @@
 import { ReadStream } from "fs";
 import { IWriteable } from "./Abstraction/IWriteable";
 import * as parser from "@babel/parser";
-import traverse, { NodePath, Node } from "@babel/traverse";
+import traverse, { NodePath, Node, Visitor } from "@babel/traverse";
 import { readAllTextAsync } from "./TextUtils";
 import { BaseCompiler } from "./BaseCompiler";
 import { JSXIdentifier, Node as BabelNode, JSXElement, Expression, JSXEmptyExpression, TemplateElement, Identifier } from "@babel/types";
@@ -22,6 +22,22 @@ interface ITextReplacement {
     dst: ITextBlock;
 }
 
+function traverseFromRoot<TNode>(path: NodePath<TNode>, visitor: Visitor & Record<string, any>, state?: object) {
+
+    const expVisitor = traverse.visitors.explode(visitor) as any;
+
+    if (expVisitor.enter?.length > 0)
+        expVisitor.enter[0].call(state, path, state);
+
+    if (path.shouldSkip) 
+        path.shouldSkip = false;
+    else 
+        path.traverse(visitor, state);
+    
+    if (expVisitor.exit?.length > 0)
+        expVisitor.exit[0].call(state, path, state);
+}
+
 export class JsxCompiler extends BaseCompiler {
 
     protected parse(template: NodePath<JSXElement>) : ITemplateElement {
@@ -37,6 +53,19 @@ export class JsxCompiler extends BaseCompiler {
         template.shouldSkip = false;
 
         let defModel: Identifier;
+
+        const rootName = template.get("openingElement").get("name").toString();
+
+        if (rootName != "Template") {
+            curElement = {
+                attributes: {},
+                name: "t:template",
+                childNodes: [],
+                type: TemplateNodeType.Element
+            }
+
+            result = curElement;
+        }
 
         if (template.parentPath.isArrowFunctionExpression())
             defModel =  template.parentPath.node.params[0] as Identifier;
@@ -60,7 +89,34 @@ export class JsxCompiler extends BaseCompiler {
             return false;
         }
 
-        template.parentPath.traverse({
+        const transformExpression = (exp: NodePath<Expression | JSXEmptyExpression>) => {
+
+            let expModel: Identifier;
+
+            if (exp.isArrowFunctionExpression())
+                expModel = exp.node.params[0] as Identifier;
+
+            traverseFromRoot(exp, {
+                enter: path => {
+                    if (path.isMemberExpression()) {
+                        const obj = path.get("object");
+
+                        if (obj.isIdentifier() || obj.isThisExpression()) {
+                            const bindig = path.scope.getBinding(obj.toString());
+                            if (bindig && bindig?.identifier == expModel || bindig?.identifier == defModel)
+                                return;
+                            const curModel = expModel ?? defModel;
+                            obj.replaceWithSourceString(`${curModel.name}[Symbol.for("@use")](${obj})`);
+
+                            path.shouldSkip = true;
+                        }
+ 
+                    }
+                }
+            });
+        }
+         
+        traverseFromRoot(template.parentPath, {
 
             exit: path => {
 
@@ -73,7 +129,6 @@ export class JsxCompiler extends BaseCompiler {
                         result = curElement;
 
                     curElement = stack.pop(); 
-
                 }
             },
 
@@ -81,17 +136,12 @@ export class JsxCompiler extends BaseCompiler {
 
                 if (curAttribute && (path.isJSXElement() || path.isJSXFragment())) {
 
-                    throw path.buildCodeFrameError("Jsx element or fragment in attribute not supported");
+                    throw path.buildCodeFrameError("JSX element or fragment in attributes is not supported");
                 }
 
-                if (path.isJSXElement()) {
+                if (path.isJSXOpeningElement()) {
 
-
-                }
-
-                else if (path.isJSXOpeningElement()) {
-
-                    const elName = (path.node.name as JSXIdentifier).name;
+                    const elName = path.get("name").toString();
 
                     const bindig = path.scope.getBinding(elName);
 
@@ -120,14 +170,18 @@ export class JsxCompiler extends BaseCompiler {
 
                     let name = (path.node.name as JSXIdentifier).name;
 
-                    if (name.startsWith("on-") ||
-                        name.startsWith("style-") ||
-                        name == "behavoir" ||
-                        FuncAttributes.indexOf(name) != -1)
-                        name = "t:" + name;
+                    if (curElement.name != "t:component") {
 
-                    else if (name == "className")
-                        name = "t:class";
+                        if (name.startsWith("on-") ||
+                            name.startsWith("style-") ||
+                            name == "behavoir" ||
+                            FuncAttributes.indexOf(name) != -1)
+                            name = "t:" + name;
+
+                        else if (name == "className")
+                            name = "t:class";
+                    }
+    
 
                     curAttribute = createAttribute(name, null, curElement);
                 }
@@ -154,6 +208,8 @@ export class JsxCompiler extends BaseCompiler {
                 else if (path.isJSXExpressionContainer()) {
 
                     const exp = path.get("expression");
+
+                    transformExpression(exp);
 
                     let value = exp.toString();
 
@@ -198,23 +254,19 @@ export class JsxCompiler extends BaseCompiler {
     async compileStreamAsync(input: ReadStream | string, output: IWriteable) {
 
         const js = typeof input == "string" ? input : await readAllTextAsync(input);
-
+        
         const ast = parser.parse(js, {
             sourceType: "module",
-            plugins: ["jsx"]
+            plugins: ["jsx", "typescript"]
         });
 
         const templates: NodePath<JSXElement>[] = [];
 
         trav(ast, {
 
-            enter(path) {
-                if (path.isJSXElement()) {
-                    const elName = (path.node.openingElement.name as JSXIdentifier).name;
-                    if (elName == "Template")
-                        templates.push(path);
-                    path.shouldSkip = true;
-                }
+            JSXElement(path) {
+                templates.push(path);
+                path.shouldSkip = true;
             }
         });
 

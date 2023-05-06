@@ -8,6 +8,10 @@ export type TemplateValueMap<TModel, TObj extends { [key: string]: any }> = { [T
 
 export type RefNodePosition = "after" | "before" | "inside";
 
+export type ComponentType<TComp, TProps> =
+    { new (props?: TProps): TComp } |
+    { (props?: TProps) : ITemplate<TProps> | null | undefined | void }
+
 
 export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement> {
 
@@ -23,7 +27,7 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
 
     if(condition: BindValue<TModel, boolean>, trueTemplate: ITemplate<TModel>, falseTemplate?: ITemplate<TModel>): this;
 
-    component<TComp extends IComponent, TProps extends TComp>(constructor: { new(props?: TProps): TComp }, props: BoundObject<TProps>): this;
+    component<TComp extends IComponent, TProps extends TComp>(constructor: ComponentType<TComp, TProps>, props: BoundObject<TProps>): this;
 
     content<TInnerModel extends ITemplateProvider>(content: Iterable<BindValue<TModel, TInnerModel>>, inline?: boolean): this;
 

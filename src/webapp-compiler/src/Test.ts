@@ -23,4 +23,3 @@ export async function runTest2() {
     stdin.read();
 }
 
-runTest2();

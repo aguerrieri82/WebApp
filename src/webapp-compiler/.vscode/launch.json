@@ -6,7 +6,8 @@
       "request": "launch",
       "name": "Launch Program",
       "skipFiles": [ "<node_internals>/**" ],
-      "program": "${workspaceFolder}/../../dist/webapp-compiler/index.js",
+      "program": "index.js",
+      "args": ["-test"],
       "cwd": "${workspaceFolder}/../../dist/webapp-compiler/",
       "console": "externalTerminal"
     }

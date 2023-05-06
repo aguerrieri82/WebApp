@@ -1,5 +1,5 @@
 
-const TYPE_NAME = Symbol("@typeName");
+const TYPE_NAME = Symbol.for("@typeName");
 
 type Type<T> = new (...args: any[]) => T;
 
@@ -7,18 +7,35 @@ type KeyOfType<TObj, TKey> = {
     [P in keyof TObj & string]: TObj[P] extends TKey ? P : never
 }[keyof TObj & string];
 
+const funcNameRegex = /function\s([^(]{1,})\(/;
+
 export function getFunctionName(func: Function): string {
 
     let curName = func.name;
     if (!curName) {
-        const funcNameRegex = /function\s([^(]{1,})\(/;
         const results = (funcNameRegex).exec(func.toString());
         curName = (results && results.length > 1) ? results[1].trim() : "";
     }
     return curName;
 }
 
-export function getTypeName(obj: any) : string {
+export function getFunctionType(value: Function): "function" | "class" | "async" | "arrow" {
+    return typeof value === 'function'
+        ? value.prototype
+            ? Object.getOwnPropertyDescriptor(value, 'prototype').writable
+                ? 'function'
+                : 'class'
+            : value.constructor.name === 'AsyncFunction'
+                ? 'async'
+                : 'arrow'
+        : undefined;
+}
+
+export function isClass(value: Function): value is { new(): any } {
+    return getFunctionType(value) == "class";
+}
+
+export function getTypeName(obj: any): string {
 
     if (!obj)
         return undefined;

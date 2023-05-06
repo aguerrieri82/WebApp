@@ -1,4 +1,4 @@
-import { IComponent, ITemplate } from "@eusoft/webapp-core";
+import { IComponent, ITemplate, getFunctionType } from "@eusoft/webapp-core";
 import { ITemplateContext, JsxComponentProps, JsxElement, JsxElementType, JsxNode, TemplateModel } from "./Abstraction";
 import { Template } from "./Components/Template";
 export function isJsxElement(obj: any): obj is JsxElement<any, JsxComponentProps<any>> {
@@ -12,18 +12,17 @@ export function isEventProp(name: string) {
 }
 export function isComponent<TModel extends TemplateModel = TemplateModel>(type: any): type is { new(props: TModel): IComponent } {
 
-    return type.toString().startsWith("class ");
+    return getFunctionType(type) == "class";
 }
 
-
-export function processElement<TModel extends TemplateModel>(context: ITemplateContext<TModel>, node: JsxNode<TModel>) {
+export function processNode<TModel extends TemplateModel>(context: ITemplateContext<TModel>, node: JsxNode<TModel>) {
 
     if (node === null || node === undefined)
         return;
 
     if (Array.isArray(node)) {
         for (const item of node)
-            processElement(context, item);
+            processNode(context, item);
     }
     else if (typeof (node) == "string") {
         context.builder.text(node);
@@ -78,7 +77,7 @@ export function processElement<TModel extends TemplateModel>(context: ITemplateC
                     childBuilder.set(prop, value)
                 }
             }
-            processElement({ builder: childBuilder }, node.props.children)
+            processNode({ builder: childBuilder }, node.props.children)
             childBuilder.endChild()
         }
         else {
@@ -93,7 +92,7 @@ export function processElement<TModel extends TemplateModel>(context: ITemplateC
                     context
                 });
 
-                processElement(context, result);
+                processNode(context, result);
             }
         }
     }

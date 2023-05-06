@@ -1,84 +1,57 @@
-import { Template } from "cazzo";
+import { Action, Page } from "@eusoft/webapp-ui";
+import { Template } from "@eusoft/webapp-jsx";
+import { ITemplateProvider } from "@eusoft/webapp-core";
+import { app } from "../";
+import { forModel } from "@eusoft/webapp-jsx/src/Runtime";
 
-function MyComp() {
-    return null;
+interface IContentModel extends ITemplateProvider<IContentModel> {
+    text: string;
+    goBack: () => Promise<any>;
 }
 
-function test() {
+function Log(props: { message: string }) {
 
-    const rootModel = {
-        items: [],
-        msg: "",
-        innerObj: {
-            name: "Inner"
-        },
-        logo: "/logo.png",
-        change() {
-            this.msg = "Nuovo messaggio" + new Date().getTime();
-            if (this.items.length > 0)
-                this.items[0].name = "Item change" + new Date().getTime();
-            this.innerObj.name = "Inner change" + new Date().getTime()
-        },
-        replace() {
-            if (this.items.length > 0)
-                this.items[0] = {
-                    name: "Pippo"
-                }
-            this.innerObj = {
-                name: "Replace inner"
-            }
-        },
-        add() {
-            this.items.push({ name: "Luca" }, { name: "Mario" });
-        },
-        addMany() {
+    console.log(props.message);
+}
+function Bold(props: { text: string }) {
 
-            const newItems = [];
+    return forModel<typeof props>(m => <strong text={m.text} />);
+}
 
-            for (let i = 0; i < 10000; i++)
-                newItems.push({ name: "Item " + i });
+class SecondPage extends Page {
 
-            this.items.push(...newItems);
+    constructor() {
+        super();
 
-        },
-        newImage() {
-            this.logo = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png";
-        }
-    };
-
-
-    setInterval(() => {
-        rootModel.msg = "Time is: " + new Date();
-    }, 1000);
-
-   const ActionTemplates = {
-
-        "Button": forModel(a => <Template name="Action">
-            <button behavoir="Ripple" className={a.className} on-click={a.executeAsync()}>
-                <Content src={a.content} />
-            </button>
-        </Template>)
-
+        this.configure({
+            name: "second",
+            title: "Seconda Pagina",
+            route: "/second",
+            content: {
+                text: "cazzo",
+                goBack() {
+                    app.pageHost.pop();
+                },
+                template: forModel(m => <Template name="SecondPage">
+                    <div>
+                        <input value={m.text} type="text" />
+                        <input value={this.text[2][m.call.my[2]].test(this.yyy)} type="text" />
+                        <Log message={m.text} />
+                        <Action executeAsync={m.goBack} content={"Back " + (m.text)} />
+                    </div>
+                    <Bold text={m.text} />
+                </Template>)
+            } as IContentModel
+        });
     }
 
-    const t = <Template name="xxx">
-        <Class name="test" />
-        <Class name={"test 2"} />
-        <Class name={12} />
-        <Class name="test 3" condition={true} />
-        <input type="text"/>
-        <div text={m => m.innerObj.name}>
-            <button on-click={m => m.addMany()}>Add</button>
-        </div>
-        <Foreach src={m => m.items}>
-            <div text={m => m.name} />
-            {m => m.cazzo}
-        </Foreach>
-    </Template>;
 
+    protected updateOptions() {
 
-    const t2 = <Template name="yyy">
-    </Template>;
+        this.bindOptions();
+    }
 
-    template(document.body, t, rootModel);
+    text: string = "class text";
 }
+
+export const secondPage = new SecondPage();

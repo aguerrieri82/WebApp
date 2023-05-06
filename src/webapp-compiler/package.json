@@ -1,12 +1,11 @@
 {
   "name": "@eusoft/webapp-compiler",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "packageManager": "pnpm@8.4.0",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
     "publish": "cd ../../dist/webapp-compiler/ && pnpm publish --access public --no-git-checks",
-    "start": "node ../../dist/webapp-compiler/index.js -test xxx sdsdsd",
     "clean": "rimraf ../../dist/webapp-compiler/",
     "build:watch": "rollup -c -w  --environment NODE_ENV:dev",
     "build:dev": "rollup -c --environment NODE_ENV:dev",

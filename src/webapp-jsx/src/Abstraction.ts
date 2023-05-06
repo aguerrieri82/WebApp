@@ -14,6 +14,7 @@ export type JsxNode<TModel extends TemplateModel> =
     string |
     number |
     null |
+    void |
     ITemplate<TModel> |
     ITemplateProvider<TModel> |
     JsxElement<TModel, JsxComponentProps<TModel>> |

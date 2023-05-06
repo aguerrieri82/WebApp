@@ -1,6 +1,6 @@
 import type { BindValue } from "@eusoft/webapp-core";
 import type { JsxComponentProps, JsxElement, JsxNode, TemplateModel } from "./../Abstraction";
-import { isJsxElement, processElement } from "./../Runtime";
+import { isJsxElement, processNode } from "./../Runtime";
 
 export interface IElseProps<TModel extends TemplateModel> {
     children: JsxNode<TModel>;
@@ -15,8 +15,8 @@ export function If<TModel extends TemplateModel>(props: IIfProps<TModel>): JsxNo
     const elseChild = Array.isArray(props.children) ? props.children.find(a => isJsxElement(a) && a.type == Else) as JsxElement<TModel, IElseProps<TModel>> : undefined;
 
     props.context.builder.if(props.condiction,
-        t => processElement({ builder: t }, props.children), elseChild ?
-        t => processElement({ builder: t }, elseChild.props.children) : undefined);
+        t => processNode({ builder: t }, props.children), elseChild ?
+        t => processNode({ builder: t }, elseChild.props.children) : undefined);
 
     return null;
 }

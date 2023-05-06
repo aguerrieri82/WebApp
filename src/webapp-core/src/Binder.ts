@@ -1,11 +1,10 @@
+import { PARENT, TARGET, USE } from "./Abstraction/IBindable";
 import type { BindValue, IGetter } from "./Abstraction/IBinder";
 import { IObservableArrayHandler, isObservableArray } from "./Abstraction/IObservableArray";
 import type { IObservableProperty, IPropertyChangedHandler } from "./Abstraction/IObservableProperty";
 import { forEachRev } from "./ArrayUtils";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
-
-const PROXY_TRAGET = Symbol("@proxyTarget")
 
 interface IBindingSubscription<TValue = any> {
 
@@ -39,7 +38,7 @@ interface IPropertyAccess {
 function cleanProxy<TObj>(obj: TObj): TObj{
 
     if (obj && typeof obj === "object") {
-        const target = (obj as any)[PROXY_TRAGET];
+        const target = (obj as any)[TARGET];
         if (target)
             return target as TObj;
     }
@@ -47,7 +46,7 @@ function cleanProxy<TObj>(obj: TObj): TObj{
     return obj;
 }
 
-export function createProxy<TObj>(obj: TObj, action: (obj: any, propName: string) => boolean, customProps?: Record<string | symbol, { () : any }>): TObj {
+export function createProxy<TObj>(obj: TObj, action?: (obj: any, propName: string) => boolean, customProps?: Record<string | symbol, { () : any }>): TObj {
 
     if (!obj || typeof (obj) !== "object")
         return obj;
@@ -66,7 +65,7 @@ export function createProxy<TObj>(obj: TObj, action: (obj: any, propName: string
 
         get: (target, prop) => {
 
-            if (prop === PROXY_TRAGET)
+            if (prop === TARGET)
                 return target;
 
             if (customProps && prop in customProps)
@@ -106,7 +105,8 @@ export function createProxy<TObj>(obj: TObj, action: (obj: any, propName: string
                 innerProxies[prop] = value;
 
             return true;
-        }
+        },
+        
     }) as TObj;
 }
 
@@ -120,12 +120,12 @@ export class Binder<TModel> {
         this.updateModel(cleanProxy(model));
     }
 
-    protected createProxy<TObj>(obj: TObj, action: (obj: any, propName: string) => boolean) {
+    protected createProxy<TObj>(obj: TObj, action?: (obj: any, propName: string) => boolean) {
 
         return createProxy(obj, action, {
 
-            "@parent": () => this.findParentModel()
-
+            [PARENT]: () => this.findParentModel(),
+            [USE]: () => (value: any) => this.createProxy(value, action)
         });
     }
 
@@ -224,7 +224,7 @@ export class Binder<TModel> {
 
         const propDesc = Object.getOwnPropertyDescriptor(obj, propName);
 
-        if ((!propDesc && Array.isArray(obj)) || (!propDesc.writable && !propDesc.set)) {
+        if ((!propDesc && Array.isArray(obj)) || (propDesc && !propDesc.writable && !propDesc.set)) {
             console.warn("Property ", propName, " for object ", obj, " not exists or is not writeable.");
             return;
         }

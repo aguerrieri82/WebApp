@@ -22,11 +22,6 @@ export class TemplateElementHandler implements ITemplateHandler {
         if (!modelType)
             modelType = "any";
 
-        if (!templateName) {
-            ctx.error("Missing template name.");
-            return HandleResult.Error;
-        }
-
         if (modelName)
             ctx.setParameter("$" + modelName, `${ctx.currentFrame.builderNameJs}.model`);
 
@@ -35,12 +30,16 @@ export class TemplateElementHandler implements ITemplateHandler {
                 .write("export const ").write(templateName).write(" = ");
         }
 
-        ctx.writer.write("__defineTemplate(").writeString(templateName).write(", ")
-            .beginInlineFunction(ctx.currentFrame.builderNameJs)
+        if (templateName)
+            ctx.writer.write("__defineTemplate(").writeString(templateName).write(", ");
+
+        ctx.writer.beginInlineFunction(ctx.currentFrame.builderNameJs)
             .beginBlock().write(" ").write(ctx.currentFrame.builderNameJs).writeLine()
             .writeChildElements(node)
-            .endBlock()
-            .write(")");
+            .endBlock();
+
+        if (templateName)
+            ctx.writer.write(")");
 
         if (ctx.compiler instanceof HtmlCompiler)
             ctx.writer.write(";");

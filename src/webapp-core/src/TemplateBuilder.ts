@@ -4,10 +4,10 @@ import { IComponent } from "./Abstraction/IComponent";
 import { isHTMLContainer } from "./Abstraction/IHTMLContainer";
 import { IObservableArrayHandler, isObservableArray } from "./Abstraction/IObservableArray";
 import { ITemplate, isTemplate } from "./Abstraction/ITemplate";
-import type { IChildTemplateBuilder, ITemplateBuilder, RefNodePosition, TemplateValueMap } from "./Abstraction/ITemplateBuilder";
+import type { ComponentType, IChildTemplateBuilder, ITemplateBuilder, RefNodePosition, TemplateValueMap } from "./Abstraction/ITemplateBuilder";
 import { CatalogTemplate, ITemplateProvider, isTemplateProvider } from "./Abstraction/ITemplateProvider";
 import { Binder } from "./Binder";
-import { getTypeName } from "./ObjectUtils";
+import { getTypeName, isClass } from "./ObjectUtils";
 
 type TemplateInlineMode = "never" | "always" | "auto" | "explicit" | "replace-parent" | "embed-child" | "inherit";
 
@@ -351,16 +351,43 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return result;
     }
 
-    component<TComp extends IComponent, TProps extends TComp>(constructor: { new (props?: TProps): TComp }, props: BoundObject<TProps>) { 
+    component<TComp extends IComponent, TProps extends TComp>(constructor: ComponentType<TComp, TProps>, props: BoundObject<TProps>): this { 
 
-        const instance = new constructor();
+        if (isClass(constructor)) {
 
-        if (props) {
-            for (let prop in props) 
-                this.bind(props[prop], value => instance[prop] = value);
+            const instance = new constructor();
+
+            if (props) {
+                for (let prop in props)
+                    this.bind(props[prop], value => instance[prop] = value);
+            }
+
+            return this.content(instance);
         }
 
-        return this.content(instance);
+        else {
+            const model = {} as TProps;
+            let callOnChange = false;
+            if (props) {
+                for (let prop in props) {
+                    this.bind(props[prop], value => {
+                        model[prop] = value;
+                        if (callOnChange)
+                            constructor(model);
+                    });
+                }
+            }
+
+            const result = constructor(model);
+
+            if (isTemplate(result))
+                return this.template(result, model);
+
+            callOnChange = true;
+
+            return this;
+        }
+
     }
 
     content<TInnerModel extends ITemplateProvider>(content: BindValue<TModel, TInnerModel> | BindValue<TModel, TInnerModel>[], inline: boolean = false): this {

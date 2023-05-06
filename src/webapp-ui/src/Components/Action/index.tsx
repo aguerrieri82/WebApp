@@ -7,7 +7,7 @@ interface IActionOptions extends IComponentOptions {
 
     content?: Bindable<string | IComponent>;
 
-    executeAsync?: () => Promise<any>;
+    executeAsync?: () => Promise<void>|void;
 }
 
 export const ActionTemplates: TemplateMap<Action> = {
