@@ -95,7 +95,7 @@ class SecondPage extends Page {
                         {m.text ? "Back: " + (m.text) : "Back"}
                     </Action>
                     <Action executeAsync={() => this.showText()}>
-                        <Bold>Show Text</Bold>
+                        <Bold>{"Show Text" + m.text[0]}</Bold>
                     </Action>
                     <ul>
                         <Foreach src={m.items}>

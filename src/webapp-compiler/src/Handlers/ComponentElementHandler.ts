@@ -116,9 +116,13 @@ export class ComponentElementHandler implements ITemplateHandler {
         }
 
         ctx.writer.write(".").write(funcName).write("(")
-            .write(type).write(",")
-            .writeObject(props).write(",")
-            .writeObject(modes).write(")");
+            .write(type).write(", ")
+            .writeObject(props);
+
+        if (Object.keys(modes).length > 0)
+            ctx.writer.write(", ").writeObject(modes);
+
+        ctx.writer.write(")");
 
         return HandleResult.SkipChildren;
     }
