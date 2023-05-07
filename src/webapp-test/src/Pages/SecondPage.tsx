@@ -17,7 +17,7 @@ function Bold(props: { text: string }) {
     return <>{props.text == "mamma" ? <Text>ccc</Text> : <strong text={props.text} />}</>;
 }
 
-function Blink(props: {time: number, color: string}) {
+function Blink(props: { time: number, color: string }) {
 
     return (t: ITemplateBuilder<any>) => {
 
@@ -33,14 +33,14 @@ function Blink(props: {time: number, color: string}) {
             else
                 t.parent.element.style.background = "";
 
-        }, props.time); 
+        }, props.time);
     }
 }
 
 
 function Input(props: { text: TwoWays<string> }) {
 
-    return <input value={props.text} value-pool={500} type="text" checked  />
+    return <input value={props.text} value-pool={500} type="text" checked />
 }
 
 class SecondPage extends Page {
@@ -68,12 +68,16 @@ class SecondPage extends Page {
                         <Input text={twoWays(m.text)} />
                         <Input text={twoWays(this.text)} />
                         <Log message={m.text} />
-                        <Blink time={500} color={this.text} />
+
                         <Action executeAsync={() => m.goBack()} content={"Back " + (m.text)} />
                         <Action executeAsync={() => this.showText()} content="Show text" />
-                        <Foreach src={m.items}>
-                            {i => <span>{i.name}</span>}
-                        </Foreach>
+                        <ul>
+                            <Foreach src={m.items}>
+                                {i => <li style-margin="16px" text={i.name}>
+                                    <Blink time={500} color={this.text} />
+                                </li>}
+                            </Foreach>
+                        </ul>
                     </div>
                     <Bold text={m.text} />
                 </Template>)
