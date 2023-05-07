@@ -1,6 +1,7 @@
 import { ReadStream } from "fs";
 import { IWriteable } from "./Abstraction/IWriteable";
 import * as parser from "@babel/parser";
+import {  types } from "@babel/core";
 import traverse, { NodePath, Visitor } from "@babel/traverse";
 import { readAllTextAsync } from "./TextUtils";
 import { BaseCompiler } from "./BaseCompiler";
@@ -8,7 +9,7 @@ import { JSXIdentifier, JSXElement, Expression, JSXEmptyExpression, Identifier, 
 import { TemplateContext } from "./TemplateContext";
 import { TemplateWriter } from "./Text/TemplateWriter";
 import { BindMode, ITemplateAttribute, ITemplateElement, ITemplateText, TemplateNodeType } from "./Abstraction/ITemplateNode";
-import {  TemplateAttributes, TemplateElements } from "./Consts";
+import { TemplateAttributes, TemplateElements } from "./Consts";
 
 const trav = (traverse as any).default as typeof traverse;
 
@@ -29,19 +30,87 @@ function traverseFromRoot<TNode>(path: NodePath<TNode>, visitor: Visitor & Recor
     if (expVisitor.enter?.length > 0)
         expVisitor.enter[0].call(state, path, state);
 
-    if (path.shouldSkip) 
+    if (path.shouldSkip)
         path.shouldSkip = false;
-    else 
+    else
         path.traverse(visitor, state);
-    
+
     if (expVisitor.exit?.length > 0)
         expVisitor.exit[0].call(state, path, state);
 }
 
+function createAttribute(name: string, value: string, owner: ITemplateElement) {
+    const result = {
+        name,
+        owner: owner,
+        type: TemplateNodeType.Attribute,
+        value
+    } as ITemplateAttribute;
+    owner.attributes[name] = result;
+    return result;
+}
+
+function createElement(name: string) {
+    const result = {
+        type: TemplateNodeType.Element,
+        name,
+        attributes: {},
+        childNodes: []
+    } as ITemplateElement;
+    return result;
+}
+
+function isBinding(path: NodePath<Expression | JSXEmptyExpression>) {
+
+    if (path.isArrowFunctionExpression())
+        return path.node.params.length == 1;
+
+    return false;
+}
+
+function isSingleElement(path: NodePath) {
+
+    const parent = path.parentPath as NodePath<JSXFragment>;
+
+    if (!(parent.isJSXElement() || parent.isJSXFragment()))
+        return;
+
+    let count = 0;
+    for (const child of parent.get("children")) {
+        if (child.isJSXText()) {
+            if (child.node.value.trim().length == 0)
+                continue;
+        }
+        count++;
+    }
+    return count == 1;
+}
+
+function getHelper(exp: NodePath<Expression | JSXEmptyExpression>) {
+
+    if (!exp.isCallExpression())
+        return;
+
+    const callee = exp.get("callee");
+    if (!callee.isIdentifier())
+        return;
+
+    const resolve = exp.scope.getBinding(callee.node.name);
+    if (!resolve || resolve.kind != "module")
+        return;
+
+    const parentModule = (resolve.path.parent as ImportDeclaration).source.value;
+    if (parentModule == "@eusoft/webapp-jsx") {
+        return {
+            name: callee.node.name,
+            body: exp.node.arguments[0]
+        }
+    }
+}
 
 export class JsxCompiler extends BaseCompiler {
 
-    protected parse(template: NodePath<JSXElement|JSXFragment>) : ITemplateElement {
+    protected parse(template: NodePath<JSXElement | JSXFragment>): ITemplateElement {
 
         interface IStack {
             element: ITemplateElement;
@@ -54,56 +123,34 @@ export class JsxCompiler extends BaseCompiler {
 
         let curAttribute: ITemplateAttribute;
 
-        let result: ITemplateElement;
+        let rootElement: ITemplateElement;
 
         let defModel: Identifier;
 
-        template.shouldSkip = false;
+        function enterNewElement(name: string) {
 
-        const rootName = template.get("openingElement").get("name").toString();
+            const newElement = createElement(name);
 
-        if (rootName != "Template") {
-            curElement = {
-                attributes: {},
-                name: "t:template",
-                childNodes: [],
-                type: TemplateNodeType.Element
-            }
+            if (curElement)
+                curElement.childNodes.push(newElement);
 
-            result = curElement;
+            stack.push({
+                element: curElement,
+                defModel
+            });
+
+            curElement = newElement;
+
+            return newElement;
         }
 
-        if (template.parentPath.isArrowFunctionExpression())
-            defModel = template.parentPath.node.params[0] as Identifier;
-        else {
-            const func = template.getFunctionParent();
-            const params = func.get("params");
-            if (params.length == 1 && params[0].isIdentifier()) {
-
-                defModel = params[0].node as Identifier;
-            }
-        }
-           
-        const createAttribute = (name: string, value: string, owner: ITemplateElement) => {
-            const result = {
-                name,
-                owner: owner,
-                type: TemplateNodeType.Attribute,
-                value
-            };
-            owner.attributes[name] = result;
-            return result;
+        function exitElement() {
+            const pop = stack.pop();
+            curElement = pop?.element;
+            defModel = pop?.defModel;
         }
 
-        const isBinding = (path: NodePath<Expression | JSXEmptyExpression>) => {
-
-            if (path.isArrowFunctionExpression())
-                return path.node.params.length == 1;
-
-            return false;
-        }
-
-        const transformExpression = (exp: NodePath<Expression | JSXEmptyExpression>) => {
+        function transformExpression(exp: NodePath<Expression | JSXEmptyExpression>)  {
 
             let expModel: Identifier;
 
@@ -112,20 +159,10 @@ export class JsxCompiler extends BaseCompiler {
             if (exp.isArrowFunctionExpression())
                 expModel = exp.node.params[0] as Identifier;
 
-            if (exp.isCallExpression()) {
-                const callee = exp.get("callee");
-                if (callee.isIdentifier()) {
-                    const resolve = exp.scope.getBinding(callee.node.name);
-                    if (resolve && resolve.kind == "module") {
-                        const parentModule = (resolve.path.parent as ImportDeclaration).source.value;
-                        if (parentModule == "@eusoft/webapp-jsx") {
-                            if (callee.node.name == "twoWay") {
-                                exp.replaceWith(exp.node.arguments[0]);
-                                result = "two-ways";
-                            }
-                        }
-                    }
-                }
+            const helper = getHelper(exp);
+            if (helper?.name == "twoWays") {
+                exp.replaceWith(helper.body);
+                result = "two-ways";
             }
 
             traverseFromRoot(exp, {
@@ -139,19 +176,40 @@ export class JsxCompiler extends BaseCompiler {
 
                             if (bindig && bindig?.identifier == expModel || bindig?.identifier == defModel)
                                 return;
+
                             const curModel = expModel ?? defModel;
                             obj.replaceWithSourceString(`${curModel.name}[USE](${obj})`);
 
                             path.shouldSkip = true;
                         }
- 
+
                     }
                 }
             });
 
             return result;
         }
-         
+
+        template.shouldSkip = false;
+
+        const rootName = template.isJSXElement() && template.get("openingElement").get("name").toString();
+
+        if (rootName != "Template") 
+            rootElement = enterNewElement("t:template");
+        
+        if (template.parentPath.isArrowFunctionExpression())
+            defModel = template.parentPath.node.params[0] as Identifier;
+
+        else {
+            const func = template.getFunctionParent();
+            const params = func.get("params");
+            if (params.length == 1 && params[0].isIdentifier()) {
+
+                defModel = params[0].node as Identifier;
+            }
+        }
+
+
         traverseFromRoot(template.parentPath, {
 
             exit: path => {
@@ -159,14 +217,12 @@ export class JsxCompiler extends BaseCompiler {
                 if (path.isJSXAttribute())
                     curAttribute = null;
 
-                if (path.isJSXElement()) {
+                else if (path.isJSXElement() || path.isJSXFragment()) {
 
                     if (curElement.name == "t:template")
-                        result = curElement;
+                        rootElement = curElement;
 
-                    const pop = stack.pop();
-                    curElement = pop.element;
-                    defModel = pop.defModel;
+                    exitElement();
                 }
             },
 
@@ -181,32 +237,18 @@ export class JsxCompiler extends BaseCompiler {
 
                     const elName = path.get("name").toString();
 
-                    const binding = path.scope.getBinding(elName);
+                    const elBinding = path.scope.getBinding(elName);
 
                     const isTempEl = TemplateElements.indexOf(elName) != -1;
 
-                    const item: ITemplateElement = {
-                        type: TemplateNodeType.Element,
-                        name: isTempEl ? "t:" + elName.toLowerCase() : elName,
-                        attributes: {},
-                        childNodes: []
+                    const newElement = enterNewElement(isTempEl ? "t:" + elName.toLowerCase() : elName);
+
+                    if (elBinding && !isTempEl) {
+                        newElement.name = "t:component";
+                        createAttribute("t:type", elName, newElement);
                     }
-
-                    if (binding && !isTempEl) {
-                        item.name = "t:component";
-                        createAttribute("t:type", elName, item);
-                    }
-
-                    if (curElement)
-                        curElement.childNodes.push(item);
-
-                    stack.push({
-                        element: curElement,
-                        defModel
-                    });
-
-                    curElement = item;
                 }
+
                 else if (path.isJSXAttribute()) {
 
                     let name = (path.node.name as JSXIdentifier).name;
@@ -221,10 +263,13 @@ export class JsxCompiler extends BaseCompiler {
                         else if (name == "className")
                             name = "t:class";
                     }
-    
 
                     curAttribute = createAttribute(name, null, curElement);
+
+                    if (!path.node.value)
+                        curAttribute.value = "true";
                 }
+
                 else if (path.isJSXText()) {
 
                     if (this.options.includeWhitespace || path.node.value.trim().length > 0) {
@@ -244,25 +289,51 @@ export class JsxCompiler extends BaseCompiler {
 
                     curAttribute.value = JSON.stringify(path.node.value);
                 }
-       
-                else if (path.isJSXExpressionContainer()) {
 
-                    const exp = path.get("expression");
+                else if (path.isExpression() && !path.isJSXFragment() && !path.isJSXElement()) {
 
-                    if (exp.isArrowFunctionExpression()) {
-                        const body = exp.get("body");
-                        if (body.isJSXFragment() || body.isJSXElement()) {
-                            defModel = exp.node.params[0] as Identifier;
+                    if (!curElement && !curAttribute)
+                        return;
+
+                    if (!curAttribute) {
+
+                        if (path.isArrowFunctionExpression() && isSingleElement(path.parentPath)) {
+
+                            const body = path.get("body");
+                            if (body.isJSXFragment() || body.isJSXElement()) {
+                                defModel = path.node.params[0] as Identifier;
+                                return;
+                            }
+                        }
+                        if (path.isConditionalExpression()) {
+
+                            enterNewElement("t:if");
+                            curAttribute = createAttribute("condition", null, curElement);
+
+                            path.get("test").visit();
+                            curAttribute = null;
+
+                            path.get("consequent").visit();
+
+                            enterNewElement("t:else");
+
+                            path.get("alternate").visit();
+
+                            exitElement();
+
+                            exitElement();
+
+                            path.shouldSkip = true;
+
                             return;
                         }
-                      
                     }
 
-                    const bindMode = transformExpression(exp);
+                    const bindMode = transformExpression(path);
 
-                    let value = exp.toString();
+                    let value = path.toString();
 
-                    if (!isBinding(exp) && curAttribute?.name != "t:value-pool")
+                    if (!isBinding(path) && curAttribute?.name != "t:value-pool")
                         value = defModel.name + " => " + value;
 
                     if (curAttribute) {
@@ -272,21 +343,11 @@ export class JsxCompiler extends BaseCompiler {
                     }
                     else {
 
-                        const contentElement = {
-                            type: TemplateNodeType.Element,
-                            name: "t:content",
-                            attributes: {},
-                            childNodes: []
-                        } as ITemplateElement;
-
-                        createAttribute("src", value, contentElement);
-
-                        curElement.childNodes.push(contentElement);
+                        enterNewElement("t:content")
+                        createAttribute("src", value, curElement);
+                        exitElement();
                     }
                     path.shouldSkip = true;
-                }
-                else if (path.isJSXFragment()) {
-
                 }
                 else if (path.isJSXSpreadAttribute() || path.isJSXSpreadChild()) {
 
@@ -295,7 +356,7 @@ export class JsxCompiler extends BaseCompiler {
             }
         });
 
-        return result;
+        return rootElement;
     }
 
     onReplaces(replaces: ITextReplacement[]) {
@@ -305,7 +366,7 @@ export class JsxCompiler extends BaseCompiler {
     async compileStreamAsync(input: ReadStream | string, output: IWriteable) {
 
         const js = typeof input == "string" ? input : await readAllTextAsync(input);
-        
+
         const ast = parser.parse(js, {
             sourceType: "module",
             plugins: ["jsx", "typescript"]
@@ -357,7 +418,7 @@ export class JsxCompiler extends BaseCompiler {
             const tempNode = this.parse(temp);
 
             const curLen = ctx.writer.length;
-          
+
             this.compileElement(ctx, tempNode);
 
             replaces.push({
@@ -372,7 +433,7 @@ export class JsxCompiler extends BaseCompiler {
             });
 
             curPos = temp.node.end;
-        } 
+        }
 
         ctx.writer.writeRaw(js.substring(curPos));
 

@@ -14,7 +14,7 @@ function Log(props: { message: string }) {
 }
 function Bold(props: { text: string }) {
 
-    return <strong text={props.text} />;
+    return <>{props.text == "mamma" ? "ccc" : <strong text={props.text} />}</>;
 }
 
 function Text(props: { text: string }) {

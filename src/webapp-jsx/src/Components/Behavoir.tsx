@@ -1,6 +1,6 @@
 import type { JsxComponentProps, JsxNode, TemplateModel } from "../Abstraction";
 
-export interface IBehavoirProps<TModel extends TemplateModel> extends JsxComponentProps<TModel> {
+export interface IBehavoirProps<TModel extends TemplateModel> extends JsxComponentProps<TModel, TModel, undefined> {
     name: string;
     children?: undefined;
 }

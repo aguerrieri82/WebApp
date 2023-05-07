@@ -18,9 +18,9 @@ devDependencies:
   '@babel/types':
     specifier: 7.21.5
     version: 7.21.5
-  '@types/babel-core':
-    specifier: 6.25.7
-    version: 6.25.7
+  '@types/babel__core':
+    specifier: 7.20.0
+    version: 7.20.0
   '@types/babel__traverse':
     specifier: 7.18.5
     version: 7.18.5
@@ -220,7 +220,6 @@ packages:
     hasBin: true
     dependencies:
       '@babel/types': 7.21.5
-    dev: false
 
   /@babel/template@7.20.7:
     resolution: {integrity: sha512-8SegXApWe6VoNw0r9JHpSteLKTpTiLZ4rMlGIm9JQ18KiCtyQiAMEazujAHrUS5flrcqYZa75ukev3P6QmUwUw==}
@@ -529,49 +528,33 @@ packages:
       minimatch: 9.0.0
     dev: true
 
-  /@types/babel-core@6.25.7:
-    resolution: {integrity: sha512-WPnyzNFVRo6bxpr7bcL27qXtNKNQ3iToziNBpibaXHyKGWQA0+tTLt73QQxC/5zzbM544ih6Ni5L5xrck6rGwg==}
+  /@types/babel__core@7.20.0:
+    resolution: {integrity: sha512-+n8dL/9GWblDO0iU6eZAwEIJVr5DWigtle+Q6HLOrh/pdbXOhOtqzq8VPPE2zvNJzSKY4vH/z3iT3tn0A3ypiQ==}
     dependencies:
-      '@types/babel-generator': 6.25.5
-      '@types/babel-template': 6.25.2
-      '@types/babel-traverse': 6.25.7
-      '@types/babel-types': 7.0.11
-      '@types/babylon': 6.16.6
+      '@babel/parser': 7.21.8
+      '@babel/types': 7.21.5
+      '@types/babel__generator': 7.6.4
+      '@types/babel__template': 7.4.1
+      '@types/babel__traverse': 7.18.5
     dev: true
 
-  /@types/babel-generator@6.25.5:
-    resolution: {integrity: sha512-lhbwMlAy5rfWG+R6l8aPtJdEFX/kcv6LMFIuvUb0i89ehqgD24je9YcB+0fRspQhgJGlEsUImxpw4pQeKS/+8Q==}
+  /@types/babel__generator@7.6.4:
+    resolution: {integrity: sha512-tFkciB9j2K755yrTALxD44McOrk+gfpIpvC3sxHjRawj6PfnQxrse4Clq5y/Rq+G3mrBurMax/lG8Qn2t9mSsg==}
     dependencies:
-      '@types/babel-types': 7.0.11
+      '@babel/types': 7.21.5
     dev: true
 
-  /@types/babel-template@6.25.2:
-    resolution: {integrity: sha512-QKtDQRJmAz3Y1HSxfMl0syIHebMc/NnOeH/8qeD0zjgU2juD0uyC922biMxCy5xjTNvHinigML2l8kxE8eEBmw==}
+  /@types/babel__template@7.4.1:
+    resolution: {integrity: sha512-azBFKemX6kMg5Io+/rdGT0dkGreboUVR0Cdm3fz9QJWpaQGJRQXl7C+6hOTCZcMll7KFyEQpgbYI2lHdsS4U7g==}
     dependencies:
-      '@types/babel-types': 7.0.11
-      '@types/babylon': 6.16.6
-    dev: true
-
-  /@types/babel-traverse@6.25.7:
-    resolution: {integrity: sha512-BeQiEGLnVzypzBdsexEpZAHUx+WucOMXW6srEWDkl4SegBlaCy+iBvRO+4vz6EZ+BNQg22G4MCdDdvZxf+jW5A==}
-    dependencies:
-      '@types/babel-types': 7.0.11
-    dev: true
-
-  /@types/babel-types@7.0.11:
-    resolution: {integrity: sha512-pkPtJUUY+Vwv6B1inAz55rQvivClHJxc9aVEPPmaq2cbyeMLCiDpbKpcKyX4LAwpNGi+SHBv0tHv6+0gXv0P2A==}
+      '@babel/parser': 7.21.8
+      '@babel/types': 7.21.5
     dev: true
 
   /@types/babel__traverse@7.18.5:
     resolution: {integrity: sha512-enCvTL8m/EHS/zIvJno9nE+ndYPh1/oNFzRYRmtUqJICG2VnCSBzMLW5VN2KCQU91f23tsNKR8v7VJJQMatl7Q==}
     dependencies:
       '@babel/types': 7.21.5
-    dev: true
-
-  /@types/babylon@6.16.6:
-    resolution: {integrity: sha512-G4yqdVlhr6YhzLXFKy5F7HtRBU8Y23+iWy7UKthMq/OSQnL1hbsoeXESQ2LY8zEDlknipDG3nRGhUC9tkwvy/w==}
-    dependencies:
-      '@types/babel-types': 7.0.11
     dev: true
 
   /@types/http-cache-semantics@4.0.1:

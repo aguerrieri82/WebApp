@@ -16,16 +16,14 @@ export class IfElementHandler implements ITemplateHandler {
 
         if ((!has && !condition) ||
             (has && condition)) {
-            ctx.error("Just must specify either has or condition.");
+            ctx.error("If must specify either has or condition.");
             return HandleResult.Error;
         }
 
         if (has)
             condition = has + " != null";
 
-        const elseName = `${ctx.htmlNamespace}\\:else`;
-
-        const elseIndex = element.childNodes?.findIndex(a => ctx.isElement(a, elseName));
+        const elseIndex = element.childNodes?.findIndex(a => ctx.isElement(a, "else"));
 
         let elseBlock: ITemplateElement;
 

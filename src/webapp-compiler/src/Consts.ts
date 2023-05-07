@@ -14,4 +14,14 @@ export const TemplateAttributes = [
     "value-mode"
 ]
 
-export const TemplateElements = ["Template", "Foreach", "Class", "Content", "Html", "If", "Node", "Behavoir"];
+export const TemplateElements = [
+    "Template",
+    "Foreach",
+    "Class",
+    "Content",
+    "Html",
+    "If",
+    "Text",
+    "Node",
+    "Behavoir"
+];

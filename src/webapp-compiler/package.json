@@ -1,6 +1,6 @@
 {
   "name": "@eusoft/webapp-compiler",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "packageManager": "pnpm@8.4.0",
   "type": "module",
   "main": "src/index.ts",
@@ -25,7 +25,7 @@
   "devDependencies": {
     "@babel/types": "7.21.5",
     "@types/babel__traverse": "7.18.5",
-    "@types/babel-core": "6.25.7",
+    "@types/babel__core": "7.20.0",
     "@types/jsdom": "21.1.1",
     "@types/node": "20.0.0",
     "@typescript-eslint/parser": "5.59.2",

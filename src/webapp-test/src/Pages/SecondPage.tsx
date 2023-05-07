@@ -1,5 +1,5 @@
 import { Action, Page } from "@eusoft/webapp-ui";
-import { Foreach, Template, forModel, twoWay } from "@eusoft/webapp-jsx";
+import { Foreach, Template, TwoWays, forModel, twoWays, Text } from "@eusoft/webapp-jsx";
 import { ITemplateProvider } from "@eusoft/webapp-core";
 import { app } from "../";
 interface IContentModel extends ITemplateProvider<IContentModel> {
@@ -14,12 +14,13 @@ function Log(props: { message: string }) {
 }
 function Bold(props: { text: string }) {
 
-    return <strong text={props.text} />;
+    return <>{props.text == "mamma" ? <Text>ccc</Text> : <strong text={props.text} />}</>;
 }
 
-function Text(props: { text: string }) {
 
-    return <input value={props.text} value-pool={500} type="text" />
+function Input(props: { text: TwoWays<string> }) {
+
+    return <input value={props.text} value-pool={500} type="text" checked  />
 }
 
 class SecondPage extends Page {
@@ -44,8 +45,8 @@ class SecondPage extends Page {
                 },
                 template: forModel(m => <Template name="SecondPage">
                     <div>
-                        <Text text={twoWay(m.text)} />
-                        <Text text={twoWay(this.text)} />
+                        <Input text={twoWays(m.text)} />
+                        <Input text={twoWays(this.text)} />
                         <Log message={m.text} />
                         <Action executeAsync={() => m.goBack()} content={"Back " + (m.text)} />
                         <Action executeAsync={() => this.showText()} content="Show text" />

@@ -12,9 +12,11 @@ export interface ITemplateNode {
 }
 
 export interface ITemplateText extends ITemplateNode {
+    type: TemplateNodeType.Text;
     value: string;
 }
 export interface ITemplateAttribute extends ITemplateNode {
+    type: TemplateNodeType.Attribute;
     name: string;
     value: string;
     owner: ITemplateElement;
@@ -22,7 +24,8 @@ export interface ITemplateAttribute extends ITemplateNode {
 }
 
 export interface ITemplateElement extends ITemplateNode {
+    type: TemplateNodeType.Element;
     name: string;
     attributes: Record<string, ITemplateAttribute>;
-    childNodes: ITemplateNode[];
+    childNodes: (ITemplateText | ITemplateElement)[];
 }

@@ -12,11 +12,15 @@ export class TextElementHandler implements ITemplateHandler {
 
         const source = element.attributes.src?.value;
 
-        if (!source) {
-            ctx.error("Source not specified in text");
-            return HandleResult.Error;
+        if (source)
+            ctx.writer.write(".text(").writeBinding(source).write(")");
+        else {
+            const text = element.childNodes
+                .filter(a => a.type == TemplateNodeType.Text)
+                .map(a => (a as ITemplateText).value)
+                .join("");
+            ctx.writer.write(".text(").writeJson(text).write(")");
         }
-        ctx.writer.write(".text(").writeBinding(source).write(")");
 
         return HandleResult.SkipChildren;
     }

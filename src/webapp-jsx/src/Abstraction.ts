@@ -48,7 +48,7 @@ type ElementEvents<TModel> = {
 }
 
 type ElementAttributes<TModel, TElement> = {
-    [K in WritableKeys<TElement, string | number>]?: BindValue<TModel, TElement[K]>
+    [K in WritableKeys<TElement, string | number | boolean>]?: BindValue<TModel, TElement[K]>
 }
 
 type ElementProps<TModel extends TemplateModel, TElement> =
