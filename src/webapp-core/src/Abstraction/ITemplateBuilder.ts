@@ -80,6 +80,8 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
 
     debugger(): this;
 
+    logTempatesTree(): void;
+
     readonly model: TModel;
 
     readonly element: TElement;

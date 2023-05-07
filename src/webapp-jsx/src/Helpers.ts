@@ -16,4 +16,9 @@ export function twoWays<T>(value: T): T {
     return value;
 }
 
+export function debug<T>(value: T, ...args: any[]) {
+    debugger;
+    return value;
+}
+
 export type TwoWays<T> = T;

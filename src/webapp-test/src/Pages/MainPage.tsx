@@ -23,6 +23,8 @@ class MainPage extends Page {
     }
 
     actionLabel: string = "Click Me";
+
+    key = "Page 1";
 }
 
 

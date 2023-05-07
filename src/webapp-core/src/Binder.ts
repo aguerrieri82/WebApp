@@ -3,6 +3,7 @@ import type { BindValue, IGetter } from "./Abstraction/IBinder";
 import { IObservableArrayHandler, isObservableArray } from "./Abstraction/IObservableArray";
 import type { IObservableProperty, IPropertyChangedHandler } from "./Abstraction/IObservableProperty";
 import { forEachRev } from "./ArrayUtils";
+import { WebApp } from "./Debug";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
 
@@ -17,7 +18,7 @@ interface IBindingSubscription<TValue = any> {
     name: string;
 }
 
-interface IBinding<TModel, TValue = any> {
+export interface IBinding<TModel, TValue = any> {
 
     lastValue: TValue;
 
@@ -112,9 +113,9 @@ export function createProxy<TObj>(obj: TObj, action?: (obj: any, propName: strin
 
 export class Binder<TModel> {
 
-    private _bindings: IBinding<TModel>[] = [];
-    private _modelBinders: Binder<TModel>[] = [];
-
+    protected _bindings: IBinding<TModel>[] = [];
+    protected _modelBinders: Binder<TModel>[] = [];
+    protected _childBinders: Binder<any>[] = [];
     constructor(model?: TModel) {
 
         this.updateModel(cleanProxy(model));
@@ -164,6 +165,9 @@ export class Binder<TModel> {
             };
 
             this._bindings.push(binding);
+
+            if (WebApp.isDebug)
+                WebApp.bindings.push(binding);
 
             const bindValue = this.getBindingValue(binding);
             
@@ -307,8 +311,15 @@ export class Binder<TModel> {
         this._modelBinders.forEach(binder =>
             binder.cleanBindings(cleanValue));
 
+        this._childBinders.forEach(binder =>
+            binder.cleanBindings(cleanValue));
+
+        if (WebApp.isDebug)
+            WebApp.bindings = WebApp.bindings.filter(a => this._bindings.indexOf(a) == -1);
+
         this._modelBinders = [];
         this._bindings = [];
+        this._childBinders = [];
     }
 
     updateModel(model: TModel) { 

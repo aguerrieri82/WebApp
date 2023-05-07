@@ -1,6 +1,6 @@
 import { Action, Page } from "@eusoft/webapp-ui";
-import { Foreach, Template, TwoWays, forModel, twoWays, Text } from "@eusoft/webapp-jsx";
-import { ITemplateBuilder, ITemplateProvider } from "@eusoft/webapp-core";
+import { Foreach, Template, TwoWays, forModel, twoWays, Text, debug } from "@eusoft/webapp-jsx";
+import { ITemplateBuilder, ITemplateProvider, propOf } from "@eusoft/webapp-core";
 import { app } from "../";
 interface IContentModel extends ITemplateProvider<IContentModel> {
     text: string;
@@ -14,7 +14,7 @@ function Log(props: { message: string }) {
 }
 function Bold(props: { text: string }) {
 
-    return <>{props.text == "mamma" ? <Text>ccc</Text> : <strong text={props.text} />}</>;
+    return <>{props.text == "" ? <Text>No input text</Text> : <strong text={props.text} />}</>;
 }
 
 function Blink(props: { time: number, color: string }) {
@@ -36,8 +36,6 @@ function Blink(props: { time: number, color: string }) {
         }, props.time);
     }
 }
-
-
 function Input(props: { text: TwoWays<string> }) {
 
     return <input value={props.text} value-pool={500} type="text" checked />
@@ -50,38 +48,44 @@ class SecondPage extends Page {
 
         this.text = "yellow";
 
+        const content = {
+            text: "main text",
+            items: [
+                { name: "Max" },
+                { name: "Lucy" },
+            ],
+            goBack() {
+                app.pageHost.pop();
+            },
+            template: forModel(m => <Template name="SecondPage">
+                <div>
+                    <Input text={twoWays(m.text)} />
+                    <Input text={twoWays(this.text)} />
+                    <Log message={m.text} />
+
+                    <Action executeAsync={() => m.goBack()} content={"Back: " + (m.text)} />
+                    <Action executeAsync={() => this.showText()} content="Show color" />
+                    <ul>
+                        <Foreach src={m.items}>
+                            {i => <li style-margin="16px" text={i.name}>
+                                <Blink time={500} color={this.text} />
+                            </li>}
+                        </Foreach>
+                    </ul>
+                </div>
+                <Bold text={m.text} />
+            </Template>)
+        } as IContentModel;
+
+        propOf(content, "text").subscribe(a => {
+            console.log(a);
+        });
+
         this.configure({
             name: "second",
             title: "Seconda Pagina",
             route: "/second",
-            content: {
-                text: "cazzo",
-                items: [
-                    { name: "Luca" },
-                    { name: "Mario" },
-                ],
-                goBack() {
-                    app.pageHost.pop();
-                },
-                template: forModel(m => <Template name="SecondPage">
-                    <div>
-                        <Input text={twoWays(m.text)} />
-                        <Input text={twoWays(this.text)} />
-                        <Log message={m.text} />
-
-                        <Action executeAsync={() => m.goBack()} content={"Back " + (m.text)} />
-                        <Action executeAsync={() => this.showText()} content="Show text" />
-                        <ul>
-                            <Foreach src={m.items}>
-                                {i => <li style-margin="16px" text={i.name}>
-                                    <Blink time={500} color={this.text} />
-                                </li>}
-                            </Foreach>
-                        </ul>
-                    </div>
-                    <Bold text={m.text} />
-                </Template>)
-            } as IContentModel
+            content
         });
     }
 
@@ -95,6 +99,8 @@ class SecondPage extends Page {
     }
 
     text: string;
+
+    key = "Page 2";
 }
 
 export const secondPage = new SecondPage();

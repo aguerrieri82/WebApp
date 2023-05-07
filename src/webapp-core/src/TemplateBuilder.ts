@@ -7,6 +7,7 @@ import { ITemplate, isTemplate } from "./Abstraction/ITemplate";
 import type { ComponentType, IChildTemplateBuilder, ITemplateBuilder, InputValueMode, RefNodePosition, TemplateValueMap } from "./Abstraction/ITemplateBuilder";
 import { CatalogTemplate, ITemplateProvider, isTemplateProvider } from "./Abstraction/ITemplateProvider";
 import { Binder } from "./Binder";
+import { WebApp } from "./Debug";
 import { getTypeName, isClass } from "./ObjectUtils";
 import { propOf } from "./Properties";
 
@@ -42,6 +43,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         super(model);
 
+        if (!WebApp.root) 
+            WebApp.root = this;
+   
         this.parent = parent;
 
         this.element = element;
@@ -63,6 +67,8 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             innerBuilder.isInline = this.isInline;
             innerBuilder.inlineMode = "inherit";
         }
+
+        this._childBinders.push(innerBuilder);
 
         return innerBuilder;
     }
@@ -95,6 +101,31 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             this._updateNode.parentNode.replaceChild(this.element, this._updateNode)
             this._updateNode = null;
         }
+    }
+
+    logTempatesTree() {
+
+        console.group(`${this.element?.nodeName} (${getTypeName(this.model)})`);
+
+        console.log("Model", getTypeName(this.model), JSON.parse(JSON.stringify(this.model)));
+
+        console.group(`Bindings (${this._bindings.length})`);
+
+        for (const bind of this._bindings) {
+            console.group(`"${bind.value.toString()}" (${bind.subscriptions.length})`);
+            console.log(bind);
+            console.groupEnd();
+        }
+
+        console.groupEnd();
+
+        for (const child of this._childBinders as TemplateBuilder<any>[])
+            child.logTempatesTree();
+
+        for (const child of this._modelBinders as TemplateBuilder<any>[])
+            child.logTempatesTree();
+
+        console.groupEnd();
     }
 
     begin(refNode?: Node, refNodePos?: RefNodePosition, marker?: string): this {
@@ -139,7 +170,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this;
     }
 
-    clear(remove: boolean = false): this {
+    clear(remove: boolean = false, cleanValue = true): this {
 
         this._childCount = 0;
 
@@ -180,7 +211,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         else
             this._lastElement = this._startElement;
 
-        this.cleanBindings(true);
+        this.cleanBindings(cleanValue);
 
         return this;
     }
@@ -421,6 +452,8 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         childBuilder.isInline = inline;
         childBuilder.inlineMode = "explicit";
 
+
+
         this.bind(content, (value, oldValue, isUpdate, isClear) => {
 
             if (isClear)
@@ -438,11 +471,8 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 else {
 
                     if (isUpdate)
-                        childBuilder.clear();
-                    /*
-                    if (isViewComponent(oldValue) && oldValue.unmount)
-                        oldValue.unmount();
-                    */
+                        childBuilder.clear(false, false); //TODO: cleanValue was true
+      
                     if (value) {
 
                         const template = this.templateFor(value);
@@ -451,8 +481,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                             throw new Error("Template '" + value.template + "' not found.");
 
                         childBuilder.updateModel(value);
-
-                        //console.debug("Rebuild", this.model);
 
                         template(childBuilder);
                     }

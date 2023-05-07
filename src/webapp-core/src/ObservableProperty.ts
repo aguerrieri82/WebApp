@@ -1,5 +1,6 @@
 ﻿import { IObservableProperty, IPropertyChangedHandler } from "./Abstraction/IObservableProperty";
 import { forEachRev } from "./ArrayUtils";
+import { WebApp } from "./Debug";
 
 export class ObservableProperty<TValue = any> implements IObservableProperty<TValue> {
 
@@ -45,8 +46,11 @@ export class ObservableProperty<TValue = any> implements IObservableProperty<TVa
         if (!this._handlers)
             this._handlers = [];
         const index = this._handlers.indexOf(handler);
-        if (index == -1)
+        if (index == -1) {
             this._handlers.push(handler);
+            if (WebApp.isDebug)
+                WebApp.subs.push(handler);
+        }
         return handler;
     }
 
@@ -55,8 +59,12 @@ export class ObservableProperty<TValue = any> implements IObservableProperty<TVa
         if (!this._handlers)
             return;
         const index = this._handlers.indexOf(handler);
-        if (index != -1)
+        if (index != -1) {
+            if (WebApp.isDebug)
+                WebApp.subs = WebApp.subs.filter(a => a == handler);
             this._handlers.splice(index, 1);
+        }
+   
     }
 
 
