@@ -25,7 +25,7 @@ export const PageTemplates: TemplateMap<Page> = {
                 {m.content}
             </section>
         </div>
-    </Template>) as ITemplate<Page>
+    </Template>)
 
 }
 export class Page<TOptions extends IPageOptions = IPageOptions> extends Component<TOptions> implements IPage {

@@ -1,18 +1,19 @@
 import { Bindable, IComponentOptions, IComponent, Component, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
 import { Template, forModel } from "@eusoft/webapp-jsx";
 import "./index.scss";
+import { Ripple } from "../../Behavoirs/Ripple";
 
 interface IActionOptions extends IComponentOptions {
 
     content?: Bindable<string | IComponent>;
 
-    executeAsync?: () => Promise<void>|void;
+    executeAsync?: () => Promise<void> | void;
 }
 
 export const ActionTemplates: TemplateMap<Action> = {
 
-    "Button": forModel(a => <Template name="Action"> 
-        <button behavoir="Ripple" className={a.className} on-click={a.executeAsync()}>
+    "Button": forModel(a => <Template name="Action">
+        <button behavoir={Ripple} className={a.className} on-click={a => a.executeAsync()}>
             {a.content}
         </button>
     </Template>)

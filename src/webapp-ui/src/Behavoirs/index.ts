@@ -1,1 +1,1 @@
-export * from "./RippleBehavoir"
+export * from "./Ripple"

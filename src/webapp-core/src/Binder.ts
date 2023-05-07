@@ -36,6 +36,9 @@ interface IPropertyAccess {
     propName: string;
 }
 
+type CleanAction = () => any;
+
+
 function cleanProxy<TObj>(obj: TObj): TObj{
 
     if (obj && typeof obj === "object") {
@@ -79,7 +82,7 @@ export function createProxy<TObj>(obj: TObj, action?: (obj: any, propName: strin
 
             if (!(prop in innerProxies)) {
 
-                if (action(obj, prop))
+                if (!action || action(obj, prop))
                     innerProxies[prop] = createProxy(value, action);
                 else
                     innerProxies[prop] = value;
@@ -100,7 +103,7 @@ export function createProxy<TObj>(obj: TObj, action?: (obj: any, propName: strin
             if (typeof prop === "symbol")
                 return true;
 
-            if (action(obj, prop))
+            if (!action || action(obj, prop))
                 innerProxies[prop] = createProxy(value, action);
             else
                 innerProxies[prop] = value;
@@ -116,9 +119,15 @@ export class Binder<TModel> {
     protected _bindings: IBinding<TModel>[] = [];
     protected _modelBinders: Binder<TModel>[] = [];
     protected _childBinders: Binder<any>[] = [];
+    protected _cleanActions: CleanAction[] = [];
+    protected _tag: string;
     constructor(model?: TModel) {
 
         this.updateModel(cleanProxy(model));
+    }
+
+    protected onClean(action: CleanAction) {
+        this._cleanActions.push(action);
     }
 
     protected createProxy<TObj>(obj: TObj, action?: (obj: any, propName: string) => boolean) {
@@ -130,8 +139,9 @@ export class Binder<TModel> {
         });
     }
 
-    protected register(binder: Binder<TModel>) {
+    protected register(binder: Binder<TModel>, tag?: string) {
 
+        binder._tag = tag;
         this._modelBinders.push(binder);
     }
 
@@ -314,12 +324,15 @@ export class Binder<TModel> {
         this._childBinders.forEach(binder =>
             binder.cleanBindings(cleanValue));
 
+        this._cleanActions.forEach(a => a());
+
         if (WebApp.isDebug)
             WebApp.bindings = WebApp.bindings.filter(a => this._bindings.indexOf(a) == -1);
 
         this._modelBinders = [];
         this._bindings = [];
         this._childBinders = [];
+        this._cleanActions = [];
     }
 
     updateModel(model: TModel) { 

@@ -210,7 +210,7 @@ export class JsxCompiler extends BaseCompiler {
         }
 
 
-        traverseFromRoot(template.parentPath, {
+        traverseFromRoot(template, {
 
             exit: path => {
 
@@ -305,6 +305,7 @@ export class JsxCompiler extends BaseCompiler {
                                 return;
                             }
                         }
+
                         if (path.isConditionalExpression()) {
 
                             enterNewElement("t:if");
@@ -329,11 +330,37 @@ export class JsxCompiler extends BaseCompiler {
                         }
                     }
 
+                    if (path.isLogicalExpression() && path.node.operator == "&&") {
+                        const right = path.get("right");
+
+                        if (right.isJSXFragment() || right.isJSXElement()) {
+
+                            enterNewElement("t:if");
+                            curAttribute = createAttribute("condition", null, curElement);
+
+                            const left = path.get("left");
+                            left.visit();
+                            curAttribute = null;
+
+                            right.visit();
+
+                            exitElement();
+
+                            path.shouldSkip = true;
+
+                            return;
+                        }
+                    }
+
                     const bindMode = transformExpression(path);
 
                     let value = path.toString();
 
-                    if (!isBinding(path) && curAttribute?.name != "t:value-pool")
+                    if (!isBinding(path) &&
+                        curAttribute?.name != "t:value-pool" &&
+                        !curAttribute?.name.startsWith("t:on-") && 
+                        curAttribute?.name != "t:behavoir")
+
                         value = defModel.name + " => " + value;
 
                     if (curAttribute) {

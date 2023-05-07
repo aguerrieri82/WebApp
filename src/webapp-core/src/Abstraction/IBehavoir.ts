@@ -5,4 +5,9 @@
     detach(element: TElement, model?: TModel): void;
 }
 
+export function isBehavoir(value: any): value is IBehavoir {
 
+    return value && typeof value === "object" &&
+        "attach" in value && typeof value["attach"] === "function" &&
+        "detach" in value && typeof value["detach"] === "function";
+}

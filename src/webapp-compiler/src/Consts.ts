@@ -22,6 +22,5 @@ export const TemplateElements = [
     "Html",
     "If",
     "Text",
-    "Node",
-    "Behavoir"
+    "Node"
 ];

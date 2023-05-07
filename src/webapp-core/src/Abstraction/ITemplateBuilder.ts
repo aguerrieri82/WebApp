@@ -1,6 +1,5 @@
 ﻿import type { IBehavoir } from "./IBehavoir";
-import type { BindValue, BoundObject } from "./IBinder";
-import { IComponent } from "./IComponent";
+import type { BindValue, BoundObject, BoundObjectModes } from "./IBinder";
 import type { ITemplate } from "./ITemplate";
 import type { CatalogTemplate, ITemplateProvider } from "./ITemplateProvider";
 
@@ -8,11 +7,22 @@ export type TemplateValueMap<TModel, TObj extends { [key: string]: any }> = { [T
 
 export type RefNodePosition = "after" | "before" | "inside";
 
-export type ComponentType<TComp, TProps> =
+export type ClassComponenType<TProps> = IBehavoir | ITemplateProvider<TProps> & TProps; 
+
+export type FunctionalComponenType<TProps> = ITemplate<TProps> | null | undefined | void;
+
+export type BehavoirType<TElement extends Element, TModel> = string | { new(): IBehavoir } | IBehavoir | BehavoirType<TElement, TModel>[];
+
+export type ComponentType<TProps, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>> =
     { new (props?: TProps): TComp } |
-    { (props?: TProps) : ITemplate<TProps> | null | undefined | void }
+    { (props?: TProps): TResult }
 
 export type InputValueMode = "focus" | "change" | "keyup" | "pool";
+
+export interface IComponentInfo<TModel> {
+    model?: TModel;
+    component: ClassComponenType<TModel> | FunctionalComponenType<TModel>;
+}
 
 export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement> {
 
@@ -27,8 +37,10 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
     foreach<TItem>(selector: BindValue<TModel, TItem[]>, templateOrName?: CatalogTemplate<TItem>): this;
 
     if(condition: BindValue<TModel, boolean>, trueTemplate: ITemplate<TModel>, falseTemplate?: ITemplate<TModel>): this;
+        
+    createComponent<TProps extends Record<string, any>, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): IComponentInfo<TProps>;
 
-    component<TComp extends IComponent, TProps extends TComp>(constructor: ComponentType<TComp, TProps>, props: BoundObject<TProps>): this;
+    component<TProps extends Record<string, any>, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): this;
 
     content<TInnerModel extends ITemplateProvider>(content: Iterable<BindValue<TModel, TInnerModel>>, inline?: boolean): this;
 
@@ -70,9 +82,8 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
 
     style<TKey extends keyof CSSStyleDeclaration>(name: TKey, value: BindValue<TModel, CSSStyleDeclaration[TKey]>): this;
 
-    behavoir(value: IBehavoir<TElement, TModel>): this;
+    behavoir(value: BehavoirType<TElement, TModel>): this;
 
-    behavoir(name: string): this;
 
     styles(value: TemplateValueMap<TModel, CSSStyleDeclaration>): this;
 

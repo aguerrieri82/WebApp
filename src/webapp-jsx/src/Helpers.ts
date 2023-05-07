@@ -1,4 +1,4 @@
-import { BindMode, BindValue, ITemplate } from "@eusoft/webapp-core";
+import { BindMode, BindValue, ITemplate, PARENT } from "@eusoft/webapp-core";
 import { ModelBuilder, TemplateModel } from "./Abstraction";
 
 export function forModel<TModel extends TemplateModel>(action: ModelBuilder<TModel>): ITemplate<TModel> {
@@ -19,6 +19,11 @@ export function twoWays<T>(value: T): T {
 export function debug<T>(value: T, ...args: any[]) {
     debugger;
     return value;
+}
+
+export function getParent<T>(m: object): T {
+
+    return m[PARENT] as T;
 }
 
 export type TwoWays<T> = T;

@@ -11,9 +11,10 @@ type CommonKeys<TSrc, TDst> = {
     [K in (keyof TSrc & keyof TDst & string) /*as TSrc[K] extends Bindable<TDst[K]> ? K : never*/]: TSrc[K]
 };
 
-export class Component<TOptions extends IComponentOptions = IComponentOptions> implements IComponent<TOptions> {
+export abstract class Component<TOptions extends IComponentOptions = IComponentOptions> implements IComponent<TOptions> {
 
     protected _bounds: IBound[];
+    protected _options: TOptions;
 
     constructor(options?: Partial<TOptions>) {
 
@@ -27,8 +28,8 @@ export class Component<TOptions extends IComponentOptions = IComponentOptions> i
         if (!newOptions)
             return;
 
-        this.options = {
-            ...this.options,
+        this._options = {
+            ...this._options,
             ...newOptions
         }
 
@@ -73,12 +74,12 @@ export class Component<TOptions extends IComponentOptions = IComponentOptions> i
 
     protected bindOptions<TKey extends keyof CommonKeys<TOptions, this>>(...keys: TKey[]) {
 
-        if (!this.options)
+        if (!this._options)
             return; 
 
         for (const key of keys) {
 
-            const value = (key in this.options ? this.options[key] : undefined) as unknown as this[TKey];
+            const value = (key in this._options ? this._options[key] : undefined) as unknown as this[TKey];
 
             this.bind(key, value);
         }
@@ -116,5 +117,5 @@ export class Component<TOptions extends IComponentOptions = IComponentOptions> i
 
     style: ComponentStyle;
 
-    options: TOptions;
+
 }

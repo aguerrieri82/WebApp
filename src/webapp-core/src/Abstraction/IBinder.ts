@@ -10,7 +10,7 @@ export type BindValue<TModel, TValue> = TValue | IGetter<TModel & IBindable, TVa
 
 
 export type BoundObject<T extends {}> = {
-    [K in keyof T & string]: BindValue<T, T[K]>
+    [K in keyof T]: BindValue<T, T[K]>
 }
 
 export type BoundObjectModes<T> = {

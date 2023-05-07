@@ -8,6 +8,14 @@ interface IContentModel extends ITemplateProvider<IContentModel> {
     goBack: () => Promise<any>;
 }
 
+function Bold2(props: { text: string }) {
+
+    return <>
+        {((props.text == "22" || props.text == "23") && props.text == "2") && <span></span>}
+    </>
+}
+
+
 function Log(props: { message: string }) {
 
     console.log(props.message);
@@ -16,6 +24,8 @@ function Bold(props: { text: string }) {
 
     return <>{props.text == "mamma" ? "ccc" : <strong text={props.text} />}</>;
 }
+
+
 
 function Text(props: { text: string }) {
 
@@ -51,7 +61,10 @@ class SecondPage extends Page {
                         <Foreach src={m.items}>
                             {x => <span>{x.name}</span>}
                         </Foreach>
-                        <Action executeAsync={() => this.showText()} content="Show text" />
+                        <Action executeAsync={() => this.showText()}>
+                            Show Text
+                            {"caso"}
+                        </Action>
    
                     </div>
                     <Bold text={m.text} />

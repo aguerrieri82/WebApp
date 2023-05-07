@@ -9,8 +9,6 @@ export interface IComponent<TOptions extends IComponentOptions = IComponentOptio
     style?: Bindable<ComponentStyle>;
 
     template: CatalogTemplate<this>;
-
-    readonly options: TOptions;
 }
 
 export function isComponent(obj: any): obj is IComponent {

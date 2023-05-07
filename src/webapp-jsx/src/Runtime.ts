@@ -77,7 +77,7 @@ export function processNode<TModel extends TemplateModel>(context: ITemplateCont
                     childBuilder.set(prop, value)
                 }
             }
-            processNode({ builder: childBuilder }, node.props.children)
+            processNode({ builder: childBuilder }, node.props.content)
             childBuilder.endChild()
         }
         else {
@@ -105,12 +105,12 @@ export function createElement<
     TModel extends TemplateModel,
     TProps extends JsxComponentProps<TModel>,
     TChildren extends JsxNode<TModel>>
-    (type: JsxElementType<TModel, TProps>, props: TProps, ...children: TChildren[]): JsxElement<TModel, TProps> {
+    (type: JsxElementType<TModel, TProps>, props: TProps, ...content: TChildren[]): JsxElement<TModel, TProps> {
 
     if (typeof (type) == "function" && (type as Function) == Template)
         return type({
             ...props,
-            children
+            content
         });
 
     else {
@@ -118,7 +118,7 @@ export function createElement<
             type: type,
             props: {
                 ...props,
-                children
+                content
             }
         }
     }

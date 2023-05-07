@@ -1,10 +1,9 @@
-import type { IBehavoir } from "./Abstraction/IBehavoir";
+import { IBehavoir, isBehavoir } from "./Abstraction/IBehavoir";
 import type { BindValue, BoundObject, BoundObjectModes } from "./Abstraction/IBinder";
-import { IComponent } from "./Abstraction/IComponent";
 import { isHTMLContainer } from "./Abstraction/IHTMLContainer";
 import { IObservableArrayHandler, isObservableArray } from "./Abstraction/IObservableArray";
 import { ITemplate, isTemplate } from "./Abstraction/ITemplate";
-import type { ComponentType, IChildTemplateBuilder, ITemplateBuilder, InputValueMode, RefNodePosition, TemplateValueMap } from "./Abstraction/ITemplateBuilder";
+import type { BehavoirType, ClassComponenType, ComponentType, FunctionalComponenType, IChildTemplateBuilder, IComponentInfo, ITemplateBuilder, InputValueMode, RefNodePosition, TemplateValueMap } from "./Abstraction/ITemplateBuilder";
 import { CatalogTemplate, ITemplateProvider, isTemplateProvider } from "./Abstraction/ITemplateProvider";
 import { Binder } from "./Binder";
 import { WebApp } from "./Debug";
@@ -26,6 +25,10 @@ export function defineBehavoir(name: string, factory: () => IBehavoir) {
     BehavoirCatalog[name] = factory;
 }
 
+export function createComponent() {
+
+}
+
 export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     extends Binder<TModel>
     implements ITemplateBuilder<TModel> {
@@ -38,6 +41,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     protected _updateNode: Node = null;
     protected _shadowUpdate = false;
     protected _isRemoved = false;
+    protected _behavoirs: IBehavoir<TElement, TModel>[] = [];
 
     constructor(model: TModel, element: TElement, parent?: TemplateBuilder<any>) {
 
@@ -105,7 +109,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     logTempatesTree() {
 
-        console.group(`${this.element?.nodeName} (${getTypeName(this.model)})`);
+        console.group(`[${this._tag ?? ""}] ${this.element?.nodeName} (${getTypeName(this.model)})`);
 
         console.log("Model", getTypeName(this.model), JSON.parse(JSON.stringify(this.model)));
 
@@ -119,8 +123,10 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         console.groupEnd();
 
-        for (const child of this._childBinders as TemplateBuilder<any>[])
-            child.logTempatesTree();
+        for (const child of this._childBinders as TemplateBuilder<any>[]) {
+            if (this._modelBinders.indexOf(child) == -1)
+                child.logTempatesTree();
+        }
 
         for (const child of this._modelBinders as TemplateBuilder<any>[])
             child.logTempatesTree();
@@ -170,6 +176,17 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this;
     }
 
+    protected execForSubBuilder(action: (builder: TemplateBuilder<any>) => void) {
+
+        const allBuilder = [...this._childBinders, ...this._modelBinders] as TemplateBuilder<any>[];
+
+        for (const builder of allBuilder) {
+            action(builder);
+            builder.execForSubBuilder(action);
+        }
+    }
+
+    //TODO improve this, call for all sub models avoid double calls
     clear(remove: boolean = false, cleanValue = true): this {
 
         this._childCount = 0;
@@ -192,8 +209,14 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
             if (mustDelete) {
 
-                if (mustDelete)
-                    curNode.parentNode.removeChild(curNode);
+                curNode.parentNode.removeChild(curNode);
+
+                this.execForSubBuilder(builder => {
+
+                    for (const item of builder._behavoirs)
+                        item.detach(builder.element, builder.model);
+                    builder._behavoirs = [];
+                });
             }
 
             if (curNode == this._startElement)
@@ -309,6 +332,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 }
 
                 itemBuilder.index = index;
+                itemBuilder._tag = "array[" + index + "]";
 
                 let itemTemplate = template;
 
@@ -352,7 +376,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         const childBuilder = this.beginTemplate(this.model);
 
-        this.register(childBuilder);
+        this.register(childBuilder, "if");
 
         this.bind(condition, (value, oldValue, isUpdate, isClear) => {
 
@@ -395,48 +419,70 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return result;
     }
 
-    component<TComp extends IComponent, TProps extends TComp>(constructor: ComponentType<TComp, TProps>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): this {
+    createComponent<TProps extends Record<string, any>, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): IComponentInfo<TProps> {
 
-        let model: TProps;
+        let model: Record<string, any>;
         let callOnChange = false;
 
         if (isClass(constructor))
-            model = new constructor() as TProps;
+            model = new constructor()
         else
-            model = {} as TProps
+            model = {}
 
         if (props) {
 
-            props = props as any;
-
             for (const prop in props) {
 
-                this.bind((props as any)[prop], value => {
-                    (model as any)[prop] = value;
+                const propValue = props[prop];
+            
+                this.bind(propValue, value => {
+                    model[prop] = value;
                     if (callOnChange && !isClass(constructor))
-                        constructor(model);
+                        constructor(model as TProps);
                 });
 
-                const mode = modes ? (modes as any)[prop] : undefined;
+                const mode = modes ? modes[prop] : undefined;
                 if (mode == "two-ways") {
-                    const bindProp = this.getBindingProperty((props as any)[prop]);
+                    const bindProp = this.getBindingProperty(propValue);
                     if (bindProp) {
-                        const modelProp = propOf(model, prop as any);
-                        modelProp.subscribe(v => bindProp.set(v));
+                        const modelProp = propOf(model, prop);
+                        const handler = modelProp.subscribe(v => bindProp.set(v));
+                        this.onClean(() => modelProp.subscribe(handler));
                     }
                 }
             }
         }
 
         if (isClass(constructor))
-            return this.content(model);
+            return {
+                component: model as TComp
+            }
 
-        const result = constructor(model);
+        const result = constructor(model as TProps);
 
-        if (isTemplate(result))
-            return this.template(result, model);
+        callOnChange = !isTemplate(result);
 
-        callOnChange = true;
+        return {
+            component: result,
+            model: model as TProps
+        }
+    }
+
+    component<TProps, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): this {
+
+        const result = this.createComponent(constructor, props, modes);
+
+        if (!result.model) {
+
+            if (isTemplateProvider(result.component))
+                return this.content(result.component);
+
+            if (isBehavoir(result.component))
+                return this.behavoir(result.component);
+        }
+
+        if (isTemplate(result.component)) 
+            return this.template(result.component, result.model);
 
         return this;
 
@@ -451,8 +497,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         childBuilder.isInline = inline;
         childBuilder.inlineMode = "explicit";
-
-
+        childBuilder._tag = "content"; 
 
         this.bind(content, (value, oldValue, isUpdate, isClear) => {
 
@@ -572,7 +617,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         if (childElement == this.element)
             childBuilder._lastElement = this._lastElement;
 
-        this.register(childBuilder);
+        this.register(childBuilder, "beginChild");
 
         this._childCount++;
 
@@ -587,7 +632,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         const childBuilder = new TemplateBuilder<TModel, HTMLElementTagNameMap[TKey]>(this.model, this.createElement(name, namespace), this);
 
-        this.register(childBuilder);
+        this.register(childBuilder, "child");
 
         if (typeof builderOrAttributes == "function")
             builderOrAttributes(childBuilder);
@@ -616,7 +661,8 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     }
 
     on<TKey extends keyof HTMLElementEventMap>(event: TKey, handler: (model: TModel, e?: HTMLElementEventMap[TKey]) => void): this {
-        this.element.addEventListener(event, ev => handler(this.model, ev));
+        this.element.addEventListener(event, ev =>
+            handler(this.createProxy(this.model), ev));
         return this;
     }
 
@@ -627,7 +673,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     class(name: string | BindValue<TModel, string>, condition?: BindValue<TModel, Boolean>): this {
         if (condition && typeof (name) == "string") {
             const nameParts: string[] = name ? name.split(" ") : [];
-            debugger;
+
             this.bind(condition, value => {
                 if (value)
                     nameParts.forEach(a => this.element.classList.add(a));
@@ -773,16 +819,22 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this;
     }
 
-    behavoir(value: IBehavoir<TElement, TModel>): this;
 
-    behavoir(name: string): this;
+    behavoir(nameOrValue: BehavoirType<TElement, TModel>): this {
 
-    behavoir(nameOrValue: any): this {
+        if (!Array.isArray(nameOrValue))
+            nameOrValue = [nameOrValue];
 
-        if (typeof nameOrValue == "string")
-            BehavoirCatalog[nameOrValue]().attach(this.element, this.model);
-        else
-            (nameOrValue as IBehavoir).attach(this.element, this.model);
+        for (let item of nameOrValue) {
+
+            if (typeof item == "string")
+                item = BehavoirCatalog[item]();
+
+            else if (typeof item == "function")
+                item = new item();
+
+            this._behavoirs.push(item as IBehavoir);
+        }
 
         return this;
     }
@@ -864,6 +916,9 @@ class ChildTemplateBuilder<TModel, TElement extends HTMLElement, TParent extends
             if (this._lastElement)
                 this.parent["_lastElement"] = this._lastElement;
         }
+
+        for (const item of this._behavoirs)
+            item.attach(this.element, this.model);
 
         return <TParent>this.parent;
     }

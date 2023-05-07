@@ -28,6 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{847BAF
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 		..\README.md = ..\README.md
+		..\docs\ToDo.docx = ..\docs\ToDo.docx
 		..\web-app.xsd = ..\web-app.xsd
 	EndProjectSection
 EndProject

@@ -1,7 +1,8 @@
 import { Action, Page } from "@eusoft/webapp-ui";
 import { Foreach, Template, TwoWays, forModel, twoWays, Text, debug } from "@eusoft/webapp-jsx";
-import { ITemplateBuilder, ITemplateProvider, propOf } from "@eusoft/webapp-core";
+import { ITemplateBuilder, ITemplateProvider, OptionsFor, PARENT, propOf } from "@eusoft/webapp-core";
 import { app } from "../";
+import { Behavoir } from "@eusoft/webapp-core/src/Behavoir";
 interface IContentModel extends ITemplateProvider<IContentModel> {
     text: string;
     items: { name: string }[];
@@ -13,11 +14,35 @@ function Log(props: { message: string }) {
     console.log(props.message);
 }
 function Bold(props: { text: string }) {
-
     return <>{props.text == "" ? <Text>No input text</Text> : <strong text={props.text} />}</>;
 }
 
-function Blink(props: { time: number, color: string }) {
+class Blink extends Behavoir<OptionsFor<Blink>> {
+
+    protected _timer: NodeJS.Timeout;
+
+    attach(element: HTMLElement) {
+
+        const doBlink = () => {
+
+            if (element.style.background == "")
+                element.style.background = this.color;
+            else
+                element.style.background = "";
+
+            if (!this._isDetach)
+                setTimeout(doBlink, this.time)
+        };
+
+        doBlink();
+    }
+
+    time: number;
+
+    color: string;
+}
+
+function DoBlink(props: { time: number, color: string }) {
 
     return (t: ITemplateBuilder<any>) => {
 
@@ -64,11 +89,12 @@ class SecondPage extends Page {
                     <Log message={m.text} />
 
                     <Action executeAsync={() => m.goBack()} content={"Back: " + (m.text)} />
-                    <Action executeAsync={() => this.showText()} content="Show color" />
+                    <Action executeAsync={() => this.showText()} content="Show Text"/>
                     <ul>
                         <Foreach src={m.items}>
                             {i => <li style-margin="16px" text={i.name}>
                                 <Blink time={500} color={this.text} />
+ 
                             </li>}
                         </Foreach>
                     </ul>
@@ -99,8 +125,6 @@ class SecondPage extends Page {
     }
 
     text: string;
-
-    key = "Page 2";
 }
 
 export const secondPage = new SecondPage();

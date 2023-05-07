@@ -1,9 +1,7 @@
-import type { BindValue, ITemplateProvider, ITemplateBuilder, ITemplate, InputValueMode } from "@eusoft/webapp-core";
-
+import type { BindValue, ITemplateProvider, ITemplateBuilder, ITemplate, InputValueMode, IBehavoir, WritableKeys, EmptyConstructor } from "@eusoft/webapp-core";
 export interface ITemplateContext<TModel> {
     builder: ITemplateBuilder<TModel>;
 }
-
 
 export type TemplateModel = object | string | number | boolean;
 
@@ -24,8 +22,8 @@ export type JsxNode<TModel extends TemplateModel> =
     JsxNode<TModel>[] |
     ModelBuilder<TModel> 
 
-export type JsxComponentProps<TModel extends TemplateModel, TChildrenModel extends TemplateModel = TModel, TChildren extends JsxNode<TChildrenModel> = JsxNode<TChildrenModel>> = {
-    children?: TChildren;
+export type JsxComponentProps<TModel extends TemplateModel, TContentModel extends TemplateModel = TModel, TContent extends JsxNode<TContentModel> = JsxNode<TContentModel>> = {
+    content?: TContent;
     context?: ITemplateContext<TModel>;
 }
 
@@ -33,15 +31,6 @@ export interface JsxElement<TModel extends TemplateModel, TProps extends JsxComp
     type: JsxElementType<TModel, TProps>;
     props: TProps;
 }
-
-type IfEquals<X, Y, A = X, B = never> =
-    (<T>() => T extends X ? 1 : 2) extends
-    (<T>() => T extends Y ? 1 : 2) ? A : B;
-
-
-type WritableKeys<T, TProp> = {
-    [P in keyof T]-?: T[P] extends TProp ? IfEquals<{ [Q in P]: T[P] }, { -readonly [Q in P]: T[P] }, P> : never
-}[keyof T];
 
 type ElementEvents<TModel> = {
     [K in keyof HTMLElementEventMap as K extends string ? `on-${K}` : never]?:{ (model: TModel, e?: HTMLElementEventMap[K]) : void } | object | number | boolean | void
@@ -58,12 +47,12 @@ type ElementProps<TModel extends TemplateModel, TElement> =
         style?: {
             [P in keyof CSSStyleDeclaration]?: BindValue<TModel, CSSStyleDeclaration[P]>
         };
-        children?: JsxNode<TModel>;
+        content?: JsxNode<TModel>;
         text?: BindValue<TModel, string | boolean>;
         visible?: BindValue<TModel, boolean>;
         html?: BindValue<TModel, string>;
         focus?: BindValue<TModel, boolean>;
-        behavoir?: string | string[];
+        behavoir?: string | string[] | EmptyConstructor<IBehavoir> | EmptyConstructor<IBehavoir>[] | IBehavoir | IBehavoir[];
     }
 
 type InputProps<TModel extends TemplateModel, TElement> =
@@ -77,13 +66,11 @@ type InputProps<TModel extends TemplateModel, TElement> =
 declare global {
     namespace JSX {
 
-        interface ElementChildrenAttribute { children: {} }
+        interface ElementChildrenAttribute { content: {} }
 
-        interface ElementAttributesProperty { options: {} } 
+        interface ElementAttributesProperty { _options: {} } 
 
-        interface ElementClass extends ITemplateProvider {
-
-        }
+        type ElementClass = ITemplateProvider | IBehavoir;
 
         type Element = JsxNode<any>;
 

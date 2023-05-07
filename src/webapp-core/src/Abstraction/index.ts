@@ -11,3 +11,4 @@ export * from "./IComponentOptions";
 export * from "./IObservableProperty";
 export * from "./IObservableArray";
 export * from "./IBound";
+export * from "./Types";

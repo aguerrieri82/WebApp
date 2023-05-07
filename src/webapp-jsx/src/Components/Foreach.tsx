@@ -11,7 +11,7 @@ export interface IForeachProps<TModel extends TemplateModel, TItem extends Templ
 
 export function Foreach<TModel extends TemplateModel, TItem extends TemplateModel>(props: IForeachProps<TModel, TItem>): JsxNode<any> {
 
-    let children = props.children as JsxNode<TItem>;
+    let children = props.content as JsxNode<TItem>;
 
     if (typeof children == "function")
         children = children(null);

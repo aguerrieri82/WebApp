@@ -12,7 +12,7 @@ export const PageHostTemplates: TemplateMap<PageHost> = {
     "Single": forModel(m => <Template name="PageHost">
         <main className={m.className}>
             <section className="content">
-                {m.current}
+                {m.content}
             </section>
         </main>
     </Template>) as ITemplate<PageHost>
@@ -31,7 +31,7 @@ export class PageHost extends Component<IPageHostOptions> {
             ...options
         });
 
-        this.onChanged("current", async (value, old) => {
+        this.onChanged("content", async (value, old) => {
 
             if (old?.onClose)
                 old.onClose();
@@ -50,13 +50,13 @@ export class PageHost extends Component<IPageHostOptions> {
     }
 
     push(page: IPage) {
-        this._stack.push(this.current);
-        this.current = page;
+        this._stack.push(this.content);
+        this.content = page;
     }
 
     pop() {
 
-        this.current = this._stack.pop();
+        this.content = this._stack.pop();
     }
 
     canGoBack() {
@@ -64,7 +64,7 @@ export class PageHost extends Component<IPageHostOptions> {
     }
 
 
-    current: IPage;
+    content: IPage;
 
     template = PageHostTemplates.Single;
 }
