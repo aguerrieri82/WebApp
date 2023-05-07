@@ -81,6 +81,10 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
     debugger(): this;
 
     readonly model: TModel;
+
+    readonly element: TElement;
+
+    readonly parent: ITemplateBuilder<any>;
 }
 
 export interface IChildTemplateBuilder<TModel, TElement extends HTMLElement, TParent extends ITemplateBuilder<TModel>> extends ITemplateBuilder<TModel, TElement> {

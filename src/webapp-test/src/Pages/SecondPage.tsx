@@ -1,6 +1,6 @@
 import { Action, Page } from "@eusoft/webapp-ui";
 import { Foreach, Template, TwoWays, forModel, twoWays, Text } from "@eusoft/webapp-jsx";
-import { ITemplateProvider } from "@eusoft/webapp-core";
+import { ITemplateBuilder, ITemplateProvider } from "@eusoft/webapp-core";
 import { app } from "../";
 interface IContentModel extends ITemplateProvider<IContentModel> {
     text: string;
@@ -15,6 +15,26 @@ function Log(props: { message: string }) {
 function Bold(props: { text: string }) {
 
     return <>{props.text == "mamma" ? <Text>ccc</Text> : <strong text={props.text} />}</>;
+}
+
+function Blink(props: {time: number, color: string}) {
+
+    return (t: ITemplateBuilder<any>) => {
+
+        const timer = setInterval(() => {
+
+            if (!t.parent.element.isConnected) {
+                clearInterval(timer);
+                return;
+            }
+
+            if (t.parent.element.style.background == "")
+                t.parent.element.style.background = props.color;
+            else
+                t.parent.element.style.background = "";
+
+        }, props.time); 
+    }
 }
 
 
@@ -48,6 +68,7 @@ class SecondPage extends Page {
                         <Input text={twoWays(m.text)} />
                         <Input text={twoWays(this.text)} />
                         <Log message={m.text} />
+                        <Blink time={500} color="yellow" />
                         <Action executeAsync={() => m.goBack()} content={"Back " + (m.text)} />
                         <Action executeAsync={() => this.showText()} content="Show text" />
                         <Foreach src={m.items}>
