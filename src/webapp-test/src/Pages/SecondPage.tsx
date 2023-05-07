@@ -48,7 +48,7 @@ class SecondPage extends Page {
     constructor() {
         super();
 
-        this.text = "class text";
+        this.text = "yellow";
 
         this.configure({
             name: "second",
@@ -68,7 +68,7 @@ class SecondPage extends Page {
                         <Input text={twoWays(m.text)} />
                         <Input text={twoWays(this.text)} />
                         <Log message={m.text} />
-                        <Blink time={500} color="yellow" />
+                        <Blink time={500} color={this.text} />
                         <Action executeAsync={() => m.goBack()} content={"Back " + (m.text)} />
                         <Action executeAsync={() => this.showText()} content="Show text" />
                         <Foreach src={m.items}>
