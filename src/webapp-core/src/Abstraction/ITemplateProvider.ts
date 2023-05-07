@@ -4,6 +4,8 @@ export type CatalogTemplate<TModel> = ITemplate<TModel> | string;
 
 export interface ITemplateProvider<TModel = any> {
 
+    model?: TModel;
+
     template: CatalogTemplate<TModel>;
 }
 

@@ -11,7 +11,7 @@ type CommonKeys<TSrc, TDst> = {
     [K in (keyof TSrc & keyof TDst & string) /*as TSrc[K] extends Bindable<TDst[K]> ? K : never*/]: TSrc[K]
 };
 
-export abstract class Component<TOptions extends IComponentOptions = IComponentOptions> implements IComponent<TOptions> {
+export abstract class Component<TOptions extends IComponentOptions = IComponentOptions> implements IComponent {
 
     protected _bounds: IBound[];
     protected _options: TOptions;
@@ -116,6 +116,4 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
     template: CatalogTemplate<this>;
 
     style: ComponentStyle;
-
-
 }

@@ -419,7 +419,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return result;
     }
 
-    createComponent<TProps extends Record<string, any>, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): IComponentInfo<TProps> {
+    protected createComponent<TProps extends Record<string, any>, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): IComponentInfo<TProps> {
 
         let model: Record<string, any>;
         let callOnChange = false;
@@ -468,6 +468,25 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         }
     }
 
+    componentContent<TProps, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): ITemplateProvider<TProps> {
+
+        const result = this.createComponent(constructor, props, modes);
+
+        if (!result.model) {
+
+            if (isTemplateProvider(result.component))
+                return result.component;
+        }
+
+        if (isTemplate(result.component))
+            return {
+                template: result.component,
+                model: result.model
+            };
+
+        throw new Error(`Component '${getTypeName(constructor)}' not supported`);
+    }
+
     component<TProps, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): this {
 
         const result = this.createComponent(constructor, props, modes);
@@ -504,6 +523,8 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             if (isClear)
                 return;
 
+            const model = value?.model ?? value;
+
             this.beginUpdate();
 
             if (!childBuilder.isInline && isHTMLContainer(value) && value.nodes && value.isCacheEnabled === true)
@@ -512,7 +533,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             else {
 
                 if (oldValue && value && oldValue.template == value.template)
-                    childBuilder.updateModel(value);
+                    childBuilder.updateModel(model);
                 else {
 
                     if (isUpdate)
@@ -525,7 +546,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                         if (!template)
                             throw new Error("Template '" + value.template + "' not found.");
 
-                        childBuilder.updateModel(value);
+                        childBuilder.updateModel(model);
 
                         template(childBuilder);
                     }
@@ -784,7 +805,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                     valueProp.set(element.value);
                 });
             }
-            else {
+            else if (mode == "pool") {
                 let lastValue: string;
 
                 const check = () => {

@@ -285,9 +285,16 @@ export class JsxCompiler extends BaseCompiler {
 
                 }
 
-                else if (path.isStringLiteral() && curAttribute) {
+                else if (path.isStringLiteral()) {
 
-                    curAttribute.value = JSON.stringify(path.node.value);
+                    if (curAttribute)
+                        curAttribute.value = JSON.stringify(path.node.value);
+                    else {
+                        curElement.childNodes.push({
+                            type: TemplateNodeType.Text,
+                            value: path.node.value
+                        });
+                    }
                 }
 
                 else if (path.isExpression() && !path.isJSXFragment() && !path.isJSXElement()) {

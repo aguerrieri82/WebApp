@@ -1,11 +1,11 @@
 import { Bindable, IComponentOptions, IComponent, Component, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
-import { Template, forModel } from "@eusoft/webapp-jsx";
+import { JsxNode, Template, forModel } from "@eusoft/webapp-jsx";
 import "./index.scss";
 import { Ripple } from "../../Behavoirs/Ripple";
 
 interface IActionOptions extends IComponentOptions {
 
-    content?: Bindable<string | IComponent>;
+    content?: Bindable<JsxNode<string> | IComponent>;
 
     executeAsync?: () => Promise<void> | void;
 }

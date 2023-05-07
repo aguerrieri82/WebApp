@@ -38,7 +38,7 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
 
     if(condition: BindValue<TModel, boolean>, trueTemplate: ITemplate<TModel>, falseTemplate?: ITemplate<TModel>): this;
         
-    createComponent<TProps extends Record<string, any>, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): IComponentInfo<TProps>;
+    componentContent<TProps, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): ITemplateProvider<TProps>;
 
     component<TProps extends Record<string, any>, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): this;
 

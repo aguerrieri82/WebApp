@@ -10,8 +10,10 @@ export class TextNodeHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, element: ITemplateText): HandleResult {
 
-        if (element.value.trim().length > 0 || ctx.compiler.options.includeWhitespace)
-            ctx.writer.write(".text(").writeJson(element.value).write(")");
+        const trimText = ctx.compiler.options.includeWhitespace ? element.value : element.value.trim();
+
+        if (trimText.length > 0 || ctx.compiler.options.includeWhitespace)
+            ctx.writer.write(".text(").writeJson(trimText).write(")");
 
         return HandleResult.SkipChildren;
     }

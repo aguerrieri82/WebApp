@@ -2,7 +2,7 @@
 import type { Bindable, ComponentStyle, IComponentOptions } from "./IComponentOptions";
 import type { CatalogTemplate } from "./ITemplateProvider";
 
-export interface IComponent<TOptions extends IComponentOptions = IComponentOptions> extends IBindable  {
+export interface IComponent extends IBindable  {
 
     unmount?(): void;
 

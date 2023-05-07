@@ -19,9 +19,9 @@ export class ValueAttributeHandler implements ITemplateHandler {
         ctx.writer.write(".value(").writeBinding(node.value);
 
         const pool = ctx.attrValue(node.owner, "value-pool"); 
-        const mode = pool ? "pool" : ctx.attrValue(node.owner, "value-mode");
+        const mode = pool ? '"pool"' : ctx.attrValue(node.owner, "value-mode");
         if (mode)
-            ctx.writer.write(", ").writeJson(mode);
+            ctx.writer.write(", ").writeString(mode);
         if (pool)
             ctx.writer.write(", ").write(pool);
 

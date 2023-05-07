@@ -1,5 +1,5 @@
 import { Action, Page } from "@eusoft/webapp-ui";
-import { Foreach, Template, TwoWays, forModel, twoWays, Text, debug } from "@eusoft/webapp-jsx";
+import { Foreach, Template, TwoWays, forModel, twoWays, Text, debug, JsxNode } from "@eusoft/webapp-jsx";
 import { ITemplateBuilder, ITemplateProvider, OptionsFor, PARENT, propOf } from "@eusoft/webapp-core";
 import { app } from "../";
 import { Behavoir } from "@eusoft/webapp-core/src/Behavoir";
@@ -13,8 +13,11 @@ function Log(props: { message: string }) {
 
     console.log(props.message);
 }
-function Bold(props: { text: string }) {
-    return <>{props.text == "" ? <Text>No input text</Text> : <strong text={props.text} />}</>;
+function Bold(props: { content: JsxNode<string> }) {
+    return <>{props.content == "" ? <Text>No input text</Text> : <strong>
+        <Blink time={100} color="red" />
+        {props.content}
+    </strong>}</>;
 }
 
 class Blink extends Behavoir<OptionsFor<Blink>> {
@@ -63,7 +66,7 @@ function DoBlink(props: { time: number, color: string }) {
 }
 function Input(props: { text: TwoWays<string> }) {
 
-    return <input value={props.text} value-pool={500} type="text" checked />
+    return <input value={props.text} value-mode="keyup" type="text" checked /> 
 }
 
 class SecondPage extends Page {
@@ -86,20 +89,23 @@ class SecondPage extends Page {
                 <div>
                     <Input text={twoWays(m.text)} />
                     <Input text={twoWays(this.text)} />
-                    <Log message={m.text} />
+                    <Log message={m.text} /> 
 
-                    <Action executeAsync={() => m.goBack()} content={"Back: " + (m.text)} />
-                    <Action executeAsync={() => this.showText()} content="Show Text"/>
+                    <Action executeAsync={() => m.goBack()}>
+                        {m.text ? "Back: " + (m.text) : "Back"}
+                    </Action>
+                    <Action executeAsync={() => this.showText()}>
+                        <Bold>Show Text</Bold>
+                    </Action>
                     <ul>
                         <Foreach src={m.items}>
                             {i => <li style-margin="16px" text={i.name}>
                                 <Blink time={500} color={this.text} />
- 
                             </li>}
                         </Foreach>
                     </ul>
                 </div>
-                <Bold text={m.text} />
+                <Bold>{m.text}</Bold>
             </Template>)
         } as IContentModel;
 
