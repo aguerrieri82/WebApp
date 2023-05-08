@@ -6,15 +6,19 @@ export function forModel<TModel extends TemplateModel>(action: ModelBuilder<TMod
     return result as ITemplate<TModel>;
 }
 
+export namespace Bind {
 
-/**
- * Enable two-ways binding in Jsx component
- * @param value
- * @returns
- */
-export function twoWays<T>(value: T): T {
-    return value;
+    /**
+     * Enable two-ways binding in Jsx component
+     * @param value
+     * @returns
+     */
+    export function twoWays<T>(value: T): T {
+        return value;
+    }
 }
+
+
 
 export function debug<T>(value: T, ...args: any[]) {
     debugger;

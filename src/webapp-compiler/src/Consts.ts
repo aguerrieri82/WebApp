@@ -8,6 +8,7 @@ export const FuncAttributes = [
 
 export const TemplateAttributes = [
     ...FuncAttributes,
+    "style",
     "value",
     "behavoir",
     "value-pool",

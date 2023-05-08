@@ -1,6 +1,6 @@
 import { Action, Page } from "@eusoft/webapp-ui";
-import { Foreach, Template, TwoWays, forModel, twoWays, Text, debug, JsxNode } from "@eusoft/webapp-jsx";
-import { ITemplateBuilder, ITemplateProvider, OptionsFor, PARENT, propOf } from "@eusoft/webapp-core";
+import { Foreach, Template, TwoWays, forModel, Text, JsxNode, Bind } from "@eusoft/webapp-jsx";
+import { ITemplateBuilder, ITemplateProvider, OptionsFor, propOf } from "@eusoft/webapp-core";
 import { app } from "../";
 import { Behavoir } from "@eusoft/webapp-core/src/Behavoir";
 interface IContentModel extends ITemplateProvider<IContentModel> {
@@ -14,7 +14,10 @@ function Log(props: { message: string }) {
     console.log(props.message);
 }
 function Bold(props: { content: JsxNode<string> }) {
-    return <>{props.content == "" ? <Text>No input text</Text> : <strong text={props.content} />}</>;
+    return <>{props.content == "" ? <Text>No input text</Text> : <strong style={{ back: props.content }}>
+        <Blink  />
+        {props.content}
+    </strong>}</>;
 }
 
 class Blink extends Behavoir<OptionsFor<Blink>> {
@@ -63,7 +66,7 @@ function DoBlink(props: { time: number, color: string }) {
 }
 function Input(props: { text: TwoWays<string> }) {
 
-    return <input value={props.text} value-pool={500} type="text" checked />
+    return <input value={props.text} value-mode="keyup" type="text" checked />
 }
 
 class SecondPage extends Page {
@@ -84,15 +87,15 @@ class SecondPage extends Page {
             },
             template: forModel(m => <Template name="SecondPage">
                 <div>
-                    <Input text={twoWays(m.text)} />
-                    <Input text={twoWays(this.text)} />
+                    <Input text={Bind.twoWays(m.text)} />
+                    <Input text={Bind.twoWays(this.text)} />
                     <Log message={m.text} />
 
                     <Action executeAsync={() => m.goBack()}>
                         {m.text ? "Back: " + (m.text) : "Back"}
                     </Action>
                     <Action executeAsync={() => this.showText()}>
-                        <Bold>Show Text</Bold>
+                        <Bold>{"Show Text" + m.text[0]}</Bold>
                     </Action>
                     <ul>
                         <Foreach src={m.items}>

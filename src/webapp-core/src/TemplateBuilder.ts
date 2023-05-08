@@ -3,7 +3,7 @@ import type { BindValue, BoundObject, BoundObjectModes } from "./Abstraction/IBi
 import { isHTMLContainer } from "./Abstraction/IHTMLContainer";
 import { IObservableArrayHandler, isObservableArray } from "./Abstraction/IObservableArray";
 import { ITemplate, isTemplate } from "./Abstraction/ITemplate";
-import type { BehavoirType, ClassComponenType, ComponentType, FunctionalComponenType, IChildTemplateBuilder, IComponentInfo, ITemplateBuilder, InputValueMode, RefNodePosition, TemplateValueMap } from "./Abstraction/ITemplateBuilder";
+import type { BehavoirType, ClassComponenType, ComponentType, FunctionalComponenType, IChildTemplateBuilder, IComponentInfo, ITemplateBuilder, InputValueMode, RefNodePosition, StyleBinding, TemplateValueMap } from "./Abstraction/ITemplateBuilder";
 import { CatalogTemplate, ITemplateProvider, isTemplateProvider } from "./Abstraction/ITemplateProvider";
 import { Binder } from "./Binder";
 import { WebApp } from "./Debug";
@@ -835,8 +835,20 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this;
     }
 
-    style<TKey extends keyof CSSStyleDeclaration>(name: TKey, value: BindValue<TModel, CSSStyleDeclaration[TKey]>): this {
-        this.bind(value, a => this.element.style[name] = a);
+    style(value: StyleBinding<TModel>): this;
+
+    style<TKey extends keyof CSSStyleDeclaration>(name: TKey, value: BindValue<TModel, CSSStyleDeclaration[TKey]>): this;
+
+    style<TKey extends keyof CSSStyleDeclaration>(nameOrValue: TKey | StyleBinding<TModel>, value?: BindValue<TModel, CSSStyleDeclaration[TKey]>): this {
+
+        if (typeof nameOrValue != "object")
+            this.bind(value, a => this.element.style[nameOrValue] = a);
+        else {
+
+            for (const prop in nameOrValue) 
+                this.bind(value, a => this.element.style[prop] = a[prop]);
+            
+        }
         return this;
     }
 

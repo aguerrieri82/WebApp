@@ -34,7 +34,11 @@ export class TemplateContext {
             return element.attributes[name].value;
     }
 
-    isAttr(node: ITemplateNode, elementName?: string) : node is ITemplateAttribute {
+    isAttr(node: ITemplateNode): node is ITemplateAttribute;
+
+    isAttr(node: ITemplateNode, elementName: string): boolean;
+
+    isAttr(node: ITemplateNode, elementName?: string) {
 
         if (node.type != TemplateNodeType.Attribute)
             return false;

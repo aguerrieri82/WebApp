@@ -1,7 +1,6 @@
 import { ReadStream } from "fs";
 import { IWriteable } from "./Abstraction/IWriteable";
 import * as parser from "@babel/parser";
-import {  types } from "@babel/core";
 import traverse, { NodePath, Visitor } from "@babel/traverse";
 import { readAllTextAsync } from "./TextUtils";
 import { BaseCompiler } from "./BaseCompiler";
@@ -12,6 +11,9 @@ import { BindMode, ITemplateAttribute, ITemplateElement, ITemplateText, Template
 import { TemplateAttributes, TemplateElements } from "./Consts";
 
 const trav = (traverse as any).default as typeof traverse;
+
+const JSX_MODULE = "@eusoft/webapp-jsx";
+const CORE_MODULE = "@eusoft/webapp-core";
 
 interface ITextBlock {
     start: number;
@@ -92,17 +94,22 @@ function getHelper(exp: NodePath<Expression | JSXEmptyExpression>) {
         return;
 
     const callee = exp.get("callee");
-    if (!callee.isIdentifier())
+    if (!callee.isMemberExpression())
         return;
 
-    const resolve = exp.scope.getBinding(callee.node.name);
+    const object = callee.get("object");
+    const prop = callee.get("property");
+    if (!prop.isIdentifier() || !object.isIdentifier() || object.node.name != "Bind")
+        return;
+
+    const resolve = exp.scope.getBinding(object.node.name);
     if (!resolve || resolve.kind != "module")
         return;
 
     const parentModule = (resolve.path.parent as ImportDeclaration).source.value;
-    if (parentModule == "@eusoft/webapp-jsx") {
+    if (parentModule == JSX_MODULE) {
         return {
-            name: callee.node.name,
+            name: prop.node.name,
             body: exp.node.arguments[0]
         }
     }
@@ -365,10 +372,14 @@ export class JsxCompiler extends BaseCompiler {
 
                     if (!isBinding(path) &&
                         curAttribute?.name != "t:value-pool" &&
-                        !curAttribute?.name.startsWith("t:on-") && 
-                        curAttribute?.name != "t:behavoir")
+                        !curAttribute?.name.startsWith("t:on-") &&
+                        curAttribute?.name != "t:behavoir") {
+
+                        if (path.isObjectExpression())
+                            value = "(" + value + ")";
 
                         value = defModel.name + " => " + value;
+                    }
 
                     if (curAttribute) {
 
@@ -400,6 +411,7 @@ export class JsxCompiler extends BaseCompiler {
     async compileStreamAsync(input: ReadStream | string, output: IWriteable) {
 
         const js = typeof input == "string" ? input : await readAllTextAsync(input);
+        const coreImports: string[] = [];
 
         const ast = parser.parse(js, {
             sourceType: "module",
@@ -413,6 +425,20 @@ export class JsxCompiler extends BaseCompiler {
             JSXFragment(path) {
                 templates.push(path);
                 path.shouldSkip = true;
+            },
+
+
+            ImportSpecifier(path) {
+
+                const dec = path.findParent(a => a.isImportDeclaration()) as NodePath<ImportDeclaration>;
+
+                if (dec.node.source?.value == CORE_MODULE) {
+
+                    const local = path.get("local").node.name;
+                    const imported = (path.get("imported").node as Identifier)?.name;
+                    if (imported == local)
+                        coreImports.push(imported);
+                }
             },
 
             JSXElement(path) {
@@ -431,7 +457,10 @@ export class JsxCompiler extends BaseCompiler {
 
         const replaces: ITextReplacement[] = [];
 
-        ctx.writer.writeImport("@eusoft/webapp-core", "USE", "PARENT");
+        const toImport = ["USE", "PARENT"].filter(a => coreImports.indexOf(a) == -1);
+
+        if (toImport.length > 0)
+            ctx.writer.writeImport("@eusoft/webapp-core", ...toImport);
 
         replaces.push({
             src: {

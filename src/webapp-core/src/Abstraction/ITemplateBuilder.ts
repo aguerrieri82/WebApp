@@ -19,6 +19,10 @@ export type ComponentType<TProps, TComp extends ClassComponenType<TProps>, TResu
 
 export type InputValueMode = "focus" | "change" | "keyup" | "pool";
 
+export type StyleBinding<TModel> = {
+    [K in keyof CSSStyleDeclaration]: BindValue<TModel, CSSStyleDeclaration[K]>
+}
+
 export interface IComponentInfo<TModel> {
     model?: TModel;
     component: ClassComponenType<TModel> | FunctionalComponenType<TModel>;
@@ -80,10 +84,11 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
 
     value(value: BindValue<TModel, string | boolean>, mode?: InputValueMode, poolTime?: number): this;
 
+    style(value: StyleBinding<TModel>): this;
+
     style<TKey extends keyof CSSStyleDeclaration>(name: TKey, value: BindValue<TModel, CSSStyleDeclaration[TKey]>): this;
 
     behavoir(value: BehavoirType<TElement, TModel>): this;
-
 
     styles(value: TemplateValueMap<TModel, CSSStyleDeclaration>): this;
 

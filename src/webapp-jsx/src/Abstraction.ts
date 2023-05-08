@@ -36,12 +36,17 @@ type ElementEvents<TModel> = {
     [K in keyof HTMLElementEventMap as K extends string ? `on-${K}` : never]?:{ (model: TModel, e?: HTMLElementEventMap[K]) : void } | object | number | boolean | void
 }
 
+type ElementStyles<TModel> = {
+    [K in keyof CSSStyleDeclaration as K extends string ? `style-${K}` : never]?: BindValue<TModel, CSSStyleDeclaration[K]>;
+}
+
 type ElementAttributes<TModel, TElement> = {
     [K in WritableKeys<TElement, string | number | boolean>]?: BindValue<TModel, TElement[K]>
 }
 
 type ElementProps<TModel extends TemplateModel, TElement> =
     ElementEvents<TModel> &
+    ElementStyles<TModel> &
     ElementAttributes<TModel, TElement> &
     {
         style?: {

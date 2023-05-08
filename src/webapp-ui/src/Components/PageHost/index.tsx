@@ -15,7 +15,7 @@ export const PageHostTemplates: TemplateMap<PageHost> = {
                 {m.content}
             </section>
         </main>
-    </Template>) as ITemplate<PageHost>
+    </Template>) 
 
 }
 export class PageHost extends Component<IPageHostOptions> {
