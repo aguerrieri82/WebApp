@@ -1,8 +1,18 @@
-import { BindMode, BindValue, ITemplate, PARENT } from "@eusoft/webapp-core";
+import { ITemplate, ITemplateProvider, PARENT } from "@eusoft/webapp-core";
 import { ModelBuilder, TemplateModel } from "./Abstraction";
 
-export function forModel<TModel extends TemplateModel>(action: ModelBuilder<TModel>): ITemplate<TModel> {
-    const result = action(null);
+export function forModel<TModel extends TemplateModel>(action: ModelBuilder<TModel>): ITemplate<TModel>;
+export function forModel<TModel extends TemplateModel>(model: TModel, action: ModelBuilder<TModel>): ITemplateProvider<TModel>;
+export function forModel<TModel extends TemplateModel>(actionOrModel: ModelBuilder<TModel> | TModel, action?: ModelBuilder<TModel>) {
+
+    if (typeof actionOrModel != "function") {
+        return {
+            template: action(actionOrModel) as ITemplate<TModel>,
+            model: actionOrModel
+        } as ITemplateProvider<TModel>
+    }
+
+    const result = actionOrModel(null);
     return result as ITemplate<TModel>;
 }
 
@@ -17,8 +27,6 @@ export namespace Bind {
         return value;
     }
 }
-
-
 
 export function debug<T>(value: T, ...args: any[]) {
     debugger;

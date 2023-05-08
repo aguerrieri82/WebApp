@@ -1,14 +1,8 @@
 import { Action, Page } from "@eusoft/webapp-ui";
-import { Foreach, Template, TwoWays, forModel, Text, JsxNode, Bind } from "@eusoft/webapp-jsx";
-import { ITemplateBuilder, ITemplateProvider, OptionsFor, propOf } from "@eusoft/webapp-core";
+import { Foreach, Template, TwoWays, Text, JsxNode, Bind, forModel } from "@eusoft/webapp-jsx";
+import { ITemplateBuilder, OptionsFor, propOf } from "@eusoft/webapp-core";
 import { app } from "../";
 import { Behavoir } from "@eusoft/webapp-core/src/Behavoir";
-interface IContentModel extends ITemplateProvider<IContentModel> {
-    text: string;
-    items: { name: string }[];
-    goBack: () => Promise<any>;
-}
-
 function Log(props: { message: string }) {
 
     console.log(props.message);
@@ -66,7 +60,7 @@ function DoBlink(props: { time: number, color: string }) {
 }
 function Input(props: { text: TwoWays<string> }) {
 
-    return <input value={props.text} value-mode="keyup" type="text" checked /> 
+    return <input value={props.text} value-mode="keyup" type="text" checked />
 }
 
 class SecondPage extends Page {
@@ -76,7 +70,8 @@ class SecondPage extends Page {
 
         this.text = "yellow";
 
-        const content = {
+        const content = forModel({
+
             text: "main text",
             items: [
                 { name: "Max" },
@@ -84,32 +79,32 @@ class SecondPage extends Page {
             ],
             goBack() {
                 app.pageHost.pop();
-            },
-            template: forModel(m => <Template name="SecondPage">
-                <div>
-                    <Input text={Bind.twoWays(m.text)} />
-                    <Input text={Bind.twoWays(this.text)} />
-                    <Log message={m.text} /> 
+            }
 
-                    <Action executeAsync={() => m.goBack()}>
-                        {m.text ? "Back: " + (m.text) : "Back"}
-                    </Action>
-                    <Action executeAsync={() => this.showText()}>
-                        <Bold>{"Show Text" + m.text[0]}</Bold>
-                    </Action>
-                    <ul>
-                        <Foreach src={m.items}>
-                            {i => <li style-margin="16px" text={i.name}>
-                                <Blink time={500} color={this.text} />
-                            </li>}
-                        </Foreach>
-                    </ul>
-                </div>
-                <Bold>{m.text}</Bold>
-            </Template>)
-        } as IContentModel;
+        }, m => <Template name="SecondPage">
+            <div>
+                <Input text={Bind.twoWays(m.text)} />
+                <Input text={Bind.twoWays(this.text)} /> 
+                <Log message={m.text} />
 
-        propOf(content, "text").subscribe(a => {
+                <Action executeAsync={() => m.goBack()}>
+                    {m.text ? "Back: " + (m.text) : "Back"}
+                </Action>
+                <Action executeAsync={() => this.showText()}>
+                    <Bold>{"Show Text" + m.text[0]}</Bold>
+                </Action>
+                <ul>
+                    <Foreach src={m.items}>
+                        {i => <li style-margin="16px" text={i.name}>
+                            <Blink time={500} color={m.text} />
+                        </li>}
+                    </Foreach>
+                </ul>
+            </div>
+            <Bold>{m.text}</Bold>
+        </Template>);
+
+        propOf(content.model, "text").subscribe(a => {
             console.log(a);
         });
 
