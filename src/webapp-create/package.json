@@ -1,0 +1,25 @@
+{
+  "name": "@eusoft/webapp-create",
+  "version": "0.0.1",
+  "packageManager": "pnpm@8.4.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "node build",
+    "lint:fix": "eslint ./src/**/*.ts* --fix",
+    "install:pnpm": "pnpm install",
+    "upgrade": "pnpm up -latest"
+  },
+  "keywords": [],
+  "author": "Andrea Guerrieri",
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "@types/node": "20.1.1",
+    "@types/fs-extra": "11.0.1",
+    "typescript": "5.0.4",
+    "fs-extra": "11.1.1",
+    "build-utils": "link:../../scripts/build-utils"
+  }
+}

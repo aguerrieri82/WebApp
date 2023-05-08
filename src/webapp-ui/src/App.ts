@@ -25,11 +25,15 @@ export class App {
 }
 
 
-export function runApp<TApp extends App>(app: TApp) {
+export var app: App;
+
+export function runApp<TApp extends App>(newApp: TApp) {
+
+    app = newApp;
 
     window.addEventListener("load", () => {
-        app.runAsync();
+        newApp.runAsync();
     });
 
-    return app;
+    return newApp;
 }

@@ -9,7 +9,6 @@
     "declarationDir": "types",
     "moduleResolution": "Node",
     "noEmit": true,
-    "incremental": true,
     "jsx": "preserve"
   },
   "include": ["src"]

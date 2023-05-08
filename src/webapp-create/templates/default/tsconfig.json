@@ -10,10 +10,7 @@
     "jsx": "preserve"
   },
   "include": [
-    "src/",
-    "../webapp-core/src/",
-    "../webapp-jsx/src/",
-    "../webapp-ui/src/"
+    "src/"
   ]
 }
  

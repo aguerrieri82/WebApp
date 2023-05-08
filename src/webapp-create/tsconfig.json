@@ -2,15 +2,13 @@
   "compilerOptions": {
     "noImplicitAny": true,
     "noEmitOnError": false,
-    "sourceMap": true,
     "target": "ESNext",
     "module": "ESNext",
-    "declaration": true,
-    "declarationDir": "types",
     "moduleResolution": "Node",
-    "noEmit": true,
-    "jsx": "preserve"
+    "outDir": "../../dist/webapp-create/",
+    "incremental": true
   },
+  "compileOnSave": true,
   "include": ["src"]
 }
  

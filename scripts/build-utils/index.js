@@ -119,6 +119,12 @@ export function configureRollup(options) {
                     hook: 'buildEnd',
                     force: true,
                     runOnce: true
+                }),
+                isProd && del({
+                    targets: outPath + "*.map",
+                    hook: 'buildEnd',
+                    force: true,
+                    runOnce: true
                 })
             ]
         },

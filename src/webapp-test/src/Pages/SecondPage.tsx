@@ -1,7 +1,6 @@
-import { Action, Page } from "@eusoft/webapp-ui";
+import { Action, Page, app } from "@eusoft/webapp-ui";
 import { Foreach, Template, TwoWays, Text, JsxNode, Bind, forModel } from "@eusoft/webapp-jsx";
 import { ITemplateBuilder, OptionsFor, propOf } from "@eusoft/webapp-core";
-import { app } from "../";
 import { Behavoir } from "@eusoft/webapp-core/src/Behavoir";
 function Log(props: { message: string }) {
 
@@ -16,12 +15,10 @@ function Bold(props: { content: JsxNode<string> }) {
 
 class Blink extends Behavoir<OptionsFor<Blink>> {
 
-    protected _timer: NodeJS.Timeout;
-
     attach(element: HTMLElement) {
 
         const doBlink = () => {
-
+             
             if (element.style.background == "")
                 element.style.background = this.color;
             else
@@ -38,7 +35,7 @@ class Blink extends Behavoir<OptionsFor<Blink>> {
 
     color: string;
 }
-
+ 
 function DoBlink(props: { time: number, color: string }) {
 
     return (t: ITemplateBuilder<any>) => {
@@ -68,13 +65,13 @@ class SecondPage extends Page {
     constructor() {
         super();
 
-        this.text = "yellow";
+        this.text = "yellow2";
 
         const content = forModel({
 
             text: "main text",
             items: [
-                { name: "Max" },
+                { name: "Max2" },
                 { name: "Lucy" },
             ],
             goBack() {

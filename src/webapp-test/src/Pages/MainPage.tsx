@@ -1,7 +1,5 @@
-import { Action, Page } from "@eusoft/webapp-ui";
+import { Action, Page, app } from "@eusoft/webapp-ui";
 import { secondPage } from "./SecondPage";
-import { app } from "..";
-
 class MainPage extends Page {
 
     constructor() {
