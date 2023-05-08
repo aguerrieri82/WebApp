@@ -15,6 +15,10 @@ export class TextWriter {
         this._length += value.length;
     }
 
+    resetLine() {
+        this._isInNewLine = false;
+    }
+
     write(value: any) {
 
         const text : string = typeof value == "string" ? value : value.toString();

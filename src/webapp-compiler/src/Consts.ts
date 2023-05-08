@@ -25,3 +25,7 @@ export const TemplateElements = [
     "Text",
     "Node"
 ];
+
+export const JSX_MODULE = "@eusoft/webapp-jsx";
+
+export const CORE_MODULE = "@eusoft/webapp-core";

@@ -46,12 +46,13 @@ export class TemplateWriter extends JsWriter {
         return this.write(value.replaceAll("$model", `${this.context.currentFrame.builderNameJs}.model`));
     }
 
-    writeTemplate(element?: ITemplateElement) {
+    writeTemplate(element?: ITemplateElement, builderNameJs?: string) {
 
         if (!element)
             element = this.context.currentFrame.element;
 
-        this.context.currentFrame.builderNameJs = "t" + this.context.currentFrame.index;
+        this.context.currentFrame.builderNameJs = builderNameJs ?? "t" + this.context.currentFrame.index;
+
         return this.beginInlineFunction(this.context.currentFrame.builderNameJs)
             .write(this.context.currentFrame.builderNameJs) 
             .indentAdd()

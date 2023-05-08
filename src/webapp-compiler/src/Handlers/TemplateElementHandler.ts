@@ -15,15 +15,12 @@ export class TemplateElementHandler implements ITemplateHandler {
 
         var templateName = node.attributes.name?.value;
         var modelType = node.attributes.for?.value;
-        var modelName = node.attributes.as?.value;
+        var builderName = node.attributes.as?.value;
 
         ctx.templates.push(templateName);
 
         if (!modelType)
             modelType = "any";
-
-        if (modelName)
-            ctx.setParameter("$" + modelName, `${ctx.currentFrame.builderNameJs}.model`);
 
         if (ctx.compiler instanceof HtmlCompiler) {
             ctx.writer.ensureNewLine()
@@ -33,10 +30,7 @@ export class TemplateElementHandler implements ITemplateHandler {
         if (templateName)
             ctx.writer.write("__defineTemplate(").writeString(templateName).write(", ");
 
-        ctx.writer.beginInlineFunction(ctx.currentFrame.builderNameJs)
-            .beginBlock().write(" ").write(ctx.currentFrame.builderNameJs).writeLine()
-            .writeChildElements(node)
-            .endBlock();
+        ctx.writer.writeTemplate(undefined, builderName);
 
         if (templateName)
             ctx.writer.write(")");

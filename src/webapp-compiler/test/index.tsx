@@ -100,7 +100,7 @@ class SecondPage extends Page {
                     <ul>
                         <Foreach src={m.items}>
                             {i => <li style-margin="16px" text={i.name}>
-                                <Blink time={500} color={this.text} />
+                                <Blink time={500} color={m.text} />
                             </li>}
                         </Foreach>
                     </ul>
