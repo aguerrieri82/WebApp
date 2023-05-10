@@ -226,9 +226,8 @@ async function inputBoolAsync<T>(prompt: string, defValue?: boolean) {
 
 async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir: string) {
 
+
 }
-
-
 
 async function queryArgsAsync()  {
     const result = {} as ITemplateArgs;
