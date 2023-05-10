@@ -1,5 +1,5 @@
 import resolve from "@rollup/plugin-node-resolve";
-import typescript from "@rollup/plugin-typescript";
+/*TS:import typescript from "@rollup/plugin-typescript"*/;
 import sourcemaps from "rollup-plugin-sourcemaps";
 import webapp from "@eusoft/webapp-compiler-rollup"
 import livereload from "rollup-plugin-livereload";
@@ -47,7 +47,6 @@ export default [
                 format: "esm",
                 sourcemap: !isProduction,
                 sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
-                    const result = path.resolve(path.dirname(sourcemapPath), relativeSourcePath)
                     return path.join(relativeSourcePath.substring(3));
                 },
             },
@@ -61,9 +60,9 @@ export default [
             resolve({
                 browser: true,
             }),
-            typescript({
+            /*TS:typescript({
                 filterRoot: "../" 
-            }),
+            }),*/
             scss({
                 fileName: "app.css",
                 outputStyle: isProduction ? "compressed" : undefined,

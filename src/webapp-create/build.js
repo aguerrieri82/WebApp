@@ -11,6 +11,6 @@ spawnSync("tsc", [], {
 
 const newPkg = createDistPackage();
 
-fse.copySync("templates", path.join(outPath, "templates"), { overwrite: true });
+fse.copySync("template", path.join(outPath, "template"), { overwrite: true });
 
 fs.writeFileSync(path.join(outPath, "package.json"), JSON.stringify(newPkg, null, 4));

@@ -1,0 +1,7 @@
+{
+  "use": [],
+  "transforms": [
+    "js/index.js",
+    "ts/index.ts"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "use": [ "jsx" ],
+  "transforms": [
+    "ts/pages/MainPage.tsx",
+    "js/pages/MainPage.jsx"
+  ]
+}

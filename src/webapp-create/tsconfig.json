@@ -4,6 +4,7 @@
     "noEmitOnError": false,
     "target": "ESNext",
     "module": "ESNext",
+    "sourceMap": true,
     "moduleResolution": "Node",
     "outDir": "../../dist/webapp-create/",
     "incremental": true

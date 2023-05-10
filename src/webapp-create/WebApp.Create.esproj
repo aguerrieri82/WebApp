@@ -1,5 +1,16 @@
 ﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.76-alpha">
+  <PropertyGroup>
+    <BuildCommand>node build</BuildCommand>
+  </PropertyGroup>
   <ItemGroup>
     <None Include=".vscode\launch.json" />
+    <None Include="template\%24%28project-name%29.esproj" />
+    <None Include="template\.vscode\launch.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptConfiguration Remove="templates\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="templates\**" />
   </ItemGroup>
 </Project>

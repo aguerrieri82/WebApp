@@ -24,7 +24,6 @@
   "devDependencies": {
     "@eusoft/webapp-compiler-rollup": "latest",
     "@rollup/plugin-node-resolve": "^15.0.2",
-    "@rollup/plugin-typescript": "^11.1.0",
     "@rollup/plugin-terser": "^0.4.1",
     "rollup-plugin-livereload": "^2.0.5",
     "express": "^4.18.2",
@@ -32,8 +31,6 @@
     "rollup-plugin-delete": "^2.0.0",
     "rollup-plugin-scss": "^4.0.0",
     "rollup-plugin-sourcemaps": "^0.6.3",
-    "sass": "^1.62.1",
-    "tslib": "^2.5.0",
-    "typescript": "^5.0.4"
+    "sass": "^1.62.1"
   }
 }

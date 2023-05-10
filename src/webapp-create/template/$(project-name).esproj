@@ -1,7 +1,4 @@
 ﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.76-alpha">
-  <PropertyGroup>
-	  <StartupCommand>pnpm dev</StartupCommand>
-  </PropertyGroup>
   <ItemGroup>
     <None Include=".vscode\launch.json" />
   </ItemGroup>

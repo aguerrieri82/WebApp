@@ -1,0 +1,7 @@
+{
+  "use": [ "jsx", "ui" ],
+  "transforms": [
+    "js/index.js",
+    "ts/index.ts"
+  ]
+}
