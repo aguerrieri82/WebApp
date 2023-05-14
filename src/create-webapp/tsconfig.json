@@ -2,7 +2,7 @@
   "compilerOptions": {
     "noImplicitAny": true,
     "noEmitOnError": false,
-    "target": "ESNext",
+    "target": "ES2019",
     "module": "ESNext",
     "sourceMap": true,
     "moduleResolution": "Node",

@@ -4,6 +4,9 @@ dependencies:
   '@eusoft/webapp-core':
     specifier: link:../webapp-core/src
     version: link:../webapp-core/src
+  '@eusoft/webapp-framework':
+    specifier: link:../webapp-framework/src
+    version: link:../webapp-framework/src
   '@eusoft/webapp-jsx':
     specifier: link:../webapp-jsx/src
     version: link:../webapp-jsx/src
