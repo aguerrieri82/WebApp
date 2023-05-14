@@ -577,7 +577,7 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
 
         if (fs.readdirSync(outPath).length > 0) {
             writeError(`${outPath}' is not empty`);
-            //return false;
+            return false;
         }
     }
     else {
@@ -613,6 +613,7 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
 
     const lastPackagesVers = await getLastPackageVersionsAsync(args.packManager,
         args.packManager,
+        "@eusoft/webapp-compiler-rollup",
         "@eusoft/webapp-ui",
         "@eusoft/webapp-core",
         "@eusoft/webapp-jsx");
@@ -634,6 +635,7 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
         }
 
         pack.dependencies["@eusoft/webapp-core"] = lastPackagesVers["@eusoft/webapp-core"];
+        pack.devDependencies["@eusoft/webapp-compiler-rollup"] = lastPackagesVers["@eusoft/webapp-compiler-rollup"];
 
         if (args.ui)
             pack.dependencies["@eusoft/webapp-ui"] = lastPackagesVers["@eusoft/webapp-ui"];

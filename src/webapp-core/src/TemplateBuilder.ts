@@ -507,10 +507,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     }
 
-    content<TInnerModel extends ITemplateProvider>(content: BindValue<TModel, TInnerModel> | BindValue<TModel, TInnerModel>[], inline: boolean = false): this {
-
-        if (Array.isArray(content))
-            return this.foreach(content);
+    content<TInnerModel extends ITemplateProvider | string>(content: BindValue<TModel, TInnerModel>, inline?: boolean): this { 
 
         const childBuilder = this.beginTemplate<TInnerModel>(undefined, undefined, undefined, this.createMarker(content));
 
@@ -523,7 +520,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             if (isClear)
                 return;
 
-            const model = value?.model ?? value;
+            const model = isTemplateProvider(value) && value.model ? value.model : value;
 
             this.beginUpdate();
 
@@ -532,8 +529,14 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
             else {
 
-                if (oldValue && value && oldValue.template == value.template)
+                if (oldValue &&
+                    value &&
+                    isTemplateProvider(oldValue) &&
+                    isTemplateProvider(value) &&
+                    oldValue.template == value.template) {
+
                     childBuilder.updateModel(model);
+                }
                 else {
 
                     if (isUpdate)
@@ -544,7 +547,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                         const template = this.templateFor(value);
 
                         if (!template)
-                            throw new Error("Template '" + value.template + "' not found.");
+                            throw new Error("Template '" + value + "' not found.");
 
                         childBuilder.updateModel(model);
 
@@ -960,17 +963,21 @@ class ChildTemplateBuilder<TModel, TElement extends HTMLElement, TParent extends
 
 /****************************************/
 
-export function mount<TModel>(root: HTMLElement, template: CatalogTemplate<TModel>, model: TModel): void;
+export function mount<TModel>(root: HTMLElement, template: CatalogTemplate<TModel>, model?: TModel): void;
 export function mount(root: HTMLElement, component: ITemplateProvider): void;
 export function mount<TModel>(root: HTMLElement, templateOrProvider: CatalogTemplate<TModel> | ITemplateProvider, model?: TModel): void {
 
     root.innerHTML = "";
 
-    const template = model === undefined ? (templateOrProvider as ITemplateProvider).template : templateOrProvider as CatalogTemplate<TModel>;
+    const template = isTemplateProvider(templateOrProvider) ? templateOrProvider.template : templateOrProvider;
 
-    if (!model)
-        model = templateOrProvider as TModel;
-
+    if (!model) {
+        if (isTemplateProvider(templateOrProvider))
+            model = templateOrProvider as TModel;
+        else
+            model = {} as TModel;
+    }
+      
     const builder = new TemplateBuilder(model, root);
 
     builder.begin();

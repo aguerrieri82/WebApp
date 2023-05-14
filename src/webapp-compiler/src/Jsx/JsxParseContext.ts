@@ -288,10 +288,13 @@ export class JsxParseContext {
         }
         else {
             const func = template.getFunctionParent();
-            const params = func.get("params");
 
-            if (params.length == 1 && params[0].isIdentifier()) 
-                this.curModel = params[0].node as Identifier;
+            if (func) {
+                const params = func.get("params");
+
+                if (params.length == 1 && params[0].isIdentifier())
+                    this.curModel = params[0].node as Identifier;
+            }
         }
 
         if (!this.curModel) 

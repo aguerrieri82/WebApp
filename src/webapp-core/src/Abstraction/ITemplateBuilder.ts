@@ -46,9 +46,7 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
 
     component<TProps extends Record<string, any>, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): this;
 
-    content<TInnerModel extends ITemplateProvider>(content: Iterable<BindValue<TModel, TInnerModel>>, inline?: boolean): this;
-
-    content<TInnerModel extends ITemplateProvider>(content: BindValue<TModel, TInnerModel>, inline?: boolean): this;
+    content<TInnerModel extends ITemplateProvider|string>(content: BindValue<TModel, TInnerModel>, inline?: boolean): this;
 
     templateFor(value: TModel): ITemplate<TModel>;
 
