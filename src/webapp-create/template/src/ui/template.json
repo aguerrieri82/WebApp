@@ -3,5 +3,6 @@
   "transforms": [
     "js/pages/MainPage.jsx",
     "ts/pages/MainPage.tsx"
-  ]
+  ],
+  "main": "index.$(lang)x"
 }

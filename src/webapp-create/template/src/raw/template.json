@@ -3,5 +3,6 @@
   "transforms": [
     "js/index.js",
     "ts/index.ts"
-  ]
+  ],
+  "main": "index.$(lang)"
 }

@@ -37,7 +37,7 @@ const colours = {
     }
 };
 
-const libs = ["webapp-compiler", "webapp-compiler-rollup", "webapp-core", "webapp-jsx", "webapp-ui"];
+const libs = ["webapp-compiler", "webapp-compiler-rollup", "webapp-core", "webapp-jsx", "webapp-ui", "webapp-create"];
 
 let mode = "dev";
 let isPublish = false;

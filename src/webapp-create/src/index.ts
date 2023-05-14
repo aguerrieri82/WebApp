@@ -3,7 +3,7 @@ import * as url from 'url';
 import * as fs from 'fs';
 import * as path from 'path';
 import { stdin, stdout } from "process";
-import { error } from "console";
+import { clear, debug, error } from "console";
 import { randomInt } from "crypto";
 import { spawn, execSync, exec } from "child_process";
 import { Socket } from "net";
@@ -14,6 +14,9 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const PARAM_REXP = /\$\(([^\)]+)\)/gm;
 
 const BLOCK_REXP = /\/\*([a-zA-Z]+)\:([\s\S]+?)\*\//g;
+
+var curStep: IStep;
+
 
 const THEME = {
     label: "1E88E5",
@@ -31,10 +34,22 @@ type Transform = (text: string) => string;
 
 type InputValue<T> = [string, T];
 
+interface IPoint {
+    row: number;
+    col: number;
+}
+
+interface IStep {
+    text: string;
+    timer: NodeJS.Timer;
+    pos: IPoint;
+}
+
 interface ITemplate {
     name: string;
     source: string;
     transforms: string[];
+    main: string;
     use: string[];
     content: Record<ContentType, string[]>;
     package: Record<string, IPackage>;
@@ -61,6 +76,26 @@ interface ITemplateArgs {
     packManager: string;
     packVersion?: string;
     port?: number;
+}
+
+function getCursorPos() {
+
+    return new Promise < IPoint>(res => {
+        const termcodes = { cursorGetPosition: '\u001b[6n' };
+
+        stdin.setRawMode(true);
+        const readfx = function () {
+   
+            const buf = process.stdin.read();
+            const xy = /\[(.*)/g.exec(buf)[0].replace(/\[|R"/g, '').split(';');
+            const pos = { row: parseInt(xy[0]), col: parseInt(xy[1]) };
+            stdin.setRawMode(false);
+            res(pos);
+        }
+
+        process.stdin.once('readable', readfx);
+        process.stdout.write(termcodes.cursorGetPosition);
+    });
 }
 
 function tempDir(...dir: string[]) {
@@ -90,8 +125,74 @@ function write(text: string) {
     return new Promise(res => stdout.write(text, res));
 }
 
-function writeStep(text: string) {
-    write("\n" + getColor(THEME.step) + text + getColor() + "\n\n");
+async function writeStep(text?: string, stepEffect = false) {
+
+    async function doWrite(symb: string, color: string, first = false) {
+
+        if (!first) {
+
+            await clearLine();
+
+            await cursorTo(0);
+        }
+        else
+            await write("\n");
+
+        await write(getColor(color) + symb + " " + getColor(THEME.step) + curStep.text + getColor());
+
+        if (first && !stepEffect)
+            await write("\n\n");
+
+        if (stepEffect)
+            await cursorTo(0);
+    }
+
+    if (curStep?.timer) {
+        clearInterval(curStep.timer);
+        await doWrite("✓", THEME.check);
+        curStep = null;
+    }
+
+    if (!text)
+        return;
+
+    curStep = {
+        pos: await getCursorPos(),
+        text,
+        timer: undefined
+    };
+
+    await doWrite("-", THEME.bullet, true);
+
+    if (!stepEffect)
+        return;
+
+    let time = 0;
+
+    curStep.timer = setInterval(async () => {
+
+        let symb = '';
+
+        switch (time) {
+            case 0:
+                symb = '-';
+                break;
+            case 1:
+                symb = '\\';
+                break;
+            case 2:
+                symb = '|';
+                break;
+            case 3:
+                symb = '/';
+                break;
+        }
+
+        await doWrite(symb, THEME.bullet);
+
+        time = (time + 1) % 4;
+
+    }, 100);
 }
 
 function writeInfo(label: string, value: string) {
@@ -103,23 +204,25 @@ function writeError(msg: string) {
 }
 
 
+
 function readCharAsync() {
 
     return new Promise<string>(res => {
+
         stdin.setRawMode(true);
         stdin.resume();
-        hideCursor();
         const handler = (data: Buffer) => {
             res(data.toString("utf8"));
             stdin.removeListener("data", handler);
             stdin.setRawMode(false);
-            showCursor();
         }
         stdin.on("data", handler);
     });
 }
 
 async function readLineAsync(prompt: string) {
+
+    showCursor();
 
     const rl = readline.createInterface({
         input: process.stdin,
@@ -130,23 +233,32 @@ async function readLineAsync(prompt: string) {
 
     rl.close();
 
+    hideCursor();
+
     return result;
 }
 
 function hideCursor() {
-    write("\u001B[?25l");
+    return write("\u001B[?25l");
 }
 
 function showCursor() {
-    write("\u001B[?25h");
+    return write("\u001B[?25h");
 }
 
 function saveCursor() {
-    write("\x1b[s");
+    return write("\x1b[s");
 }
 
 function restoreCursor() {
-    write("\x1b[u");
+    return write("\x1b[u");
+}
+
+function cursorTo(x: number, y?: number) {
+    return new Promise<void>(res => stdout.cursorTo(x, y, res));
+}
+function clearLine() {
+    return new Promise<void>(res => stdout.clearLine(0, res));
 }
 
 async function inputTextAsync<T>(prompt: string, defValue?: string, validate?: (v: string) => boolean) {
@@ -155,14 +267,14 @@ async function inputTextAsync<T>(prompt: string, defValue?: string, validate?: (
 
     while (true) {
 
-        saveCursor();
+        await saveCursor();
 
         let result = await readLineAsync(promptFull);
 
         if (result.length == 0)
             result = defValue;
 
-        restoreCursor();
+        await restoreCursor();
 
         if (!validate || validate(result)) {
 
@@ -185,9 +297,9 @@ async function inputBoolAsync<T>(prompt: string, defValue?: boolean) {
 
     while (true) {
 
-        saveCursor();
+        await saveCursor();
 
-        stdout.clearLine(0);
+        await clearLine();
 
         let promptFull = getColor(THEME.bullet) + "• " + getColor(THEME.label) + prompt + "? " + getColor();
 
@@ -239,7 +351,7 @@ async function inputBoolAsync<T>(prompt: string, defValue?: boolean) {
                 break;
         }
 
-        restoreCursor();
+        await restoreCursor();
 
         stdout.clearLine(0);
         stdout.cursorTo(0);
@@ -273,11 +385,11 @@ async function inputOptionAsync<T>(prompt: string, defOption: number, ...options
 
         if (isValid) {
 
-            stdout.cursorTo(0);
+            restoreCursor();
 
             write(getColor(THEME.check) + "✓" + getColor());
 
-            stdout.moveCursor(0, 1);
+            stdout.moveCursor(0, 1 + options.length);
             stdout.cursorTo(0);
             stdout.clearLine(0);
 
@@ -413,6 +525,7 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
     const params = {
         "project-name": args.projectName,
         "port": args.port.toString(),
+        "lang": args.lang
     } as Record<string, string>;
 
     params[args.lang] = "true";
@@ -534,6 +647,8 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
         return JSON.stringify(pack, null, 4);
     }
 
+    params["main"] = JSON.stringify(replaceParams(path.join("src", variant.template.main)));
+
     processTemplate(template);
     processTemplate(variant.template, variant.path, "src", path.join(variant.path, ".."));
 
@@ -590,12 +705,13 @@ async function waitForServerAsync(address: string, port: number) {
     }
 }
 
-
 async function runAsync() {
 
-    console.log("Hello");
+    console.clear();
 
     try {
+
+        stdin.setEncoding('utf8');
 
         const template = readJson<ITemplate>(tempDir("template/template.json"));
 
@@ -608,20 +724,22 @@ async function runAsync() {
             packManager: "pnpm"
         }
 
-        //args = await queryArgsAsync();
+        args = await queryArgsAsync();
 
-        writeStep("Creating project...");
+        await writeStep("Creating project...", true);
 
         const outDir = args.projectName;
 
         if (!await createTemplateAsync(template, args, outDir))
             return;
 
-        writeStep("Restoring packages...");
+        await writeStep("Restoring packages...");
 
         await launchAsync(args.packManager, outDir, "install");
 
-        write("\n\n");
+        await writeStep();
+
+        await write("\n\n");
 
         const result = await inputBoolAsync("Launch application now", true);
 
@@ -631,19 +749,30 @@ async function runAsync() {
             write("\n");
             writeInfo(" • Run", args.packManager + " run dev");
             writeInfo(" • Open", url);
+
+            write("\n");
+
+            process.exit(0);
         }
         else {
 
             launchAsync(args.packManager, outDir, "run", "dev");
 
-            writeStep("Wating for dev server...");
+            await writeStep("Wating for dev server...");
 
             await waitForServerAsync("localhost", args.port);
 
-            writeStep("Launch browser");
+            await writeStep("Launch browser");
 
-            open(url);
+            await open(url, {
+                background: true,
+                newInstance: true
+            });
+
+            await writeStep();
         }
+
+
 
     }
     catch (ex) {

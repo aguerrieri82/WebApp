@@ -40,7 +40,7 @@ function serve() {
 
 export default [
     {
-        input: "src/index.tsx",
+        input: $(main),
         output: [
             {
                 file: outPath + "/app.js",
