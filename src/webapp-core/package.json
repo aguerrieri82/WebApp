@@ -1,6 +1,6 @@
 {
   "name": "@eusoft/webapp-core",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "packageManager": "pnpm@8.4.0",
   "type": "module",
   "main": "src/index.ts",

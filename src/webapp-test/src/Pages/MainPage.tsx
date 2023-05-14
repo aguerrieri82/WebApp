@@ -1,7 +1,6 @@
-import { app } from "@eusoft/webapp-ui/App";
 import { Page, Action } from "@eusoft/webapp-ui/components";
 import { secondPage } from "./SecondPage";
-
+import { router } from "@eusoft/webapp-framework";
 
 class MainPage extends Page {
 
@@ -17,7 +16,7 @@ class MainPage extends Page {
                 content: this.prop("actionLabel"),
                 executeAsync: async () => {
                     this.actionLabel = "cambiato";
-                    app.pageHost.push(secondPage);
+                    router.navigateAsync(secondPage);
                 }
             })
         });

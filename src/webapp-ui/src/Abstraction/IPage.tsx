@@ -1,8 +1,8 @@
 import { IComponent } from "@eusoft/webapp-core";
 
-export interface IPage extends IComponent {
+export interface IPage<TArgs extends Record<string, any> = undefined> extends IComponent {
 
-    loadAsync(): Promise<any>;
+    loadAsync(args?: TArgs): Promise<any>;
 
     onOpen(): void;
 

@@ -28,7 +28,7 @@ export const PageTemplates: TemplateMap<Page> = {
     </Template>)
 
 }
-export class Page<TOptions extends IPageOptions = IPageOptions> extends Component<TOptions> implements IPage {
+export class Page<TOptions extends IPageOptions = IPageOptions, TArgs extends Record<string, any> = undefined> extends Component<TOptions> implements IPage<TArgs> {
 
     constructor(options?: TOptions) {
 

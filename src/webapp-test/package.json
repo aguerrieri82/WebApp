@@ -24,6 +24,7 @@
     "@eusoft/webapp-framework": "link:../webapp-framework/src"
   },
   "devDependencies": {
+    "@types/express": "4.17.17",
     "@eusoft/webapp-compiler-rollup": "../../dist/webapp-compiler-rollup",
     "@rollup/plugin-node-resolve": "^15.0.2",
     "@rollup/plugin-typescript": "^11.1.0",

@@ -1,7 +1,6 @@
-import { App, app, runApp } from "@eusoft/webapp-ui";
-import { mainPage } from "./Pages/MainPage";
+import { runApp } from "@eusoft/webapp-ui";
+import { TestApp } from "./TestApp";
 
-runApp(new App())
-    .pageHost.push(mainPage);
+runApp(new TestApp());
 
 

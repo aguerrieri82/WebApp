@@ -3,8 +3,15 @@ import { mount } from "@eusoft/webapp-core";
 export interface IAppOptions {
 
 }
+export interface IApp {
 
-export class App {
+    runAsync(root?: HTMLElement | string);
+
+    pageHost: PageHost;
+}
+
+
+export class App  {
 
     constructor(options?: IAppOptions) {
 
@@ -19,13 +26,20 @@ export class App {
             root = document.body;
 
         mount(root, this.pageHost);
+
+        this.onStarted();
+    }
+
+    protected onStarted() {
+
     }
 
     readonly pageHost = new PageHost();
 }
 
 
-export var app: App;
+
+export var app: IApp;
 
 export function runApp<TApp extends App>(newApp: TApp) {
 

@@ -13,7 +13,8 @@
     "src/",
     "../webapp-core/src/",
     "../webapp-jsx/src/",
-    "../webapp-ui/src/"
+    "../webapp-ui/src/",
+    "../webapp-framework/src/"
   ]
 }
  

@@ -2,6 +2,7 @@ import { Action, Page, app } from "@eusoft/webapp-ui";
 import { Foreach, Template, TwoWays, Text, JsxNode, Bind, forModel } from "@eusoft/webapp-jsx";
 import { ITemplateBuilder, OptionsFor, propOf } from "@eusoft/webapp-core";
 import { Behavoir } from "@eusoft/webapp-core/Behavoir";
+import { router } from "@eusoft/webapp-framework";
 function Log(props: { message: string }) {
 
     console.log(props.message);
@@ -75,7 +76,7 @@ class SecondPage extends Page {
                 { name: "Lucy" },
             ],
             goBack() {
-                app.pageHost.pop();
+                router.back();
             }
 
         }, m => <Template name="SecondPage">
