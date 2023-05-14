@@ -1,11 +1,11 @@
-import { IPropertyChangedHandler, isObservableProperty } from "./Abstraction/IObservableProperty";
-import type { CatalogTemplate } from "./Abstraction/ITemplateProvider";
-import type { IComponent } from "./Abstraction/IComponent";
+import { IPropertyChangedHandler, isObservableProperty } from "./abstraction/IObservableProperty";
+import type { CatalogTemplate } from "./abstraction/ITemplateProvider";
+import type { IComponent } from "./abstraction/IComponent";
 import { enumOverrides, getTypeName } from "./ObjectUtils";
 import { bindTwoWay, getOrCreateProp } from "./Properties";
 import { toKebabCase } from "./StringUtils";
-import type { IBound } from "./Abstraction/IBound";
-import type { Bindable, ComponentStyle, IComponentOptions } from "./Abstraction/IComponentOptions";
+import type { IBound } from "./abstraction/IBound";
+import type { Bindable, ComponentStyle, IComponentOptions } from "./abstraction/IComponentOptions";
 
 type CommonKeys<TSrc, TDst> = {
     [K in (keyof TSrc & keyof TDst & string) /*as TSrc[K] extends Bindable<TDst[K]> ? K : never*/]: TSrc[K]

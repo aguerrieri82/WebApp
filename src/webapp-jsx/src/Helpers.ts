@@ -1,5 +1,5 @@
 import { IBindable, ITemplate, ITemplateProvider, PARENT } from "@eusoft/webapp-core";
-import { ModelBuilder, TemplateModel } from "./Abstraction";
+import { ModelBuilder, TemplateModel } from "./abstraction";
 
 export function forModel<TModel extends TemplateModel>(action: ModelBuilder<TModel>): ITemplate<TModel>;
 export function forModel<TModel extends TemplateModel>(model: TModel, action: ModelBuilder<TModel>): ITemplateProvider<TModel>;

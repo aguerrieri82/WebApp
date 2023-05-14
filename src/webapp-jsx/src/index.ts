@@ -1,7 +1,7 @@
 import { createElement } from "./Runtime";
 
-export type * from "./Abstraction";
-export * from "./Components";
+export type * from "./abstraction";
+export * from "./components";
 export * from "./Helpers";
 
 declare global {

@@ -1,4 +1,4 @@
-import type { JsxComponentProps, JsxNode, TemplateModel } from "../Abstraction";
+import type { JsxComponentProps, JsxNode, TemplateModel } from "../abstraction";
 
 export interface INodeProps<TModel extends TemplateModel> extends JsxComponentProps<TModel, TModel, undefined> {
     src: Node;

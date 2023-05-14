@@ -1,5 +1,5 @@
-import { IPropertyChangedHandler } from "./Abstraction/IObservableProperty";
-import { ITemplateBuilder } from "./Abstraction/ITemplateBuilder";
+import { IPropertyChangedHandler } from "./abstraction/IObservableProperty";
+import { ITemplateBuilder } from "./abstraction/ITemplateBuilder";
 import { IBinding } from "./Binder";
 
 export const WebApp = {

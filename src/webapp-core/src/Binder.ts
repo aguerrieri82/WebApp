@@ -1,7 +1,7 @@
-import { PARENT, TARGET, USE } from "./Abstraction/IBindable";
-import type { BindValue, IGetter } from "./Abstraction/IBinder";
-import { IObservableArrayHandler, isObservableArray } from "./Abstraction/IObservableArray";
-import type { IObservableProperty, IPropertyChangedHandler } from "./Abstraction/IObservableProperty";
+import { PARENT, TARGET, USE } from "./abstraction/IBindable";
+import type { BindValue, IGetter } from "./abstraction/IBinder";
+import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
+import type { IObservableProperty, IPropertyChangedHandler } from "./abstraction/IObservableProperty";
 import { forEachRev } from "./ArrayUtils";
 import { WebApp } from "./Debug";
 import { createObservableArray } from "./ObservableArray";

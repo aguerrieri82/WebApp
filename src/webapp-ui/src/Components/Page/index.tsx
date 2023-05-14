@@ -1,6 +1,6 @@
 import { Bindable, IComponentOptions, ITemplate, Component, IComponent, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
 import { forModel, Template } from "@eusoft/webapp-jsx";
-import { IPage } from "../../Abstraction/IPage";
+import { IPage } from "../../abstraction/IPage";
 import "./index.scss";
 
 interface IPageOptions extends IComponentOptions {

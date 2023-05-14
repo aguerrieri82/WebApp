@@ -1,0 +1,5 @@
+﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.76-alpha">
+  <ItemGroup>
+    <Folder Include="src\services\" />
+  </ItemGroup>
+</Project>

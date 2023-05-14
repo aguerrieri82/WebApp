@@ -2,6 +2,17 @@ import fs from 'fs';
 import path from "path";
 import { spawnSync } from 'child_process';
 
+const libs = [
+    "webapp-compiler",
+    "webapp-compiler-rollup",
+    "webapp-core",
+    "webapp-jsx",
+    "webapp-ui",
+    "webapp-framework",
+    "create-webapp"
+];
+
+
 const colours = {
     reset: "\x1b[0m",
     bright: "\x1b[1m",
@@ -37,7 +48,6 @@ const colours = {
     }
 };
 
-const libs = ["webapp-compiler", "webapp-compiler-rollup", "webapp-core", "webapp-jsx", "webapp-ui", "create-webapp"];
 
 let mode = "dev";
 let isPublish = false;

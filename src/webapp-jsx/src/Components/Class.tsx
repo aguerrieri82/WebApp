@@ -1,5 +1,5 @@
 import type { BindValue } from "@eusoft/webapp-core";
-import type { JsxComponentProps, JsxNode, TemplateModel } from "../Abstraction";
+import type { JsxComponentProps, JsxNode, TemplateModel } from "../abstraction";
 
 export interface IClassProps<TModel extends TemplateModel> extends Omit<JsxComponentProps<TModel>, "children"> {
     name: this["condition"] extends null | undefined ? BindValue<TModel, string> : string;

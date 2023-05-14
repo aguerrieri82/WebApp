@@ -1,4 +1,4 @@
-export * from "./Abstraction";
+export * from "./abstraction";
 export * from "./Binder";
 export * from "./TemplateBuilder";
 export * from "./Properties";

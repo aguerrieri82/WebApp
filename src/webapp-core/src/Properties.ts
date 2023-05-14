@@ -1,7 +1,7 @@
-import { IBindable, PROPS } from "./Abstraction/IBindable";
-import type { IBound } from "./Abstraction/IBound";
-import type { IObservableProperty } from "./Abstraction/IObservableProperty";
-import type { IProperty } from "./Abstraction/IProperty";
+import { IBindable, PROPS } from "./abstraction/IBindable";
+import type { IBound } from "./abstraction/IBound";
+import type { IObservableProperty } from "./abstraction/IObservableProperty";
+import type { IProperty } from "./abstraction/IProperty";
 import { getTypeName } from "./ObjectUtils";
 import { ObservableProperty } from "./ObservableProperty";
 

@@ -1,4 +1,4 @@
-import { PageHost } from "./Components/PageHost";
+import { PageHost } from "./components/PageHost";
 import { mount } from "@eusoft/webapp-core";
 export interface IAppOptions {
 

@@ -26,6 +26,6 @@
     "rollup": "^3.21.5"
   },
   "dependencies": {
-    "@eusoft/webapp-core": "link:../webapp-core"
+    "@eusoft/webapp-core": "link:../webapp-core/src"
   }
 }

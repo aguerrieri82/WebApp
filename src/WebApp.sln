@@ -34,6 +34,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{847BAF
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "WebApp.Create", "create-webapp\WebApp.Create.esproj", "{4E712692-288D-40DF-BBF2-BEACBB40938D}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "WebApp.Framework", "webapp-framework\WebApp.Framework.esproj", "{1B33EAD6-00B9-4583-8D9D-E2EE3119DEB4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,12 @@ Global
 		{4E712692-288D-40DF-BBF2-BEACBB40938D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E712692-288D-40DF-BBF2-BEACBB40938D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4E712692-288D-40DF-BBF2-BEACBB40938D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{1B33EAD6-00B9-4583-8D9D-E2EE3119DEB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B33EAD6-00B9-4583-8D9D-E2EE3119DEB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B33EAD6-00B9-4583-8D9D-E2EE3119DEB4}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{1B33EAD6-00B9-4583-8D9D-E2EE3119DEB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B33EAD6-00B9-4583-8D9D-E2EE3119DEB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B33EAD6-00B9-4583-8D9D-E2EE3119DEB4}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

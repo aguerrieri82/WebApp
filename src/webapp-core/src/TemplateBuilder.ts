@@ -1,10 +1,10 @@
-import { IBehavoir, isBehavoir } from "./Abstraction/IBehavoir";
-import type { BindValue, BoundObject, BoundObjectModes } from "./Abstraction/IBinder";
-import { isHTMLContainer } from "./Abstraction/IHTMLContainer";
-import { IObservableArrayHandler, isObservableArray } from "./Abstraction/IObservableArray";
-import { ITemplate, isTemplate } from "./Abstraction/ITemplate";
-import type { BehavoirType, ClassComponenType, ComponentType, FunctionalComponenType, IChildTemplateBuilder, IComponentInfo, ITemplateBuilder, InputValueMode, RefNodePosition, StyleBinding, TemplateValueMap } from "./Abstraction/ITemplateBuilder";
-import { CatalogTemplate, ITemplateProvider, isTemplateProvider } from "./Abstraction/ITemplateProvider";
+import { IBehavoir, isBehavoir } from "./abstraction/IBehavoir";
+import type { BindValue, BoundObject, BoundObjectModes } from "./abstraction/IBinder";
+import { isHTMLContainer } from "./abstraction/IHTMLContainer";
+import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
+import { ITemplate, isTemplate } from "./abstraction/ITemplate";
+import type { BehavoirType, ClassComponenType, ComponentType, FunctionalComponenType, IChildTemplateBuilder, IComponentInfo, ITemplateBuilder, InputValueMode, RefNodePosition, StyleBinding, TemplateValueMap } from "./abstraction/ITemplateBuilder";
+import { CatalogTemplate, ITemplateProvider, isTemplateProvider } from "./abstraction/ITemplateProvider";
 import { Binder } from "./Binder";
 import { WebApp } from "./Debug";
 import { getTypeName, isClass } from "./ObjectUtils";

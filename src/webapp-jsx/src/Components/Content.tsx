@@ -1,5 +1,5 @@
 import type { BindValue, ITemplateProvider, CatalogTemplate } from "@eusoft/webapp-core";
-import type { JsxComponentProps, JsxNode, TemplateModel } from "../Abstraction";
+import type { JsxComponentProps, JsxNode, TemplateModel } from "../abstraction";
 
 export interface IContentProps<TModel extends TemplateModel, TInnerModel extends TemplateModel> extends JsxComponentProps<TModel, TModel, undefined> {
     src: BindValue<TModel, ITemplateProvider> | CatalogTemplate<TInnerModel>;

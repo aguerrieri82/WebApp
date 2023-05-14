@@ -1,4 +1,4 @@
-import { IBehavoir } from "./Abstraction";
+import { IBehavoir } from "./abstraction";
 
 export abstract class Behavoir<TOptions extends Record<string, any> = Record<string, any>, TElement extends HTMLElement = HTMLElement, TModel = any> implements IBehavoir<TElement, TModel> {
 

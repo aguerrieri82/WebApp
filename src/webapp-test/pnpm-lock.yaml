@@ -2,14 +2,14 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@eusoft/webapp-core':
-    specifier: link:../webapp-core
-    version: link:../webapp-core
+    specifier: link:../webapp-core/src
+    version: link:../webapp-core/src
   '@eusoft/webapp-jsx':
-    specifier: link:../webapp-jsx
-    version: link:../webapp-jsx
+    specifier: link:../webapp-jsx/src
+    version: link:../webapp-jsx/src
   '@eusoft/webapp-ui':
-    specifier: link:../webapp-ui
-    version: link:../webapp-ui
+    specifier: link:../webapp-ui/src
+    version: link:../webapp-ui/src
 
 devDependencies:
   '@eusoft/webapp-compiler-rollup':

@@ -199,7 +199,7 @@ async function writeStep(text?: string, stepEffect = false) {
 }
 
 function writeInfo(label: string, value: string) {
-    write(getColor(THEME.label) + label + " " + getColor(THEME.bullet) + value + "\n");
+    write(getColor(THEME.label) + label + " " + getColor(THEME.bullet) + value + "\n" + getColor());
 }
 
 function writeError(msg: string) {
@@ -759,7 +759,9 @@ async function runAsync() {
 
         if (!result) {
             write("\n");
-            writeInfo(" • Run", args.packManager + " run dev");
+
+            writeInfo(" • Run", "cd " + args.projectName);
+            writeInfo("      ", args.packManager + " run dev");
             writeInfo(" • Open", url);
 
             write("\n");
@@ -771,7 +773,7 @@ async function runAsync() {
             const child = launch(args.packManager, outDir, "run", "dev");
 
             process.on('SIGINT', () => {
-                write("Dev server terminated");
+                write("Dev server terminated\n");
                 child.kill();
             })
 
