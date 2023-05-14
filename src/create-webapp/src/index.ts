@@ -4,7 +4,7 @@ import * as readline from "readline";
 import * as url from 'url';
 import * as fs from 'fs';
 import * as path from 'path';
-import { stdin, stdout } from "process";
+import { stderr, stdin, stdout } from "process";
 import {  error } from "console";
 import { randomInt } from "crypto";
 import { spawn, exec } from "child_process";
@@ -203,8 +203,8 @@ function writeInfo(label: string, value: string) {
 }
 
 function writeError(msg: string) {
-    write(getColor(THEME.error) + msg + getColor() + "\n");
-    process.exit(0);
+    stderr.write(getColor(THEME.error) + msg + getColor() + "\n");
+    process.exit(-1);
 }
 
 function readCharAsync() {
@@ -213,12 +213,14 @@ function readCharAsync() {
 
         stdin.setRawMode(true);
         stdin.resume();
-        const handler = (data: Buffer) => {
-            res(data.toString("utf8"));
-            stdin.removeListener("data", handler);
+        stdin.once("data", data => {
+            const value = data.toString("utf8");
+            if (value.length == 1 && (value.charCodeAt(0) == 3 || value.charCodeAt(0) == 27))
+                process.exit(-1);
+            res(value);
             stdin.setRawMode(false);
-        }
-        stdin.on("data", handler);
+        });
+   
     });
 }
 
@@ -361,7 +363,6 @@ async function inputBoolAsync<T>(prompt: string, defValue?: boolean) {
     }
 }
 
-
 async function inputOptionAsync<T>(prompt: string, defOption: number, ...options: InputValue<T>[]) {
 
     let curValue = defOption;
@@ -462,24 +463,30 @@ async function getLastPackageVersionsAsync(manager: string, ...name: string[]) {
     return result;
 }
 
-function launchAsync(cmd: string, cwd: string = ".", ...args: string[]) {
+function launchAndWaitAsync(cmd: string, cwd: string = ".", ...args: string[]) {
 
     return new Promise<boolean>(res => {
 
-        const result = spawn(cmd, args, {
-            shell: true,
-            stdio: "inherit",
-            cwd: path.resolve(cwd)
-        });
-
-        //result.stdout.pipe(process.stdout);
-        //result.stderr.pipe(process.stderr);
+        const result = launch(cmd, cwd, ...args);
 
         result.on("exit", code => {
             res(code == 0);
         })
     });
 }
+
+function launch(cmd: string, cwd: string = ".", ...args: string[]) {
+
+    const result = spawn(cmd, args, {
+        shell: true,
+        stdio: "inherit",
+        detached: false,
+        cwd: path.resolve(cwd)
+    });
+
+    return result;
+}
+
 
 
 function findVariant(args: ITemplateArgs) {
@@ -740,7 +747,7 @@ async function runAsync() {
 
         await writeStep("Restoring packages...");
 
-        await launchAsync(args.packManager, outDir, "install");
+        await launchAndWaitAsync(args.packManager, outDir, "install");
 
         await writeStep();
 
@@ -761,7 +768,12 @@ async function runAsync() {
         }
         else {
 
-            launchAsync(args.packManager, outDir, "run", "dev");
+            const child = launch(args.packManager, outDir, "run", "dev");
+
+            process.on('SIGINT', () => {
+                write("Dev server terminated");
+                child.kill();
+            })
 
             await writeStep("Wating for dev server...");
 
@@ -779,7 +791,7 @@ async function runAsync() {
     }
     catch (ex) {
         error(ex);
-        process.exit(0);
+        process.exit(-1);
     }
 }
 
