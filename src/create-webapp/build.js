@@ -10,6 +10,7 @@ spawnSync("tsc", [], {
 });
 
 const newPkg = createDistPackage();
+newPkg.bin = "index.js";
 
 fse.copySync("template", path.join(outPath, "template"), { overwrite: true });
 

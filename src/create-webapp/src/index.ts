@@ -1,11 +1,13 @@
+#! /usr/bin/env node
+
 import * as readline from "readline";
 import * as url from 'url';
 import * as fs from 'fs';
 import * as path from 'path';
 import { stdin, stdout } from "process";
-import { clear, debug, error } from "console";
+import {  error } from "console";
 import { randomInt } from "crypto";
-import { spawn, execSync, exec } from "child_process";
+import { spawn, exec } from "child_process";
 import { Socket } from "net";
 import open from "open";
 
@@ -201,9 +203,8 @@ function writeInfo(label: string, value: string) {
 
 function writeError(msg: string) {
     write(getColor(THEME.error) + msg + getColor() + "\n");
+    process.exit(0);
 }
-
-
 
 function readCharAsync() {
 
@@ -525,7 +526,8 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
     const params = {
         "project-name": args.projectName,
         "port": args.port.toString(),
-        "lang": args.lang
+        "lang": args.lang,
+        "gitignore": ".gitignore"
     } as Record<string, string>;
 
     params[args.lang] = "true";
@@ -773,12 +775,10 @@ async function runAsync() {
 
             await writeStep();
         }
-
-
-
     }
     catch (ex) {
         error(ex);
+        process.exit(0);
     }
 }
 

@@ -14,7 +14,7 @@
     ],
     "common": [
       "public",
-      ".gitignore",
+      "$(gitignore)",
       "package.json",
       "rollup.config.js",
       "server.js"

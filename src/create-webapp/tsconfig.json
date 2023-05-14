@@ -6,7 +6,7 @@
     "module": "ESNext",
     "sourceMap": true,
     "moduleResolution": "Node",
-    "outDir": "../../dist/webapp-create/",
+    "outDir": "../../dist/create-webapp/",
     "incremental": true
   },
   "compileOnSave": true,

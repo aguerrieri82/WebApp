@@ -32,7 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{847BAF
 		..\web-app.xsd = ..\web-app.xsd
 	EndProjectSection
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "WebApp.Create", "webapp-create\WebApp.Create.esproj", "{4E712692-288D-40DF-BBF2-BEACBB40938D}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "WebApp.Create", "create-webapp\WebApp.Create.esproj", "{4E712692-288D-40DF-BBF2-BEACBB40938D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

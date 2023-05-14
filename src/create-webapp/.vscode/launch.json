@@ -8,7 +8,7 @@
       "skipFiles": [ "<node_internals>/**" ],
       "program": "index.js",
       "args": [ "-test" ],
-      "cwd": "${workspaceFolder}/../../dist/webapp-create/",
+      "cwd": "${workspaceFolder}/../../dist/create-webapp/",
       "console": "externalTerminal"
     }
   ]

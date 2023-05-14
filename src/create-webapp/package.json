@@ -1,14 +1,14 @@
 {
-  "name": "@eusoft/webapp-create",
-  "version": "0.0.4",
+  "name": "@eusoft/create-webapp",
+  "version": "0.0.5",
   "packageManager": "pnpm@8.4.0",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
     "build": "node build",
     "build:prod": "pnpm run clean&&node build",
-    "clean": "rimraf ../../dist/webapp-create/",
-    "publish": "cd ../../dist/webapp-create/ && pnpm publish --access public --no-git-checks",
+    "clean": "rimraf ../../dist/create-webapp/",
+    "publish": "cd ../../dist/create-webapp/ && pnpm publish --access public --no-git-checks",
     "lint:fix": "eslint ./src/**/*.ts* --fix",
     "install:pnpm": "pnpm install",
     "upgrade": "pnpm up -latest"
