@@ -1,7 +1,6 @@
 {
   "name": "$(project-name)",
   "version": "0.0.1",
-  "packageManager": "pnpm@8.4.0",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
@@ -17,9 +16,7 @@
   "keywords": [],
   "author": "Andrea Guerrieri",
   "dependencies": {
-    "@eusoft/webapp-core": "latest",
-    "@eusoft/webapp-jsx": "latest",
-    "@eusoft/webapp-ui": "latest"
+    "@eusoft/webapp-core": "latest"
   },
   "devDependencies": {
     "@eusoft/webapp-compiler-rollup": "latest",

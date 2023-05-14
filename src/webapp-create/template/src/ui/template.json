@@ -1,7 +1,7 @@
 {
   "use": [ "jsx", "ui" ],
   "transforms": [
-    "js/index.js",
-    "ts/index.ts"
+    "js/pages/MainPage.jsx",
+    "ts/pages/MainPage.tsx"
   ]
 }

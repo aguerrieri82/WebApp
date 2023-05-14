@@ -13,7 +13,7 @@
   "keywords": [],
   "author": "Andrea Guerrieri",
   "dependencies": {
-
+    "open": "9.1.0"
   },
   "devDependencies": {
     "@types/node": "20.1.1",

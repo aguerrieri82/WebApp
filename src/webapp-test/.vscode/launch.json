@@ -18,7 +18,7 @@
       "name": "Build",
       "skipFiles": [ "<node_internals>/**" ],
       "runtimeExecutable": "npm",
-      "runtimeArgs": [ "run-script", "build:dev" ],
+      "runtimeArgs": [ "run-script", "dist:prod" ],
       "cwd": "${workspaceFolder}",
       "console": "externalTerminal"
     }

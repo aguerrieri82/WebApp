@@ -8,6 +8,7 @@
     "start": "node server",
     "dev": "rollup -c -w --environment NODE_ENV:dev",
     "dist:dev": "cd ../../scripts/build-utils/ && node dist",
+    "dist:prod": "cd ../../scripts/build-utils/ && node dist -prod",
     "dist:pub": "cd ../../scripts/build-utils/ && node dist -n -p",
     "build:dev": "rollup -c --environment NODE_ENV:dev",
     "build:prod": "rollup -c --environment NODE_ENV:prod",

@@ -846,7 +846,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         else {
 
             for (const prop in nameOrValue) 
-                this.bind(value, a => this.element.style[prop] = a[prop]);
+                this.bind(nameOrValue[prop], a => this.element.style[prop] = a);
             
         }
         return this;

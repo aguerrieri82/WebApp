@@ -3,33 +3,53 @@ import * as url from 'url';
 import * as fs from 'fs';
 import * as path from 'path';
 import { stdin, stdout } from "process";
-
+import { error } from "console";
+import { randomInt } from "crypto";
+import { spawn, execSync, exec } from "child_process";
+import { Socket } from "net";
+import open from "open";
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
+const PARAM_REXP = /\$\(([^\)]+)\)/gm;
 
+const BLOCK_REXP = /\/\*([a-zA-Z]+)\:([\s\S]+?)\*\//g;
 
 const THEME = {
-    labelColor: "1E88E5",
+    label: "1E88E5",
     selectedValue: "9C27B0",
+    step: "4CAF50",
     value: "78909C",
     check: "388E3C",
     bullet: "FFFFFF",
-
+    error: "F44336"
 }
+
+type ContentType = "vs" | "ts" | "common" | "ui" | "js" |"jsx";
+
+type Transform = (text: string) => string;
+
+type InputValue<T> = [string, T];
 
 interface ITemplate {
     name: string;
     source: string;
     transforms: string[];
     use: string[];
-    content: Record<string, string[]>;
-    packages: Record<string, Record<string, string>>;
+    content: Record<ContentType, string[]>;
+    package: Record<string, IPackage>;
 }
 
-interface IInputValue {
-    text: string;
-    value: string;
+interface ITemplateVariant {
+    name: string;
+    template: ITemplate;
+    path: string;
+}
+
+interface IPackage {
+    packageManager: string;
+    dependencies: Record<string, string>;
+    devDependencies: Record<string, string>;
 }
 
 interface ITemplateArgs {
@@ -38,11 +58,14 @@ interface ITemplateArgs {
     ui: boolean;
     jsx: boolean;
     vs: boolean;
+    packManager: string;
+    packVersion?: string;
+    port?: number;
 }
 
-function tempDir(dir: string) {
+function tempDir(...dir: string[]) {
 
-    return path.join(__dirname, dir);
+    return path.join(__dirname, ...dir);
 }
 
 function readJson<T>(filePath: string) {
@@ -67,6 +90,19 @@ function write(text: string) {
     return new Promise(res => stdout.write(text, res));
 }
 
+function writeStep(text: string) {
+    write("\n" + getColor(THEME.step) + text + getColor() + "\n\n");
+}
+
+function writeInfo(label: string, value: string) {
+    write(getColor(THEME.label) + label + " " + getColor(THEME.bullet) + value + "\n");
+}
+
+function writeError(msg: string) {
+    write(getColor(THEME.error) + msg + getColor() + "\n");
+}
+
+
 function readCharAsync() {
 
     return new Promise<string>(res => {
@@ -81,17 +117,6 @@ function readCharAsync() {
         }
         stdin.on("data", handler);
     });
-
-
-
-    stdin.resume();
-    stdin.setEncoding('utf8');
-    hideCursor();
-    const readBuffer = Buffer.alloc(1);
-    fs.readSync(0, readBuffer, 0, 1, undefined);
-    stdin.setRawMode(false);
-    showCursor();
-    return readBuffer.toString('utf8')
 }
 
 async function readLineAsync(prompt: string) {
@@ -126,7 +151,7 @@ function restoreCursor() {
 
 async function inputTextAsync<T>(prompt: string, defValue?: string, validate?: (v: string) => boolean) {
 
-    const promptFull = getColor(THEME.bullet) + "• " + getColor(THEME.labelColor) + prompt + ": " + getColor();
+    const promptFull = getColor(THEME.bullet) + "• " + getColor(THEME.label) + prompt + ": " + getColor();
 
     while (true) {
 
@@ -152,7 +177,6 @@ async function inputTextAsync<T>(prompt: string, defValue?: string, validate?: (
     }
 }
 
-
 async function inputBoolAsync<T>(prompt: string, defValue?: boolean) {
 
     let curValue = defValue;
@@ -165,7 +189,7 @@ async function inputBoolAsync<T>(prompt: string, defValue?: boolean) {
 
         stdout.clearLine(0);
 
-        let promptFull = getColor(THEME.bullet) + "• " + getColor(THEME.labelColor) + prompt + "? " + getColor();
+        let promptFull = getColor(THEME.bullet) + "• " + getColor(THEME.label) + prompt + "? " + getColor();
 
         write(promptFull);
 
@@ -224,9 +248,296 @@ async function inputBoolAsync<T>(prompt: string, defValue?: boolean) {
 }
 
 
+async function inputOptionAsync<T>(prompt: string, defOption: number, ...options: InputValue<T>[]) {
+
+    let curValue = defOption;
+
+    let isValid = false;
+
+    while (true) {
+
+        saveCursor();
+
+        stdout.clearLine(0);
+
+        let promptFull = getColor(THEME.bullet) + "• " + getColor(THEME.label) + prompt + ":" + getColor() + "\n";
+
+        write(promptFull);
+
+        options.forEach((o, i) => {
+
+            write(getColor(curValue == i ? THEME.selectedValue : THEME.value));
+            write("  " + i + " " + o[0] + "\n");
+            write(getColor());
+        });
+
+        if (isValid) {
+
+            stdout.cursorTo(0);
+
+            write(getColor(THEME.check) + "✓" + getColor());
+
+            stdout.moveCursor(0, 1);
+            stdout.cursorTo(0);
+            stdout.clearLine(0);
+
+            return options[curValue][1];
+        }
+
+        const c = await readCharAsync();
+
+        const num = parseInt(c);
+
+        if (!isNaN(num) && num >= 0 && num < options.length) {
+            isValid = true;
+            curValue = num;
+        }
+        else {  
+            switch (c) {
+                case "\r":
+                    isValid = true;
+                    break;
+                case "\x1b[A":
+                    if (curValue > 0)
+                        curValue--;
+                    break;
+                case "\x1b[B":
+                    if (curValue < options.length - 1)
+                        curValue++;
+                    break;
+            }
+        }
+
+        restoreCursor();
+
+        stdout.clearLine(0);
+        stdout.cursorTo(0);
+    }
+}
+
+function extractContent(args: ITemplateArgs) {
+
+    const result: ContentType[] = ["common"];
+    if (args.vs)
+        result.push("vs");
+    if (args.ui)
+        result.push("ui");
+    if (args.jsx)
+        result.push("jsx");
+    result.push(args.lang);
+    return result;
+}
+
+function getLastPackageVersionAsync(manager: string, name: string) {
+
+    return new Promise<string>(res => {
+        exec(manager + " view " + name + " version", (err, stdout) => {
+            res(stdout.trim());
+        });
+    });
+}
+
+async function getLastPackageVersionsAsync(manager: string, ...name: string[]) {
+
+    const versions = await Promise.all(name.map(n => getLastPackageVersionAsync(manager, n)));
+
+    const result = {} as Record<string, string>;
+
+    name.forEach((n, i) => result[n] = versions[i]);
+
+    return result;
+}
+
+function launchAsync(cmd: string, cwd: string = ".", ...args: string[]) {
+
+    return new Promise<boolean>(res => {
+
+        const result = spawn(cmd, args, {
+            shell: true,
+            stdio: "inherit",
+            cwd: path.resolve(cwd)
+        });
+
+        //result.stdout.pipe(process.stdout);
+        //result.stderr.pipe(process.stderr);
+
+        result.on("exit", code => {
+            res(code == 0);
+        })
+    });
+}
+
+
+function findVariant(args: ITemplateArgs) {
+
+    const srcDir = tempDir("template/src");
+    const content = extractContent(args);
+
+    const result: ITemplateVariant[] = [];
+
+    let bestMatch, bestMatchCount: number;
+
+    for (const entry of fs.readdirSync(srcDir)) {
+        const template = readJson<ITemplate>(path.join(srcDir, entry, "template.json"));
+
+        const matchCount = template.use.filter(a => content.indexOf(a as ContentType) != -1).length;
+
+        if (matchCount < template.use.length)
+            continue;
+
+        result.push({
+            name: entry,
+            path: path.join("src", entry, args.lang),
+            template
+        });
+
+        if (!bestMatchCount || matchCount > bestMatchCount) {
+            bestMatch = result[result.length - 1];
+            bestMatchCount = matchCount;
+        }
+  
+    }
+
+    return bestMatch;
+}
+
 async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir: string) {
 
+    const outPath = path.resolve(dir);
+    const validContent = extractContent(args);
+    const transforms: Record<string, Transform> = {}
 
+    if (!args.port)
+        args.port = randomInt(3000, 8000);
+
+    const params = {
+        "project-name": args.projectName,
+        "port": args.port.toString(),
+    } as Record<string, string>;
+
+    params[args.lang] = "true";
+
+    function replaceParams(text: string) {
+        text = text.replace(PARAM_REXP, (_, p1: string) => params[p1]);
+        text = text.replace(BLOCK_REXP, (_, p1: string, p2: string) => {
+            if (params[p1.toLowerCase()])
+                return p2;
+            return "";
+        });
+        return text;
+    }
+
+    function processEntry(relPath: string, baseInPath = ".", baseOutPath = ".") {
+
+        relPath = path.normalize(relPath);
+
+        const inPath = tempDir("template", relPath);
+        const outPath = path.resolve(dir, baseOutPath, replaceParams(path.relative(baseInPath, relPath)));
+
+        const info = fs.lstatSync(inPath);
+
+        if (info.isDirectory()) {
+
+            for (const entry of fs.readdirSync(inPath))
+                processEntry(path.join(relPath, entry), baseInPath, baseOutPath);
+        }
+        else {
+
+            const ourDirName = path.dirname(outPath);
+
+            if (!fs.existsSync(ourDirName))
+                fs.mkdirSync(ourDirName, { recursive: true });
+
+            if (relPath in transforms) {
+                let text = fs.readFileSync(inPath, "utf8");
+
+                text = transforms[relPath](text);
+
+                fs.writeFileSync(outPath, text);
+            }
+            else
+                fs.copyFileSync(inPath, outPath);
+        }
+    }
+
+    if (fs.existsSync(outPath)) {
+
+        if (fs.readdirSync(outPath).length > 0) {
+            writeError(`${outPath}' is not empty`);
+            //return false;
+        }
+    }
+    else {
+        fs.mkdirSync(outPath, { recursive: true });
+    }
+
+    function processTemplate(curTemplate: ITemplate, baseInPath = ".", baseOutPath = ".", tempPath = baseInPath) {
+
+        const content: string[] = [];
+
+        if (curTemplate.content) {
+            for (const key in curTemplate.content) {
+                if (validContent.indexOf(key as ContentType) == -1)
+                    continue;
+                content.push(...curTemplate.content[key as ContentType]);
+            }
+        }
+        else
+            content.push(baseInPath);
+     
+
+        if (curTemplate.transforms) {
+            for (const t of curTemplate.transforms)
+                transforms[path.join(tempPath, t)] = text => replaceParams(text);
+        }
+
+        for (const entry of content)
+            processEntry(entry, baseInPath, baseOutPath);
+    }
+
+
+    const variant = findVariant(args);
+
+    const lastPackagesVers = await getLastPackageVersionsAsync(args.packManager,
+        args.packManager,
+        "@eusoft/webapp-ui",
+        "@eusoft/webapp-core",
+        "@eusoft/webapp-jsx");
+
+    if (!args.packVersion)
+        args.packVersion = lastPackagesVers[args.packManager];
+
+    transforms["package.json"] = text => {
+
+        let pack = JSON.parse(replaceParams(text)) as IPackage;
+
+        for (const content of validContent) {
+            const item = template.package[content];
+            if (item) {
+       
+                Object.assign(pack.devDependencies, item.devDependencies);
+                Object.assign(pack.dependencies, item.dependencies);
+            }
+        }
+
+        pack.dependencies["@eusoft/webapp-core"] = lastPackagesVers["@eusoft/webapp-core"];
+
+        if (args.ui)
+            pack.dependencies["@eusoft/webapp-ui"] = lastPackagesVers["@eusoft/webapp-ui"];
+
+        if (args.jsx)
+            pack.dependencies["@eusoft/webapp-jsx"] = lastPackagesVers["@eusoft/webapp-jsx"];
+
+        if (args.packManager != "npm")
+            pack.packageManager = args.packManager + "@" + args.packVersion;
+
+        return JSON.stringify(pack, null, 4);
+    }
+
+    processTemplate(template);
+    processTemplate(variant.template, variant.path, "src", path.join(variant.path, ".."));
+
+    return true;
 }
 
 async function queryArgsAsync()  {
@@ -236,7 +547,47 @@ async function queryArgsAsync()  {
     result.lang = (await inputBoolAsync("Use typescript", true)) ? "ts" : "js";
     result.jsx = (await inputBoolAsync("Use JSX", true));
     result.ui = (await inputBoolAsync("Use UI component library", true));
+    result.vs = (await inputBoolAsync("Visual studio/code support", true));
+    result.packManager = await inputOptionAsync("Package manager",
+        0,
+        ["pnpm", "pnpm"],
+        ["npm", "npm"],
+        ["yarn", "yarn"],
+    )
     return result;
+}
+async function waitForServerAsync(address: string, port: number) {
+
+    while (true) {
+
+        const result = await new Promise<boolean>(res => {
+
+            try {
+                const socket = new Socket();
+
+                function fail(ex: any) {
+                    socket.destroy();
+                    res(false);
+                }
+
+                socket.setTimeout(1000);
+
+                socket.on("timeout", fail);
+                socket.on("error", fail);
+
+                socket.connect(port, address, () => {
+                    socket.destroy();
+                    res(true);
+                });
+            }
+            catch {
+                res(false);
+            }
+        });
+
+        if (result)
+            break;
+    }
 }
 
 
@@ -244,13 +595,60 @@ async function runAsync() {
 
     console.log("Hello");
 
-    const template = readJson<ITemplate>(tempDir("template/template.json"));
+    try {
 
-    const args = await queryArgsAsync();
+        const template = readJson<ITemplate>(tempDir("template/template.json"));
 
-    await createTemplateAsync(template, args, args.projectName);
+        let args: ITemplateArgs = {
+            jsx: true,
+            lang: "ts",
+            projectName: "web-app",
+            ui: true,
+            vs: true,
+            packManager: "pnpm"
+        }
 
-    debugger;
+        //args = await queryArgsAsync();
+
+        writeStep("Creating project...");
+
+        const outDir = args.projectName;
+
+        if (!await createTemplateAsync(template, args, outDir))
+            return;
+
+        writeStep("Restoring packages...");
+
+        await launchAsync(args.packManager, outDir, "install");
+
+        write("\n\n");
+
+        const result = await inputBoolAsync("Launch application now", true);
+
+        const url = "http://localhost:" + args.port + "/";
+
+        if (!result) {
+            write("\n");
+            writeInfo(" • Run", args.packManager + " run dev");
+            writeInfo(" • Open", url);
+        }
+        else {
+
+            launchAsync(args.packManager, outDir, "run", "dev");
+
+            writeStep("Wating for dev server...");
+
+            await waitForServerAsync("localhost", args.port);
+
+            writeStep("Launch browser");
+
+            open(url);
+        }
+
+    }
+    catch (ex) {
+        error(ex);
+    }
 }
 
 runAsync(); 

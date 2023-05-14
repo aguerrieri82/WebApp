@@ -2,10 +2,9 @@
   "name": "default",
   "source": "src",
   "transforms": [
-    "package.json",
-    "server.json",
+    "server.js",
+    "rollup.config.js",
     "public/index.html",
-    "$(project-name).esproj",
     ".vscode/launch.json"
   ],
   "content": {
@@ -24,11 +23,13 @@
       "tsconfig.json"
     ]
   },
-  "packages": {
+  "package": {
     "ts": {
-      "typescript": "^11.1.0",
-      "tslib": "^2.5.0",
-      "@rollup/plugin-typescript": "^5.0.4"
+      "devDependencies": {
+        "typescript": "^5.0.4",
+        "tslib": "^2.5.0",
+        "@rollup/plugin-typescript": "^11.1.0"
+      }
     }
   }
 }

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from "path";
-import { exec } from 'child_process';
+import { spawnSync } from 'child_process';
 
 const colours = {
     reset: "\x1b[0m",
@@ -77,26 +77,15 @@ function saveJson(filePath, data) {
 
 function pnpmExec(libPath, script) {
 
-    return pnpm(libPath, "run " + script)
+    return pnpm(libPath, "run", script)
 }
 
-function pnpm(libPath, command) {
+function pnpm(libPath, ...command) {
 
-    return new Promise((res, rej) => {
-
-        const child = exec("pnpm " + command, {
-            cwd: libPath
-        }, (error, stdout, stderr) => {
-
-            if (error)
-                rej(error);
-            else {
-                res(stdout);
-            }
-            
-        });
-
-        child.stdout.pipe(process.stdout);
+    spawnSync("pnpm", command, {
+        cwd: libPath,
+        shell: true,
+        stdio: "inherit",
     });
 }
 
@@ -146,7 +135,7 @@ async function processLib(libName) {
 
             logColor(`Publish\n`, colours.fg.blue);
 
-            await pnpm(libDistPath, "publish --access public --no-git-checks");
+            await pnpm(libDistPath, "publish", "--access public", "--no-git-checks");
         }
     }
     catch (ex) {
