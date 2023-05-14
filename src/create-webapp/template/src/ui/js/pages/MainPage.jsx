@@ -1,5 +1,6 @@
 import { Template, forModel } from "@eusoft/webapp-jsx";
 import { Page } from "@eusoft/webapp-ui";
+import "./MainPage.scss";
 
 class MainPage extends Page {
 
