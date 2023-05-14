@@ -13,6 +13,7 @@ import open from "open";
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
+
 const PARAM_REXP = /\$\(([^\)]+)\)/gm;
 
 const BLOCK_REXP = /\/\*([a-zA-Z]+)\:([\s\S]+?)\*\//g;
@@ -732,7 +733,7 @@ async function runAsync() {
 
         await writeStep("Creating project...", true);
 
-        const outDir = args.projectName;
+        const outDir = path.join(process.cwd(), args.projectName);
 
         if (!await createTemplateAsync(template, args, outDir))
             return;
