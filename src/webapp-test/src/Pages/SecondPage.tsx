@@ -75,8 +75,9 @@ class SecondPage extends Page {
                 { name: "Max2" },
                 { name: "Lucy" },
             ],
-            goBack() {
-                router.back();
+            async goBack() {
+                await router.backAsync();
+                alert("I'm back");
             }
 
         }, m => <Template name="SecondPage">
@@ -108,7 +109,7 @@ class SecondPage extends Page {
 
         this.configure({
             name: "second",
-            title: "Seconda Pagina",
+            title: "Seconda Pagina 2",
             route: "/second",
             content
         });

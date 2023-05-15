@@ -45,7 +45,8 @@ export class PageHost extends Component<IPageHostOptions> {
 
     protected async loadPageAsync(page: IPage) {
 
-        await page.loadAsync();
+        if (page.loadState == "")
+            await page.loadAsync();
     }
 
     push(page: IPage) {

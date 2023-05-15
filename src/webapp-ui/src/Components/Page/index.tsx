@@ -1,6 +1,6 @@
 import { Bindable, IComponentOptions, ITemplate, Component, IComponent, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
 import { forModel, Template } from "@eusoft/webapp-jsx";
-import { IPage } from "../../abstraction/IPage";
+import { IPage, LoadState } from "../../abstraction/IPage";
 import "./index.scss";
 interface IPageOptions extends IComponentOptions {
 
@@ -29,6 +29,8 @@ export const PageTemplates: TemplateMap<Page> = {
 }
 export class Page<TOptions extends IPageOptions = IPageOptions, TArgs extends Record<string, any> = undefined> extends Component<TOptions> implements IPage<TArgs> {
 
+    protected _loadState: LoadState;
+
     constructor(options?: TOptions) {
 
         super();
@@ -44,9 +46,19 @@ export class Page<TOptions extends IPageOptions = IPageOptions, TArgs extends Re
         this.bindOptions("title", "content", "route", "name");
     }
 
-    async loadAsync()  {
+    async loadAsync(args?: TArgs)  {
+
+        this._loadState = "loading";
+
+        await this.loadAsyncWork(args);
+
+        this._loadState = "loaded";
+    }
+
+    protected async loadAsyncWork(args?: TArgs) {
 
     }
+
 
     onOpen(): void {
 
@@ -54,6 +66,10 @@ export class Page<TOptions extends IPageOptions = IPageOptions, TArgs extends Re
 
     onClose(): void {
 
+    }
+
+    get loadState() {
+        return this._loadState;
     }
 
     title: string;

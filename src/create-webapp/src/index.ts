@@ -61,10 +61,11 @@ interface ITemplate {
 interface ITemplateVariant {
     name: string;
     template: ITemplate;
-    path: string;
+    paths: string[];
 }
 
 interface IPackage {
+    name: string;
     packageManager: string;
     dependencies: Record<string, string>;
     devDependencies: Record<string, string>;
@@ -487,8 +488,6 @@ function launch(cmd: string, cwd: string = ".", ...args: string[]) {
     return result;
 }
 
-
-
 function findVariant(args: ITemplateArgs) {
 
     const srcDir = tempDir("template/src");
@@ -499,6 +498,7 @@ function findVariant(args: ITemplateArgs) {
     let bestMatch, bestMatchCount: number;
 
     for (const entry of fs.readdirSync(srcDir)) {
+
         const template = readJson<ITemplate>(path.join(srcDir, entry, "template.json"));
 
         const matchCount = template.use.filter(a => content.indexOf(a as ContentType) != -1).length;
@@ -506,11 +506,16 @@ function findVariant(args: ITemplateArgs) {
         if (matchCount < template.use.length)
             continue;
 
-        result.push({
+        const variant = {
             name: entry,
-            path: path.join("src", entry, args.lang),
+            paths: [path.join("src", entry, args.lang)],
             template
-        });
+        } as ITemplateVariant;
+
+        if (fs.existsSync(path.join(srcDir, entry, "common")))
+            variant.paths.push(path.join("src", entry, "common"));
+
+        result.push(variant);
 
         if (!bestMatchCount || matchCount > bestMatchCount) {
             bestMatch = result[result.length - 1];
@@ -520,6 +525,40 @@ function findVariant(args: ITemplateArgs) {
     }
 
     return bestMatch;
+}
+
+function isUpperCase(value: string): boolean {
+    return value.toUpperCase() === value;
+}
+function isWhiteSpace(value: string): boolean {
+    return value == "_" || value == "." || value == " ";
+}
+
+function toKebabCase(name: string) {
+    let state = 0;
+    let result = "";
+    for (let i = 0; i < name.length; i++) {
+        const c = name.charAt(i);
+        switch (state) {
+            case 0:
+                result += c.toLowerCase();
+                if (isWhiteSpace(c))
+                    result += "-";
+                else if (!isUpperCase(c) || c == "-")
+                    state = 1;
+                break;
+            case 1:
+                if (isUpperCase(c) && c != "-") {
+                    if (result[result.length - 1] != "-")
+                        result += "-";
+                    state = 0;
+                }
+                if (!isWhiteSpace(c))
+                    result += c.toLowerCase();
+                break;
+        }
+    }
+    return result;
 }
 
 async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir: string) {
@@ -535,7 +574,8 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
         "project-name": args.projectName,
         "port": args.port.toString(),
         "lang": args.lang,
-        "gitignore": ".gitignore"
+        "gitignore": ".gitignore",
+        "pack-manager": args.packManager
     } as Record<string, string>;
 
     params[args.lang] = "true";
@@ -634,6 +674,7 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
     transforms["package.json"] = text => {
 
         let pack = JSON.parse(replaceParams(text)) as IPackage;
+        pack.name = toKebabCase(args.projectName);
 
         for (const content of validContent) {
             const item = template.package[content];
@@ -662,7 +703,9 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
     params["main"] = JSON.stringify(replaceParams(path.join("src", variant.template.main)));
 
     processTemplate(template);
-    processTemplate(variant.template, variant.path, "src", path.join(variant.path, ".."));
+
+    for (const varPath of variant.paths)
+        processTemplate(variant.template, varPath, "src", path.join(varPath, ".."));
 
     return true;
 }
@@ -670,7 +713,7 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
 async function queryArgsAsync()  {
     const result = {} as ITemplateArgs;
 
-    result.projectName = await inputTextAsync("Project name", "", a => /([A-Za-z0-9]|-_)+/.test(a));
+    result.projectName = await inputTextAsync("Project name", "", a => /([A-Za-z0-9]|-_\.)+/.test(a));
     result.lang = (await inputBoolAsync("Use typescript", true)) ? "ts" : "js";
     result.jsx = (await inputBoolAsync("Use JSX", true));
     result.ui = (await inputBoolAsync("Use UI component library", true));
@@ -798,3 +841,4 @@ async function runAsync() {
 }
 
 runAsync(); 
+

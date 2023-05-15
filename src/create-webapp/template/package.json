@@ -6,15 +6,12 @@
   "scripts": {
     "start": "node server",
     "dev": "rollup -c -w --environment NODE_ENV:dev",
-    "dist:dev": "cd ../../scripts/build-utils/ && node dist",
-    "dist:pub": "cd ../../scripts/build-utils/ && node dist -n -p",
     "build:dev": "rollup -c --environment NODE_ENV:dev",
     "build:prod": "rollup -c --environment NODE_ENV:prod",
-    "install:pnpm": "pnpm install",
-    "upgrade": "pnpm up -latest"
+    "install:$(pack-manager)": "$(pack-manager) install",
+    "upgrade": "$(pack-manager) up -latest"
   },
   "keywords": [],
-  "author": "Andrea Guerrieri",
   "dependencies": {
     "@eusoft/webapp-core": "latest"
   },
