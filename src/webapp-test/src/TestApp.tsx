@@ -15,3 +15,4 @@ export class TestApp extends App {
 declare module "@eusoft/webapp-ui" {
     interface IApp extends TestApp { }
 }
+

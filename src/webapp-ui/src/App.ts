@@ -37,11 +37,7 @@ export class App  {
     readonly pageHost = new PageHost();
 }
 
-
-
-export var app: IApp;
-
-export function runApp<TApp extends App>(newApp: TApp) {
+export function runApp<TApp extends IApp>(newApp: TApp) {
 
     app = newApp;
 
@@ -51,3 +47,5 @@ export function runApp<TApp extends App>(newApp: TApp) {
 
     return newApp;
 }
+
+export var app: IApp;

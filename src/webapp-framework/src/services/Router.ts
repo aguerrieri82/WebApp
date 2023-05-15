@@ -1,9 +1,8 @@
-import { app } from "@eusoft/webapp-ui";
-import { IPage } from "@eusoft/webapp-ui/src/abstraction/IPage";
+import { app, IPage } from "@eusoft/webapp-ui";
 
 type StringLike = { toString(): string } | string;
 
-type RouteArgs = Record<string, StringLike>;
+export type RouteArgs = Record<string, StringLike>;
 
 export type RouteAction<TArgs extends RouteArgs> = (args: TArgs) => void | Promise<any>;
 
@@ -36,7 +35,7 @@ interface IRouteState {
     historyIndex: number;
 }
 
-class Router {
+export class Router {
 
     protected _history: IRounteHistory<any>[] = [];
     protected _entries: IRounteEntry<any>[] = [];

@@ -2,7 +2,6 @@ import { IComponentOptions, Component, TemplateMap } from "@eusoft/webapp-core";
 import { forModel, Template } from "@eusoft/webapp-jsx";
 import { IPage } from "../../abstraction/IPage";
 import "./index.scss";
-
 interface IPageHostOptions extends IComponentOptions {
 
 }

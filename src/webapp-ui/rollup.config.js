@@ -5,5 +5,8 @@ export default configureRollup({
     components: true,
     plugins: [
         webapp()
-    ]
+    ],
+    include: {
+        "src/themes": "themes"
+    }
 });

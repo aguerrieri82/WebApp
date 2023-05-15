@@ -1,4 +1,6 @@
+@import "../../themes/_Global";
 
 .action {
-    background-color: rebeccapurple;
+    background-color: $backColor;
+    color: darkblue;
 }

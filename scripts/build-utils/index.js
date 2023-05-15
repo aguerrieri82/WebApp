@@ -9,6 +9,7 @@ import del from "rollup-plugin-delete";
 import path from "path";
 import commonjs from '@rollup/plugin-commonjs';
 import fs from 'fs';
+import fse from 'fs-extra';
 
 const isProd = process.env.NODE_ENV == "prod";
 
@@ -80,6 +81,24 @@ export function configureRollup(options) {
         warn(warning)
     }
 
+    const createPackage = {
+        writeBundle() {
+            saveJson(path.join(outPath, "package.json"), createDistPackage());
+        }
+    }
+
+    const copyExtra = {
+        writeBundle() {
+            if (options.include) {
+                for (const src in options.include) {
+
+                    fse.copySync(src, path.join(outPath, options.include[src]), { overwrite: true });
+                }
+            }
+        }
+    };
+
+
     return [
         {
             input: "src/index.ts",
@@ -96,11 +115,8 @@ export function configureRollup(options) {
                 },
             ],
             plugins: [
-                {
-                    writeBundle() {
-                        saveJson(path.join(outPath, "package.json"), createDistPackage());
-                    }
-                },
+                createPackage,
+                copyExtra,
                 commonjs(),
                 resolve(),
                 typescript(),

@@ -1,4 +1,4 @@
-import { Action, Page, app } from "@eusoft/webapp-ui";
+import { Action, Page } from "@eusoft/webapp-ui";
 import { Foreach, Template, TwoWays, Text, JsxNode, Bind, forModel } from "@eusoft/webapp-jsx";
 import { ITemplateBuilder, OptionsFor, propOf } from "@eusoft/webapp-core";
 import { Behavoir } from "@eusoft/webapp-core/Behavoir";
