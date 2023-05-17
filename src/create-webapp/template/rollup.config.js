@@ -60,9 +60,7 @@ export default [
             resolve({
                 browser: true,
             }),
-            /*TS:typescript({
-                filterRoot: "../" 
-            }),*/
+            /*TS:typescript(),*/
             scss({
                 fileName: "app.css",
                 outputStyle: isProduction ? "compressed" : undefined,
