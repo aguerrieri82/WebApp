@@ -201,7 +201,7 @@ export class Binder<TModel> {
         });
     }
 
-    bindTwoWays<TValue>(src: BindExpression<TModel, TValue>, dst: BindExpression<TModel, TValue>) { 
+    bindTwoWays<TValue>(src: BindExpression<TModel, TValue>, dst: BindExpression<TModel, TValue>, onChanged?: (value: TValue) => void) { 
 
         let isBinding = false;
 
@@ -214,8 +214,15 @@ export class Binder<TModel> {
                 if (isBinding)
                     return;
 
-                if (value !== undefined)
+                let isChanged = false;
+
+                if (value !== undefined) {
+                    isChanged = curValue !== value;
                     curValue = value;
+                }
+
+                if (curValue === undefined)
+                    return;
 
                 isBinding = true;
                 try {
@@ -225,6 +232,9 @@ export class Binder<TModel> {
                         dstProp.set(curValue);
                     if (srcProp)
                         srcProp.set(curValue);
+
+                    if (isChanged && onChanged)
+                        onChanged(curValue);
                 }
                 finally {
                     isBinding = false;

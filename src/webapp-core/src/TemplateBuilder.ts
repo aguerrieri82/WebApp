@@ -1,4 +1,5 @@
 import { IBehavoir, isBehavoir } from "./abstraction/IBehavoir";
+import { USE } from "./abstraction/IBindable";
 import type { BindValue, BoundObject, BoundObjectModes } from "./abstraction/IBinder";
 import { isHTMLContainer } from "./abstraction/IHTMLContainer";
 import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
@@ -437,22 +438,21 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
                 const mode = modes ? modes[prop] : undefined;
 
-                this.bind(propValue, value => {
-                    model[prop] = value;
-                    if (callOnChange && !isClass(constructor))
-                        constructor(model as TProps);
-                }, prop == "builder" || mode == "no-bind" ? "no-bind" : undefined);
-
-
                 if (mode == "two-ways") {
-                    const bindProp = this.getBindingProperty(propValue);
-                    if (bindProp) {
-                        const modelProp = propOf(model, prop);
-                        const handler = modelProp.subscribe(v => bindProp.set(v));
-                        this.onClean(() => modelProp.subscribe(handler));
-                    }
+
+                    this.bindTwoWays(propValue as any, m => m[USE](model)[prop], () => {
+                        if (callOnChange && !isClass(constructor))
+                            constructor(model as TProps);
+                    });
                 }
-              
+                else {
+
+                    this.bind(propValue, value => {
+                        model[prop] = value;
+                        if (callOnChange && !isClass(constructor))
+                            constructor(model as TProps);
+                    }, prop == "builder" || mode == "no-bind" ? "no-bind" : undefined);
+                }
             }
         }
 

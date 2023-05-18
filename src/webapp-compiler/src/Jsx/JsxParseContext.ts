@@ -3,7 +3,7 @@ import { JSXElement, Expression, JSXEmptyExpression, Identifier, ImportDeclarati
 import { BindMode, ITemplateAttribute, ITemplateElement, ITemplateText, TemplateNodeType } from "../Abstraction/ITemplateNode";
 import { JSX_MODULE, TemplateAttributes, TemplateElements } from "../Consts";
 import type { JsxCompiler } from "../JsxCompiler";
-import { formatStyle } from "../TextUtils";
+import { formatStyle, toKebabCase } from "../TextUtils";
 
 type JsxNodeHandler = {
 
@@ -372,7 +372,7 @@ export class JsxParseContext {
         const helper = this.getHelper(exp);
         if (helper?.name == "twoWays" || helper?.name == "noBind" || helper?.name == "oneWay") {
             exp.replaceWith(helper.body);
-            result = formatStyle(helper.name) as BindMode;
+            result = toKebabCase(helper.name) as BindMode;
         }
 
         this.traverseFromRoot(exp, {
