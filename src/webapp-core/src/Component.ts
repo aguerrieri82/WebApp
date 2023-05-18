@@ -29,23 +29,11 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
         this.onChanged("style", () => this.updateClass());
     }
 
-    protected bindTwoWays<T>(src: (model: this) => T, dst: (model: this) => T) {
-
+    bindTwoWays<T>(src: (model: this) => T, dst: (model: this) => T) {
+            
         if (!this._binder)
             this._binder = new Binder(this);
-
-        this._binder.bind(dst, value => {
-            const srcProp = this._binder.getBindingProperty(src);
-            if (srcProp)
-                srcProp.set(value);
-        }, true);
-
-        
-        this._binder.bind(src, value => {
-            const dstProp = this._binder.getBindingProperty(dst);
-            if (dstProp)
-                dstProp.set(value);
-        }, true); 
+        this._binder.bindTwoWays(src, dst);
     }
 
     protected configure(newOptions?: Partial<TOptions>) {
@@ -89,11 +77,18 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
         }
     }
 
+    //TODO never called
     unmount() {
+
         if (this._bounds) {
             for (const item of this._bounds)
                 item.unbind();
             delete this._bounds;
+        }
+
+        if (this._binder) {
+            this._binder.cleanBindings(false);
+            delete this._binder;
         }
     }
 

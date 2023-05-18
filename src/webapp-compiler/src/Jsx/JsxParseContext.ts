@@ -3,7 +3,7 @@ import { JSXElement, Expression, JSXEmptyExpression, Identifier, ImportDeclarati
 import { BindMode, ITemplateAttribute, ITemplateElement, ITemplateText, TemplateNodeType } from "../Abstraction/ITemplateNode";
 import { JSX_MODULE, TemplateAttributes, TemplateElements } from "../Consts";
 import type { JsxCompiler } from "../JsxCompiler";
-import { types } from "@babel/core";
+import { formatStyle } from "../TextUtils";
 
 type JsxNodeHandler = {
 
@@ -17,7 +17,7 @@ interface IStack {
 
 function TransfromNotModelRef(ctx: JsxParseContext, stage: "trans-exp", path: NodePath<Expression>) {
 
-    if (stage != "trans-exp")
+    if (stage != "trans-exp" || !ctx.curModel || ctx.curAttribute?.name.startsWith("t:on-"))
         return;
 
     if (!path.isMemberExpression())
@@ -122,22 +122,32 @@ function JSXAttributeHandler(ctx: JsxParseContext, stage: "enter", path: NodePat
 
     let name = (path.node.name as JSXIdentifier).name;
 
-    if (ctx.curElement.name != "t:component") {
-
-        if (name.startsWith("on-") ||
-            name.startsWith("style-") ||
-            TemplateAttributes.indexOf(name) != -1)
-            name = "t:" + name;
-
-        else if (name == "className")
-            name = "t:class";
-    }
+    if (ctx.curElement.name != "t:component")
+        name = ctx.transformIntrinsicAttribute(name);
 
     ctx.curAttribute = ctx.createAttribute(name, null, ctx.curElement);
 
     if (!path.node.value)
         ctx.curAttribute.value = "true";
 
+    return true;
+}
+
+function NestedTemplateHandler(ctx: JsxParseContext, stage: "trans-exp", path: NodePath): boolean {
+
+    if (!(stage == "trans-exp" && ctx.curAttribute && (path.isJSXFragment() || path.isJSXElement())))
+        return;
+
+    const newCtx = new JsxParseContext(ctx.compiler);
+
+    const root = newCtx.parse(path);
+
+    const text = ctx.compiler.generateTemplate(root);
+
+    path.replaceWithSourceString(text);
+
+    ctx.curModel = null;
+    
     return true;
 }
 
@@ -158,10 +168,7 @@ function ExpressionHandler(ctx: JsxParseContext, stage: "enter", path: NodePath)
 
     let value = path.toString();
 
-    if (!ctx.isBinding(path) &&
-        ctx.curAttribute?.name != "t:value-pool" &&
-        !ctx.curAttribute?.name.startsWith("t:on-") &&
-        ctx.curAttribute?.name != "t:behavoir") {
+    if (!ctx.isBinding(path) && ctx.isBindable()) {
 
         if (path.isObjectExpression())
             value = "(" + value + ")";
@@ -170,7 +177,6 @@ function ExpressionHandler(ctx: JsxParseContext, stage: "enter", path: NodePath)
     }
 
     if (ctx.curAttribute) {
-
         ctx.curAttribute.value = value;
         ctx.curAttribute.bindMode = bindMode;
     }
@@ -192,9 +198,9 @@ function ArrowTemplateExpressionHandler(ctx: JsxParseContext, stage: "exp", path
         return;
 
     if (path.isArrowFunctionExpression() && ctx.isSingleElement(path.parentPath)) {
-
         const body = path.get("body");
         if (body.isJSXFragment() || body.isJSXElement()) {
+    
             ctx.curModel = path.node.params[0] as Identifier;
             ctx.generateBuilder();
             if (ctx.curElement.name == "t:foreach")
@@ -264,6 +270,8 @@ export class JsxParseContext {
         this.handlers.push(TransfromNotModelRef);
         this.handlers.push(JsxErrorHandler);
         this.handlers.push(JsxOpenHandler);
+        this.handlers.push(NestedTemplateHandler);
+        
         this.handlers.push(StringHandler);
         this.handlers.push(JsxTextHandler);
         this.handlers.push(JSXAttributeHandler);
@@ -275,30 +283,44 @@ export class JsxParseContext {
         this.compiler = compiler;
     }
 
+    isTemplateDefinition(path: NodePath) {
+
+        if (path.isArrowFunctionExpression()) {
+            const context = path.parentPath;
+            if (context.isCallExpression()) {
+                var callee = context.get("callee");
+                if (callee.isIdentifier() && callee.node.name == "forModel") {
+                    const params = path.get("params");
+                    if (params.length > 0 && params[0].isIdentifier())
+                        return params[0].node;
+                }
+            }
+        }
+    }
+
     parse(template: NodePath<JSXElement | JSXFragment>): ITemplateElement  {
 
         const rootName = template.isJSXElement() && template.get("openingElement").get("name").toString();
 
         const parentPath = template.parentPath;
 
-        if (parentPath.isArrowFunctionExpression()) {
-            const params = parentPath.get("params");
-            if (params.length > 0 && params[0].isIdentifier())
-                this.curModel = params[0].node;
+        const tempModel = this.isTemplateDefinition(parentPath);
+
+        if (tempModel) {
+
+            this.curModel = tempModel;
         }
         else {
+
             const func = template.getFunctionParent();
 
-            if (func) {
+            if (func && func.type != "ArrowFunctionExpression") {
                 const params = func.get("params");
 
                 if (params.length == 1 && params[0].isIdentifier())
                     this.curModel = params[0].node as Identifier;
             }
         }
-
-        if (!this.curModel) 
-            this.curModel = types.identifier("m");
 
         this.generateBuilder();
 
@@ -342,17 +364,15 @@ export class JsxParseContext {
 
         const curModel = this.curModel;
 
-        if (exp.isArrowFunctionExpression()) {
-            const params = exp.get("params");
-            if (params.length > 0 && params[0].isIdentifier())
-                this.curModel = params[0].node;
-        }
-        
+        const tempModel = this.isTemplateDefinition(exp);
+
+        if (tempModel)
+            this.curModel = tempModel;
 
         const helper = this.getHelper(exp);
-        if (helper?.name == "twoWays") {
+        if (helper?.name == "twoWays" || helper?.name == "noBind" || helper?.name == "oneWay") {
             exp.replaceWith(helper.body);
-            result = "two-ways";
+            result = formatStyle(helper.name) as BindMode;
         }
 
         this.traverseFromRoot(exp, {
@@ -438,12 +458,34 @@ export class JsxParseContext {
         return result;
     }
 
+    isBindable() {
+        return this.curModel &&
+            this.curElement.name != "t:content" &&
+            this.curAttribute?.name != "t:value-pool" &&
+            !this.curAttribute?.name.startsWith("t:on-") &&
+            this.curAttribute?.name != "t:behavoir";
+    }
+
     isBinding(path: NodePath<Expression | JSXEmptyExpression>) {
 
         if (path.isArrowFunctionExpression())
             return path.node.params.length == 1;
 
         return false;
+    }
+
+    transformIntrinsicAttribute(name: string) {
+
+        if (name.startsWith("on-") ||
+            name.startsWith("style-") ||
+            TemplateAttributes.indexOf(name) != -1)
+
+        return "t:" + name;
+
+        if (name == "className")
+            return "t:class";
+
+        return name;
     }
 
     isSingleElement(path: NodePath) {

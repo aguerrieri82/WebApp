@@ -1,6 +1,5 @@
 import { ITemplateAttribute, ITemplateElement, ITemplateNode, TemplateNodeType } from "../Abstraction/ITemplateNode";
 import { IWriteable } from "../Abstraction/IWriteable";
-import { JsxCompiler } from "../JsxCompiler";
 import type { TemplateContext } from "../TemplateContext";
 import { JsWriter } from "./JsWriter";
 
@@ -25,7 +24,7 @@ export class TemplateWriter extends JsWriter {
 
     writeBinding(value: string) {
 
-        if (this.context.compiler instanceof JsxCompiler) 
+        if (this.context.isJsx) 
             return this.write(value);
         
 
@@ -35,13 +34,13 @@ export class TemplateWriter extends JsWriter {
     }
 
     writeString(value: string) {
-        if (this.context.compiler instanceof JsxCompiler)
+        if (this.context.isJsx) 
             return this.write(value);
         return this.writeJson(value);
     }
 
     writeExpression(value: string) {
-        if (this.context.compiler instanceof JsxCompiler)
+        if (this.context.isJsx) 
             return this.write(value);
         return this.write(value.replaceAll("$model", `${this.context.currentFrame.builderNameJs}.model`));
     }

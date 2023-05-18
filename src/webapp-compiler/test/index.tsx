@@ -1,65 +1,37 @@
-import { IComponentOptions, Component, TemplateMap, Bindable } from "@eusoft/webapp-core";
-import { Template, forModel } from "@eusoft/webapp-jsx";
-import { IEditor, ValueChangedReason } from "../../abstraction/IEditor";
-import { LocalString } from "../../Types";
+import { Bind, Template, forModel } from "@eusoft/webapp-jsx";
+import { InputField, ObjectEditor, Page } from "@eusoft/webapp-ui";
+import "./MainPage.scss";
+import TextEditor from "@eusoft/webapp-ui/editors/TextEditor";
 
-interface ITextEditorOptions extends IComponentOptions {
+class MainPage extends Page {
 
-    password?: Bindable<boolean>;
-
-    visible: Bindable<boolean>;
-
-    disabled: Bindable<boolean>;
-
-    multiLine?: Bindable<boolean>;
-
-    rows?: Bindable<number>;
-
-    placeholder?: LocalString;
-
-    value?: Bindable<string>;
-}
-
-export const TextEditorTemplates: TemplateMap<TextEditor> = {
-
-    "Default": forModel(m => <Template name="TextEditor">
-        <input visible={m.visible} disabled={m.disabled} type={m.password ? "password" : "text"} value={m.value} />
-    </Template>)
-}
-export class TextEditor extends Component<ITextEditorOptions> implements IEditor<string> {
-
-    constructor(options?: ITextEditorOptions) {
+    constructor() {
 
         super();
 
         this.configure({
-            ...options,
-            template: TextEditorTemplates.Default
+            name: "main",
+            title: "PaymentManager.App Home",
+            route: "/",
+            content: forModel(this, m => <Template name="MainPage">
+                <ObjectEditor value={m.obj} builder={bld => <>
+                    {bld.text(m => m.password, {
+                        label: "Pippo",
+                        editor: {
+                            password: true
+                        }
+                    })}
+                </>} />
+            </Template>)
         });
-
-        this.prop("value").subscribe((v, o) => this.onValueChanged(v, o, ""));
     }
 
-    protected updateOptions() {
-
-        this.bindOptions("password", "visible", "disabled", "value", "rows");
+    obj = {
+        name: "xxxxx",
+        password: "b"
     }
 
-    onValueChanged(value: string, oldValue: string, reason: ValueChangedReason) {
-
-    }
-
-    rows?: number;
-
-    placeholder?: string;
-
-    password: boolean;
-
-    visible: boolean;
-
-    disabled: boolean;
-
-    value: string;
+    message: string = "Hello World";
 }
 
-export default TextEditor;
+export const mainPage = new MainPage();

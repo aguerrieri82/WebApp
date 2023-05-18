@@ -3,7 +3,8 @@ import type { IObservableProperty } from "./IObservableProperty";
 import type { CatalogTemplate } from "./ITemplateProvider";
 
 
-export type Bindable<TValue, TBind extends BindMode = BindMode> = TValue | IObservableProperty<TValue>;
+export type Bindable<TValue, TBind extends BindMode = BindMode> =
+    TValue | IObservableProperty<TValue>;
 
 export type ComponentStyle = string | ComponentStyle[];
 

@@ -83,7 +83,10 @@ declare global {
         type Element = IComponent<any> | ITemplate<any>; 
 
         type IntrinsicAttributes = {
+        }
 
+        type IntrinsicClassAttributes<T> = {
+            builder?: (model: T, builder: any) => Element;
         }
 
         type IntrinsicElements = {

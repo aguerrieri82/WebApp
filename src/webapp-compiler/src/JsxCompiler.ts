@@ -3,10 +3,8 @@ import { IWriteable } from "./Abstraction/IWriteable";
 import * as parser from "@babel/parser";
 import traverse, { NodePath } from "@babel/traverse";
 import { readAllTextAsync } from "./TextUtils";
-import { BaseCompiler } from "./BaseCompiler";
+import { BaseCompiler, ICompilerOptions } from "./BaseCompiler";
 import { JSXElement, Identifier, ImportDeclaration, JSXFragment } from "@babel/types";
-import { TemplateContext } from "./TemplateContext";
-import { TemplateWriter } from "./Text/TemplateWriter";
 import { ITemplateElement } from "./Abstraction/ITemplateNode";
 import { CORE_MODULE } from "./Consts";
 import { JsxParseContext } from "./Jsx/JsxParseContext";
@@ -17,14 +15,17 @@ interface ITextBlock {
     start: number;
     end: number;
 }
-
 interface ITextReplacement {
     src: ITextBlock;
     dst: ITextBlock;
 }
 
-
 export class JsxCompiler extends BaseCompiler {
+
+    constructor(options?: ICompilerOptions) {
+        super(options);
+        this.type = "Jsx";
+    }
 
     protected parse(template: NodePath<JSXElement | JSXFragment>): ITemplateElement {
 
@@ -36,6 +37,7 @@ export class JsxCompiler extends BaseCompiler {
     onReplaces(replaces: ITextReplacement[]) {
 
     }
+
 
     async compileStreamAsync(input: ReadStream | string, output: IWriteable) {
 
@@ -91,11 +93,7 @@ export class JsxCompiler extends BaseCompiler {
             }
         });
 
-        const ctx = new TemplateContext();
-        ctx.compiler = this;
-        ctx.jsNamespace = "WebApp";
-        ctx.htmlNamespace = "t";
-        ctx.writer = new TemplateWriter(output, ctx);
+        const ctx = this.createContext(output);
 
         let curPos = 0;
 

@@ -1,6 +1,5 @@
-import { it } from "node:test";
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
-import { BindMode, ITemplateElement, ITemplateNode, TemplateNodeType } from "../Abstraction/ITemplateNode";
+import {  ITemplateElement, ITemplateNode, TemplateNodeType } from "../Abstraction/ITemplateNode";
 import { StringBuilder } from "../StringBuilder";
 import { TemplateContext } from "../TemplateContext";
 import { TemplateWriter } from "../Text/TemplateWriter";
@@ -54,7 +53,6 @@ export class ComponentElementHandler implements ITemplateHandler {
 
                 if (element.childNodes.length > 1) 
                     contentWriter.write("[");
-                
 
                 element.childNodes.forEach((item, i) => {
 

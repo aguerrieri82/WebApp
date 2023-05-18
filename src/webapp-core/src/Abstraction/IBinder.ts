@@ -1,12 +1,14 @@
 ﻿import { IBindable } from "./IBindable";
 
-export type BindMode = "one-way" | "two-ways";
+export type BindMode = "one-way" | "two-ways" | "no-bind";
 
 export interface IGetter<TObj, TValue> {
     (model: TObj): TValue;
 }
 
-export type BindValue<TModel, TValue> = TValue | IGetter<TModel & IBindable, TValue>;
+export type BindExpression<TModel, TValue> = IGetter<TModel & IBindable, TValue>;
+
+export type BindValue<TModel, TValue> = TValue | BindExpression<TModel, TValue>;
 
 
 export type BoundObject<T extends {}> = {

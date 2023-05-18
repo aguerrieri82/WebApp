@@ -1,24 +1,30 @@
-import { TemplateMap } from "@eusoft/webapp-core";
-import { Template, forModel } from "@eusoft/webapp-jsx";
+import { Binder, ITemplate, TemplateMap } from "@eusoft/webapp-core";
+import { Bind, Content, Template, forModel } from "@eusoft/webapp-jsx";
 import { IEditorOptions } from "../../abstraction/IEditor";
 import { EditorBuilder } from "../EditorBuilder";
 import { Editor } from "../Editor";
+import { InputField } from "../../components";
+import { IValidable } from "../../abstraction/IValidable";
+import { ViewNode } from "../../Types";
 
 interface IObjectEditorOptions<TObj extends Record<string, any>> extends IEditorOptions<TObj> {
 
-    content: (model: TObj, builder: EditorBuilder<TObj>) => JSX.Element;
+    builder: (builder: EditorBuilder<TObj>) => ITemplate<TObj> | JSX.Element;
 }
 
 export const ObjectEditorTemplates: TemplateMap<ObjectEditor<any>> = {
 
     "Default": forModel(m => <Template name="ObjectEditor">
-        <div>
-            {m.contentTemplate()}
+        <div> 
+            <Content src={m.value} template={Bind.noBind(m.contentTemplate(m.value))}/>
         </div>
     </Template>)
 }
 
-export class ObjectEditor<TObj extends Record<string, any>> extends Editor<TObj, IObjectEditorOptions<TObj>>  {
+export class ObjectEditor<TObj extends Record<string, any>> extends Editor<TObj, IObjectEditorOptions<TObj>> implements IValidable  {
+
+    protected _editors: InputField<any, any>[];
+    protected _isDirty: boolean;
 
     constructor(options?: IObjectEditorOptions<TObj>) {
 
@@ -32,18 +38,47 @@ export class ObjectEditor<TObj extends Record<string, any>> extends Editor<TObj,
 
     protected updateOptions() {
 
-        this.bindOptions("content");
+        this.bindOptions("builder");
     }
 
-    contentTemplate() {
-        return this.content(this.value, new EditorBuilder({
-            attach: editor => {
+    contentTemplate(model: TObj) { 
 
+        this._editors = [];
+
+        var result = this.builder(new EditorBuilder({
+            model,
+            attach: editor => {
+                this._editors.push(editor);
+                editor.onChanged("value", v => {
+                    this._isDirty = true;
+                });
             }
         }));
+
+        return result;
     }
 
-    content: (model: TObj, builder: EditorBuilder<TObj>) => JSX.Element;
+    async validateAsync(force?: boolean): Promise<boolean> {
+
+        let isValid = true;
+
+        for (const editor of this._editors) {
+            if (!await editor.validateAsync())
+                isValid = false;
+        }
+
+        this.isValid = isValid;
+
+        this._isDirty = false;
+
+        return isValid;
+    }
+
+    error: ViewNode;
+
+    isValid: boolean;
+
+    builder: (builder: EditorBuilder<TObj>) => JSX.Element;
 }
 
 export default ObjectEditor;

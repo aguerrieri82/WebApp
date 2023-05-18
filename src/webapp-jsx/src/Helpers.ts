@@ -26,6 +26,10 @@ export namespace Bind {
     export function twoWays<T>(value: T): T {
         return value;
     }
+
+    export function noBind<T>(value: T): T {
+        return value;
+    }
 }
 
 export function debug<T>(value: T, ...args: any[]) {

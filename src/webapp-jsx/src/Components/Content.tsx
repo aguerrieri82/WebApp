@@ -2,15 +2,15 @@ import type { BindValue, ITemplateProvider, CatalogTemplate } from "@eusoft/weba
 import type { JsxComponentProps, JsxNode, TemplateModel } from "../abstraction";
 
 export interface IContentProps<TModel extends TemplateModel, TInnerModel extends TemplateModel> extends JsxComponentProps<TModel, TModel, undefined> {
-    src: BindValue<TModel, ITemplateProvider> | CatalogTemplate<TInnerModel>;
+    src: BindValue<TModel, TInnerModel>;
     inline?: boolean;
-    model?: BindValue<TModel, TInnerModel>;
+    template?: BindValue<TModel, ITemplateProvider> | CatalogTemplate<TInnerModel>;
 }
 
 export function Content<TModel extends TemplateModel, TInnerModel extends TemplateModel = any>(props: IContentProps<TModel, TInnerModel>): null {
 
-    if (props.model)
-        props.context.builder.template(props.src as CatalogTemplate<TInnerModel>, props.model);
+    if (props.template)
+        props.context.builder.template(props.template as CatalogTemplate<TInnerModel>, props.src);
     else
         props.context.builder.content(props.src as BindValue<TModel, ITemplateProvider>, props.inline)
 

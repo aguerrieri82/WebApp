@@ -1,5 +1,5 @@
-import { TemplateMap, Bindable, BindValue } from "@eusoft/webapp-core";
-import { Template, forModel } from "@eusoft/webapp-jsx";
+import { TemplateMap, Bindable, BindValue, BindExpression } from "@eusoft/webapp-core";
+import { Template, debug, forModel } from "@eusoft/webapp-jsx";
 import { IEditorOptions } from "../../abstraction/IEditor";
 import { LocalString } from "../../Types";
 import { EditorBuilder } from "../EditorBuilder";
@@ -22,6 +22,7 @@ export const TextEditorTemplates: TemplateMap<TextEditor> = {
         <input visible={m.visible} disabled={m.disabled} type={m.password ? "password" : "text"} value={m.value} />
     </Template>)
 }
+
 export class TextEditor extends Editor<string, ITextEditorOptions> {
 
     constructor(options?: ITextEditorOptions) {
@@ -49,12 +50,12 @@ export class TextEditor extends Editor<string, ITextEditorOptions> {
 
 declare module "../EditorBuilder" {
     interface EditorBuilder<TModel> {
-        text(value: BindValue<TModel, string>);
+        text(value: BindExpression<TModel, string>, options?: IBuilderEditorOptions<string, ITextEditorOptions>);
     }
 }
 
-EditorBuilder.prototype.text = value => {
-
+EditorBuilder.prototype.text = function (this: EditorBuilder<any>, value, options) {
+    return this.editor(value, TextEditor, options);
 }
 
 export default TextEditor;

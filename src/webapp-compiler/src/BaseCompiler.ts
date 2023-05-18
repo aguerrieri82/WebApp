@@ -7,6 +7,7 @@ import { TemplateContext } from "./TemplateContext";
 import type { ITemplateAttribute, ITemplateElement, ITemplateNode } from "./Abstraction/ITemplateNode";
 import { HandleResult, ITemplateHandler } from "./Abstraction/ITemplateHandler";
 import * as handlers from "./Handlers";
+import { TemplateWriter } from "./Text/TemplateWriter";
 
 export enum CompilerOutMode {
     Always,
@@ -43,8 +44,21 @@ export abstract class BaseCompiler<TOptions extends ICompilerOptions = ICompiler
         for (const name in activeHandlers) {
             this.register(new activeHandlers[name]());
         }
+    }
 
+    protected createContext(writer: IWriteable) {
+        const ctx = new TemplateContext();
+        ctx.compiler = this;
+        ctx.jsNamespace = "WebApp";
+        ctx.htmlNamespace = "t";
+        ctx.writer = new TemplateWriter(writer, ctx);
+        return ctx;
+    }
 
+    generateTemplate(root: ITemplateElement) {
+        const ctx = this.createContext(new StringBuilder());
+        ctx.writer.writeElement(root);
+        return ctx.writer.out.toString();
     }
 
     error(msg: string) {
@@ -170,6 +184,8 @@ export abstract class BaseCompiler<TOptions extends ICompilerOptions = ICompiler
                 ctx.exit();
         }
     }
+
+    type: "Jsx" | "Html";
 
     readonly options: TOptions;
 

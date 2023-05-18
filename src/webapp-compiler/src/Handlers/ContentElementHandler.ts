@@ -20,8 +20,19 @@ export class ContentElementHandler implements ITemplateHandler {
             return HandleResult.Error;
         }
 
-        if (template)
-            ctx.writer.write(".template(").writeJson(template).write(", ").writeBinding(source).write(")");
+        if (template) {
+
+            ctx.writer.write(".content(")
+                .beginInlineFunction(ctx.getParameter("$model"))
+                .write("(")
+                .beginBlock()
+                .ensureNewLine().write("model: ").writeBinding(source).write(",")
+                .ensureNewLine().write("template: ").writeBinding(template)
+                .endBlock()
+                .write(")")
+                .endInlineFunction()
+                .write(")");
+        }
         else {
             ctx.writer.write(".content(").writeBinding(source);
             if (inline == "true")

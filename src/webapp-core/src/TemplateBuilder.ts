@@ -434,14 +434,16 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             for (const prop in props) {
 
                 const propValue = props[prop];
-            
+
+                const mode = modes ? modes[prop] : undefined;
+
                 this.bind(propValue, value => {
                     model[prop] = value;
                     if (callOnChange && !isClass(constructor))
                         constructor(model as TProps);
-                });
+                }, prop == "builder" || mode == "no-bind" ? "no-bind" : undefined);
 
-                const mode = modes ? modes[prop] : undefined;
+
                 if (mode == "two-ways") {
                     const bindProp = this.getBindingProperty(propValue);
                     if (bindProp) {
@@ -450,6 +452,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                         this.onClean(() => modelProp.subscribe(handler));
                     }
                 }
+              
             }
         }
 
@@ -686,7 +689,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     on<TKey extends keyof HTMLElementEventMap>(event: TKey, handler: (model: TModel, e?: HTMLElementEventMap[TKey]) => void): this {
         this.element.addEventListener(event, ev =>
-            handler(this.createProxy(this.model), ev));
+            handler(this.createProxy(this.model, undefined, "evaluate"), ev));
         return this;
     }
 

@@ -5,8 +5,6 @@ import { ViewNode } from "../../Types";
 import { Validator } from "../../abstraction/Validator";
 import { IValidable } from "../../abstraction/IValidable";
 
-type InputFieldEditor<T> = IEditor<T>;
-
 interface IInputFieldOptions<TValue> extends IComponentOptions {
 
     name: string;
@@ -21,7 +19,7 @@ interface IInputFieldOptions<TValue> extends IComponentOptions {
 }
 
 
-export const InputFieldTemplates: TemplateMap<InputField<any, InputFieldEditor<any>>> = {
+export const InputFieldTemplates: TemplateMap<InputField<any, IEditor<any>>> = {
 
     "Default": forModel(m => <Template name="InputField">
         <div className={m.className}>
@@ -34,7 +32,7 @@ export const InputFieldTemplates: TemplateMap<InputField<any, InputFieldEditor<a
         </div>
     </Template>)
 }
-export class InputField<TValue, TEditor extends InputFieldEditor<TValue>> extends Component<IInputFieldOptions<TValue>> implements IValidable {
+export class InputField<TValue, TEditor extends IEditor<TValue>> extends Component<IInputFieldOptions<TValue>> implements IValidable {
 
     constructor(options?: IInputFieldOptions<TValue>) {
 

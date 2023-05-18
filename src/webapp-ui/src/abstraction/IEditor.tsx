@@ -14,7 +14,7 @@ export interface IEditorOptions<TValue> extends IComponentOptions {
     value?: Bindable<TValue, "two-ways">;
 }
 
-export interface IEditor<TValue> extends IComponent {
+export interface IEditor<TValue, TOptions extends IEditorOptions<TValue> = IEditorOptions<TValue>> extends IComponent<TOptions> {
 
     onValueChanged: (value: TValue, oldValue: TValue, reason: ValueChangedReason) => void;
 

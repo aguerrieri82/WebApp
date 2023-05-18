@@ -1,7 +1,4 @@
 import { ReadStream } from "fs";
-import {  ITemplateHandler } from "./Abstraction/ITemplateHandler";
-import { TemplateContext } from "./TemplateContext";
-import { TemplateWriter } from "./Text/TemplateWriter";
 import type { IWriteable } from "./Abstraction/IWriteable";
 import { JSDOM } from 'jsdom'
 import { readAllTextAsync } from "./TextUtils";
@@ -14,7 +11,7 @@ export class HtmlCompiler extends BaseCompiler {
 
         super(options);
 
-   
+        this.type = "Html";
     }
 
     protected parse(text: string) {
@@ -72,11 +69,7 @@ export class HtmlCompiler extends BaseCompiler {
 
             const templates = this.parse(text);
       
-            const ctx = new TemplateContext();
-            ctx.compiler = this;
-            ctx.jsNamespace = "WebApp";
-            ctx.htmlNamespace = "t";
-            ctx.writer = new TemplateWriter(output, ctx);
+            const ctx = this.createContext(output);
 
             ctx.writer.writeImport("@eusoft/webapp-core", "USE", "PARENT");
 
@@ -84,8 +77,6 @@ export class HtmlCompiler extends BaseCompiler {
 
             if (ctx.templates.length == 1)
                 ctx.writer.ensureNewLine().write("export default ").write(ctx.templates[0]).write(";");
-
-    
         }
         catch (ex) {
             console.log(ex);

@@ -170,6 +170,10 @@ export class TemplateContext {
         this.currentFrame = this.currentFrame.parent;
     }
 
+    get isJsx() {
+        return this.compiler.type == "Jsx";
+    }
+
     templates: string[] = [];
 
     currentFrame: StackFrame 

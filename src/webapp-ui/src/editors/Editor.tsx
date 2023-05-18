@@ -1,7 +1,7 @@
 import { Component } from "@eusoft/webapp-core";
 import { IEditor, IEditorOptions, ValueChangedReason } from "../abstraction/IEditor";
 
-export abstract class Editor<TValue, TOptions extends IEditorOptions<TValue>> extends Component<TOptions> implements IEditor<TValue>{
+export abstract class Editor<TValue, TOptions extends IEditorOptions<TValue>> extends Component<TOptions> implements IEditor<TValue, TOptions>{
 
     constructor(options?: TOptions) {
 
