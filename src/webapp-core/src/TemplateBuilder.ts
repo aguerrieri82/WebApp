@@ -455,7 +455,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                     });
                 }
                 else {
-
+                    //TODO call bindOneWay?
                     this.bind(propValue, value => {
                         model[prop] = value;
                         if (callOnChange && !isClass(constructor))

@@ -3,7 +3,8 @@ import { JSXElement, Expression, JSXEmptyExpression, Identifier, ImportDeclarati
 import { BindMode, ITemplateAttribute, ITemplateElement, ITemplateText, TemplateNodeType } from "../Abstraction/ITemplateNode";
 import { JSX_MODULE, TemplateAttributes, TemplateElements } from "../Consts";
 import type { JsxCompiler } from "../JsxCompiler";
-import { formatStyle, toKebabCase } from "../TextUtils";
+import { toKebabCase } from "../TextUtils";
+import * as parser from "@babel/parser";
 
 type JsxNodeHandler = {
 
@@ -36,7 +37,8 @@ function TransfromNotModelRef(ctx: JsxParseContext, stage: "trans-exp", path: No
 
     const exp = builder ? `${builder}.model` : obj.toString();
 
-    obj.replaceWithSourceString(`${ctx.curModel.name}[USE](${exp})`);
+    ctx.replaceNode(obj, `${ctx.curModel.name}[USE](${exp})`);
+
 
     path.shouldSkip = true;
 
@@ -144,7 +146,7 @@ function NestedTemplateHandler(ctx: JsxParseContext, stage: "trans-exp", path: N
 
     const text = ctx.compiler.generateTemplate(root);
 
-    path.replaceWithSourceString(text);
+    ctx.replaceNode(path, text);
 
     ctx.curModel = null;
     
@@ -535,6 +537,16 @@ export class JsxParseContext {
 
     generateBuilder() {
         this.curBuilder = "t" + (this.stack.length > 0 ? this.stack.length : "");
+    }
+
+    replaceNode(obj: NodePath, text: string) {
+
+        const ast = parser.parse(text, {
+            sourceType: "module",
+            plugins: ["jsx", "typescript"]
+        });
+
+        obj.replaceWith(ast.program.body[0]);
     }
 
     rootElement: ITemplateElement;

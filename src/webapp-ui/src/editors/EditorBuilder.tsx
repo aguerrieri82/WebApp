@@ -1,9 +1,8 @@
-import { BindExpression, BindValue } from "@eusoft/webapp-core/abstraction/IBinder";
-import { Constructor, ViewNode } from "../Types";
+import { BindExpression } from "@eusoft/webapp-core/abstraction/IBinder";
+import { ViewNode } from "../Types";
 import { IEditor, IEditorOptions } from "../abstraction/IEditor";
 import { Validator } from "../abstraction/Validator";
 import { InputField } from "../components";
-import { USE } from "@eusoft/webapp-core";
 import { Bind } from "@eusoft/webapp-jsx";
 
 interface EditorBuilderOptions<TModel, TModelContainer extends Record<string, any>> {

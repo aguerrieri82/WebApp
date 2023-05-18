@@ -7,7 +7,7 @@ export type TemplateModel = object | string | number | boolean;
 
 export type JsxElementType<TModel extends TemplateModel, TProps extends JsxComponentProps<TModel>> = keyof HTMLElementTagNameMap | JsxComponent<TModel, TProps> ;
 
-export type JsxComponent<TModel extends TemplateModel, TProps extends JsxComponentProps<TModel>> = (props: TProps) => (JsxElement<TModel, TProps> | null);
+export type JsxComponent<TModel extends TemplateModel, TProps extends JsxComponentProps<TModel>> = (props: TProps) => (JsxElementInstance<TModel, TProps> | null | void);
 
 export type ModelBuilder<TModel extends TemplateModel> = { (t: TModel): JSX.Element };
 
@@ -18,9 +18,15 @@ export type JsxNode<TModel extends TemplateModel> =
     void |
     ITemplate<TModel> |
     ITemplateProvider<TModel> |
-    JsxElement<TModel, JsxComponentProps<TModel>> |
+    JsxElementInstance<TModel, JsxComponentProps<TModel>> |
     JsxNode<TModel>[] |
     ModelBuilder<TModel> 
+
+export type JsxTypedComponent<TOptions> =
+    null |
+    void |
+    ITemplate<IComponent<TOptions>> |
+    JsxElementInstance<IComponent<TOptions>, TOptions> 
 
 export type JsxComponentProps<
         TModel extends TemplateModel,
@@ -30,7 +36,7 @@ export type JsxComponentProps<
     context?: ITemplateContext<TModel>;
 }
 
-export interface JsxElement<TModel extends TemplateModel, TProps extends JsxComponentProps<TModel>> {
+export interface JsxElementInstance<TModel extends TemplateModel, TProps extends JsxComponentProps<TModel>> {
     type: JsxElementType<TModel, TProps>;
     props: TProps;
 }
@@ -80,7 +86,7 @@ declare global {
 
         type ElementClass = IComponent<any> | ITemplateProvider | IBehavoir;
          
-        type Element = IComponent<any> | ITemplate<any> | void; 
+        type Element = ITemplate<any> | void | null | JsxElementInstance<any, any>;
 
         type IntrinsicAttributes = {
         }

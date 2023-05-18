@@ -1,5 +1,5 @@
 import type { BindValue, ITemplate } from "@eusoft/webapp-core";
-import type { JsxComponentProps, JsxElement, JsxNode, ModelBuilder, TemplateModel } from "./../abstraction";
+import type { JsxComponentProps, JsxElementInstance, JsxNode, ModelBuilder, TemplateModel } from "./../abstraction";
 import { processNode } from "./../Runtime";
 
 

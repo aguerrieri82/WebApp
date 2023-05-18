@@ -1,5 +1,5 @@
-import { IComponentOptions,  Component,  TemplateMap, ITemplateProvider, Bindable, IComponent, propOf, ITemplate } from "@eusoft/webapp-core";
-import { Class, Template, forModel } from "@eusoft/webapp-jsx";
+import { IComponentOptions,  Component,  TemplateMap, Bindable, IComponent } from "@eusoft/webapp-core";
+import { Class, JsxTypedComponent, Template, forModel } from "@eusoft/webapp-jsx";
 import { IEditor, IEditorOptions } from "../../abstraction/IEditor";
 import { ViewNode } from "../../Types";
 import { IValidationContext, Validator } from "../../abstraction/Validator";
@@ -10,13 +10,13 @@ interface IInputFieldOptions<TValue> extends IComponentOptions {
 
     name: string;
 
-    content: IComponent<IEditorOptions<TValue>> | ITemplate<TValue>;
+    content: IEditor<TValue, IEditorOptions<TValue>> | JsxTypedComponent<IEditorOptions<TValue>>;
 
     label?: Bindable<ViewNode>;
 
     validators?: Bindable<Validator<TValue>[]>;
 
-    value: Bindable<string, "two-ways">;
+    value: Bindable<TValue, "two-ways">;
 }
 
 
@@ -25,7 +25,7 @@ export const InputFieldTemplates: TemplateMap<InputField<any, IEditor<any>>> = {
     "Default": forModel(m => <Template name="InputField">
         <div className={m.className}>
             <Class name="invalid" condition={m.isValid === false}/>
-            <label>{m.label}</label>
+            <label><NodeView>{m.label}</NodeView></label>
             {m.content}
             <div>
                 <NodeView>{m.error}</NodeView>

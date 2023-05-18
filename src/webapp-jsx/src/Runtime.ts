@@ -1,7 +1,7 @@
 import { IComponent, getFunctionType } from "@eusoft/webapp-core";
-import { ITemplateContext, JsxComponentProps, JsxElement, JsxElementType, JsxNode, TemplateModel } from "./abstraction";
+import { ITemplateContext, JsxComponentProps, JsxElementInstance, JsxElementType, JsxNode, TemplateModel } from "./abstraction";
 import { Template } from "./components/Template";
-export function isJsxElement(obj: any): obj is JsxElement<any, JsxComponentProps<any>> {
+export function isJsxElement(obj: any): obj is JsxElementInstance<any, JsxComponentProps<any>> {
 
     return obj && typeof (obj) == "object" && "props" in obj && "type" in obj;
 }
@@ -105,7 +105,7 @@ export function createElement<
     TModel extends TemplateModel,
     TProps extends JsxComponentProps<TModel>,
     TChildren extends JsxNode<TModel>>
-    (type: JsxElementType<TModel, TProps>, props: TProps, ...content: TChildren[]): JsxElement<TModel, TProps> {
+    (type: JsxElementType<TModel, TProps>, props: TProps, ...content: TChildren[]): JsxElementInstance<TModel, TProps> {
 
     if (typeof (type) == "function" && (type as Function) == Template)
         return type({
