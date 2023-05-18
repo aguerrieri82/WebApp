@@ -1,4 +1,4 @@
-import type { BindValue, ITemplateProvider, ITemplateBuilder, ITemplate, InputValueMode, IBehavoir, WritableKeys, EmptyConstructor } from "@eusoft/webapp-core";
+import type { BindValue, ITemplateProvider, ITemplateBuilder, ITemplate, InputValueMode, IBehavoir, WritableKeys, EmptyConstructor, IComponent } from "@eusoft/webapp-core";
 export interface ITemplateContext<TModel> {
     builder: ITemplateBuilder<TModel>;
 }
@@ -22,7 +22,10 @@ export type JsxNode<TModel extends TemplateModel> =
     JsxNode<TModel>[] |
     ModelBuilder<TModel> 
 
-export type JsxComponentProps<TModel extends TemplateModel, TContentModel extends TemplateModel = TModel, TContent extends JsxNode<TContentModel> = JsxNode<TContentModel>> = {
+export type JsxComponentProps<
+        TModel extends TemplateModel,
+        TContentModel extends TemplateModel = TModel,
+        TContent extends JsxNode<TContentModel> = JsxNode<TContentModel>> = {
     content?: TContent;
     context?: ITemplateContext<TModel>;
 }
@@ -33,7 +36,7 @@ export interface JsxElement<TModel extends TemplateModel, TProps extends JsxComp
 }
 
 type ElementEvents<TModel> = {
-    [K in keyof HTMLElementEventMap as K extends string ? `on-${K}` : never]?:{ (model: TModel, e?: HTMLElementEventMap[K]) : void } | object | number | boolean | void
+    [K in keyof HTMLElementEventMap as K extends string ? `on-${K}` : never]?: { (model: TModel, e?: HTMLElementEventMap[K]): object | number | boolean | void }
 }
 
 type ElementStyles<TModel> = {
@@ -73,11 +76,11 @@ declare global {
 
         interface ElementChildrenAttribute { content: {} }
 
-        interface ElementAttributesProperty { _options: {} } 
+        interface ElementAttributesProperty { readonly options: {} }
 
-        type ElementClass = ITemplateProvider | IBehavoir;
-
-        type Element = JsxNode<any>;
+        type ElementClass = IComponent<any> | ITemplateProvider | IBehavoir;
+         
+        type Element = IComponent<any> | ITemplate<any>; 
 
         type IntrinsicAttributes = {
 

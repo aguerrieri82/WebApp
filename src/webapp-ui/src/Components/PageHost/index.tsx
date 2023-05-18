@@ -68,3 +68,5 @@ export class PageHost extends Component<IPageHostOptions> {
 
     template = PageHostTemplates.Single;
 }
+
+export default PageHost;

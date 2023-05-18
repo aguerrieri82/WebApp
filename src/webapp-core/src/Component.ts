@@ -6,15 +6,21 @@ import { bindTwoWay, getOrCreateProp } from "./Properties";
 import { toKebabCase } from "./StringUtils";
 import type { IBound } from "./abstraction/IBound";
 import type { Bindable, ComponentStyle, IComponentOptions } from "./abstraction/IComponentOptions";
+import { Binder } from "./Binder";
 
 type CommonKeys<TSrc, TDst> = {
     [K in (keyof TSrc & keyof TDst & string) /*as TSrc[K] extends Bindable<TDst[K]> ? K : never*/]: TSrc[K]
 };
 
-export abstract class Component<TOptions extends IComponentOptions = IComponentOptions> implements IComponent {
+type ChangeHandlers<T> = {
+    [K in keyof T as K extends string ? `on${Capitalize<K>}Changed` : never]?: { (value: T[K], oldValue: T[K]): void }
+}
+
+export abstract class Component<TOptions extends IComponentOptions = IComponentOptions> implements IComponent<TOptions> {
 
     protected _bounds: IBound[];
-    protected _options: TOptions;
+
+    protected _binder: Binder<this>;
 
     constructor(options?: Partial<TOptions>) {
 
@@ -23,13 +29,32 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
         this.onChanged("style", () => this.updateClass());
     }
 
+    protected bindTwoWays<T>(src: (model: this) => T, dst: (model: this) => T) {
+
+        if (!this._binder)
+            this._binder = new Binder(this);
+
+        this._binder.bind(dst, value => {
+            const srcProp = this._binder.getBindingProperty(src);
+            if (srcProp)
+                srcProp.set(value);
+        }, true);
+
+        
+        this._binder.bind(src, value => {
+            const dstProp = this._binder.getBindingProperty(dst);
+            if (dstProp)
+                dstProp.set(value);
+        }, true); 
+    }
+
     protected configure(newOptions?: Partial<TOptions>) {
 
         if (!newOptions)
             return;
 
-        this._options = {
-            ...this._options,
+        this.options = {
+            ...this.options,
             ...newOptions
         }
 
@@ -74,18 +99,18 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     protected bindOptions<TKey extends keyof CommonKeys<TOptions, this>>(...keys: TKey[]) {
 
-        if (!this._options)
-            return; 
+        if (!this.options)
+            return;
 
         for (const key of keys) {
 
-            const value = (key in this._options ? this._options[key] : undefined) as unknown as this[TKey];
+            const value = (key in this.options ? this.options[key] : undefined) as unknown as this[TKey];
 
-            this.bind(key, value);
+            this.bindValue(key, value);
         }
     }
 
-    protected bind<TKey extends keyof this & string, TValue extends this[TKey]>(key: TKey, value: Bindable<TValue>) {
+    protected bindValue<TKey extends keyof this & string, TValue extends this[TKey]>(key: TKey, value: Bindable<TValue>) {
 
         if (value === null && value === undefined)
             return;
@@ -116,4 +141,6 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
     template: CatalogTemplate<this>;
 
     style: ComponentStyle;
+
+    options: TOptions;
 }

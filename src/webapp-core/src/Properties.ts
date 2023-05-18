@@ -45,7 +45,11 @@ export function bindTwoWay(dst: any, src: any, propName?: string) {
     if (!dstProp)
         throw new Error("Dest property missing");
 
-    dstProp.set(srcProp.get());
+    if (srcProp.get())
+        dstProp.set(srcProp.get());
+
+    else if (dstProp.get())
+        srcProp.set(dstProp.get());
 
     const srcHandler = srcProp.subscribe((v: any) => dstProp.set(v));
 

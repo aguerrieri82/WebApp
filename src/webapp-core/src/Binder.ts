@@ -4,6 +4,7 @@ import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObser
 import type { IObservableProperty, IPropertyChangedHandler } from "./abstraction/IObservableProperty";
 import { forEachRev } from "./ArrayUtils";
 import { WebApp } from "./Debug";
+import { getFunctionType } from "./ObjectUtils";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
 
@@ -21,6 +22,8 @@ interface IBindingSubscription<TValue = any> {
 export interface IBinding<TModel, TValue = any> {
 
     lastValue: TValue;
+
+    execAlways: boolean;
 
     value(model: TModel): TValue;
 
@@ -162,16 +165,17 @@ export class Binder<TModel> {
         return cleanProxy(result);
     }
 
-    bind<TValue>(value: BindValue<TModel, TValue>, action: (newValue: TValue, oldValue?: TValue, isUpdate?: boolean, isClear?: boolean) => void) {
+    bind<TValue>(value: BindValue<TModel, TValue>, action: (newValue: TValue, oldValue?: TValue, isUpdate?: boolean, isClear?: boolean) => void, execAlways = false) {
 
-        if (typeof value == "function") {
+        if (typeof value == "function" && getFunctionType(value) != "class") {
 
             const binding: IBinding<TModel, TValue> = {
                 value: value as IGetter<TModel, TValue>,
                 action: action,
                 subscriptions: [],
                 lastValue: undefined,
-                suspend: 0
+                suspend: 0,
+                execAlways
             };
 
             this._bindings.push(binding);
@@ -254,7 +258,7 @@ export class Binder<TModel> {
             try {
                 const bindValue = this.getBindingValue(binding, false);
 
-                if (bindValue == binding.lastValue)
+                if (bindValue == binding.lastValue && !binding.execAlways)
                     return;
 
                 this.unsubscribe(binding, false);
@@ -285,7 +289,7 @@ export class Binder<TModel> {
         }); 
     }
 
-    protected getBindingProperty<TValue>(value: BindValue<TModel, TValue>): IObservableProperty<TValue> {
+    getBindingProperty<TValue>(value: BindValue<TModel, TValue>): IObservableProperty<TValue> {
 
         if (typeof value != "function")
             return null;

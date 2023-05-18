@@ -10,7 +10,7 @@ export interface IIfProps<TModel extends TemplateModel> extends JsxComponentProp
     condition: BindValue<TModel, boolean>;
 }
 
-export function If<TModel extends TemplateModel>(props: IIfProps<TModel>): JsxNode<any> {
+export function If<TModel extends TemplateModel>(props: IIfProps<TModel>): null {
 
     const elseChild = Array.isArray(props.content) ? props.content.find(a => isJsxElement(a) && a.type == Else) as JsxElement<TModel, IElseProps<TModel>> : undefined;
 

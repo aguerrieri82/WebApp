@@ -1,23 +1,19 @@
-import { IComponentOptions, Component, TemplateMap, Bindable } from "@eusoft/webapp-core";
+import { TemplateMap, Bindable, BindValue } from "@eusoft/webapp-core";
 import { Template, forModel } from "@eusoft/webapp-jsx";
-import { IEditor, ValueChangedReason } from "../../abstraction/IEditor";
+import { IEditorOptions } from "../../abstraction/IEditor";
 import { LocalString } from "../../Types";
+import { EditorBuilder } from "../EditorBuilder";
+import { Editor } from "../Editor";
 
-interface ITextEditorOptions extends IComponentOptions {
+interface ITextEditorOptions extends IEditorOptions<string> {
 
     password?: Bindable<boolean>;
-
-    visible: Bindable<boolean>;
-
-    disabled: Bindable<boolean>;
 
     multiLine?: Bindable<boolean>;
 
     rows?: Bindable<number>;
 
     placeholder?: LocalString;
-
-    value?: Bindable<string>;
 }
 
 export const TextEditorTemplates: TemplateMap<TextEditor> = {
@@ -26,7 +22,7 @@ export const TextEditorTemplates: TemplateMap<TextEditor> = {
         <input visible={m.visible} disabled={m.disabled} type={m.password ? "password" : "text"} value={m.value} />
     </Template>)
 }
-export class TextEditor extends Component<ITextEditorOptions> implements IEditor<string> {
+export class TextEditor extends Editor<string, ITextEditorOptions> {
 
     constructor(options?: ITextEditorOptions) {
 
@@ -36,17 +32,11 @@ export class TextEditor extends Component<ITextEditorOptions> implements IEditor
             ...options,
             template: TextEditorTemplates.Default
         });
-
-        this.prop("value").subscribe((v, o) => this.onValueChanged(v, o, ""));
     }
 
     protected updateOptions() {
 
-        this.bindOptions("password", "visible", "disabled", "value", "rows");
-    }
-
-    onValueChanged(value: string, oldValue: string, reason: ValueChangedReason) {
-
+        this.bindOptions("password", "rows");
     }
 
     rows?: number;
@@ -54,12 +44,17 @@ export class TextEditor extends Component<ITextEditorOptions> implements IEditor
     placeholder?: string;
 
     password: boolean;
+}
 
-    visible: boolean;
 
-    disabled: boolean;
+declare module "../EditorBuilder" {
+    interface EditorBuilder<TModel> {
+        text(value: BindValue<TModel, string>);
+    }
+}
 
-    value: string;
+EditorBuilder.prototype.text = value => {
+
 }
 
 export default TextEditor;

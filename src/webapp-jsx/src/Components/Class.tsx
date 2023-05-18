@@ -6,7 +6,7 @@ export interface IClassProps<TModel extends TemplateModel> extends Omit<JsxCompo
     condition?: BindValue<TModel, boolean>;
 }
 
-export function Class<TModel extends TemplateModel>(props: IClassProps<TModel>): JsxNode<any> {
+export function Class<TModel extends TemplateModel>(props: IClassProps<TModel>) : null {
 
     if (props.condition == undefined)
         props.context.builder.class(props.name);

@@ -6,7 +6,7 @@ export interface ITextProps<TModel extends TemplateModel> extends JsxComponentPr
     src?: BindValue<TModel, string>;
 }
 
-export function Text<TModel extends TemplateModel>(props: ITextProps<TModel>): JsxNode<any>  {
+export function Text<TModel extends TemplateModel>(props: ITextProps<TModel>): null  {
 
     if (props.src)
         props.context.builder.text(props.src);

@@ -1,12 +1,14 @@
 ﻿import { IBindable } from "./IBindable";
-import type { Bindable, ComponentStyle, IComponentOptions } from "./IComponentOptions";
+import type { IComponentOptions } from "./IComponentOptions";
 import type { CatalogTemplate } from "./ITemplateProvider";
 
-export interface IComponent extends IBindable  {
+export interface IComponent<TOptions extends IComponentOptions = IComponentOptions> extends IBindable  {
+
+    readonly options: TOptions;
 
     unmount?(): void;
 
-    style?: Bindable<ComponentStyle>;
+    parent?: IComponent;
 
     template: CatalogTemplate<this>;
 }

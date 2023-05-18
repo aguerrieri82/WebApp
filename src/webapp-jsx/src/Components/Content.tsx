@@ -7,7 +7,7 @@ export interface IContentProps<TModel extends TemplateModel, TInnerModel extends
     model?: BindValue<TModel, TInnerModel>;
 }
 
-export function Content<TModel extends TemplateModel, TInnerModel extends TemplateModel = any>(props: IContentProps<TModel, TInnerModel>): JsxNode<any> {
+export function Content<TModel extends TemplateModel, TInnerModel extends TemplateModel = any>(props: IContentProps<TModel, TInnerModel>): null {
 
     if (props.model)
         props.context.builder.template(props.src as CatalogTemplate<TInnerModel>, props.model);

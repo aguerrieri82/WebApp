@@ -89,7 +89,7 @@ export function configureRollup(options) {
 
     const copyExtra = {
         writeBundle() {
-            if (options.include) {
+            if (options?.include) {
                 for (const src in options.include) {
 
                     fse.copySync(src, path.join(outPath, options.include[src]), { overwrite: true });

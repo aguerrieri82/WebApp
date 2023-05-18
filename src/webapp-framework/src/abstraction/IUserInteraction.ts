@@ -1,9 +1,6 @@
-
-
+import { ViewNode } from "@eusoft/webapp-ui";
 
 export interface IUserInteraction {
 
-    confirmAsync(body: xxx): Promise<boolean>;
-
-
+    confirmAsync(body: ViewNode): Promise<boolean>;
 }

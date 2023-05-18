@@ -4,7 +4,7 @@ export interface IBehavoirProps<TModel extends TemplateModel> extends JsxCompone
     name: string;
 }
 
-export function Behavoir<TModel extends TemplateModel>(props: IBehavoirProps<TModel>): JsxNode<any> {
+export function Behavoir<TModel extends TemplateModel>(props: IBehavoirProps<TModel>): null {
 
     props.context.builder.behavoir(props.name);
     return null;

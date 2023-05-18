@@ -9,12 +9,12 @@ export interface IForeachProps<TModel extends TemplateModel, TItem extends Templ
     src: BindValue<TModel, TItem[]>;
 }
 
-export function Foreach<TModel extends TemplateModel, TItem extends TemplateModel>(props: IForeachProps<TModel, TItem>): JsxNode<any> {
+export function Foreach<TModel extends TemplateModel, TItem extends TemplateModel>(props: IForeachProps<TModel, TItem>): null {
 
     let children = props.content as JsxNode<TItem>;
 
     if (typeof children == "function")
-        children = children(null);
+        children = children(null) as JsxNode<TItem>; 
 
     props.context.builder.foreach(props.src, t => processNode({ builder: t }, children))
     return null;

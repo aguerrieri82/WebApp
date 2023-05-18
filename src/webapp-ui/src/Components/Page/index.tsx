@@ -80,3 +80,5 @@ export class Page<TOptions extends IPageOptions = IPageOptions, TArgs extends Re
 
     name: string;
 }
+
+export default Page;
