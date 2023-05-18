@@ -87,6 +87,7 @@ declare global {
 
         type IntrinsicClassAttributes<T> = {
             builder?: (model: T, builder: any) => Element;
+            ref?: BindValue<T, any>;
         }
 
         type IntrinsicElements = {

@@ -1,4 +1,4 @@
-import { IBindable, ITemplate, ITemplateProvider, PARENT } from "@eusoft/webapp-core";
+import { BindExpression, IBindable, ITemplate, ITemplateProvider, PARENT, USE } from "@eusoft/webapp-core";
 import { ModelBuilder, TemplateModel } from "./abstraction";
 
 export function forModel<TModel extends TemplateModel>(action: ModelBuilder<TModel>): ITemplate<TModel>;
@@ -29,6 +29,28 @@ export namespace Bind {
 
     export function noBind<T>(value: T): T {
         return value;
+    }
+
+    export function build(model: any) {
+
+        function builder<TModel>(curModel: TModel) {
+            return ({
+
+                use<TValue>(value: TValue) {
+                    return builder(curModel[USE](value))
+                },
+
+                get<TValue>(exp: BindExpression<TModel, TValue>) {
+                    return builder(exp(curModel));
+                },
+
+                get value() {
+                    return curModel;
+                }
+            });
+        }
+
+        return builder(model);
     }
 }
 

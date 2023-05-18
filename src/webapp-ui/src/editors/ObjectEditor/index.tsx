@@ -1,4 +1,4 @@
-import { Binder, ITemplate, TemplateMap } from "@eusoft/webapp-core";
+import { Binder, ITemplate, TemplateMap, renderOnce } from "@eusoft/webapp-core";
 import { Bind, Content, Template, forModel } from "@eusoft/webapp-jsx";
 import { IEditorOptions } from "../../abstraction/IEditor";
 import { EditorBuilder } from "../EditorBuilder";
@@ -9,14 +9,14 @@ import { ViewNode } from "../../Types";
 
 interface IObjectEditorOptions<TObj extends Record<string, any>> extends IEditorOptions<TObj> {
 
-    builder: (builder: EditorBuilder<TObj>) => ITemplate<TObj> | JSX.Element;
+    builder: (builder: EditorBuilder<TObj, ObjectEditor<TObj>>) => ITemplate<TObj> | JSX.Element;
 }
 
 export const ObjectEditorTemplates: TemplateMap<ObjectEditor<any>> = {
 
     "Default": forModel(m => <Template name="ObjectEditor">
         <div> 
-            <Content src={m.value} template={Bind.noBind(m.contentTemplate(m.value))}/>
+            <Content src={m.value} template={m.contentTemplate()}/>
         </div>
     </Template>)
 }
@@ -25,6 +25,7 @@ export class ObjectEditor<TObj extends Record<string, any>> extends Editor<TObj,
 
     protected _editors: InputField<any, any>[];
     protected _isDirty: boolean;
+    protected _contentTemplate: JSX.Element;
 
     constructor(options?: IObjectEditorOptions<TObj>) {
 
@@ -41,21 +42,27 @@ export class ObjectEditor<TObj extends Record<string, any>> extends Editor<TObj,
         this.bindOptions("builder");
     }
 
-    contentTemplate(model: TObj) { 
+    contentTemplate() { 
 
-        this._editors = [];
+        if (!this._contentTemplate) {
 
-        var result = this.builder(new EditorBuilder({
-            model,
-            attach: editor => {
-                this._editors.push(editor);
-                editor.onChanged("value", v => {
-                    this._isDirty = true;
-                });
-            }
-        }));
+            this._editors = [];
 
-        return result;
+            const innerTemplate = this.builder(new EditorBuilder({
+                container: this,
+                model: a => a.value,
+                attach: editor => {
+                    this._editors.push(editor);
+                    editor.onChanged("value", v => {
+                        this._isDirty = true;
+                    });
+                }
+            })) as ITemplate<TObj>;
+
+            this._contentTemplate = renderOnce(innerTemplate);
+        }
+
+        return this._contentTemplate;
     }
 
     async validateAsync(force?: boolean): Promise<boolean> {
@@ -78,7 +85,7 @@ export class ObjectEditor<TObj extends Record<string, any>> extends Editor<TObj,
 
     isValid: boolean;
 
-    builder: (builder: EditorBuilder<TObj>) => JSX.Element;
+    builder: (builder: EditorBuilder<TObj, this>) => JSX.Element;
 }
 
 export default ObjectEditor;

@@ -9,7 +9,6 @@ import { CatalogTemplate, ITemplateProvider, isTemplateProvider } from "./abstra
 import { Binder } from "./Binder";
 import { WebApp } from "./Debug";
 import { getTypeName, isClass } from "./ObjectUtils";
-import { propOf } from "./Properties";
 
 type TemplateInlineMode = "never" | "always" | "auto" | "explicit" | "replace-parent" | "embed-child" | "inherit";
 
@@ -436,6 +435,16 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
                 const propValue = props[prop];
 
+                if (prop == "ref") {
+
+                    this.bind(propValue, () => {
+                        const refProp = this.getBindingProperty(propValue);
+                        if (refProp)
+                            refProp.set(model as any);
+                    }, "exec-always");
+                    continue;
+                }
+
                 const mode = modes ? modes[prop] : undefined;
 
                 if (mode == "two-ways") {
@@ -771,6 +780,15 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this;
     }
 
+    ref(value: BindValue<TModel, TModel>): this {
+
+        const valueProp = this.getBindingProperty(value);
+        if (valueProp)
+            valueProp.set(this.model);
+
+        return this;
+    }
+
     value(value: BindValue<TModel, string | boolean>, mode: InputValueMode = "change", poolTime: number = 500): this {
 
         const element = <HTMLInputElement><any>this.element;
@@ -965,6 +983,18 @@ class ChildTemplateBuilder<TModel, TElement extends HTMLElement, TParent extends
 
 
 /****************************************/
+
+export function renderOnce<T>(template: ITemplate<T>): ITemplate<T> {
+
+    let isRendered = false;
+
+    return t => {
+        if (isRendered)
+            return;
+        template(t);
+        isRendered = true;
+    };
+}
 
 export function mount<TModel>(root: HTMLElement, template: CatalogTemplate<TModel>, model?: TModel): void;
 export function mount(root: HTMLElement, component: ITemplateProvider): void;

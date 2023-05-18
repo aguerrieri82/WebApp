@@ -3,11 +3,12 @@ export const FuncAttributes = [
     "text",
     "focus",
     "html",
-    "visible"
+    "visible",
+    "ref"
 ]
 
 export const TemplateAttributes = [
-    ...FuncAttributes,
+    ...FuncAttributes,  
     "style",
     "value",
     "behavoir",

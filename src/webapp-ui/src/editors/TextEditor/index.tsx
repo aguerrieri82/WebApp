@@ -49,12 +49,12 @@ export class TextEditor extends Editor<string, ITextEditorOptions> {
 
 
 declare module "../EditorBuilder" {
-    interface EditorBuilder<TModel> {
+    interface EditorBuilder<TModel, TModelContainer> {
         text(value: BindExpression<TModel, string>, options?: IBuilderEditorOptions<string, ITextEditorOptions>);
     }
 }
 
-EditorBuilder.prototype.text = function (this: EditorBuilder<any>, value, options) {
+EditorBuilder.prototype.text = function (this: EditorBuilder<any, any>, value, options) {
     return this.editor(value, TextEditor, options);
 }
 

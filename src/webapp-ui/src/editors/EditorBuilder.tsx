@@ -4,10 +4,14 @@ import { IEditor, IEditorOptions } from "../abstraction/IEditor";
 import { Validator } from "../abstraction/Validator";
 import { InputField } from "../components";
 import { USE } from "@eusoft/webapp-core";
+import { Bind } from "@eusoft/webapp-jsx";
 
-interface EditorBuilderOptions<TModel> {
+interface EditorBuilderOptions<TModel, TModelContainer extends Record<string, any>> {
 
-    model: TModel;
+    model: BindExpression<TModelContainer, TModel>;
+
+    container: TModelContainer;
+
     attach?: (editor: InputField<any, any>) => void;
 }
 
@@ -22,11 +26,11 @@ export interface IBuilderEditorOptions<TValue, TEditorOptions extends IEditorOpt
     editor: TEditorOptions;
 }
 
-export class EditorBuilder<TModel> {
+export class EditorBuilder<TModel, TModelContainer extends Record<string, any>> {
 
-    protected _options: EditorBuilderOptions<TModel>;
+    protected _options: EditorBuilderOptions<TModel, TModelContainer>;
 
-    constructor(options: EditorBuilderOptions<TModel>) {
+    constructor(options: EditorBuilderOptions<TModel, TModelContainer>) {
         this._options = options;
     }
 
@@ -44,7 +48,10 @@ export class EditorBuilder<TModel> {
             value: undefined
         });
 
-        input.bindTwoWays(m => bind(m[USE](this._options.model)), m => m.value);
+        input.bindTwoWays(m => Bind.build(m)
+            .use(this._options.container)
+            .get(this._options.model)
+            .get(bind).value, m => m.value);
 
         if (this._options.attach)
             this._options.attach(input);
