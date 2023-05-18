@@ -13,5 +13,5 @@ export type WritableKeys<T, TProp> = {
 export type EmptyConstructor<T> = { new(): T }
 
 export type OptionsFor<T> = {
-    [K in keyof T as K extends string ? (T[K] extends Function ? never : K) : never] : T[K]
+    [K in keyof T as K extends string ? K extends "options" ? never : (T[K] extends Function ? never : K) : never] : T[K]
 }

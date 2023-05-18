@@ -2,22 +2,21 @@ import { IBehavoir } from "./abstraction";
 
 export abstract class Behavoir<TOptions extends Record<string, any> = Record<string, any>, TElement extends HTMLElement = HTMLElement, TModel = any> implements IBehavoir<TElement, TModel> {
 
-    protected _options: TOptions;
     protected _isDetach: boolean;
 
     constructor(options?: TOptions) {
 
-        this._options = options;
+        this.options = options;
 
         this.updateOptions();
     }
 
     protected updateOptions() {
 
-        for (const key in this._options) {
+        for (const key in this.options) {
 
             if (key in this)
-                (this as Record<string, any>)[key] = this._options[key];
+                (this as Record<string, any>)[key] = this.options[key];
         }
     }
 
@@ -26,4 +25,6 @@ export abstract class Behavoir<TOptions extends Record<string, any> = Record<str
     detach(element: TElement, model?: TModel): void {
         this._isDetach = true;
     }
+
+    options: TOptions;
 }

@@ -1,11 +1,12 @@
-import { Binder, ITemplate, TemplateMap, renderOnce } from "@eusoft/webapp-core";
-import { Bind, Content, Template, forModel } from "@eusoft/webapp-jsx";
+import { ITemplate, TemplateMap, renderOnce } from "@eusoft/webapp-core";
+import { Content, Template, forModel } from "@eusoft/webapp-jsx";
 import { IEditorOptions } from "../../abstraction/IEditor";
 import { EditorBuilder } from "../EditorBuilder";
 import { Editor } from "../Editor";
 import { InputField } from "../../components";
 import { IValidable } from "../../abstraction/IValidable";
 import { ViewNode } from "../../Types";
+import { IValidationContext } from "../../abstraction/Validator";
 
 interface IObjectEditorOptions<TObj extends Record<string, any>> extends IEditorOptions<TObj> {
 
@@ -65,12 +66,16 @@ export class ObjectEditor<TObj extends Record<string, any>> extends Editor<TObj,
         return this._contentTemplate;
     }
 
-    async validateAsync(force?: boolean): Promise<boolean> {
+    async validateAsync<TTarget>(ctx?: IValidationContext<TTarget>, force?: boolean): Promise<boolean> {
 
         let isValid = true;
 
+        const innerCtx = {
+            target: this.value
+        } as IValidationContext<TObj>;
+
         for (const editor of this._editors) {
-            if (!await editor.validateAsync())
+            if (!await editor.validateAsync(innerCtx, force))
                 isValid = false;
         }
 

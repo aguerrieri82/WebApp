@@ -3,7 +3,7 @@ import { IValidationContext, IValidationResult } from "./Validator";
 
 export interface IValidable {
 
-    validateAsync(force?: boolean): Promise<boolean>;
+    validateAsync<TTarget>(ctx?: IValidationContext<TTarget>, force?: boolean): Promise<boolean>;
 
     error: ViewNode;
      

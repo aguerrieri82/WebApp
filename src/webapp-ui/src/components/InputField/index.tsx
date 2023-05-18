@@ -2,8 +2,9 @@ import { IComponentOptions,  Component,  TemplateMap, ITemplateProvider, Bindabl
 import { Class, Template, forModel } from "@eusoft/webapp-jsx";
 import { IEditor, IEditorOptions } from "../../abstraction/IEditor";
 import { ViewNode } from "../../Types";
-import { Validator } from "../../abstraction/Validator";
+import { IValidationContext, Validator } from "../../abstraction/Validator";
 import { IValidable } from "../../abstraction/IValidable";
+import { NodeView } from "../NodeView";
 
 interface IInputFieldOptions<TValue> extends IComponentOptions {
 
@@ -27,7 +28,7 @@ export const InputFieldTemplates: TemplateMap<InputField<any, IEditor<any>>> = {
             <label>{m.label}</label>
             {m.content}
             <div>
-                {m.error}
+                <NodeView>{m.error}</NodeView>
             </div>
         </div>
     </Template>)
@@ -51,9 +52,29 @@ export class InputField<TValue, TEditor extends IEditor<TValue>> extends Compone
         this.bindOptions("name", "label", "validators", "content", "value");
     }
 
-    validateAsync(force?: boolean): Promise<boolean> {
+    async validateAsync<TTarget>(ctx: IValidationContext<TTarget>, force?: boolean): Promise<boolean> {
 
-        return null;
+        if (!this.validators || this.validators?.length == 0)
+            return true;
+
+        const errors: ViewNode[] = [];
+
+        let isValid = false;
+
+        for (const validator of this.validators) {
+
+            const result = await validator(ctx, this.value);
+            if (!result.isValid) {
+                if (result.error)
+                    errors.push(result.error);
+            }
+        }
+
+        this.isValid = isValid;
+
+        this.error = isValid ? null : errors;
+
+        return isValid;
     }
 
     name: string;

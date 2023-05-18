@@ -3,6 +3,7 @@
     attach(element: TElement, model?: TModel) : void;
 
     detach(element: TElement, model?: TModel): void;
+
 }
 
 export function isBehavoir(value: any): value is IBehavoir {

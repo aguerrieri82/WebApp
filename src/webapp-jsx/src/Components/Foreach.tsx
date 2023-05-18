@@ -5,7 +5,7 @@ import { processNode } from "./../Runtime";
 
 
 export interface IForeachProps<TModel extends TemplateModel, TItem extends TemplateModel>
-    extends JsxComponentProps<TModel, TItem, Exclude<JsxNode<TItem>, ITemplate<TModel>>> {
+    extends JsxComponentProps<TModel, TItem, {(t: TItem) : JSX.Element } > {
     src: BindValue<TModel, TItem[]>;
 }
 

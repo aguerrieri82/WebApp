@@ -251,7 +251,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     appendChild(node: Node): this {
 
-        if (!this._lastElement || !this._lastElement.parentNode) //TODO this || didn't exists
+        if (!this._lastElement || !this._lastElement.parentNode) //TODO WARN: this || didn't exists
             this.element.appendChild(node);
         else {
             if (this._lastElement.nextSibling)
@@ -260,7 +260,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 this._lastElement.parentNode.appendChild(node);
 
         }
-        //TODO this line was inside else
+        //TODO WARN: this line was inside else
         this._lastElement = node;
         //
         return this;
@@ -552,7 +552,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 else {
 
                     if (isUpdate)
-                        childBuilder.clear(false, false); //TODO: cleanValue was true
+                        childBuilder.clear(false, false); //TODO WARN: cleanValue was true
       
                     if (value) {
 

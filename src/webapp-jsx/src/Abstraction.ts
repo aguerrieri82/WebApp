@@ -80,7 +80,7 @@ declare global {
 
         type ElementClass = IComponent<any> | ITemplateProvider | IBehavoir;
          
-        type Element = IComponent<any> | ITemplate<any>; 
+        type Element = IComponent<any> | ITemplate<any> | void; 
 
         type IntrinsicAttributes = {
         }
