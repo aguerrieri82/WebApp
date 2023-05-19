@@ -52,6 +52,7 @@ export class PageHost extends Component<IPageHostOptions> {
     push(page: IPage) {
         this._stack.push(this.content);
         this.content = page;
+        return page;
     }
 
     pop() {
@@ -61,6 +62,7 @@ export class PageHost extends Component<IPageHostOptions> {
 
     canGoBack() {
 
+        return true;
     }
 
 
