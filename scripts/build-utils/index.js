@@ -28,8 +28,11 @@ function saveJson(filePath, data) {
 
 function getPkgVersion(pkgPath) {
 
-    if (pkgPath.startsWith("link:"))
+    if (pkgPath.startsWith("link:")) {
         pkgPath = pkgPath.substring(5);
+        if (pkgPath.endsWith("/src"))
+            pkgPath = pkgPath.substring(0, pkgPath.length - 4);
+    }
 
     const curPkg = loadJson(path.join(pkgPath, "package.json"));
     return curPkg.version;
