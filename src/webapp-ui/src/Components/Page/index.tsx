@@ -1,4 +1,4 @@
-import { Bindable, IComponentOptions, ITemplate, Component, IComponent, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
+import { Bindable, IComponentOptions, Component, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
 import { forModel, Template } from "@eusoft/webapp-jsx";
 import { IPage, LoadState } from "../../abstraction/IPage";
 import "./index.scss";

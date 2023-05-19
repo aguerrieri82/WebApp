@@ -1,11 +1,11 @@
-import type { BindValue, ITemplate } from "@eusoft/webapp-core";
-import type { JsxComponentProps, JsxElementInstance, JsxNode, ModelBuilder, TemplateModel } from "./../abstraction";
+import type { BindValue } from "@eusoft/webapp-core";
+import type { JsxComponentProps, JsxNode, TemplateModel } from "./../abstraction";
 import { processNode } from "./../Runtime";
 
 
 
 export interface IForeachProps<TModel extends TemplateModel, TItem extends TemplateModel>
-    extends JsxComponentProps<TModel, TItem, {(t: TItem) : JSX.Element } > {
+    extends JsxComponentProps<TModel, {(t: TItem) : JSX.Element } > {
     src: BindValue<TModel, TItem[]>;
 }
 

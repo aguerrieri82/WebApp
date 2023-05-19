@@ -26,7 +26,7 @@ export class ObjectEditor<TObj extends Record<string, any>> extends Editor<TObj,
 
     protected _editors: InputField<any, any>[];
     protected _isDirty: boolean;
-    protected _contentTemplate: JSX.Element;
+    protected _contentTemplate: ITemplate<TObj>;
 
     constructor(options?: IObjectEditorOptions<TObj>) {
 

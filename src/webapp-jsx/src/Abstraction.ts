@@ -7,31 +7,30 @@ export type TemplateModel = object | string | number | boolean;
 
 export type JsxElementType<TModel extends TemplateModel, TProps extends JsxComponentProps<TModel>> = keyof HTMLElementTagNameMap | JsxComponent<TModel, TProps> ;
 
-export type JsxComponent<TModel extends TemplateModel, TProps extends JsxComponentProps<TModel>> = (props: TProps) => (JsxElementInstance<TModel, TProps> | null | void);
+export type JsxComponent<TModel extends TemplateModel, TProps extends JsxComponentProps<TModel>> = (props: TProps) => (JsxElementInstance<TModel, TProps> | null | void | ITemplate<TModel>);
 
 export type ModelBuilder<TModel extends TemplateModel> = { (t: TModel): JSX.Element };
 
 export type JsxNode<TModel extends TemplateModel> =
     string |
     number |
-    null |
-    void |
-    ITemplate<TModel> |
-    ITemplateProvider<TModel> |
-    JsxElementInstance<TModel, JsxComponentProps<TModel>> |
+    JsxTypedElement<TModel, JsxComponentProps<TModel>> | 
     JsxNode<TModel>[] |
     ModelBuilder<TModel> 
 
-export type JsxTypedComponent<TOptions> =
+export type JsxTypedElement<TModel extends TemplateModel, TProps> =
+    JsxElementInstance<TModel, TProps> |
     null |
     void |
-    ITemplate<IComponent<TOptions>> |
-    JsxElementInstance<IComponent<TOptions>, TOptions> 
+    ITemplateProvider<TModel> |
+    ITemplate<TModel>
+
+
+export type JsxTypedComponent<TOptions> = JsxTypedElement<IComponent<TOptions>, TOptions>;
 
 export type JsxComponentProps<
         TModel extends TemplateModel,
-        TContentModel extends TemplateModel = TModel,
-        TContent extends JsxNode<TContentModel> = JsxNode<TContentModel>> = {
+        TContent = any> = {
     content?: TContent;
     context?: ITemplateContext<TModel>;
 }
@@ -86,7 +85,7 @@ declare global {
 
         type ElementClass = IComponent<any> | ITemplateProvider | IBehavoir;
          
-        type Element = ITemplate<any> | void | null | JsxElementInstance<any, any>;
+        type Element = JsxTypedElement<any, any>;
 
         type IntrinsicAttributes = {
         }

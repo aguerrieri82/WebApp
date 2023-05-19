@@ -1,5 +1,5 @@
 import { ITemplate, defineTemplate } from "@eusoft/webapp-core";
-import type { JsxComponentProps, JsxNode, TemplateModel } from "./../abstraction";
+import type { JsxComponentProps, TemplateModel } from "./../abstraction";
 import { processNode } from "./../Runtime";
 
 export interface ITemplateProps<TModel extends TemplateModel> extends JsxComponentProps<TModel> {

@@ -37,7 +37,7 @@ export namespace Bind {
             return ({
 
                 use<TValue>(value: TValue) {
-                    return builder(curModel[USE](value))
+                    return builder((curModel as IBindable)[USE](value))
                 },
 
                 get<TValue>(exp: BindExpression<TModel, TValue>) {

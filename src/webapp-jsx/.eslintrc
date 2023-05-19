@@ -13,8 +13,8 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": [],
+  "plugins": [ "unused-imports" ],
   "rules": {
-
+    "unused-imports/no-unused-imports": "error"
   }
 }

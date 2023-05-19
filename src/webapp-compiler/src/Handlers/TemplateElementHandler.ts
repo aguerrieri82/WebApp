@@ -1,6 +1,5 @@
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
 import { ITemplateElement, ITemplateNode } from "../Abstraction/ITemplateNode";
-import { CompilerLanguage } from "../BaseCompiler";
 import { HtmlCompiler } from "../HtmlCompiler";
 import { TemplateContext } from "../TemplateContext";
 

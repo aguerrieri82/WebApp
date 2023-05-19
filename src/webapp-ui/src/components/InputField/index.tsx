@@ -1,4 +1,4 @@
-import { IComponentOptions,  Component,  TemplateMap, Bindable, IComponent } from "@eusoft/webapp-core";
+import { IComponentOptions,  Component,  TemplateMap, Bindable } from "@eusoft/webapp-core";
 import { Class, JsxTypedComponent, Template, forModel } from "@eusoft/webapp-jsx";
 import { IEditor, IEditorOptions } from "../../abstraction/IEditor";
 import { ViewNode } from "../../Types";

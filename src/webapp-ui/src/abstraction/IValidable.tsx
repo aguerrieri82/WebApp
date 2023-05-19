@@ -1,5 +1,5 @@
 import { ViewNode } from "../Types";
-import { IValidationContext, IValidationResult } from "./Validator";
+import { IValidationContext } from "./Validator";
 
 export interface IValidable {
 

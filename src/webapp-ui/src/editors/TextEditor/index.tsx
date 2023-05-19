@@ -1,5 +1,5 @@
-import { TemplateMap, Bindable, BindValue, BindExpression } from "@eusoft/webapp-core";
-import { Template, debug, forModel } from "@eusoft/webapp-jsx";
+import { TemplateMap, Bindable, BindExpression } from "@eusoft/webapp-core";
+import { Template, forModel } from "@eusoft/webapp-jsx";
 import { IEditorOptions } from "../../abstraction/IEditor";
 import { LocalString } from "../../Types";
 import { EditorBuilder } from "../EditorBuilder";
