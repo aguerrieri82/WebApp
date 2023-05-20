@@ -1,12 +1,32 @@
 import { BindExpression, PARENT, USE } from "./abstraction";
 
-type ExpressionType = CallExpression<any> | SetExpression<any> | UseExpression<any> | GetExpression<any>;
+type ExpressionType = Expression<any> | CallExpression<any> | SetExpression<any> | UseExpression<any> | GetExpression<any>;
+
+
+export interface IExpressionOptions {
+    evaluate?: boolean;
+    customProps?: Record<string | symbol, () => any>;
+}
+
+export interface IExpressionProp {
+
+    object: Record<string, any>;
+
+    propName?: string;
+
+    value?: any;
+}
+
 
 export abstract class Expression<TValue extends Record<string, any> | Function> {
 
-    constructor(value: TValue, parent?: ExpressionType) {
+    protected _options: IExpressionOptions;
+
+    constructor(value: TValue, parent?: ExpressionType, options?: IExpressionOptions) {
         this.parent = parent;
         this.value = value;
+        this._options = options || {};
+        this.hitCount = 1;
     }
 
     use(model: TValue) {
@@ -14,50 +34,146 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
         return this;
     }
 
-    set<TSetValue>(propName: string, value: TSetValue) {
+    set<TSetValue>(propName: string, value: TSetValue)   {
+
+        if (this._options.evaluate)
+            (this.value as Record<string, any>)[propName] = value;
 
         let innerExp = this.actions.find(a => a.type == "set" && a.propName == propName);
 
         if (!innerExp) {
 
-            innerExp = new SetExpression(value, propName, this as ExpressionType);
+            innerExp = new SetExpression(value, propName, this);
 
             this.actions.push(innerExp);
         }
+        else
+            innerExp.hitCount++;
 
         return innerExp;
     }
 
     get(propName: string) {
 
-        const value = (this.value as Record<string, any>)[propName];
+        const value = this._options.evaluate ? (this.value as Record<string, any>)[propName] : undefined;
 
         let innerExp = this.actions.find(a => a.type == "get" && a.propName == propName);
 
         if (!innerExp) {
 
-            innerExp = new GetExpression(value, propName, this as ExpressionType);
+            innerExp = new GetExpression(value, propName, this);
 
             this.actions.push(innerExp);
         }
+        else
+            innerExp.hitCount++;
         
         return innerExp;
     }
 
-    call(...args: []) {
+    call(...args: []): ExpressionType{
 
-        const result = (this.value as Function).call(this.parent.value, ...args);
+        const result = this._options.evaluate ? (this.value as Function).call(this.parent.value, ...args) : null;
 
         let innerExp = this.actions.find(a => a.type == "call" && a.value == result);
 
         if (!innerExp) {
 
-            innerExp = new CallExpression(result, args, this as ExpressionType);
+            innerExp = new CallExpression(result, args, this);
 
             this.actions.push(innerExp);
         }
+        else
+            innerExp.hitCount++;
 
         return innerExp;
+    }
+
+    *getReferences(): Iterable<IExpressionProp> {
+
+        const map = new Map<object, string[]>();
+
+        function getOrCreateProps(obj: object) {
+
+            let curProps = map.get(obj);
+
+            if (!curProps) {
+                curProps = [];
+                map.set(obj, curProps);
+            }
+
+            return curProps;
+        }
+
+        for (const exp of this.visit()) {
+
+            if (exp.type == "get") {
+
+                const curProps = getOrCreateProps(exp.parent.value);
+
+                if (!curProps.some(a => a == exp.propName))
+                    curProps.push(exp.propName);
+            }
+
+            if (exp.value !== undefined && exp.value !== null)
+                getOrCreateProps(exp.value);
+        }
+
+        for (const item of map) {
+            if (!item[1])
+                yield {
+                    object: item[0]
+                }
+            else {
+                for (const prop of item[1])
+                    yield {
+                        object: item[0],
+                        propName: prop
+                    }
+            }
+
+        }
+
+        return map;
+    }
+
+    getProperty() {
+
+        let result: IExpressionProp;
+
+        function visit(exp: ExpressionType) {
+
+            if (exp.actions.length == 0 && exp.type == "get") {
+                result = {
+                    object: exp.parent.value,
+                    propName: (exp as GetExpression<any>).propName,
+                    value: exp.value
+                }
+            }
+            else if (exp.actions.length == 1 && exp.hitCount == 1)
+                visit(exp.actions[0]);
+        }
+
+        visit(this);
+
+        return result;
+    }
+
+    isSingle() {
+
+        let result = true;
+
+        function visit(exp: ExpressionType) {
+
+            if (exp.actions.length > 1 || exp.hitCount > 1)
+                result = false;
+            else
+                visit(exp.actions[0]);
+        }
+
+        visit(this);
+
+        return result;
     }
 
     *visit(filter: (exp: Expression<any>) => boolean = () => true): Iterable<Expression<any>> {
@@ -96,7 +212,7 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
             }
         }
 
-        visit(this as ExpressionType, "$root");
+        visit(this, "$root");
 
         return result;
     }
@@ -110,7 +226,12 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
             get: (target: any, prop, rec) : any => {
 
-                const value = target[prop];
+                let value: any;
+
+                if (this._options.customProps && prop in this._options.customProps)
+                    value = this._options.customProps[prop]();
+                else
+                    value = target[prop];
 
                 if (prop == USE) {
                     const exp = this.use(value);
@@ -144,13 +265,15 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
         });
     }
 
-    static build<TModel extends object, TValue>(model: TModel, bind: BindExpression<TModel, TValue>) {
-        const exp = new UseExpression(model);
+    static build<TModel extends object, TValue>(model: TModel, bind: BindExpression<TModel, TValue>, options?: IExpressionOptions) {
+        const exp = new UseExpression(model, null, options);
         bind(exp.createProxy());
         return exp;
     }
 
-    readonly type: "get" | "set" | "call" | "use";
+    hitCount: number;
+
+    readonly type: string;
 
     readonly value: TValue;
 
@@ -198,8 +321,8 @@ class GetExpression<TObj extends Record<string, any>> extends Expression<TObj> {
 }
 
 class UseExpression<TObj extends Record<string, any>> extends Expression<TObj> {
-    constructor(value: TObj, parent?: ExpressionType) {
-        super(value, parent);
+    constructor(value: TObj, parent?: ExpressionType, options?: IExpressionOptions ) {
+        super(value, parent, options);
     }
 
     readonly type = "use";

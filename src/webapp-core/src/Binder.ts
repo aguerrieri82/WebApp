@@ -2,23 +2,24 @@ import { PARENT, TARGET, USE } from "./abstraction/IBindable";
 import type { BindExpression, BindValue, IGetter } from "./abstraction/IBinder";
 import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
 import type { IObservableProperty, IPropertyChangedHandler } from "./abstraction/IObservableProperty";
-import { forEachRev } from "./ArrayUtils";
+import { compareArray, forEachRev } from "./ArrayUtils";
 import { WebApp } from "./Debug";
+import { Expression, IExpressionProp } from "./Expression";
 import { getFunctionType } from "./ObjectUtils";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
 
 const EMPTY_VALUE = {}
 
-interface IBindingSubscription<TValue = any> {
+interface IBindingSubscription<TValue = any, TProp extends IObservableProperty<TValue>|undefined = any> {
 
     source: any;
 
-    property: IObservableProperty<TValue>;
+    handler: TProp extends undefined ? IObservableArrayHandler<any> : IPropertyChangedHandler<TValue>;
 
-    handler: IPropertyChangedHandler<TValue> | IObservableArrayHandler<any>;
+    property?: TProp;
 
-    name: string;
+    name?: string;
 }
 
 type BindingActionMode = "exec-always" | "no-bind";
@@ -31,6 +32,8 @@ export interface IBinding<TModel, TValue = any> {
 
     actionMode: BindingActionMode;
 
+    refs: IExpressionProp[];
+
     value(model: TModel): TValue;
 
     action(newValue: TValue, oldValue?: TValue, isUpdate?: boolean, isClear?: boolean): void;
@@ -40,98 +43,7 @@ export interface IBinding<TModel, TValue = any> {
     suspend: number;
 }
 
-interface IPropertyAccess {
-    obj: any;
-    propName: string;
-}
-
 type CleanAction = () => any;
-
-function cleanProxy<TObj>(value: TObj, cleanEmpty = true): TObj{
-
-    if (cleanEmpty && value === EMPTY_VALUE)
-        return undefined;
-
-    if (value && typeof value === "object") {
-        const target = (value as any)[TARGET];
-        if (cleanEmpty && target === EMPTY_VALUE)
-            return undefined;
-        if (target)
-            return target as TObj;
-    }
-
-    return value;
-}
-
-export function createProxy<TObj>(obj: TObj, action?: (obj: any, propName: string) => boolean, customProps?: Record<string | symbol, { (): any }>, mode?: ProxyMode): TObj {
-
-    if (obj === null || obj === undefined) {
-        if (mode == "evaluate")
-            return obj;
-        obj = EMPTY_VALUE as TObj;
-    }
-
-    if (typeof (obj) !== "object")
-        return obj;
-
-    obj = cleanProxy(obj, false);
-
-    const innerProxies: Record<PropertyKey, any> = {};
-
-    if (Array.isArray(obj)) {
-
-        if (!isObservableArray(obj))
-            createObservableArray(obj);
-    }
-
-    return new Proxy(obj as Record<PropertyKey, any>, {
-
-        get: (target, prop) => {
-
-            if (prop === TARGET)
-                return target;
-
-            if (customProps && prop in customProps)
-                return createProxy(customProps[prop](), action, undefined, mode);
-  
-            const value = target[prop];
-            
-            if (typeof prop === "symbol" || typeof value === "function" || (Array.isArray(obj) && prop === "length"))
-                return value;
-
-            if (!(prop in innerProxies)) {
-                if (!action || action(obj, prop))
-                    innerProxies[prop] = createProxy(value, action, undefined, mode);
-                else
-                    innerProxies[prop] = value;
-            }
-
-            return innerProxies[prop];
-        },
-
-        set: (target, prop, value) => {
-
-            //TODO handle null target
-            value = cleanProxy(value);
-
-            if (target[prop] === value)
-                return true;
-
-            target[prop] = value;
-
-            if (typeof prop === "symbol")
-                return true;
-
-            if (!action || action(obj, prop))
-                innerProxies[prop] = createProxy(value, action, undefined, mode);
-            else
-                innerProxies[prop] = value;
-
-            return true;
-        },
-        
-    }) as TObj;
-}
 
 export class Binder<TModel> {
 
@@ -142,21 +54,13 @@ export class Binder<TModel> {
     protected _tag: string;
     constructor(model?: TModel) {
 
-        this.updateModel(cleanProxy(model));
+        this.updateModel(model);
     }
 
     protected onClean(action: CleanAction) {
         this._cleanActions.push(action);
     }
 
-    protected createProxy<TObj>(obj: TObj, action: (obj: any, propName: string) => boolean, mode: ProxyMode) {
-
-        return createProxy(obj, action, {
-
-            [PARENT]: () => this.findParentModel(),
-            [USE]: () => (value: any) => createProxy(value, action, undefined, mode)
-        }, mode);
-    }
 
     protected register(binder: Binder<TModel>, tag?: string) {
 
@@ -170,20 +74,69 @@ export class Binder<TModel> {
         return <TValue>value;
     }
 
+    protected getBindingExpression<TValue>(binding: BindExpression<TModel, TValue>) {
+
+        if (typeof this.model != "object")
+            return;
+
+        return Expression.build(this.model, binding, {
+            evaluate: true,
+            customProps: {
+                [PARENT]: () => this.findParentModel()
+            }
+        });
+    }
+
     protected getBindingValue<TValue>(binding: IBinding<TModel, TValue>, subscribe = true) {
 
-        const result = binding.value(this.createProxy(this.model, (obj, propName) => {
+        const exp = this.getBindingExpression(binding.value);
 
-            if (obj === EMPTY_VALUE) 
-                return false;
+        if (!exp)
+            return;
 
-            if (subscribe)
-                this.subscribe(obj, propName, binding);
+        if (subscribe) {
 
-            return true;
-        }, "evaluate"));
+            const refs = Array.from(exp.getReferences());
 
-        return cleanProxy(result);
+            compareArray(refs, binding.refs, {
+
+                equals: (a, b) => (a.object == b.object && a.propName == b.propName),
+
+                onAdded: ref => {
+
+                    if (Array.isArray(ref.object)) {
+
+                        if (!isObservableArray(ref.object))
+                            createObservableArray(ref.object);
+                    }
+                    else {
+
+                        if (ref.propName)
+                            this.subscribe(ref.object, ref.propName, binding);
+                    }
+                },
+
+                onRemoved: ref => {
+
+                    if (isObservableArray(ref.object)) {
+                        const sub = binding.subscriptions.find(a => a.source == ref.object);
+                        sub.source.unsubscribe(sub.handler as IObservableArrayHandler<any>);
+                    }
+
+                    else if (ref.propName) {
+                        const sub = binding.subscriptions.find(a => a.source == ref.object && a.name == ref.propName);
+                        sub.property.unsubscribe(sub.handler as IPropertyChangedHandler<any>);
+                    }
+
+                }
+            });
+
+            binding.refs = refs;
+        }
+
+        const prop = exp.getProperty();
+
+        return prop?.value;
     }
 
     bindOneWay<TValue>(src: (model: TModel) => TValue, dst: (model: TModel) => TValue) {
@@ -243,6 +196,18 @@ export class Binder<TModel> {
         }
     }
 
+    protected executeBinding<TValue>(binding: IBinding<TModel, TValue>, isUpdate: boolean) {
+
+        const bindValue = this.getBindingValue(binding);
+
+        if (isUpdate && bindValue === binding.lastValue && binding.actionMode != "exec-always")
+            return;
+
+        binding.action(bindValue, undefined, isUpdate);
+
+        binding.lastValue = bindValue;
+    }
+
     bind<TValue>(value: BindValue<TModel, TValue>, action: (newValue: TValue, oldValue?: TValue, isUpdate?: boolean, isClear?: boolean) => void, actionMode?: BindingActionMode) {
 
         if (typeof value == "function" && getFunctionType(value) != "class" && actionMode != "no-bind") {
@@ -253,19 +218,13 @@ export class Binder<TModel> {
                 subscriptions: [],
                 lastValue: undefined,
                 suspend: 0,
+                refs: [],
                 actionMode
             };
 
             this._bindings.push(binding);
 
-            if (WebApp.isDebug)
-                WebApp.bindings.push(binding);
-
-            const bindValue = this.getBindingValue(binding);
-            
-            binding.action(bindValue, undefined, false);
-
-            binding.lastValue = bindValue;
+            this.executeBinding(binding, false);
         }
         else 
             action(value as TValue, undefined, false);
@@ -275,11 +234,11 @@ export class Binder<TModel> {
 
         binding.subscriptions.forEach(sub => {
 
-            if (isObservableArray(sub.source)) 
+            if (isObservableArray(sub.source) && !sub.property) 
                 sub.source.unsubscribe(sub.handler as IObservableArrayHandler<any>);
 
             if (sub.property)
-                sub.property.unsubscribe(sub.handler as IPropertyChangedHandler<any>);
+                sub.property.unsubscribe(sub.handler);
         });
 
         if (cleanValue && binding.lastValue) {
@@ -292,31 +251,29 @@ export class Binder<TModel> {
 
     protected subscribe(obj: any, propName: string, binding: IBinding<TModel>) {
 
-        for (let i = 0; i < binding.subscriptions.length; i++) {
-            const sub = binding.subscriptions[i];
-            if (sub.source == obj && sub.name == propName)
-                return;
-        }
+        if (binding.subscriptions.some(a => a.source == obj && a.name == propName))
+            return;
 
-        if (isObservableArray(obj)) {
+        if (isObservableArray(obj) && !binding.subscriptions.some(a => a.source == obj && !a.property)) {
 
             const handler: IObservableArrayHandler<any> = {
                 onChanged: () => {
-                     
-                    const bindValue = this.getBindingValue(binding);
 
-                    if (bindValue == binding.lastValue)
-                        return;
-
-                    binding.action(bindValue, binding.lastValue, true);
-
-                    binding.lastValue = bindValue; 
+                    this.executeBinding(binding, true);
                 }
             };
 
             obj.subscribe(handler); 
+
+            binding.subscriptions.push({
+                handler: handler,
+                source: obj,
+            });
+
         }  
 
+        if (propName === null || propName === undefined)
+            return;
 
         const propDesc = Object.getOwnPropertyDescriptor(obj, propName);
 
@@ -334,23 +291,13 @@ export class Binder<TModel> {
 
             binding.suspend++;
             try {
-                const bindValue = this.getBindingValue(binding, false);
 
-                if (bindValue == binding.lastValue && binding.actionMode != "exec-always")
-                    return;
-
-                this.unsubscribe(binding, false);
-
-                this.getBindingValue(binding);
-
-                binding.action(bindValue, binding.lastValue, true);
+                this.executeBinding(binding, true);
 
                 if (isObservableArray(obj)) {
                     obj.raise(a => a.onChanged && a.onChanged());
                     obj.raise(a => a.onItemReplaced && a.onItemReplaced(value, oldValue, parseInt(propName)));
                 }
-
-                binding.lastValue = bindValue;
             }
             finally {
                 binding.suspend--;
@@ -372,24 +319,15 @@ export class Binder<TModel> {
         if (typeof value != "function")
             return undefined;
 
-        let lastProp: IPropertyAccess;
+        const exp = this.getBindingExpression(value as BindExpression<TModel, TValue>);
+        if (!exp)
+            return;
 
-        (value as IGetter<TModel, TValue>)(this.createProxy(this.model, (obj, propName) => {
+        const prop = exp.getProperty();
 
-            if (obj === EMPTY_VALUE) {
-                lastProp = undefined;
-                return false;
-            }
+        if (prop && prop.object)
+            return getOrCreateProp(prop.object, prop.propName);
 
-            lastProp = {
-                obj: obj,
-                propName: propName
-            }
-            return true;
-        }, "explore"));
-
-        if (lastProp && lastProp.obj)
-            return getOrCreateProp(lastProp.obj, lastProp.propName);
     }
 
     protected findParentModel() {
@@ -427,18 +365,12 @@ export class Binder<TModel> {
 
         this.model = model;
 
-        forEachRev(this._bindings, binding => {
-            const value = this.getBindingValue(binding);
-            if (binding.lastValue == value)
-                return;
-            binding.action(value, binding.lastValue, true)
-            binding.lastValue = value;
-        });
+        forEachRev(this._bindings, binding => 
+            this.executeBinding(binding, true));
 
         forEachRev(this._modelBinders, binder =>
             binder.updateModel(model));
     }
-
  
     model: TModel;
 
