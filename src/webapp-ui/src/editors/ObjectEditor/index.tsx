@@ -6,7 +6,7 @@ import { IValidationContext } from "../../abstraction/Validator";
 import { CommitableEditor, ICommitableEditorOptions } from "../CommitableEditor";
 import { isCommitable } from "../../abstraction/ICommitable";
 import { IEditor } from "../../abstraction/IEditor";
-import { cloneObject } from "../../utils/ObjectUtils";
+import { cloneObject } from "../../utils/Object";
 
 type ObjectEditorValidationMode = "manual" | "onInputChange";
 

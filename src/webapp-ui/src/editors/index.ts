@@ -1,4 +1,6 @@
-
 export * from "./ObjectEditor"
 export * from "./TextEditor"
+export * from "./NumberEditor"
 export * from "./EditorBuilder"
+export * from "./Editor"
+export * from "./CommitableEditor"

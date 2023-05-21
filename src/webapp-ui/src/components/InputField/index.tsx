@@ -23,7 +23,7 @@ interface IInputFieldOptions<TValue, TTarget> extends IComponentOptions {
 }
  
 
-export const InputFieldTemplates: TemplateMap<InputField<any, IEditor<any>>> = {
+export const InputFieldTemplates: TemplateMap<InputField<unknown, IEditor<any>>> = {
 
     "Default": forModel(m => <Template name="InputField">
         <div className={m.className} visible={m.visible}>
@@ -71,7 +71,7 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
         this.error = null;
     }
 
-    async validateAsync<TTarget>(ctx: IValidationContext<TTarget>, force?: boolean): Promise<boolean> {
+    async validateAsync<TInnerTarget>(ctx: IValidationContext<TInnerTarget & TTarget>, force?: boolean): Promise<boolean> {
 
         if (!this.validators || this.validators?.length == 0)
             return true;
@@ -80,9 +80,11 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
 
         let isValid = true;
 
+        const newCtx = { ...ctx, fieldName: this.name };
+
         for (const validator of this.validators) {
 
-            const result = await validator(ctx as unknown, this.value);
+            const result = await validator(newCtx, this.value);
             if (!result.isValid) {
                 if (result.error)
                     errors.push(result.error);

@@ -1,8 +1,10 @@
 import { ViewNode } from "../Types";
 
-export interface IValidationContext<TTarget> {
+export interface IValidationContext<TTarget = Record<string, unknown>> {
 
     target?: TTarget;
+
+    fieldName?: string;
 }
 
 export interface IValidationResult {
@@ -10,4 +12,4 @@ export interface IValidationResult {
     error?: ViewNode;
 }
 
-export type Validator<TValue, TTarget = any> = (ctx: IValidationContext<TTarget>, value: TValue) => Promise<IValidationResult>;
+export type Validator<TValue, TTarget = Record<string, unknown>> = (ctx: IValidationContext<TTarget>, value: TValue) => Promise<IValidationResult>;
