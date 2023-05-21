@@ -1,4 +1,4 @@
-import { BindExpression, IBindable, ITemplate, ITemplateProvider, PARENT, USE } from "@eusoft/webapp-core";
+import {  ITemplate, ITemplateProvider } from "@eusoft/webapp-core";
 import { ModelBuilder, TemplateModel } from "./abstraction";
 
 export function forModel<TModel extends TemplateModel>(action: ModelBuilder<TModel>): ITemplate<TModel>;
@@ -20,10 +20,3 @@ export function debug<T>(value: T, ...args: any[]) {
     debugger;
     return value;
 }
-
-export function getParent<T>(m: object): T {
-
-    return (m as IBindable)[PARENT] as T;
-}
-
-export type TwoWays<T> = T;

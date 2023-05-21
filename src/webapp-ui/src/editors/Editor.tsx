@@ -5,19 +5,27 @@ export abstract class Editor<TValue, TOptions extends IEditorOptions<TValue>> ex
 
     constructor(options?: TOptions) {
 
-        super();
-
-        this.configure({
+        super({
             visible: true,
-            ...this.options
+            commitMode: "auto",
+            ...options
         });
 
-        this.onChanged("value", (v, o) => this.onValueChanged(v, o, ""));
+        this.init(Editor);
+    }
+
+    protected initWork() {
+
+        this.onChanged("value", (v, o) => this.onValueChanged(v, o, this.changeReason));
     }
 
     protected updateOptions() {
 
         this.bindOptions("visible", "disabled", "value");
+    }
+
+    protected get changeReason(): ValueChangedReason {
+        return undefined;
     }
 
     onValueChanged(value: TValue, oldValue: TValue, reason: ValueChangedReason) {
@@ -30,4 +38,5 @@ export abstract class Editor<TValue, TOptions extends IEditorOptions<TValue>> ex
     disabled: boolean;
 
     value: TValue;
+
 }

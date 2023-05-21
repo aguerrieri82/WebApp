@@ -1,3 +1,4 @@
+import type { ArrayElement } from "./abstraction";
 import { IBindable, PARENT, USE } from "./abstraction/IBindable";
 import type { BindExpression, BindValue, IGetter } from "./abstraction/IBinder";
 import { isBindingContainer } from "./abstraction/IBindingContainer";
@@ -10,21 +11,17 @@ import { getFunctionType } from "./ObjectUtils";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
 
-type ArrayElement<ArrayType extends readonly unknown[]> =
-    ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 
-interface IBindingSubscription<TSrc extends object | [], TKey extends ((keyof TSrc) & string), TProp extends IObservableProperty<TValue> | undefined, TValue extends TSrc[TKey] = TSrc[TKey]> {
+interface IBindingSubscription<TSrc extends object | [], TValue> {
 
     source: TSrc;
 
     handler: TSrc extends [] ? IObservableArrayHandler<ArrayElement<TSrc>> : IPropertyChangedHandler<TValue>;
 
-    property?: TProp;
+    property?: IObservableProperty<TValue>;
 
-    name?: TKey;
+    name?: string;
 }
-
-
 
 type BindingActionMode = "exec-always" | "no-bind";
 
@@ -40,7 +37,7 @@ export interface IBinding<TModel, TValue = unknown> {
 
     action(newValue: TValue, oldValue?: TValue, isUpdate?: boolean, isClear?: boolean): void;
 
-    subscriptions: IBindingSubscription<any, any, any, any>[];
+    subscriptions: IBindingSubscription<object | [], unknown>[];
 
     suspend: number;
 }
@@ -86,6 +83,33 @@ export class Binder<TModel> {
         });
     }
 
+    protected unsubscribeProp<TValue>(binding: IBinding<TModel, TValue>, source: object, propName: string) {
+
+        const subIndex = binding.subscriptions.findIndex(a => a.source === source && a.name === propName);
+
+        if (subIndex != -1) {
+            const sub = binding.subscriptions[subIndex];
+            sub.property.unsubscribe(sub.handler as IPropertyChangedHandler<TValue>);
+            binding.subscriptions.splice(subIndex, 1);
+        }
+        else
+            console.warn("Subscription for property ", propName, " not found in object ", source);
+
+
+        if (isObservableArray(source)) {
+            if (!binding.subscriptions.some(a => a.source == source && a.name)) {
+
+                const subIndex = binding.subscriptions.findIndex(a => a.source === source && !a.property);
+                if (subIndex != -1) {
+
+                    const sub = binding.subscriptions[subIndex];
+                    source.unsubscribe(sub.handler as IObservableArrayHandler<TValue>);
+                    binding.subscriptions.splice(subIndex, 1);
+                }
+            }
+        }
+    }
+
     protected getBindingValue<TValue>(binding: IBinding<TModel, TValue>, subscribe = true) {
 
         const exp = this.getBindingExpression(binding.value);
@@ -105,40 +129,17 @@ export class Binder<TModel> {
 
                 onAdded: ref => {
 
-                    if (Array.isArray(ref.object)) {
+                    if (Array.isArray(ref.object) && !isObservableArray(ref.object))
+                        createObservableArray(ref.object);
 
-                        if (!isObservableArray(ref.object))
-                            createObservableArray(ref.object);
-
-                        if (!ref.propName)
-                            this.subscribe(ref.object, undefined, binding);
-                    }
-                    else {
-
-                        if (ref.propName)
-                            this.subscribe(ref.object, ref.propName, binding);
-                    }
+                    if (ref.propName)
+                        this.subscribe(ref.object, ref.propName, binding);
                 },
 
                 onRemoved: ref => {
 
-                    let subIndex;
-
-                    if (isObservableArray(ref.object) && !ref.propName) {
-                        subIndex = binding.subscriptions.findIndex(a => a.source === ref.object && !a.property);
-                        const sub = binding.subscriptions[subIndex];
-                        sub.source.unsubscribe(sub.handler as IObservableArrayHandler<unknown>);
-                    }
-
-                    else if (ref.propName) {
-                        subIndex = binding.subscriptions.findIndex(a => a.source === ref.object && a.name === ref.propName);
-                        const sub = binding.subscriptions[subIndex];
-                        if (sub.property)
-                        sub.property.unsubscribe(sub.handler as IPropertyChangedHandler<unknown>);
-                    }
-
-                    if (subIndex !== undefined)
-                        binding.subscriptions.splice(subIndex, 1);
+                    if (ref.propName)
+                        this.unsubscribeProp(binding, ref.object, ref.propName);
                 }
             });
 
@@ -244,7 +245,7 @@ export class Binder<TModel> {
             action(value as TValue, undefined, false);
     }
 
-    protected unsubscribe(binding: IBinding<TModel>, cleanValue: boolean) {
+    protected unsubscribeBinding(binding: IBinding<TModel>, cleanValue: boolean) {
 
         binding.subscriptions.forEach(sub => {
 
@@ -252,7 +253,7 @@ export class Binder<TModel> {
                 sub.source.unsubscribe(sub.handler as IObservableArrayHandler<unknown>);
 
             if (sub.property)
-                sub.property.unsubscribe(sub.handler);
+                sub.property.unsubscribe(sub.handler as IPropertyChangedHandler<unknown>);
         });
 
         if (cleanValue && binding.lastValue) {
@@ -281,8 +282,7 @@ export class Binder<TModel> {
 
             binding.subscriptions.push({
                 handler: handler,
-                source: obj,
-                property: undefined
+                source: obj
             });
 
         }  
@@ -362,7 +362,7 @@ export class Binder<TModel> {
     cleanBindings(cleanValue: boolean) {
 
         this._bindings.forEach(binding =>
-            this.unsubscribe(binding, cleanValue));
+            this.unsubscribeBinding(binding, cleanValue));
 
         this._modelBinders.forEach(binder =>
             binder.cleanBindings(cleanValue));

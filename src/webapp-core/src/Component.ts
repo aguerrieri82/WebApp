@@ -31,9 +31,30 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     protected _isCleaning: boolean;
 
-    constructor(options?: Partial<TOptions>) {
+    constructor(options?: TOptions) {
 
-        this.configure(options);
+        this.options = options;
+
+        this.init(Component);
+    }
+
+    protected init(caller: Function) {
+
+        if (caller != this.constructor)
+            return;
+
+        const inits = enumOverrides(this, "initWork" as any);
+
+        for (const func of inits) {
+
+            if (func != this.init)
+                func.call(this);
+        }
+    }
+
+    protected initWork() {
+
+        this.configure(this.options);
 
         this.onChanged("style", () => this.updateClass());
 

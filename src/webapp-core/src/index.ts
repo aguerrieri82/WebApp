@@ -8,5 +8,6 @@ export * from "./ObjectUtils"
 export * from "./StringUtils"
 export * from "./Component"
 export * from "./Expression" 
+export * from "./Templates"
 
 import "./Global"

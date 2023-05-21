@@ -5,3 +5,4 @@ export * from "./Class";
 export * from "./Content";
 export * from "./Node";
 export * from "./Text";
+export * from "./Switch";

@@ -15,13 +15,13 @@ interface EditorBuilderOptions<TModel, TModelContainer extends Record<string, an
     attach?: (editor: InputField<any, any>) => void;
 }
 
-export interface IBuilderEditorOptions<TValue, TEditorOptions extends IEditorOptions<TValue>> {
+export interface IBuilderEditorOptions<TModel, TValue, TEditorOptions extends IEditorOptions<TValue>> {
 
     name?: string;
 
     label?: ViewNode;
 
-    validators?: Validator<TValue>[];
+    validators?: Validator<TValue, TModel>[];
 
     editor: TEditorOptions;
 }
@@ -36,7 +36,7 @@ export class EditorBuilder<TModel, TModelContainer extends Record<string, any>> 
 
     editor<TValue,
         TEditor extends IEditor<TValue, TOptions>,
-        TOptions extends IEditorOptions<TValue>>(bind: BindExpression<TModel, TValue>, type: { new (options: TOptions): TEditor }, options: IBuilderEditorOptions<TValue, TOptions>) {
+        TOptions extends IEditorOptions<TValue>>(bind: BindExpression<TModel, TValue>, type: { new(options: TOptions): TEditor }, options: IBuilderEditorOptions<TModel, TValue, TOptions>) {
 
         const editor = new type(options.editor);
 

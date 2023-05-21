@@ -15,3 +15,10 @@ export type EmptyConstructor<T> = { new(): T }
 export type OptionsFor<T> = {
     [K in keyof T as K extends string ? K extends "options" ? never : (T[K] extends Function ? never : K) : never] : T[K]
 }
+
+export type ArrayElement<ArrayType extends readonly unknown[]> =
+    ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
+
+
+export type StringLike = string | number | object | boolean | { toString(): string }
+

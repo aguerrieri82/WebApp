@@ -1,7 +1,7 @@
 import traverse, { NodePath, Visitor } from "@babel/traverse";
 import { JSXElement, Expression, JSXEmptyExpression, Identifier, ImportDeclaration, JSXFragment, JSXIdentifier } from "@babel/types";
 import { BindMode, ITemplateAttribute, ITemplateElement, ITemplateText, TemplateNodeType } from "../Abstraction/ITemplateNode";
-import { CORE_MODULE, JSX_MODULE, TemplateAttributes, TemplateElements } from "../Consts";
+import { CORE_MODULE, TemplateAttributes, TemplateElements } from "../Consts";
 import type { JsxCompiler } from "../JsxCompiler";
 import { toKebabCase } from "../TextUtils";
 import * as parser from "@babel/parser";
@@ -205,7 +205,7 @@ function ArrowTemplateExpressionHandler(ctx: JsxParseContext, stage: "exp", path
     
             ctx.curModel = path.node.params[0] as Identifier;
             ctx.generateBuilder();
-            if (ctx.curElement.name == "t:foreach")
+            if (ctx.curElement.name == "t:foreach" || ctx.curElement.name == "t:switch")
                 ctx.createAttribute("as", ctx.curBuilder, ctx.curElement);
             return true;
         }
@@ -527,7 +527,7 @@ export class JsxParseContext {
             return;
 
         const parentModule = (resolve.path.parent as ImportDeclaration).source.value;
-        if (parentModule == CORE_MODULE) {
+        if (parentModule.startsWith(CORE_MODULE)) {
             return {
                 name: prop.node.name,
                 body: exp.node.arguments[0]

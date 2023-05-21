@@ -33,12 +33,12 @@ export class Page<TOptions extends IPageOptions = IPageOptions, TArgs extends Re
 
     constructor(options?: TOptions) {
 
-        super();
-
-        this.configure({
+        super({
             template: PageTemplates.Simple,
             ...options
         });
+
+        this.init(Page);
     }
 
     protected updateOptions() {

@@ -23,18 +23,18 @@ export const TextEditorTemplates: TemplateMap<TextEditor> = {
             <Class name="default"/>
         </input>
     </Template>)
-}
+} 
 
 export class TextEditor extends Editor<string, ITextEditorOptions> {
 
     constructor(options?: ITextEditorOptions) {
 
-        super();
-
-        this.configure({
+        super({
             template: TextEditorTemplates.Default,
             ...options
         });
+
+        this.init(TextEditor);
     }
 
     protected updateOptions() {
@@ -52,7 +52,7 @@ export class TextEditor extends Editor<string, ITextEditorOptions> {
 
 declare module "../EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {
-        text(value: BindExpression<TModel, string>, options?: IBuilderEditorOptions<string, ITextEditorOptions>);
+        text(value: BindExpression<TModel, string>, options?: IBuilderEditorOptions<TModel, string, ITextEditorOptions>);
     }
 }
 

@@ -1,4 +1,5 @@
-import { defineTemplate } from "./TemplateBuilder";
+import { defineTemplate } from "./Templates";
+
 
 declare global {
     var __defineTemplate : typeof defineTemplate;

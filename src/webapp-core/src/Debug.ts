@@ -1,11 +1,11 @@
-import { IPropertyChangedHandler } from "./abstraction/IObservableProperty";
-import { ITemplateBuilder } from "./abstraction/ITemplateBuilder";
-import { IBinding } from "./Binder";
+import type { IPropertyChangedHandler } from "./abstraction/IObservableProperty";
+import type { IBinding } from "./Binder";
+import type { TemplateBuilder } from "./TemplateBuilder";
 
 export const WebApp = {
     bindings: [] as IBinding<any>[],
     isDebug: true,
-    root: null as ITemplateBuilder<unknown>,
+    root: null as TemplateBuilder<unknown>,
     subs: [] as IPropertyChangedHandler<any>[]
 }
 

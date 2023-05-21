@@ -1,9 +1,10 @@
-import type { BindValue, ITemplateProvider, ITemplateBuilder, ITemplate, InputValueMode, IBehavoir, WritableKeys, EmptyConstructor, IComponent } from "@eusoft/webapp-core";
+import type { BindValue, ITemplateProvider, ITemplate, InputValueMode, IBehavoir, WritableKeys, EmptyConstructor, IComponent, TemplateBuilder } from "@eusoft/webapp-core";
+
 export interface ITemplateContext<TModel> {
-    builder: ITemplateBuilder<TModel>;
+    builder: TemplateBuilder<TModel>;
 }
 
-export type TemplateModel = object | string | number | boolean;
+export type TemplateModel = object | string | number | boolean | { (): string };
 
 export type JsxElementType<TModel extends TemplateModel, TProps extends JsxComponentProps<TModel>> = keyof HTMLElementTagNameMap | JsxComponent<TModel, TProps> ;
 

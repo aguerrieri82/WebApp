@@ -1,7 +1,7 @@
 import { Bindable, IComponent, IComponentOptions } from "@eusoft/webapp-core";
 import { ViewNode } from "../Types";
 
-export type ValueChangedReason = "";
+export type ValueChangedReason = undefined | "edit";
 
 export interface IEditorOptions<TValue> extends IComponentOptions {
 
@@ -25,4 +25,5 @@ export interface IEditor<TValue, TOptions extends IEditorOptions<TValue> = IEdit
     disabled: boolean;
 
     value: TValue;
+
 }

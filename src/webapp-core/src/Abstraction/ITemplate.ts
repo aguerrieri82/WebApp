@@ -1,9 +1,9 @@
 ﻿import { getFunctionType } from "../ObjectUtils";
-import type { ITemplateBuilder } from "./ITemplateBuilder";
+import type { TemplateBuilder } from "../TemplateBuilder";
 
 export interface ITemplate<TModel> {
 
-    (builder: ITemplateBuilder<TModel>): void;
+    (builder: TemplateBuilder<TModel>): void;
 }
 
 export type TemplateMap<TModel> = Record<string, ITemplate<TModel>>;

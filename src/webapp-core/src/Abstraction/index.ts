@@ -4,7 +4,6 @@ export * from "./IBinder";
 export * from "./IHTMLContainer";
 export * from "./IProperty";
 export * from "./ITemplate";
-export * from "./ITemplateBuilder";
 export * from "./ITemplateProvider";
 export * from "./IComponent";
 export * from "./IComponentOptions";

@@ -1,7 +1,12 @@
-import { IBindable, USE } from "./abstraction/IBindable";
+import { IBindable, PARENT, USE } from "./abstraction/IBindable";
 import type { BindExpression } from "./abstraction/IBinder";
 
 export namespace Bind {
+
+    export function parent<T>(m: object): T {
+
+        return (m as IBindable)[PARENT] as T;
+    }
 
     export function oneWay<T>(value: T): T {
         return value;
@@ -41,3 +46,5 @@ export namespace Bind {
         return builder(model);
     }
 }
+
+export type TwoWays<T> = T;

@@ -1,48 +1,53 @@
-import { ITemplate, TemplateMap, renderOnce, withCleanup } from "@eusoft/webapp-core";
+import { ITemplate, TemplateMap, withCleanup } from "@eusoft/webapp-core";
 import { Content, Template, forModel } from "@eusoft/webapp-jsx";
-import { IEditorOptions } from "../../abstraction/IEditor";
 import { EditorBuilder } from "../EditorBuilder";
-import { Editor } from "../Editor";
 import { InputField } from "../../components";
-import { IValidable } from "../../abstraction/IValidable";
-import { ViewNode } from "../../Types";
 import { IValidationContext } from "../../abstraction/Validator";
+import { CommitableEditor, ICommitableEditorOptions } from "../CommitableEditor";
+import { isCommitable } from "../../abstraction/ICommitable";
+import { IEditor } from "../../abstraction/IEditor";
+import { cloneObject } from "../../utils/ObjectUtils";
 
-interface IObjectEditorOptions<TObj extends Record<string, any>> extends IEditorOptions<TObj> {
+type ObjectEditorValidationMode = "manual" | "onInputChange";
+
+interface IObjectEditorOptions<TObj extends Record<string, any>> extends ICommitableEditorOptions<TObj, TObj> {
 
     builder: (builder: EditorBuilder<TObj, ObjectEditor<TObj>>) => ITemplate<TObj> | JSX.Element;
 
+    validationMode?: ObjectEditorValidationMode;
+
     isDynamic?: boolean;
+
 }
 
 export const ObjectEditorTemplates: TemplateMap<ObjectEditor<any>> = {
 
     "Default": forModel(m => <Template name="ObjectEditor">
         <div className={m.className} visible={m.visible} > 
-            <Content src={m.value} template={m.contentTemplate()}/>
+            <Content src={m.editValue} template={m.contentTemplate()}/>
         </div>
     </Template>)
 }
 
-export class ObjectEditor<TObj extends Record<string, any>> extends Editor<TObj, IObjectEditorOptions<TObj>> implements IValidable  {
+export class ObjectEditor<TObj extends Record<string, any>> extends CommitableEditor<TObj, TObj, IObjectEditorOptions<TObj>>  {
 
-    protected _editors: InputField<any, any>[];
-    protected _isDirty: boolean;
+    protected _inputs: InputField<unknown, IEditor<unknown>>[];
     protected _contentTemplate: ITemplate<TObj>;
      
     constructor(options?: IObjectEditorOptions<TObj>) {
 
-        super();
-
-        this.configure({
+        super({
+            validationMode: "manual",
+            template: ObjectEditorTemplates.Default,
             ...options,
-            template: ObjectEditorTemplates.Default
         });
+
+        this.init(ObjectEditor);
     }
 
     protected updateOptions() {
 
-        this.bindOptions("builder", "isDynamic");
+        this.bindOptions("builder", "isDynamic", "validationMode");
     }
 
     contentTemplate() { 
@@ -51,19 +56,50 @@ export class ObjectEditor<TObj extends Record<string, any>> extends Editor<TObj,
 
             const innerTemplate = this.builder(new EditorBuilder({
                 container: this,
-                model: a => a.value,
+                model: a => a.editValue,
                 attach: editor => {
-                    this._editors.push(editor);
-                    editor.onChanged("value", v => {
-                        this._isDirty = true;
-                    });
+
+                    this._inputs.push(editor);
+
+                    editor.onChanged("value", v => this.onInputChanged(editor, v));
                 }
             })) as ITemplate<TObj>;
 
-            this._contentTemplate = withCleanup(innerTemplate, () => this._editors = []);
+            this._contentTemplate = withCleanup(innerTemplate, () => this._inputs = []);
         }
 
         return this._contentTemplate;
+    }
+
+    protected async onInputChanged(input: InputField<unknown, IEditor<unknown>>, value: unknown) {
+
+        this.isDirty = true;
+
+        if (this.validationMode == "onInputChange") {
+
+            const innerCtx = {
+                target: this.value
+            } as IValidationContext<TObj>;
+
+            if (!await input.validateAsync(innerCtx))
+                this.isValid = false;
+        }
+    }
+
+
+    protected async commitAsyncWork() {
+
+        let isSuccess = true;
+
+        for (const input of this._inputs) {
+
+            if (isCommitable(input.content)) {
+                if (!await input.content.commitAsync())
+                    isSuccess = false;
+            }
+        }
+
+        return isSuccess;
     }
 
     async validateAsync<TTarget>(ctx?: IValidationContext<TTarget>, force?: boolean): Promise<boolean> {
@@ -74,23 +110,42 @@ export class ObjectEditor<TObj extends Record<string, any>> extends Editor<TObj,
             target: this.value
         } as IValidationContext<TObj>;
 
-        for (const editor of this._editors) {
-            if (!await editor.validateAsync(innerCtx, force))
+        for (const input of this._inputs) {
+            if (!await input.validateAsync(innerCtx, force))
                 isValid = false;
         }
 
         this.isValid = isValid;
 
-        this._isDirty = false;
-
         return isValid;
     }
 
-    error: ViewNode;
+    protected editToValue(editValue: TObj, clone: boolean) {
 
-    isValid: boolean;
+        if (clone)
+            return cloneObject(editValue);
+
+        if (editValue == this.value)
+            return editValue;
+
+        const value = this.value ?? {} as TObj;
+        Object.assign(value, editValue);
+        return value;
+    }
+
+    protected valueToEdit(value: TObj, clone: boolean) {
+
+        const editValue = value ?? {} as TObj;
+
+        if (clone)
+            return cloneObject(editValue);
+
+        return editValue;
+    }
 
     isDynamic: boolean;
+
+    validationMode: ObjectEditorValidationMode;
 
     builder: (builder: EditorBuilder<TObj, this>) => JSX.Element;
 }

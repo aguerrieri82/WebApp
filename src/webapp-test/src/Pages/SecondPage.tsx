@@ -1,8 +1,9 @@
 import { Action, Page } from "@eusoft/webapp-ui";
-import { Foreach, Template, TwoWays, Text, JsxNode, Bind, forModel } from "@eusoft/webapp-jsx";
-import { ITemplateBuilder, OptionsFor, propOf } from "@eusoft/webapp-core";
+import { Foreach, Template, Text, JsxNode, forModel } from "@eusoft/webapp-jsx";
+import { OptionsFor, TemplateBuilder, propOf } from "@eusoft/webapp-core";
 import { Behavoir } from "@eusoft/webapp-core/Behavoir";
 import { router } from "@eusoft/webapp-framework";
+import { Bind } from "@eusoft/webapp-core/Bind";
 function Log(props: { message: string }) {
 
     console.log(props.message);
@@ -39,7 +40,7 @@ class Blink extends Behavoir<OptionsFor<Blink>> {
  
 function DoBlink(props: { time: number, color: string }) {
 
-    return (t: ITemplateBuilder<any>) => {
+    return (t: TemplateBuilder<any>) => {
 
         const timer = setInterval(() => {
 

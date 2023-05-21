@@ -29,7 +29,7 @@ export interface IObservableArray<T> extends Array<T> {
     raise(action: (hander: IObservableArrayHandler<T>) => void): void;
 }
 
-export function isObservableArray(value: any): value is IObservableArray<any> {
+export function isObservableArray(value: any): value is IObservableArray<any>  {
 
     return Array.isArray(value) && "subscribe" in value && typeof (value["subscribe"]) == "function";
 }

@@ -23,12 +23,15 @@ export class PageHost extends Component<IPageHostOptions> {
     protected _index: number;
     constructor(options?: IPageHostOptions) {
 
-        super();
-
-        this.configure({
+        super({
             template: PageHostTemplates.Single,
             ...options
         });
+
+        this.init(PageHost);
+    }
+
+    protected initWork() {
 
         this.onChanged("content", async (value, old) => {
 
@@ -65,10 +68,7 @@ export class PageHost extends Component<IPageHostOptions> {
         return true;
     }
 
-
     content: IPage;
-
-    template = PageHostTemplates.Single;
 }
 
 export default PageHost;

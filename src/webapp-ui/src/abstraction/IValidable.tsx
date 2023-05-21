@@ -9,3 +9,7 @@ export interface IValidable {
      
     readonly isValid: boolean;
 }
+
+export function isValidable(obj: any) : obj is IValidable {
+    return obj && typeof obj == "object" && "validateAsync" in obj && typeof obj["validateAsync"] == "function";
+}

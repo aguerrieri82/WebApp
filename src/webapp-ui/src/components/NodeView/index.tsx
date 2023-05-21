@@ -1,20 +1,27 @@
-import { Content, Foreach, Text } from "@eusoft/webapp-jsx";
+import { Default, Foreach, Switch, Text, When } from "@eusoft/webapp-jsx";
 import { ViewNode } from "../../Types";
+import { ITemplateProvider } from "@eusoft/webapp-core/abstraction/ITemplateProvider";
 
 export interface INodeViewOptions {
     content: ViewNode;
 }
 export function NodeView(options: INodeViewOptions) {
 
-    //TODO fix compiler <Content src={i}/> } 
-
     return <>
         <Foreach src={Array.isArray(options.content) ? options.content : [options.content]}>
-            {i => <>
-                {typeof i == "string" ? <Text src={i} /> :
-                    typeof i == "function" && (i as Function).length == 0 ? <Text src={i()} /> :
-                        <Content src={i => i}/> } 
-            </>}
+            {i => <Switch src={i}>
+                {v => <>
+                    <When condition={typeof v == "string"}>
+                        <Text src={v as string} />
+                    </When>
+                    <When condition={typeof v == "function" && (v as Function).length == 0}>
+                        <Text src={(v as unknown as Function)()} />
+                    </When>
+                    <Default>{v as ITemplateProvider}</Default>
+                </>
+                }
+            </Switch>
+           }
         </Foreach>
     </>;
 }

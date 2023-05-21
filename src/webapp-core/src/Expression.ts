@@ -32,7 +32,7 @@ export function proxyEquals(a: any, b: any) {
 
 export function cleanProxy<T>(item: T) : T {
 
-    if (typeof(item) === "object" || typeof(item) === "function") {
+    if (item && (typeof(item) === "object" || typeof(item) === "function")) {
 
         const target = (item as any)[TARGET];
 
@@ -259,7 +259,8 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
         if (!this._options.evaluate && (this.value === undefined || this.value === null))
             proxyValue = EMPTY_FUNCTION;
 
-        if (typeof proxyValue != "object" && typeof proxyValue != "function")
+        if ((typeof proxyValue != "object" && typeof proxyValue != "function") ||
+            (this._options.evaluate && (proxyValue === null || proxyValue === undefined)))
             return proxyValue;
 
         return new Proxy(proxyValue, {
