@@ -13,7 +13,7 @@ export interface IPage<TArgs extends Record<string, any> = undefined> extends IC
 
     route: string;
 
-    name: string;
+    name?: string;
 
     readonly loadState: LoadState;
 }

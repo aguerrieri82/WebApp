@@ -5,10 +5,13 @@ import { ViewNode } from "../../Types";
 import { IValidationContext, Validator } from "../../abstraction/Validator";
 import { IValidable } from "../../abstraction/IValidable";
 import { NodeView } from "../NodeView";
+import "./index.scss";
 
 interface IInputFieldOptions<TValue> extends IComponentOptions {
 
     name: string;
+
+    visible?: boolean;
 
     content: IEditor<TValue, IEditorOptions<TValue>> | JsxTypedComponent<IEditorOptions<TValue>>;
 
@@ -18,16 +21,18 @@ interface IInputFieldOptions<TValue> extends IComponentOptions {
 
     value: Bindable<TValue, "two-ways">;
 }
-
+ 
 
 export const InputFieldTemplates: TemplateMap<InputField<any, IEditor<any>>> = {
 
     "Default": forModel(m => <Template name="InputField">
-        <div className={m.className}>
-            <Class name="invalid" condition={m.isValid === false}/>
+        <div className={m.className} visible={m.visible}>
+            <Class name="default" />
+            <Class name="invalid" condition={m.isValid === false} />
+
             <label><NodeView>{m.label}</NodeView></label>
             {m.content}
-            <div>
+            <div className = "error">
                 <NodeView>{m.error}</NodeView>
             </div>
         </div>
@@ -42,15 +47,18 @@ export class InputField<TValue, TEditor extends IEditor<TValue>> extends Compone
         this.bindTwoWays(a => a.value, a => a.content?.value);
 
         this.configure({
+            template: InputFieldTemplates.Default,
+            visible: true,
             ...options,
-            template: InputFieldTemplates.Default
+
         });
     }
 
     protected updateOptions() {
 
-        this.bindOptions("name", "label", "validators", "content", "value");
+        this.bindOptions("label", "validators", "content", "value", "visible");
     }
+
 
     async validateAsync<TTarget>(ctx: IValidationContext<TTarget>, force?: boolean): Promise<boolean> {
 
@@ -77,8 +85,6 @@ export class InputField<TValue, TEditor extends IEditor<TValue>> extends Compone
         return isValid;
     }
 
-    name: string;
-
     error: ViewNode;
 
     content: TEditor;
@@ -90,6 +96,8 @@ export class InputField<TValue, TEditor extends IEditor<TValue>> extends Compone
     isValid: boolean;
 
     value: TValue;
+
+    visible: boolean;
 }
 
 export default InputField;

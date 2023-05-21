@@ -1,0 +1,11 @@
+@import "../../themes/_Global";
+
+.input-field {
+    &.default {
+        
+    }
+
+    .error{
+        color: red;
+    }
+}

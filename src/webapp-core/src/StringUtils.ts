@@ -3,6 +3,10 @@ export function isUpperCase(value: string): boolean {
 }
 
 export function toKebabCase(name: string): string {
+
+    if (!name)
+        return;
+
     let s = 0;
     let result = "";
     for (let i = 0; i < name.length; i++) {

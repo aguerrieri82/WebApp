@@ -43,7 +43,7 @@ export class Page<TOptions extends IPageOptions = IPageOptions, TArgs extends Re
 
     protected updateOptions() {
 
-        this.bindOptions("title", "content", "route", "name");
+        this.bindOptions("title", "content", "route");
     }
 
     async loadAsync(args?: TArgs)  {
@@ -77,8 +77,6 @@ export class Page<TOptions extends IPageOptions = IPageOptions, TArgs extends Re
     content: ITemplateProvider;
 
     route: string;
-
-    name: string;
 }
 
 export default Page;

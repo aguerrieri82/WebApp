@@ -18,7 +18,7 @@ interface IObjectEditorOptions<TObj extends Record<string, any>> extends IEditor
 export const ObjectEditorTemplates: TemplateMap<ObjectEditor<any>> = {
 
     "Default": forModel(m => <Template name="ObjectEditor">
-        <div> 
+        <div className={m.className} visible={m.visible} > 
             <Content src={m.value} template={m.contentTemplate()}/>
         </div>
     </Template>)

@@ -4,6 +4,7 @@ import { IEditor, IEditorOptions } from "../abstraction/IEditor";
 import { Validator } from "../abstraction/Validator";
 import { InputField } from "../components";
 import { Bind } from "@eusoft/webapp-jsx";
+import { Expression } from "@eusoft/webapp-core";
 
 interface EditorBuilderOptions<TModel, TModelContainer extends Record<string, any>> {
 
@@ -39,9 +40,11 @@ export class EditorBuilder<TModel, TModelContainer extends Record<string, any>> 
 
         const editor = new type(options.editor);
 
+        const propName = Expression.build(null, bind).expression.property()?.propName;
+
         const input = new InputField({
             content: editor,
-            name: options?.name,
+            name: options?.name ?? propName,
             label: options?.label,
             validators: options?.validators,
             value: undefined

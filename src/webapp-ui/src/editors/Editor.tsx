@@ -7,9 +7,12 @@ export abstract class Editor<TValue, TOptions extends IEditorOptions<TValue>> ex
 
         super();
 
-        this.configure(options);
+        this.configure({
+            visible: true,
+            ...this.options
+        });
 
-        this.prop("value").subscribe((v, o) => this.onValueChanged(v, o, ""));
+        this.onChanged("value", (v, o) => this.onValueChanged(v, o, ""));
     }
 
     protected updateOptions() {

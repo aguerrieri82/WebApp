@@ -36,6 +36,8 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
         this.configure(options);
 
         this.onChanged("style", () => this.updateClass());
+
+        this.onChanged("name", () => this.updateClass());
     }
 
     bindTwoWays<T>(src: (model: this) => T, dst: (model: this) => T) {
@@ -63,7 +65,7 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     protected updateOptions() {
 
-        this.bindOptions("style", "template");
+        this.bindOptions("style", "template", "name");
     }
 
     prop<TKey extends keyof this & string>(prop: TKey) {
@@ -156,7 +158,15 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     protected updateClass() {
 
-        this.className = [toKebabCase(getTypeName(this)), ...this.style ?? []].flat().join(" ");
+        const classes: ComponentStyle[] = [toKebabCase(getTypeName(this))];
+
+        if (this.style)
+            classes.push(...this.style);
+
+        if (this.name)
+            classes.push(toKebabCase(this.name)); 
+
+        this.className = classes.flat().join(" ");
     }
 
     className: string;
@@ -166,4 +176,6 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
     style: ComponentStyle;
 
     options: TOptions;
+
+    name?: string;
 }

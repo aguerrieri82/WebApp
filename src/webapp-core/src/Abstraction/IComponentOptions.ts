@@ -13,4 +13,6 @@ export interface IComponentOptions {
     style?: Bindable<ComponentStyle>;
 
     template?: CatalogTemplate<any>;
+
+    name?: string;
 }
