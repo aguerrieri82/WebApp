@@ -1,5 +1,5 @@
 import { TemplateMap, Bindable, BindExpression } from "@eusoft/webapp-core";
-import { Template, forModel } from "@eusoft/webapp-jsx";
+import { Class, Template, forModel } from "@eusoft/webapp-jsx";
 import { IEditorOptions } from "../../abstraction/IEditor";
 import { LocalString } from "../../Types";
 import { EditorBuilder } from "../EditorBuilder";
@@ -19,7 +19,9 @@ interface ITextEditorOptions extends IEditorOptions<string> {
 export const TextEditorTemplates: TemplateMap<TextEditor> = {
 
     "Default": forModel(m => <Template name="TextEditor">
-        <input visible={m.visible} disabled={m.disabled} type={m.password ? "password" : "text"} value={m.value} />
+        <input placeholder={m.placeholder} visible={m.visible} disabled={m.disabled} type={m.password ? "password" : "text"} value={m.value} >
+            <Class name="default"/>
+        </input>
     </Template>)
 }
 
@@ -30,14 +32,14 @@ export class TextEditor extends Editor<string, ITextEditorOptions> {
         super();
 
         this.configure({
-            ...options,
-            template: TextEditorTemplates.Default
+            template: TextEditorTemplates.Default,
+            ...options
         });
     }
 
     protected updateOptions() {
 
-        this.bindOptions("password", "rows");
+        this.bindOptions("password", "rows", "placeholder");
     }
 
     rows?: number;

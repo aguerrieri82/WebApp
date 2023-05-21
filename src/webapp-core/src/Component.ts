@@ -2,7 +2,7 @@ import { IPropertyChangedHandler, isObservableProperty } from "./abstraction/IOb
 import type { CatalogTemplate } from "./abstraction/ITemplateProvider";
 import type { IComponent } from "./abstraction/IComponent";
 import { enumOverrides, getTypeName } from "./ObjectUtils";
-import { bindTwoWay, getOrCreateProp } from "./Properties";
+import { bindTwoWays, getOrCreateProp } from "./Properties";
 import { toKebabCase } from "./StringUtils";
 import type { IBound } from "./abstraction/IBound";
 import type { Bindable, ComponentStyle, IComponentOptions } from "./abstraction/IComponentOptions";
@@ -40,11 +40,11 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
         this.onChanged("name", () => this.updateClass());
     }
 
-    bindTwoWays<T>(src: (model: this) => T, dst: (model: this) => T) {
+    bindTwoWays<TValue, TDestModel extends object>(src: (model: this) => TValue, dstModel: TDestModel, dst: (model: TDestModel) => TValue) {
             
         if (!this._binder)
             this._binder = new Binder(this);
-        this._binder.bindTwoWays(src, dst);
+        this._binder.bindTwoWays(src, dstModel, dst);
     }
 
     protected configure(newOptions?: Partial<TOptions>) {
@@ -149,7 +149,7 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
                 if (!this._bounds)
                     this._bounds = [];
 
-                this._bounds.push(bindTwoWay(dst, value));
+                this._bounds.push(bindTwoWays(dst, value));
             }
         }
         else

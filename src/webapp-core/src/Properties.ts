@@ -29,11 +29,11 @@ export function getProp<TObj extends object, TKey extends keyof TObj & string, T
     return undefined;
 }
 
-export function bindTwoWay<TValue>(dst: IObservableProperty<TValue>, src: IObservableProperty<TValue>): IBound;
+export function bindTwoWays<TValue>(dst: IObservableProperty<TValue>, src: IObservableProperty<TValue>): IBound;
 
-export function bindTwoWay<TSrc extends {}, TDst extends {}, TProp extends keyof TSrc & keyof TDst & string>(dst: TSrc, src: TDst, propName: TProp): IBound;
+export function bindTwoWays<TSrc extends {}, TDst extends {}, TProp extends keyof TSrc & keyof TDst & string>(dst: TSrc, src: TDst, propName: TProp): IBound;
 
-export function bindTwoWay(dst: any, src: any, propName?: string) {
+export function bindTwoWays(dst: any, src: any, propName?: string) {
 
     const srcProp = propName ? getOrCreateProp(src, propName) : src;
 
@@ -45,10 +45,10 @@ export function bindTwoWay(dst: any, src: any, propName?: string) {
     if (!dstProp)
         throw new Error("Dest property missing");
 
-    if (srcProp.get())
+    if (srcProp.get() !== undefined)
         dstProp.set(srcProp.get());
 
-    else if (dstProp.get())
+    else if (dstProp.get() !== undefined)
         srcProp.set(dstProp.get());
 
     const srcHandler = srcProp.subscribe((v: any) => dstProp.set(v));

@@ -44,7 +44,7 @@ export class InputField<TValue, TEditor extends IEditor<TValue>> extends Compone
 
         super();
 
-        this.bindTwoWays(a => a.value, a => a.content?.value);
+        this.bindTwoWays(a => a.value, this, a => a.content?.value);
 
         this.configure({
             template: InputFieldTemplates.Default,

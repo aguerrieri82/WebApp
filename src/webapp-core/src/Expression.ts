@@ -266,13 +266,16 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
             get: (target: any, prop, rec) : any => {
 
-                let value: any;
-
                 if (prop == TARGET)
                     return target;
 
                 if (prop == Symbol.toPrimitive && !this._options.evaluate)
                     return EMPTY_FUNCTION;
+
+                if (prop == USE)
+                    return (model: any) => this.use(model).createProxy();
+
+                let value: any;
 
                 if (this._options.evaluate) {
 
@@ -282,8 +285,6 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
                         value = target[prop];
                 }
 
-                if (prop == USE) 
-                    return (model: any) => this.use(model).createProxy();
 
                 if (typeof prop == "symbol")
                     return value;
@@ -312,7 +313,7 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
         });
     }
 
-    static build<TModel extends object, TValue>(model: TModel, bind: BindExpression<TModel, TValue>, options?: IExpressionOptions) {
+    static build<TModel, TValue>(model: TModel, bind: BindExpression<TModel, TValue>, options?: IExpressionOptions) {
         const exp = new UseExpression(model, null, options);
         const value = bind(exp.createProxy()) as TValue;
         return {

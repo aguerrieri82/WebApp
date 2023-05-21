@@ -5,7 +5,7 @@ import { IBinding } from "./Binder";
 export const WebApp = {
     bindings: [] as IBinding<any>[],
     isDebug: true,
-    root: null as ITemplateBuilder<any>,
+    root: null as ITemplateBuilder<unknown>,
     subs: [] as IPropertyChangedHandler<any>[]
 }
 

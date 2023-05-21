@@ -3,7 +3,7 @@ import { ViewNode } from "../Types";
 import { IEditor, IEditorOptions } from "../abstraction/IEditor";
 import { Validator } from "../abstraction/Validator";
 import { InputField } from "../components";
-import { Bind } from "@eusoft/webapp-jsx";
+
 import { Expression } from "@eusoft/webapp-core";
 
 interface EditorBuilderOptions<TModel, TModelContainer extends Record<string, any>> {
@@ -48,12 +48,9 @@ export class EditorBuilder<TModel, TModelContainer extends Record<string, any>> 
             label: options?.label,
             validators: options?.validators,
             value: undefined
-        });
+        }); 
 
-        input.bindTwoWays(m => Bind.build(m)
-            .use(this._options.container)
-            .get(this._options.model)
-            .get(bind).value, m => m.value);
+        input.bindTwoWays(m => m.value, this._options.container, m => bind(this._options.model(m)));
 
         if (this._options.attach)
             this._options.attach(input);

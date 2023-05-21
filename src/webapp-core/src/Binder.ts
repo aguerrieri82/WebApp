@@ -1,4 +1,4 @@
-import { PARENT, TARGET, USE } from "./abstraction/IBindable";
+import { IBindable, PARENT, USE } from "./abstraction/IBindable";
 import type { BindExpression, BindValue, IGetter } from "./abstraction/IBinder";
 import { isBindingContainer } from "./abstraction/IBindingContainer";
 import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
@@ -10,22 +10,25 @@ import { getFunctionType } from "./ObjectUtils";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
 
-interface IBindingSubscription<TValue = any, TProp extends IObservableProperty<TValue>|undefined = any> {
+type ArrayElement<ArrayType extends readonly unknown[]> =
+    ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 
-    source: any;
+interface IBindingSubscription<TSrc extends object | [], TKey extends ((keyof TSrc) & string), TProp extends IObservableProperty<TValue> | undefined, TValue extends TSrc[TKey] = TSrc[TKey]> {
 
-    handler: TProp extends undefined ? IObservableArrayHandler<any> : IPropertyChangedHandler<TValue>;
+    source: TSrc;
+
+    handler: TSrc extends [] ? IObservableArrayHandler<ArrayElement<TSrc>> : IPropertyChangedHandler<TValue>;
 
     property?: TProp;
 
-    name?: string;
+    name?: TKey;
 }
+
+
 
 type BindingActionMode = "exec-always" | "no-bind";
 
-
-
-export interface IBinding<TModel, TValue = any> {
+export interface IBinding<TModel, TValue = unknown> {
 
     lastValue: TValue;
 
@@ -37,7 +40,7 @@ export interface IBinding<TModel, TValue = any> {
 
     action(newValue: TValue, oldValue?: TValue, isUpdate?: boolean, isClear?: boolean): void;
 
-    subscriptions: IBindingSubscription[];
+    subscriptions: IBindingSubscription<any, any, any, any>[];
 
     suspend: number;
 }
@@ -48,7 +51,7 @@ export class Binder<TModel> {
 
     protected _bindings: IBinding<TModel>[] = [];
     protected _modelBinders: Binder<TModel>[] = [];
-    protected _childBinders: Binder<any>[] = [];
+    protected _childBinders: Binder<unknown>[] = [];
     protected _cleanActions: CleanAction[] = [];
     protected _tag: string;
     constructor(model?: TModel) {
@@ -75,7 +78,7 @@ export class Binder<TModel> {
 
     protected getBindingExpression<TValue>(binding: BindExpression<TModel, TValue>) {
 
-        return Expression.build<any, TValue>(this.model, binding, {
+        return Expression.build<TModel, TValue>(this.model, binding, {
             evaluate: true,
             customProps: {
                 [PARENT]: () => this.findParentModel()
@@ -124,13 +127,14 @@ export class Binder<TModel> {
                     if (isObservableArray(ref.object) && !ref.propName) {
                         subIndex = binding.subscriptions.findIndex(a => a.source === ref.object && !a.property);
                         const sub = binding.subscriptions[subIndex];
-                        sub.source.unsubscribe(sub.handler as IObservableArrayHandler<any>);
+                        sub.source.unsubscribe(sub.handler as IObservableArrayHandler<unknown>);
                     }
 
                     else if (ref.propName) {
                         subIndex = binding.subscriptions.findIndex(a => a.source === ref.object && a.name === ref.propName);
                         const sub = binding.subscriptions[subIndex];
-                        sub.property.unsubscribe(sub.handler as IPropertyChangedHandler<any>);
+                        if (sub.property)
+                        sub.property.unsubscribe(sub.handler as IPropertyChangedHandler<unknown>);
                     }
 
                     if (subIndex !== undefined)
@@ -159,13 +163,15 @@ export class Binder<TModel> {
         });
     }
 
-    bindTwoWays<TValue>(src: BindExpression<TModel, TValue>, dst: BindExpression<TModel, TValue>, onChanged?: (value: TValue) => void) { 
+    bindTwoWays<TValue, TDestModel extends TModel|object>(src: BindValue<TModel, TValue>, dstModel: TDestModel, dst: BindExpression<TDestModel, TValue>, onChanged?: (value: TValue) => void): void { 
 
         let isBinding = false;
 
         let curValue: TValue;
 
-        for (const bind of [src, dst]) {
+        const realDst = (dstModel == this.model ? dst : (m: TModel & IBindable) => dst(m[USE](dstModel))) as BindExpression<TModel, TValue>;
+
+        for (const bind of [src, realDst]) {
 
             this.bind(bind, value => {
 
@@ -184,7 +190,7 @@ export class Binder<TModel> {
 
                 isBinding = true;
                 try {
-                    const dstProp = this.getBindingProperty(dst);
+                    const dstProp = this.getBindingProperty(realDst);
                     const srcProp = this.getBindingProperty(src);
                     if (dstProp)
                         dstProp.set(curValue);
@@ -243,7 +249,7 @@ export class Binder<TModel> {
         binding.subscriptions.forEach(sub => {
 
             if (isObservableArray(sub.source) && !sub.property) 
-                sub.source.unsubscribe(sub.handler as IObservableArrayHandler<any>);
+                sub.source.unsubscribe(sub.handler as IObservableArrayHandler<unknown>);
 
             if (sub.property)
                 sub.property.unsubscribe(sub.handler);
@@ -257,14 +263,14 @@ export class Binder<TModel> {
         binding.subscriptions = [];
     }
 
-    protected subscribe(obj: any, propName: string, binding: IBinding<TModel>) {
+    protected subscribe(obj: unknown, propName: string, binding: IBinding<TModel>) {
 
         if (binding.subscriptions.some(a => a.source === obj && a.name === propName))
             return;
 
         if (isObservableArray(obj) && !binding.subscriptions.some(a => a.source === obj && !a.property)) {
 
-            const handler: IObservableArrayHandler<any> = {
+            const handler: IObservableArrayHandler<unknown> = {
                 onChanged: () => {
 
                     this.executeBinding(binding, true);
@@ -276,6 +282,7 @@ export class Binder<TModel> {
             binding.subscriptions.push({
                 handler: handler,
                 source: obj,
+                property: undefined
             });
 
         }  
@@ -290,9 +297,14 @@ export class Binder<TModel> {
             return;
         }
 
-        const prop = getOrCreateProp(obj, propName);
+        if (typeof obj != "object") {
+            console.warn("Try to access ", propName, " for not object type ", obj);
+            return;
+        }
 
-        const handler: IPropertyChangedHandler<any> = (value, oldValue) => {
+        const prop = getOrCreateProp(obj, propName as keyof object);
+
+        const handler: IPropertyChangedHandler<unknown> = (value, oldValue) => {
 
             if (binding.suspend > 0)
                 return;
@@ -385,5 +397,5 @@ export class Binder<TModel> {
  
     model: TModel;
 
-    parent: Binder<any>;
+    parent: Binder<unknown>;
 }

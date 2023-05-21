@@ -3,7 +3,11 @@ import type { BindValue, BoundObject, BoundObjectModes } from "./IBinder";
 import type { ITemplate } from "./ITemplate";
 import type { CatalogTemplate, ITemplateProvider } from "./ITemplateProvider";
 
-export type TemplateValueMap<TModel, TObj extends { [key: string]: any }> = { [TKey in keyof TObj]?: BindValue<TModel, TObj[TKey]> }
+
+export type TemplateValueMap<TModel, TObj> = {
+
+    [TKey in keyof TObj]?: BindValue<TModel, TObj[TKey]>
+}
 
 export type RefNodePosition = "after" | "before" | "inside";
 
@@ -12,6 +16,9 @@ export type ClassComponenType<TProps> = IBehavoir | ITemplateProvider<TProps> & 
 export type FunctionalComponenType<TProps> = ITemplate<TProps> | null | undefined | void;
 
 export type BehavoirType<TElement extends Element, TModel> = string | { new(): IBehavoir } | IBehavoir | BehavoirType<TElement, TModel>[];
+
+export type StringLike = string | number | object | boolean | { toString(): string }
+
 
 export type ComponentType<TProps, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>> =
     { new (props?: TProps): TComp } |
@@ -42,9 +49,9 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
 
     if(condition: BindValue<TModel, boolean>, trueTemplate: ITemplate<TModel>, falseTemplate?: ITemplate<TModel>): this;
         
-    componentContent<TProps, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): ITemplateProvider<TProps>;
+    componentContent<TProps extends Record<string, unknown>, TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): ITemplateProvider<TProps>;
 
-    component<TProps extends Record<string, any>, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): this;
+    component<TProps extends Record<string, unknown>, TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): this;
 
     content<TInnerModel extends ITemplateProvider|string>(content: BindValue<TModel, TInnerModel>, inline?: boolean): this;
 
@@ -64,7 +71,7 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
 
     child<TKey extends keyof HTMLElementTagNameMap>(name: TKey, builder: (builder: ITemplateBuilder<TModel, HTMLElementTagNameMap[TKey]>, namespace?: string) => void): this;
 
-    set(attribute: string, value: BindValue<TModel, string | number | boolean | Promise<string | number | boolean>>): this;
+    set(attribute: string, value: BindValue<TModel, StringLike | Promise<StringLike>>): this;
 
     on<TKey extends keyof HTMLElementEventMap>(event: TKey, handler: (model: TModel, e?: HTMLElementEventMap[TKey]) => void): this;
 
@@ -74,7 +81,7 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
 
     visible(value: BindValue<TModel, boolean>): this;
 
-    text(value: BindValue<TModel, string | number>): this;
+    text(value: BindValue<TModel, StringLike>): this;
 
     html(value: BindValue<TModel, string>): this;
 
@@ -90,7 +97,7 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
 
     styles(value: TemplateValueMap<TModel, CSSStyleDeclaration>): this;
 
-    attribs(value: { [key: string]: BindValue<TModel, string | number | boolean> }): this;
+    attribs(value: Record<string, BindValue<TModel, StringLike>>): this;
 
     debugger(): this;
 
@@ -100,7 +107,7 @@ export interface ITemplateBuilder<TModel, TElement extends HTMLElement = HTMLEle
 
     readonly element: TElement;
 
-    readonly parent: ITemplateBuilder<any>;
+    readonly parent: ITemplateBuilder<unknown>;
 }
 
 export interface IChildTemplateBuilder<TModel, TElement extends HTMLElement, TParent extends ITemplateBuilder<TModel>> extends ITemplateBuilder<TModel, TElement> {
