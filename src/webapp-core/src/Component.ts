@@ -7,6 +7,7 @@ import { toKebabCase } from "./StringUtils";
 import type { IBound } from "./abstraction/IBound";
 import type { Bindable, ComponentStyle, IComponentOptions } from "./abstraction/IComponentOptions";
 import { Binder } from "./Binder";
+import { IBindingContainer } from "./abstraction/IBindingContainer";
 
 type CommonKeys<TSrc, TDst> = {
     [K in (keyof TSrc & keyof TDst & string) /*as TSrc[K] extends Bindable<TDst[K]> ? K : never*/]: TSrc[K]
@@ -16,11 +17,19 @@ type ChangeHandlers<T> = {
     [K in keyof T as K extends string ? `on${Capitalize<K>}Changed` : never]?: { (value: T[K], oldValue: T[K]): void }
 }
 
-export abstract class Component<TOptions extends IComponentOptions = IComponentOptions> implements IComponent<TOptions> {
+interface ISubscription {
+    unsubscribe(): void;
+}
+
+export abstract class Component<TOptions extends IComponentOptions = IComponentOptions> implements IComponent<TOptions>, IBindingContainer {
 
     protected _bounds: IBound[];
 
+    protected _subscriptions: ISubscription[];
+
     protected _binder: Binder<this>;
+
+    protected _isCleaning: boolean;
 
     constructor(options?: Partial<TOptions>) {
 
@@ -70,15 +79,26 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
         handler(prop.get(), undefined);
 
-        return {
-            remove() {
+        const result: ISubscription = {
+            unsubscribe() {
                 prop.unsubscribe(handler)
             }
         }
+
+        if (!this._subscriptions)
+            this._subscriptions = [];
+
+        this._subscriptions.push(result);
+
+        return result;
     }
 
-    //TODO never called
-    unmount() {
+    cleanBindings(cleanValue: boolean) {
+
+        if (this._isCleaning)
+            return;
+             
+        this._isCleaning = true;
 
         if (this._bounds) {
             for (const item of this._bounds)
@@ -86,10 +106,18 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
             delete this._bounds;
         }
 
+        if (this._subscriptions) {
+            for (const item of this._subscriptions)
+                item.unsubscribe();
+            delete this._subscriptions;
+        }
+
         if (this._binder) {
-            this._binder.cleanBindings(false);
+            this._binder.cleanBindings(cleanValue);
             delete this._binder;
         }
+
+        this._isCleaning = false;
     }
 
     protected bindOptions<TKey extends keyof CommonKeys<TOptions, this>>(...keys: TKey[]) {

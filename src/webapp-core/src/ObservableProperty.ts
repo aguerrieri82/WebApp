@@ -61,7 +61,7 @@ export class ObservableProperty<TValue = any> implements IObservableProperty<TVa
         const index = this._handlers.indexOf(handler);
         if (index != -1) {
             if (WebApp.isDebug)
-                WebApp.subs = WebApp.subs.filter(a => a == handler);
+                WebApp.subs = WebApp.subs.filter(a => a !== handler);
             this._handlers.splice(index, 1);
         }
    

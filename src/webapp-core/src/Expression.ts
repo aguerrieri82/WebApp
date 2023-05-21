@@ -1,7 +1,8 @@
-import { BindExpression, PARENT, USE } from "./abstraction";
+import { BindExpression, TARGET, USE } from "./abstraction";
 
-type ExpressionType = Expression<any> | CallExpression<any> | SetExpression<any> | UseExpression<any> | GetExpression<any>;
+type ExpressionType = Expression<any>;
 
+const EMPTY_FUNCTION = () => 0;
 
 export interface IExpressionOptions {
     evaluate?: boolean;
@@ -17,6 +18,31 @@ export interface IExpressionProp {
     value?: any;
 }
 
+export interface IExpressionBuild<TModel, TValue> {
+
+    expression: UseExpression<TModel>;
+
+    value: TValue;
+}
+
+export function proxyEquals(a: any, b: any) {
+
+    return cleanProxy(a) == cleanProxy(b);
+}
+
+export function cleanProxy<T>(item: T) : T {
+
+    if (typeof(item) === "object" || typeof(item) === "function") {
+
+        const target = (item as any)[TARGET];
+
+        if (target)
+            return target;
+    }
+
+    return item;
+}
+
 
 export abstract class Expression<TValue extends Record<string, any> | Function> {
 
@@ -25,21 +51,30 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
     constructor(value: TValue, parent?: ExpressionType, options?: IExpressionOptions) {
         this.parent = parent;
         this.value = value;
-        this._options = options || {};
+        this._options = options || parent?._options || {};
         this.hitCount = 1;
     }
 
-    use(model: TValue) {
+    use(model: TValue) : ExpressionType {
 
-        return this;
+        let innerExp = this.actions.find(a => a instanceof UseExpression && a.value == model);
+
+        if (!innerExp) {
+            innerExp = new UseExpression(model, this);
+            this.actions.push(innerExp);
+        }
+        else
+            innerExp.hitCount++;
+
+        return innerExp;
     }
 
-    set<TSetValue>(propName: string, value: TSetValue)   {
+    set<TSetValue>(propName: string, value: TSetValue): ExpressionType  {
 
         if (this._options.evaluate)
             (this.value as Record<string, any>)[propName] = value;
 
-        let innerExp = this.actions.find(a => a.type == "set" && a.propName == propName);
+        let innerExp = this.actions.find(a => a instanceof SetExpression && a.propName == propName);
 
         if (!innerExp) {
 
@@ -53,11 +88,11 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
         return innerExp;
     }
 
-    get(propName: string) {
+    get(propName: string): ExpressionType {
 
         const value = this._options.evaluate ? (this.value as Record<string, any>)[propName] : undefined;
 
-        let innerExp = this.actions.find(a => a.type == "get" && a.propName == propName);
+        let innerExp = this.actions.find(a => a instanceof GetExpression && a.propName == propName);
 
         if (!innerExp) {
 
@@ -71,11 +106,11 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
         return innerExp;
     }
 
-    call(...args: []): ExpressionType{
+    call(...args: []): ExpressionType {
 
         const result = this._options.evaluate ? (this.value as Function).call(this.parent.value, ...args) : null;
 
-        let innerExp = this.actions.find(a => a.type == "call" && a.value == result);
+        let innerExp = this.actions.find(a => a instanceof CallExpression && a.value == result);
 
         if (!innerExp) {
 
@@ -89,9 +124,9 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
         return innerExp;
     }
 
-    *getReferences(): Iterable<IExpressionProp> {
+    *references(): Iterable<IExpressionProp> {
 
-        const map = new Map<object, string[]>();
+        const map = new Map<object, IExpressionProp[]>();
 
         function getOrCreateProps(obj: object) {
 
@@ -107,12 +142,16 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
         for (const exp of this.visit()) {
 
-            if (exp.type == "get") {
+            if (exp instanceof GetExpression) {
 
                 const curProps = getOrCreateProps(exp.parent.value);
 
-                if (!curProps.some(a => a == exp.propName))
-                    curProps.push(exp.propName);
+                if (!curProps.some(a => a.propName == exp.propName))
+                    curProps.push({
+                        object: exp.parent.value,
+                        propName: exp.propName,
+                        value: exp.value
+                    });
             }
 
             if (exp.value !== undefined && exp.value !== null)
@@ -120,30 +159,26 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
         }
 
         for (const item of map) {
-            if (!item[1])
+            if (item[1].length === 0)
                 yield {
                     object: item[0]
                 }
             else {
                 for (const prop of item[1])
-                    yield {
-                        object: item[0],
-                        propName: prop
-                    }
+                    yield prop;
             }
-
         }
 
         return map;
     }
 
-    getProperty() {
+    property() {
 
         let result: IExpressionProp;
 
         function visit(exp: ExpressionType) {
 
-            if (exp.actions.length == 0 && exp.type == "get") {
+            if (exp.actions.length == 0 && exp instanceof GetExpression) {
                 result = {
                     object: exp.parent.value,
                     propName: (exp as GetExpression<any>).propName,
@@ -199,11 +234,11 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
                     let newPath = curPath;
 
-                    if (action.type == "get")
+                    if (action instanceof GetExpression)
                         newPath += "." + action.propName;
-                    else if (action.type == "set")
+                    else if (action instanceof SetExpression)
                         newPath += "." + action.propName + ".set";
-                    else if (action.type == "use")
+                    else if (action instanceof UseExpression)
                         newPath = "use";
                     else
                         newPath += "()";
@@ -219,26 +254,36 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
     protected createProxy() {
 
-        if (typeof this.value != "object" && typeof this.value != "function")
-            return this.value;
+        let proxyValue : object = this.value;
 
-        return new Proxy(this.value, {
+        if (!this._options.evaluate && (this.value === undefined || this.value === null))
+            proxyValue = EMPTY_FUNCTION;
+
+        if (typeof proxyValue != "object" && typeof proxyValue != "function")
+            return proxyValue;
+
+        return new Proxy(proxyValue, {
 
             get: (target: any, prop, rec) : any => {
 
                 let value: any;
 
-                if (this._options.customProps && prop in this._options.customProps)
-                    value = this._options.customProps[prop]();
-                else
-                    value = target[prop];
+                if (prop == TARGET)
+                    return target;
 
-                if (prop == USE) {
-                    const exp = this.use(value);
-                    return exp.createProxy();
+                if (prop == Symbol.toPrimitive && !this._options.evaluate)
+                    return EMPTY_FUNCTION;
+
+                if (this._options.evaluate) {
+
+                    if (this._options.customProps && prop in this._options.customProps)
+                        value = this._options.customProps[prop]();
+                    else
+                        value = target[prop];
                 }
 
-                //TODO pass context & get parent
+                if (prop == USE) 
+                    return (model: any) => this.use(model).createProxy();
 
                 if (typeof prop == "symbol")
                     return value;
@@ -252,12 +297,14 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
                 if (typeof prop != "symbol")
                     this.set(prop, newValue);
+                else if (this._options.evaluate)
+                    target[prop] = newValue;
        
                 return true;
             },
 
             apply: (target, thisArg, argArray: []): any => {
-
+                 
                 const exp = this.call(...argArray);
 
                 return exp.createProxy();
@@ -267,13 +314,17 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
     static build<TModel extends object, TValue>(model: TModel, bind: BindExpression<TModel, TValue>, options?: IExpressionOptions) {
         const exp = new UseExpression(model, null, options);
-        bind(exp.createProxy());
-        return exp;
+        const value = bind(exp.createProxy()) as TValue;
+        return {
+            expression: exp,
+            value: options?.evaluate ? cleanProxy(value) : undefined
+        } as IExpressionBuild<TModel, TValue>
+;
     }
 
     hitCount: number;
 
-    readonly type: string;
+    abstract readonly type: any;
 
     readonly value: TValue;
 

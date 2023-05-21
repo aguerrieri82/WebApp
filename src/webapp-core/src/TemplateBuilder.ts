@@ -1,6 +1,7 @@
 import { IBehavoir, isBehavoir } from "./abstraction/IBehavoir";
 import { USE } from "./abstraction/IBindable";
 import type { BindValue, BoundObject, BoundObjectModes } from "./abstraction/IBinder";
+import { isBindingContainer } from "./abstraction/IBindingContainer";
 import { isHTMLContainer } from "./abstraction/IHTMLContainer";
 import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
 import { ITemplate, isTemplate } from "./abstraction/ITemplate";
@@ -8,6 +9,7 @@ import type { BehavoirType, ClassComponenType, ComponentType, FunctionalComponen
 import { CatalogTemplate, ITemplateProvider, isTemplateProvider } from "./abstraction/ITemplateProvider";
 import { Binder } from "./Binder";
 import { WebApp } from "./Debug";
+import {  cleanProxy, proxyEquals } from "./Expression";
 import { getTypeName, isClass } from "./ObjectUtils";
 
 type TemplateInlineMode = "never" | "always" | "auto" | "explicit" | "replace-parent" | "embed-child" | "inherit";
@@ -111,7 +113,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         console.group(`[${this._tag ?? ""}] ${this.element?.nodeName} (${getTypeName(this.model)})`);
 
-        console.log("Model", getTypeName(this.model), JSON.parse(JSON.stringify(this.model)));
+        console.log("Model", getTypeName(this.model));
 
         console.group(`Bindings (${this._bindings.length})`);
 
@@ -474,6 +476,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         callOnChange = !isTemplate(result);
 
+
         return {
             component: result,
             model: model as TProps
@@ -532,7 +535,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             if (isClear)
                 return;
 
-            const model = isTemplateProvider(value) && value.model ? value.model : value;
+            const model = cleanProxy(isTemplateProvider(value) && value.model ? value.model : value);
 
             this.beginUpdate();
 
@@ -545,18 +548,18 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                     value &&
                     isTemplateProvider(oldValue) &&
                     isTemplateProvider(value) &&
-                    oldValue.template == value.template) {
+                    proxyEquals(oldValue.template, value.template)) { //TODO proxy should be already clean...
 
                     childBuilder.updateModel(model);
                 }
                 else {
 
-                    if (isUpdate)
+                    if (isUpdate) 
                         childBuilder.clear(false, false); //TODO WARN: cleanValue was true
-      
+
                     if (value) {
 
-                        const template = this.templateFor(value);
+                        const template = cleanProxy(this.templateFor(value));
 
                         if (!template)
                             throw new Error("Template '" + value + "' not found.");
@@ -698,7 +701,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     on<TKey extends keyof HTMLElementEventMap>(event: TKey, handler: (model: TModel, e?: HTMLElementEventMap[TKey]) => void): this {
         this.element.addEventListener(event, ev =>
-            handler(this.createProxy(this.model, undefined, "evaluate"), ev));
+            handler(this.model, ev));
         return this;
     }
 
@@ -995,6 +998,15 @@ export function renderOnce<T>(template: ITemplate<T>): ITemplate<T> {
         isRendered = true;
     };
 }
+
+export function withCleanup<T>(template: ITemplate<T>, action: () => void): ITemplate<T> {
+
+    return t => {
+        action();
+        template(t);
+    };
+}
+
 
 export function mount<TModel>(root: HTMLElement, template: CatalogTemplate<TModel>, model?: TModel): void;
 export function mount(root: HTMLElement, component: ITemplateProvider): void;

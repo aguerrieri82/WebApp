@@ -1,4 +1,4 @@
-import { ITemplate, TemplateMap, renderOnce } from "@eusoft/webapp-core";
+import { ITemplate, TemplateMap, renderOnce, withCleanup } from "@eusoft/webapp-core";
 import { Content, Template, forModel } from "@eusoft/webapp-jsx";
 import { IEditorOptions } from "../../abstraction/IEditor";
 import { EditorBuilder } from "../EditorBuilder";
@@ -11,6 +11,8 @@ import { IValidationContext } from "../../abstraction/Validator";
 interface IObjectEditorOptions<TObj extends Record<string, any>> extends IEditorOptions<TObj> {
 
     builder: (builder: EditorBuilder<TObj, ObjectEditor<TObj>>) => ITemplate<TObj> | JSX.Element;
+
+    isDynamic?: boolean;
 }
 
 export const ObjectEditorTemplates: TemplateMap<ObjectEditor<any>> = {
@@ -40,14 +42,12 @@ export class ObjectEditor<TObj extends Record<string, any>> extends Editor<TObj,
 
     protected updateOptions() {
 
-        this.bindOptions("builder");
+        this.bindOptions("builder", "isDynamic");
     }
 
     contentTemplate() { 
 
-        if (!this._contentTemplate) {
-
-            this._editors = [];
+        if (!this._contentTemplate || this.isDynamic) {
 
             const innerTemplate = this.builder(new EditorBuilder({
                 container: this,
@@ -60,7 +60,7 @@ export class ObjectEditor<TObj extends Record<string, any>> extends Editor<TObj,
                 }
             })) as ITemplate<TObj>;
 
-            this._contentTemplate = renderOnce(innerTemplate);
+            this._contentTemplate = withCleanup(innerTemplate, () => this._editors = []);
         }
 
         return this._contentTemplate;
@@ -89,6 +89,8 @@ export class ObjectEditor<TObj extends Record<string, any>> extends Editor<TObj,
     error: ViewNode;
 
     isValid: boolean;
+
+    isDynamic: boolean;
 
     builder: (builder: EditorBuilder<TObj, this>) => JSX.Element;
 }
