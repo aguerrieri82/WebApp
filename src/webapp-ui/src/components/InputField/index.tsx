@@ -11,8 +11,6 @@ interface IInputFieldOptions<TValue, TTarget> extends IComponentOptions {
 
     name: string;
 
-    visible?: boolean;
-
     content: IEditor<TValue, IEditorOptions<TValue>> | JsxTypedComponent<IEditorOptions<TValue>>;
 
     label?: Bindable<ViewNode>;
@@ -42,13 +40,13 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
 
     constructor(options?: IInputFieldOptions<TValue, TTarget>) {
 
-        super({
+        super();
+
+        this.init(InputField, {
             template: InputFieldTemplates.Default,
             visible: true,
             ...options,
         });
-
-        this.init(InputField);
     }
 
     protected initWork() {
@@ -63,7 +61,7 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
 
     protected updateOptions() {
 
-        this.bindOptions("label", "validators", "content", "value", "visible");
+        this.bindOptions("label", "validators", "content", "value");
     }
 
     resetValidation() {
@@ -115,8 +113,6 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
     isValid: boolean;
 
     value: TValue;
-
-    visible: boolean;
 }
 
 export default InputField;

@@ -1,15 +1,15 @@
-import type { ArrayElement } from "./abstraction";
 import { IBindable, PARENT, USE } from "./abstraction/IBindable";
 import type { BindExpression, BindValue, IGetter } from "./abstraction/IBinder";
 import { isBindingContainer } from "./abstraction/IBindingContainer";
 import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
 import type { IObservableProperty, IPropertyChangedHandler } from "./abstraction/IObservableProperty";
-import { compareArray, forEachRev } from "./ArrayUtils";
-import { WebApp } from "./Debug";
+import { compareArray, forEachRev } from "./utils/Array";
+import { WebApp } from "./utils/Debug";
 import { cleanProxy, Expression, IExpressionProp } from "./Expression";
-import { getFunctionType } from "./ObjectUtils";
+import { getFunctionType } from "./utils/Object";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
+import type { ArrayElement } from "./abstraction/Types";
 
 
 interface IBindingSubscription<TSrc extends object | [], TValue> {
@@ -359,20 +359,31 @@ export class Binder<TModel> {
         }
     }
 
-    cleanBindings(cleanValue: boolean) {
+    protected execForSubBinders<TBinder extends Binder<unknown> = this>(action: (binder: TBinder) => void, includeSelf: boolean) {
+
+        const allBinders = [...this._childBinders, ...this._modelBinders] as TBinder[];
+
+        if (includeSelf)
+            action(this as unknown as TBinder);
+
+        for (const binder of allBinders) {
+            action(binder);
+            binder.execForSubBinders(action, false);
+        }
+    }
+
+    get isRootModel() {
+        return !this.parent || this.parent.model != this.model;
+    }
+
+    cleanBindings(cleanValue: boolean, deep: boolean) {
 
         this._bindings.forEach(binding =>
             this.unsubscribeBinding(binding, cleanValue));
 
-        this._modelBinders.forEach(binder =>
-            binder.cleanBindings(cleanValue));
-
-        this._childBinders.forEach(binder =>
-            binder.cleanBindings(cleanValue));
-
         this._cleanActions.forEach(a => a());
 
-        if (isBindingContainer(this.model))
+        if (this.isRootModel && isBindingContainer(this.model))
             this.model.cleanBindings(cleanValue);
 
         if (WebApp.isDebug)
@@ -382,6 +393,9 @@ export class Binder<TModel> {
         this._bindings = [];
         this._childBinders = [];
         this._cleanActions = [];
+
+        if (deep)
+            this.execForSubBinders(binder => binder.cleanBindings(cleanValue, true), false);
     }
 
     updateModel(model: TModel) { 

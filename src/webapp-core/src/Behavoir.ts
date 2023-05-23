@@ -1,4 +1,5 @@
 import { IBehavoir } from "./abstraction";
+import { ITemplateContext } from "./abstraction/ITemplateContext";
 
 export abstract class Behavoir<TOptions extends Record<string, any> = Record<string, any>, TElement extends HTMLElement = HTMLElement, TModel = any> implements IBehavoir<TElement, TModel> {
 
@@ -20,9 +21,9 @@ export abstract class Behavoir<TOptions extends Record<string, any> = Record<str
         }
     }
 
-    abstract attach(element: TElement, model?: TModel): void;
+    abstract attach(ctx: ITemplateContext<TModel, TElement>): void;
 
-    detach(element: TElement, model?: TModel): void {
+    detach(ctx: ITemplateContext<TModel, TElement>): void {
         this._isDetach = true;
     }
 

@@ -15,4 +15,6 @@ export interface IComponentOptions {
     template?: CatalogTemplate<any>;
 
     name?: string;
+
+    visible?: Bindable<boolean>;
 }

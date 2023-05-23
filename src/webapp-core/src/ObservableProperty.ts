@@ -1,6 +1,6 @@
 ﻿import { IObservableProperty, IPropertyChangedHandler } from "./abstraction/IObservableProperty";
-import { forEachRev } from "./ArrayUtils";
-import { WebApp } from "./Debug";
+import { forEachRev } from "./utils/Array";
+import { WebApp } from "./utils/Debug";
 
 export class ObservableProperty<TValue = any> implements IObservableProperty<TValue> {
 

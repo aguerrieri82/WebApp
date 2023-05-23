@@ -1,8 +1,8 @@
 ﻿export interface IBindingContainer {
 
     cleanBindings(cleanValue: boolean): void;
-
 }
+
 export function isBindingContainer(value: any): value is IBindingContainer {
 
     return value && typeof value === "object" &&

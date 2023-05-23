@@ -36,13 +36,13 @@ export class ObjectEditor<TObj extends Record<string, any>> extends CommitableEd
      
     constructor(options?: IObjectEditorOptions<TObj>) {
 
-        super({
+        super();
+
+        this.init(ObjectEditor, {
             validationMode: "manual",
             template: ObjectEditorTemplates.Default,
             ...options,
         });
-
-        this.init(ObjectEditor);
     }
 
     protected updateOptions() {

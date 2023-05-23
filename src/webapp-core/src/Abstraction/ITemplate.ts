@@ -1,4 +1,4 @@
-﻿import { getFunctionType } from "../ObjectUtils";
+﻿import { getFunctionType } from "../utils/Object";
 import type { TemplateBuilder } from "../TemplateBuilder";
 
 export interface ITemplate<TModel> {

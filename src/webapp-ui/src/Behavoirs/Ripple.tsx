@@ -1,17 +1,11 @@
-import { IBehavoir, defineBehavoir } from "@eusoft/webapp-core";
+import { Behavoir, defineBehavoir } from "@eusoft/webapp-core";
+import { ITemplateContext } from "@eusoft/webapp-core";
 
-export class Ripple implements IBehavoir {
+export class Ripple extends Behavoir {
 
-    attach(element: HTMLElement, model?: any): void {
-
-        console.log("attach", element);
+    attach(ctx: ITemplateContext<any, HTMLElement>): void {
+        throw new Error("Method not implemented.");
     }
-
-    detach(element: HTMLElement, model?: any): void {
-
-        console.log("detach", element);
-    }
-
 }
 
 defineBehavoir("Ripple", () => new Ripple());

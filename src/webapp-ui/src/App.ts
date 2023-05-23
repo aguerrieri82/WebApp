@@ -1,5 +1,6 @@
 import { PageHost } from "./components/PageHost";
 import { mount } from "@eusoft/webapp-core";
+import { OperationManager } from "./services";
 export interface IAppOptions {
 
 }
@@ -15,6 +16,7 @@ export class App  {
 
     constructor(options?: IAppOptions) {
 
+        this.pageHost.provides(new OperationManager());
     }
 
     runAsync(root?: HTMLElement | string) {

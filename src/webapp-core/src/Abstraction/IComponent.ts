@@ -1,16 +1,21 @@
 ﻿import { IBindable } from "./IBindable";
 import type { IComponentOptions } from "./IComponentOptions";
+import { ITemplateContext } from "./ITemplateContext";
 import type { CatalogTemplate } from "./ITemplateProvider";
+
+export const COMPONENT: unique symbol = Symbol.for("@component");
 
 export interface IComponent<TOptions extends IComponentOptions = IComponentOptions> extends IBindable  {
 
     readonly options: TOptions;
 
-    unmount?(): void;
-
-    parent?: IComponent;
+    context?: ITemplateContext<this, HTMLElement>;
 
     template: CatalogTemplate<this>;
+
+    visible?: boolean;
+
+    name?: string;
 }
 
 export function isComponent(obj: any): obj is IComponent {

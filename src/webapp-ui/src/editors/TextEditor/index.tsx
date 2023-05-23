@@ -29,12 +29,12 @@ export class TextEditor extends Editor<string, ITextEditorOptions> {
 
     constructor(options?: ITextEditorOptions) {
 
-        super({
+        super();
+
+        this.init(TextEditor, {
             template: TextEditorTemplates.Default,
             ...options
         });
-
-        this.init(TextEditor);
     }
 
     protected updateOptions() {

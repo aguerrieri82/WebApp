@@ -18,12 +18,12 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
 
     constructor(options?: TOptions) {
 
-        super({
+        super();
+
+        this.init(CommitableEditor, {
             commitMode: "auto",
             ...options
         });
-
-        this.init(CommitableEditor);
     }
 
     protected initWork() {

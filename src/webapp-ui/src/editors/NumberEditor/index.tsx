@@ -23,12 +23,12 @@ export class NumberEditor extends Editor<number, INumberEditorOptions> {
 
     constructor(options?: INumberEditorOptions) {
 
-        super({
+        super();
+
+        this.init(NumberEditor, {
             template: NumberEditorTemplates.Default,
             ...options
         });
-
-        this.init(NumberEditor);
     }
 
     protected initWork() {

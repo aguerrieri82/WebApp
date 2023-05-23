@@ -1,47 +1,42 @@
 import { IPropertyChangedHandler, isObservableProperty } from "./abstraction/IObservableProperty";
 import type { CatalogTemplate } from "./abstraction/ITemplateProvider";
-import type { IComponent } from "./abstraction/IComponent";
-import { enumOverrides, getTypeName } from "./ObjectUtils";
+import { COMPONENT, IComponent, isComponent } from "./abstraction/IComponent";
+import { enumOverrides, getTypeName, isClass } from "./utils/Object";
 import { bindTwoWays, getOrCreateProp } from "./Properties";
-import { toKebabCase } from "./StringUtils";
+import { toKebabCase } from "./utils/String";
 import type { IBound } from "./abstraction/IBound";
 import type { Bindable, ComponentStyle, IComponentOptions } from "./abstraction/IComponentOptions";
 import { Binder } from "./Binder";
 import { IBindingContainer } from "./abstraction/IBindingContainer";
-
-type CommonKeys<TSrc, TDst> = {
-    [K in (keyof TSrc & keyof TDst & string) /*as TSrc[K] extends Bindable<TDst[K]> ? K : never*/]: TSrc[K]
-};
-
-type ChangeHandlers<T> = {
-    [K in keyof T as K extends string ? `on${Capitalize<K>}Changed` : never]?: { (value: T[K], oldValue: T[K]): void }
-}
+import { IMountListener } from "./abstraction/IMountListener";
+import { ITemplateContext } from "./abstraction/ITemplateContext";
+import { IService, SERVICE_TYPE, ServiceType } from "./abstraction/IService";
+import { IServiceProvider, ServiceContainer } from "./abstraction/IServiceProvider";
+import type { CommonKeys } from "./abstraction/Types";
 
 interface ISubscription {
     unsubscribe(): void;
 }
 
-export abstract class Component<TOptions extends IComponentOptions = IComponentOptions> implements IComponent<TOptions>, IBindingContainer {
+export abstract class Component<TOptions extends IComponentOptions = IComponentOptions> implements IComponent<TOptions>, IBindingContainer, IMountListener, IServiceProvider {
 
     protected _bounds: IBound[];
-
     protected _subscriptions: ISubscription[];
-
     protected _binder: Binder<this>;
-
     protected _isCleaning: boolean;
 
-    constructor(options?: TOptions) {
-
-        this.options = options;
+    constructor() {
 
         this.init(Component);
     }
 
-    protected init(caller: Function) {
+    protected init(caller: Function, options?: TOptions) {
 
         if (caller != this.constructor)
             return;
+
+        if (options)
+            this.configure(options);
 
         const inits = enumOverrides(this, "initWork" as any);
 
@@ -59,13 +54,6 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
         this.onChanged("style", () => this.updateClass());
 
         this.onChanged("name", () => this.updateClass());
-    }
-
-    bindTwoWays<TValue, TDestModel extends object>(src: (model: this) => TValue, dstModel: TDestModel, dst: (model: TDestModel) => TValue) {
-            
-        if (!this._binder)
-            this._binder = new Binder(this);
-        this._binder.bindTwoWays(src, dstModel, dst);
     }
 
     protected configure(newOptions?: Partial<TOptions>) {
@@ -86,61 +74,7 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     protected updateOptions() {
 
-        this.bindOptions("style", "template", "name");
-    }
-
-    prop<TKey extends keyof this & string>(prop: TKey) {
-
-        return getOrCreateProp(this, prop);
-    }
-
-    onChanged<TKey extends keyof this & string>(propName: TKey, handler: IPropertyChangedHandler<this[TKey]>) {
-
-        const prop = this.prop(propName);
-
-        prop.subscribe(handler);
-
-        handler(prop.get(), undefined);
-
-        const result: ISubscription = {
-            unsubscribe() {
-                prop.unsubscribe(handler)
-            }
-        }
-
-        if (!this._subscriptions)
-            this._subscriptions = [];
-
-        this._subscriptions.push(result);
-
-        return result;
-    }
-
-    cleanBindings(cleanValue: boolean) {
-
-        if (this._isCleaning)
-            return;
-             
-        this._isCleaning = true;
-
-        if (this._bounds) {
-            for (const item of this._bounds)
-                item.unbind();
-            delete this._bounds;
-        }
-
-        if (this._subscriptions) {
-            for (const item of this._subscriptions)
-                item.unsubscribe();
-            delete this._subscriptions;
-        }
-
-        if (this._binder) {
-            this._binder.cleanBindings(cleanValue);
-            delete this._binder;
-        }
-
-        this._isCleaning = false;
+        this.bindOptions("style", "template", "name", "visible");
     }
 
     protected bindOptions<TKey extends keyof CommonKeys<TOptions, this>>(...keys: TKey[]) {
@@ -190,13 +124,113 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
         this.className = classes.flat().join(" ");
     }
 
+    provides<TServiceType extends ServiceType, TService extends IService<TServiceType>>(service: TService): void {
+
+        const serviceType = service[SERVICE_TYPE] as TServiceType;
+
+        (this as unknown as ServiceContainer<TServiceType, TService>)[serviceType] = service;
+    }
+
+
+    bindTwoWays<TValue, TDestModel extends object>(src: (model: this) => TValue, dstModel: TDestModel, dst: (model: TDestModel) => TValue) {
+
+        if (!this._binder)
+            this._binder = new Binder(this);
+        this._binder.bindTwoWays(src, dstModel, dst);
+    }
+
+    prop<TKey extends keyof this & string>(prop: TKey) {
+
+        return getOrCreateProp(this, prop);
+    }
+
+    onChanged<TKey extends keyof this & string>(propName: TKey, handler: IPropertyChangedHandler<this[TKey]>) {
+
+        const prop = this.prop(propName);
+
+        prop.subscribe(handler);
+
+        handler(prop.get(), undefined);
+
+        const result: ISubscription = {
+            unsubscribe() {
+                prop.unsubscribe(handler)
+            }
+        }
+
+        if (!this._subscriptions)
+            this._subscriptions = [];
+
+        this._subscriptions.push(result);
+
+        return result;
+    }
+
+    cleanBindings(cleanValue: boolean) {
+
+        if (this._isCleaning)
+            return;
+
+        console.debug("cleanBindings", getTypeName(this));
+
+        this._isCleaning = true;
+
+        if (this._bounds) {
+            for (const item of this._bounds)
+                item.unbind();
+            delete this._bounds;
+        }
+
+        if (this._subscriptions) {
+            for (const item of this._subscriptions)
+                item.unsubscribe();
+            delete this._subscriptions;
+        }
+
+        if (this._binder) {
+            this._binder.cleanBindings(cleanValue, true);
+            delete this._binder;
+        }
+
+        this._isCleaning = false;
+    }
+
+    mount(ctx: ITemplateContext) {
+
+        console.debug("mount", getTypeName(this));
+
+        this.context = ctx as ITemplateContext<this, HTMLElement>;
+    }
+
+    unmount() {
+        console.debug("unmount", getTypeName(this));
+    }
+
+    context: ITemplateContext<this, HTMLElement>;
+
     className: string;
 
     template: CatalogTemplate<this>;
 
     style: ComponentStyle;
 
+    visible: boolean;
+
     options: TOptions;
 
     name?: string;
+}
+
+export function getComponent(obj: any): Function {
+
+    if (!obj || typeof obj != "object")
+        return undefined;
+
+    if (isClass(obj.constructor) && isComponent(obj))
+        return obj.constructor;
+
+    if (COMPONENT in obj)
+        return obj[COMPONENT];
+
+    return undefined;
 }

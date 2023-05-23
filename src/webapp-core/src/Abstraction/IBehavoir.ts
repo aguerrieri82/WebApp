@@ -1,8 +1,10 @@
-﻿export interface IBehavoir<TElement extends HTMLElement = HTMLElement, TModel = any> {
+﻿import { ITemplateContext } from "./ITemplateContext";
 
-    attach(element: TElement, model?: TModel) : void;
+export interface IBehavoir<TElement extends HTMLElement = HTMLElement, TModel = unknown> {
 
-    detach(element: TElement, model?: TModel): void;
+    attach(ctx: ITemplateContext<TModel, TElement>) : void;
+
+    detach(ctx: ITemplateContext<TModel, TElement>): void;
 
 }
 

@@ -1,10 +1,8 @@
-import { BindExpression } from "@eusoft/webapp-core/abstraction/IBinder";
+import { Expression, BindExpression } from "@eusoft/webapp-core";
 import { ViewNode } from "../Types";
 import { IEditor, IEditorOptions } from "../abstraction/IEditor";
 import { Validator } from "../abstraction/Validator";
 import { InputField } from "../components";
-
-import { Expression } from "@eusoft/webapp-core";
 
 interface EditorBuilderOptions<TModel, TModelContainer extends Record<string, any>> {
 
@@ -23,7 +21,7 @@ export interface IBuilderEditorOptions<TModel, TValue, TEditorOptions extends IE
 
     validators?: Validator<TValue, TModel>[];
 
-    editor: TEditorOptions;
+    editor?: TEditorOptions;
 }
 
 export class EditorBuilder<TModel, TModelContainer extends Record<string, any>> {

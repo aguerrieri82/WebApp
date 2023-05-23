@@ -1,42 +1,78 @@
 import { Bindable, IComponentOptions, IComponent, Component, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
-import { JsxNode, Template, forModel } from "@eusoft/webapp-jsx";
+import { Class, JsxNode, Template, forModel } from "@eusoft/webapp-jsx";
 import { Ripple } from "../../behavoirs/Ripple";
+import { IActionContext } from "../../abstraction/IAction";
 import "./index.scss";
-interface IActionOptions extends IComponentOptions {
+import { OperationManager } from "../../services";
+import { OPERATION_MANAGER } from "../../abstraction";
+import { ViewNode } from "../../Types";
+
+interface IActionOptions<TTarget> extends IComponentOptions {
 
     content?: Bindable<JsxNode<string> | IComponent>;
 
-    executeAsync?: () => Promise<void> | void;
+    executeAsync?: (ctx?: IActionContext<TTarget>) => Promise<void> | void;
 }
+
 
 export const ActionTemplates: TemplateMap<Action> = {
 
     "Button": forModel(m => <Template name="Action">
-        <button behavoir={Ripple} className={m.className} on-click={a => a.executeAsync()}>
+        <button visible={m.visible} behavoir={Ripple} className={m.className} on-click={() => m.executeAsync()}>
+            <Class name="executing" condition={m.isExecuting} />
             {m.content}
         </button>
     </Template>)
 }
-export class Action extends Component<IActionOptions> {
 
-    constructor(options?: IActionOptions) {
+export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>> {
+
+    constructor(options?: IActionOptions<TTarget>) {
 
         super();
 
-        this.configure({
-            ...options,
-            template: ActionTemplates.Button
+        this.init(Action, {
+            template: ActionTemplates.Button,
+            ...options 
         });
     }
 
     protected updateOptions() {
 
-        this.bindOptions("content", "executeAsync");
+        this.bindOptions("content");
+
+        if (this.options.executeAsync)
+            this.executeAsyncWork = this.options?.executeAsync;
     }
 
-    async executeAsync() {
+    async executeAsync(ctx?: IActionContext<TTarget>) {
+
+        if (this.isExecuting)
+            return;
+
+        const operation = this.context.require<OperationManager>(OPERATION_MANAGER);
+
+        const newOp = operation.begin();
+
+        try {
+            this.isExecuting = true;
+
+            await this.executeAsyncWork(ctx);
+
+        }
+        finally {
+
+            newOp.end();
+
+            this.isExecuting = false;
+        }
+    }
+
+    protected executeAsyncWork(ctx?: IActionContext<TTarget>) {
 
     }
 
-    content: string | ITemplateProvider;
+    isExecuting: boolean;
+
+    content: ViewNode;
 }

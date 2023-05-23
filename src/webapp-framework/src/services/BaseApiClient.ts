@@ -10,7 +10,7 @@ export class HttpError extends Error {
     readonly response: Response;
 }
 
-export class ApiClient {
+export class BaseApiClient {
 
     constructor(endpoint?: string) {
         this.endpoint = endpoint;
@@ -100,4 +100,4 @@ export class ApiClient {
     endpoint: string;
 }
 
-export default ApiClient;
+export default BaseApiClient;

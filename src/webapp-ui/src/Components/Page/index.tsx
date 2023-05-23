@@ -2,6 +2,7 @@ import { Bindable, IComponentOptions, Component, ITemplateProvider, TemplateMap 
 import { forModel, Template } from "@eusoft/webapp-jsx";
 import { IPage, LoadState } from "../../abstraction/IPage";
 import "./index.scss";
+import { IFeature } from "../../abstraction/IFeature";
 export interface IPageOptions extends IComponentOptions {
 
     title?: Bindable<string>;
@@ -9,6 +10,8 @@ export interface IPageOptions extends IComponentOptions {
     content?: Bindable<ITemplateProvider>;
 
     route?: string;
+
+    behavoirs?: IFeature<IPage>[];
 
     name: string;
 }
@@ -33,12 +36,12 @@ export class Page<TOptions extends IPageOptions = IPageOptions, TArgs extends Re
 
     constructor(options?: TOptions) {
 
-        super({
+        super();
+
+        this.init(Page, {
             template: PageTemplates.Simple,
             ...options
         });
-
-        this.init(Page);
     }
 
     protected updateOptions() {
@@ -48,11 +51,25 @@ export class Page<TOptions extends IPageOptions = IPageOptions, TArgs extends Re
 
     async loadAsync(args?: TArgs)  {
 
+        let isValid = true;
+
         this._loadState = "loading";
 
         await this.loadAsyncWork(args);
 
-        this._loadState = "loaded";
+        if (this.features) {
+
+            for (const loader of this.features)
+                if (!await loader(this))
+                    isValid = false;
+        }
+
+        if (isValid)
+            this._loadState = "loaded";
+        else
+            this._loadState = "error";
+
+        return isValid; 
     }
 
     protected async loadAsyncWork(args?: TArgs) {
@@ -72,11 +89,16 @@ export class Page<TOptions extends IPageOptions = IPageOptions, TArgs extends Re
         return this._loadState;
     }
 
+
+    features: IFeature<this>[];
+
     title: string;
 
     content: ITemplateProvider;
 
     route: string;
+
+    declare name: string;
 }
 
 export default Page;

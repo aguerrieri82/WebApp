@@ -2,6 +2,7 @@ import { IComponentOptions, Component, TemplateMap } from "@eusoft/webapp-core";
 import { forModel, Template } from "@eusoft/webapp-jsx";
 import { IPage } from "../../abstraction/IPage";
 import "./index.scss";
+
 interface IPageHostOptions extends IComponentOptions {
 
 }
@@ -23,12 +24,12 @@ export class PageHost extends Component<IPageHostOptions> {
     protected _index: number;
     constructor(options?: IPageHostOptions) {
 
-        super({
+        super();
+
+        this.init(PageHost, {
             template: PageHostTemplates.Single,
             ...options
         });
-
-        this.init(PageHost);
     }
 
     protected initWork() {
@@ -48,7 +49,7 @@ export class PageHost extends Component<IPageHostOptions> {
 
     protected async loadPageAsync(page: IPage) {
 
-        if (page.loadState == "")
+        if (!page.loadState)
             await page.loadAsync();
     }
 
@@ -61,11 +62,6 @@ export class PageHost extends Component<IPageHostOptions> {
     pop() {
 
         this.content = this._stack.pop();
-    }
-
-    canGoBack() {
-
-        return true;
     }
 
     content: IPage;

@@ -1,15 +1,18 @@
+import { COMPONENT, ServiceType, StringLike, isComponent } from "./abstraction";
 import { IBehavoir, isBehavoir } from "./abstraction/IBehavoir";
 import type { BindValue, BoundObject, BoundObjectModes } from "./abstraction/IBinder";
 import { isHTMLContainer } from "./abstraction/IHTMLContainer";
+import { isMountListener } from "./abstraction/IMountListener";
 import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
 import { ITemplate, isTemplate } from "./abstraction/ITemplate";
+import { ITemplateContext } from "./abstraction/ITemplateContext";
 import { CatalogTemplate, ITemplateProvider, isTemplateProvider } from "./abstraction/ITemplateProvider";
-import type { StringLike } from "./abstraction/Types";
 import { Binder } from "./Binder";
-import { WebApp } from "./Debug";
+import { WebApp } from "./utils/Debug";
 import { cleanProxy, proxyEquals } from "./Expression";
-import { getTypeName, isClass } from "./ObjectUtils";
+import { getTypeName, isClass, setTypeName } from "./utils/Object";
 import { ArrayTemplate, BehavoirCatalog, TemplateCatalog, TextTemplate } from "./Templates";
+import { getComponent } from "./Component";
 
 type TemplateValueMap<TModel, TObj> = {
 
@@ -59,7 +62,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     protected _updateNode: Node = null;
     protected _shadowUpdate = false;
     protected _isRemoved = false;
-    protected _behavoirs: IBehavoir<TElement, TModel>[] = [];
+    protected _behavoirs: IBehavoir<HTMLElement, unknown>[] = [];
 
     constructor(model: TModel, element: TElement, parent?: TemplateBuilder<unknown>) {
 
@@ -194,18 +197,10 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this;
     }
 
-    protected execForSubBuilder(action: (builder: TemplateBuilder<unknown>) => void) {
-
-        const allBuilder = [...this._childBinders, ...this._modelBinders] as TemplateBuilder<unknown>[];
-
-        for (const builder of allBuilder) {
-            action(builder);
-            builder.execForSubBuilder(action);
-        }
-    }
-
-    //TODO improve this, call for all sub models avoid double calls
     clear(remove: boolean = false, cleanValue = true): this {
+
+        if (isMountListener(this.model) && this.isRootModel)
+            this.model.unmount();
 
         this._childCount = 0;
 
@@ -229,12 +224,12 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
                 curNode.parentNode.removeChild(curNode);
 
-                this.execForSubBuilder(builder => {
+                this.execForSubBinders(builder => {
 
                     for (const item of builder._behavoirs)
-                        item.detach(builder.element, builder.model);
+                        item.detach(this.getContext());
                     builder._behavoirs = [];
-                });
+                }, true);
             }
 
             if (curNode == this._startElement)
@@ -243,28 +238,115 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             curNode = prev;
         }
 
-        if (remove) {
-            this._endElement = null;
-            this._startElement = null;
-            this._lastElement = null;
-            this._isRemoved = true;
-        }
-        else
+        if (!remove)
             this._lastElement = this._startElement;
 
-        this.cleanBindings(cleanValue);
+        this.execForSubBinders(bld => {
+
+            if (remove) {
+                bld._endElement = null;
+                bld._startElement = null;
+                bld._lastElement = null;
+                bld._isRemoved = true;
+            }
+
+            bld.cleanBindings(cleanValue, false);
+
+        }, true);
 
         return this;
     }
 
-    isRemoved() {
-        let curBuilder = this as TemplateBuilder<unknown>;
-        while (curBuilder) {
-            if (curBuilder._isRemoved)
-                return true;
-            curBuilder = curBuilder.parent;
-        }
-        return false;
+    protected onRemoved() {
+
+        this._isRemoved = true;
+    }
+
+    protected getContext() {
+
+        const ctx = {
+
+            logTree: () => {
+
+                ctx.visitChildComponents((ctx, level) => {
+
+                    const compo = getComponent(ctx.model);
+
+                    console.log(" ".repeat(level * 3), getTypeName(compo));
+                })
+            },
+
+            require: <TService,>(service: ServiceType) => {
+
+                const parent = ctx.parent(m => typeof(m) == "object" && service in m);
+                if (parent)
+                    return (parent.model as Record<ServiceType, TService>)[service];
+
+            },
+
+            visitChildComponents: (visitor) => ctx.visitChildren(visitor, m => getComponent(m) != undefined),
+
+            visitChildren: (visitor, selector) => {
+
+                const visit = (item: this, curModel: unknown, level: number) => {
+
+                    const allBinders = [...item._childBinders, ...item._modelBinders] as this[];
+
+                    for (const binder of allBinders) {
+
+                        let nextModel = curModel;
+                        let nextLevel = level;
+
+                        if (binder.model != curModel) {
+
+                            if ((!selector || selector(binder.model))) {
+
+                                const result = visitor(binder.getContext(), level);
+
+                                if (result == "stop")
+                                    return false;
+
+                                if (result == "skip-children") 
+                                    continue;
+
+                                nextLevel = level + 1;
+                            }
+                
+                            nextModel = binder.model;
+                        }
+
+                        if (!visit(binder, nextModel, nextLevel))
+                            return false;
+                    }
+
+                    return true;
+                }
+
+                visit(this, this.model, 0);
+            },
+
+            parent: selector => {
+
+                let curParent = this.parent;
+
+                while (curParent && (curParent.model == this.model || (selector && !selector(curParent.model))))
+                    curParent = curParent.parent;
+
+                if (curParent)
+                    return curParent.getContext();
+            },
+
+            parentOfType: type => ctx.parent(m => m instanceof type),
+
+            parentComponent: () => ctx.parent(m => isComponent(m)),
+
+            model: this.model,
+
+            element: this.element
+
+        } as ITemplateContext
+
+        return ctx;
     }
 
     appendChild(node: Node): this {
@@ -390,7 +472,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this;
     }
 
-    switch<TValue>(selector: BindValue<TModel, TValue>, build: (bld: SwitchBuilder<TValue>) => void): this  {
+    switch<TValue>(selector: BindValue<TModel, TValue>, build: (bld: SwitchBuilder<TValue>) => void): this {
 
         const builder = new SwitchBuilder<TValue>();
 
@@ -517,6 +599,12 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                     }, prop == "builder" || mode == "no-bind" ? "no-bind" : undefined);
                 }
             }
+
+            if (!isClass(constructor)) {
+                (props as Record<symbol, unknown>)[COMPONENT] = constructor;
+                setTypeName(props, getTypeName(constructor));
+            }
+
         }
 
         if (isClass(constructor))
@@ -527,7 +615,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         const result = constructor(model as TProps);
 
         callOnChange = !isTemplate(result);
-
 
         return {
             component: result,
@@ -619,6 +706,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                         childBuilder.updateModel(model);
 
                         template(childBuilder);
+
+                        if (isMountListener(value))
+                            value.mount(this.getContext());
                     }
                 }
 
@@ -892,7 +982,8 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 let lastValue: string;
 
                 const check = () => {
-                    if (!element.isConnected || this.isRemoved())
+
+                    if (!element.isConnected || this._isRemoved)
                         return;
 
                     if (lastValue !== undefined && lastValue != element.value)
@@ -1033,7 +1124,7 @@ class ChildTemplateBuilder<TModel, TElement extends HTMLElement, TParent extends
         }
 
         for (const item of this._behavoirs)
-            item.attach(this.element, this.model);
+            item.attach(this.getContext());
 
         return <TParent>this.parent;
     }

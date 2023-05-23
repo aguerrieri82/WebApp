@@ -5,13 +5,13 @@ export abstract class Editor<TValue, TOptions extends IEditorOptions<TValue>> ex
 
     constructor(options?: TOptions) {
 
-        super({
+        super();
+
+        this.init(Editor, {
             visible: true,
             commitMode: "auto",
             ...options
         });
-
-        this.init(Editor);
     }
 
     protected initWork() {
@@ -31,9 +31,6 @@ export abstract class Editor<TValue, TOptions extends IEditorOptions<TValue>> ex
     onValueChanged(value: TValue, oldValue: TValue, reason: ValueChangedReason) {
 
     }
-
-
-    visible: boolean;
 
     disabled: boolean;
 

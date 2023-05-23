@@ -70,9 +70,9 @@ type ElementProps<TModel extends TemplateModel, TElement> =
     }
 
 type InputProps<TModel extends TemplateModel, TElement> =
-    ElementProps<TModel, TElement> &
+    Omit< ElementProps<TModel, TElement>, "value"> &
     {
-        "value"?: BindValue<TModel, string>;
+        "value"?: BindValue<TModel, string|boolean>;
         "value-mode"?: InputValueMode;
         "value-pool"?: number;
     }
@@ -95,10 +95,10 @@ declare global {
             ref?: BindValue<T, any>;
         }
 
-        type IntrinsicElements = {
+        type IntrinsicElements = Omit<{
 
             [P in keyof HTMLElementTagNameMap]: ElementProps<any, HTMLElementTagNameMap[P]>
-        } & {
+        }, "input"> & {
 
             ["input"]: InputProps<any, HTMLElementTagNameMap["input"]>
             ["select"]: InputProps<any, HTMLElementTagNameMap["select"]>

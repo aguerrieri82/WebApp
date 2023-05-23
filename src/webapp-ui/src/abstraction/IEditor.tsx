@@ -7,8 +7,6 @@ export interface IEditorOptions<TValue> extends IComponentOptions {
 
     label?: Bindable<ViewNode>;
 
-    visible?: Bindable<boolean>;
-
     disabled?: Bindable<boolean>;
 
     value?: Bindable<TValue, "two-ways">;

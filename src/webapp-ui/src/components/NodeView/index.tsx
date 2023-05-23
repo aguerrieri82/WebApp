@@ -8,7 +8,7 @@ export interface INodeViewOptions {
 export function NodeView(options: INodeViewOptions) {
 
     return <>
-        <Foreach src={Array.isArray(options.content) ? options.content : [options.content]}>
+        <Foreach src={(Array.isArray(options.content) ? options.content : [options.content]) as []}>
             {i => <Switch src={i}>
                 {v => <>
                     <When condition={typeof v == "string"}>
