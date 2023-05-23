@@ -10,6 +10,8 @@ import { cloneObject } from "../../utils/Object";
 
 type ObjectEditorValidationMode = "manual" | "onInputChange";
 
+
+
 interface IObjectEditorOptions<TObj extends Record<string, any>> extends ICommitableEditorOptions<TObj, TObj> {
 
     builder: (builder: EditorBuilder<TObj, ObjectEditor<TObj>>) => ITemplate<TObj> | JSX.Element;
