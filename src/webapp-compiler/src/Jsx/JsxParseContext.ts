@@ -217,6 +217,8 @@ function CondictionalExpressionHandler(ctx: JsxParseContext, stage: "exp", path:
     if (stage != "exp" || ctx.curAttribute || !path.isConditionalExpression())
         return;
 
+    const curElement = ctx.curElement;
+
     ctx.enterNewElement("t:if");
     ctx.curAttribute = ctx.createAttribute("condition", null, ctx.curElement);
 
@@ -229,9 +231,8 @@ function CondictionalExpressionHandler(ctx: JsxParseContext, stage: "exp", path:
 
     path.get("alternate").visit();
 
-    ctx.exitElement();
-
-    ctx.exitElement();
+    while(ctx.curElement != curElement)
+        ctx.exitElement();
 
     path.shouldSkip = true;
 

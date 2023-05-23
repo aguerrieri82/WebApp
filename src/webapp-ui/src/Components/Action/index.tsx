@@ -18,7 +18,7 @@ interface IActionOptions<TTarget> extends IComponentOptions {
 export const ActionTemplates: TemplateMap<Action> = {
 
     "Button": forModel(m => <Template name="Action">
-        <button visible={m.visible} behavoir={Ripple} className={m.className} on-click={m => m.executeAsync()}>
+        <button visible={m.visible} behavoir={Ripple} className={m.className} on-click={m => m.doExecuteAsync()}>
             <Class name="executing" condition={m.isExecuting} />
             {m.content}
         </button>
@@ -39,13 +39,10 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
 
     protected updateOptions() {
 
-        this.bindOptions("content");
-
-        if (this.options.executeAsync)
-            this.executeAsyncWork = this.options?.executeAsync;
+        this.bindOptions("content", "executeAsync");
     }
 
-    async executeAsync(ctx?: IActionContext<TTarget>) {
+    async doExecuteAsync(ctx?: IActionContext<TTarget>) {
 
         if (this.isExecuting)
             return;
@@ -59,7 +56,7 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
         try {
             this.isExecuting = true;
 
-            await this.executeAsyncWork(ctx);
+            await this.executeAsync(ctx);
 
         }
         finally {
@@ -70,9 +67,8 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
         }
     }
 
-    protected executeAsyncWork(ctx?: IActionContext<TTarget>) {
 
-    }
+    executeAsync: (ctx?: IActionContext<TTarget>) => Promise<void> | void;
 
     isExecuting: boolean;
 

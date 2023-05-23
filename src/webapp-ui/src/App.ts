@@ -16,7 +16,7 @@ export class App  {
 
     constructor(options?: IAppOptions) {
 
-        this.pageHost.provides(new OperationManager());
+
     }
 
     runAsync(root?: HTMLElement | string) {
@@ -26,6 +26,8 @@ export class App  {
 
         else if (!root)
             root = document.body;
+
+        this.pageHost.provides(new OperationManager());
 
         mount(root, this.pageHost);
 

@@ -1170,7 +1170,7 @@ export function mount<TModel>(root: HTMLElement, template: CatalogTemplate<TMode
 export function mount(root: HTMLElement, component: ITemplateProvider): void;
 export function mount<TModel>(root: HTMLElement, templateOrProvider: CatalogTemplate<TModel> | ITemplateProvider, model?: TModel): void {
 
-    root.innerHTML = "";
+    //root.innerHTML = "";
 
     const template = isTemplateProvider(templateOrProvider) ? templateOrProvider.template : templateOrProvider;
 
