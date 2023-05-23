@@ -885,13 +885,14 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             if (isClear)
                 return;
 
-            if (newValue) {
-                this.element.classList.add("visible");
-                this.element.classList.remove("hidden");
-            }
-            else {
+            if (newValue === false) {
                 this.element.classList.add("hidden");
                 this.element.classList.remove("visible");
+
+            }
+            else {
+                this.element.classList.add("visible");
+                this.element.classList.remove("hidden");
             }
         });
         return this;

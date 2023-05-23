@@ -20,7 +20,7 @@ export const PageHostTemplates: TemplateMap<PageHost> = {
 }
 export class PageHost extends Component<IPageHostOptions> {
 
-    protected _stack: IPage[] = [];
+    protected _stack: IPage[] = []; 
     protected _index: number;
     constructor(options?: IPageHostOptions) {
 
@@ -32,36 +32,35 @@ export class PageHost extends Component<IPageHostOptions> {
         });
     }
 
-    protected initWork() {
 
-        this.onChanged("content", async (value, old) => {
+    async loadPageAsync<T>(page: IPage<T>, args?: T) {
 
-            if (old?.onClose)
-                old.onClose();
+        if (page?.loadAsync) {
+            if (!await page.loadAsync(page, args))
+                return false;
+        }
 
-            if (value?.loadAsync)
-                await this.loadPageAsync(value);
+        if (this.content?.onClose)
+            this.content.onClose();
 
-            if (value?.onOpen)
-                value.onOpen();
-        });
+        this.content = page;
+
+        if (this.content.onOpen)
+            page.onOpen();
+
+        return true;
     }
 
-    protected async loadPageAsync(page: IPage) {
-
-        if (!page.loadState)
-            await page.loadAsync();
-    }
 
     push(page: IPage) {
         this._stack.push(this.content);
-        this.content = page;
+        this.loadPageAsync(page);
         return page;
     }
 
     pop() {
 
-        this.content = this._stack.pop();
+        this.loadPageAsync(this._stack.pop());
     }
 
     content: IPage;

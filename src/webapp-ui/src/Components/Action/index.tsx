@@ -18,7 +18,7 @@ interface IActionOptions<TTarget> extends IComponentOptions {
 export const ActionTemplates: TemplateMap<Action> = {
 
     "Button": forModel(m => <Template name="Action">
-        <button visible={m.visible} behavoir={Ripple} className={m.className} on-click={() => m.executeAsync()}>
+        <button visible={m.visible} behavoir={Ripple} className={m.className} on-click={m => m.executeAsync()}>
             <Class name="executing" condition={m.isExecuting} />
             {m.content}
         </button>
@@ -52,7 +52,9 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
 
         const operation = this.context.require<OperationManager>(OPERATION_MANAGER);
 
-        const newOp = operation.begin();
+        const newOp = operation?.begin({
+            name: "Executing " + this.name,
+        });
 
         try {
             this.isExecuting = true;
@@ -62,7 +64,7 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
         }
         finally {
 
-            newOp.end();
+            newOp?.end();
 
             this.isExecuting = false;
         }

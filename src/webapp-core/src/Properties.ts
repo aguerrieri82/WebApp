@@ -89,6 +89,8 @@ export function createProp<TObj extends object, TKey extends (keyof TObj) & stri
 
     Object.defineProperty(obj, propName, {
 
+        enumerable: true,
+
         get: () => property.get(),
 
         set: (newValue) => property.set(newValue)

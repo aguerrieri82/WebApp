@@ -82,10 +82,7 @@ export class Router {
 
         const result = this.addAction(page.route, async args => {
 
-            await page.loadAsync(args as TArgs);
-
-            app.pageHost.content = page;
-
+            await app.pageHost.loadPageAsync(page, args);
         });
 
         result.tag = page;

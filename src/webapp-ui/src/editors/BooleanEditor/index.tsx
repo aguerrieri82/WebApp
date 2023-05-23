@@ -6,13 +6,12 @@ import { Editor } from "../Editor";
 
 interface IBooleanEditorOptions extends IEditorOptions<boolean> {
 
-
 }
 
 export const BoolEditorTemplates: TemplateMap<BooleanEditor> = {
 
     "Default": forModel(m => <Template name="BooleanEditor">
-        <input visible={m.visible} disabled={m.disabled} type="check" value={m.value} >
+        <input className={m.className}  visible={m.visible} disabled={m.disabled} type="checkbox" value={m.value} >
             <Class name="default"/>
         </input>
     </Template>)
@@ -28,10 +27,6 @@ export class BooleanEditor extends Editor<boolean, IBooleanEditorOptions> {
             template: BoolEditorTemplates.Default,
             ...options
         });
-    }
-
-    protected updateOptions() {
-
     }
 }
 

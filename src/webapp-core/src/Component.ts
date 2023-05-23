@@ -27,16 +27,22 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     constructor() {
 
+        this.options = {} as TOptions;
         this.init(Component);
     }
 
     protected init(caller: Function, options?: TOptions) {
 
+        if (options) 
+            Object.assign(this.options, options);
+
         if (caller != this.constructor)
             return;
 
-        if (options)
-            this.configure(options);
+        const upOptions = enumOverrides(this, "updateOptions" as any);
+
+        for (const func of upOptions) 
+            func.call(this);
 
         const inits = enumOverrides(this, "initWork" as any);
 
@@ -49,28 +55,11 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     protected initWork() {
 
-        this.configure(this.options);
-
         this.onChanged("style", () => this.updateClass());
 
         this.onChanged("name", () => this.updateClass());
     }
 
-    protected configure(newOptions?: Partial<TOptions>) {
-
-        if (!newOptions)
-            return;
-
-        this.options = {
-            ...this.options,
-            ...newOptions
-        }
-
-        const updates = enumOverrides(this, "updateOptions" as any);
-
-        for (const func of updates)
-            func.call(this);
-    }
 
     protected updateOptions() {
 

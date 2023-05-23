@@ -23,9 +23,9 @@ interface IObjectEditorOptions<TObj extends Record<string, any>> extends ICommit
 export const ObjectEditorTemplates: TemplateMap<ObjectEditor<any>> = {
 
     "Default": forModel(m => <Template name="ObjectEditor">
-        <div className={m.className} visible={m.visible} > 
+        <form className={m.className} visible={m.visible} > 
             <Content src={m.editValue} template={m.contentTemplate()}/>
-        </div>
+        </form>
     </Template>)
 }
 
@@ -41,6 +41,7 @@ export class ObjectEditor<TObj extends Record<string, any>> extends CommitableEd
         this.init(ObjectEditor, {
             validationMode: "manual",
             template: ObjectEditorTemplates.Default,
+            value: {} as TObj,
             ...options,
         });
     }

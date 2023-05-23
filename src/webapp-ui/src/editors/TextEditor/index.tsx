@@ -19,7 +19,7 @@ interface ITextEditorOptions extends IEditorOptions<string> {
 export const TextEditorTemplates: TemplateMap<TextEditor> = {
 
     "Default": forModel(m => <Template name="TextEditor">
-        <input placeholder={m.placeholder} visible={m.visible} disabled={m.disabled} type={m.password ? "password" : "text"} value={m.value} >
+        <input className={m.className}  placeholder={m.placeholder} visible={m.visible} disabled={m.disabled} type={m.password ? "password" : "text"} value={m.value} >
             <Class name="default"/>
         </input>
     </Template>)
