@@ -222,6 +222,8 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
     options: TOptions;
 
     name?: string;
+
+    model: never;
 }
 
 export function getComponent(obj: any): Function {

@@ -5,27 +5,31 @@
     flex-direction: row;
     gap: size(3);
 
-    .step-list {
+    > .step-list {
         margin: 0;
         padding: 0;
         list-style: none;
+        flex-shrink: 0;
 
         li {
             padding: size(1) size(1.5);
+            transition-duration: $duration-fast;
 
             &.active {
                 color: $primary-color;
+                font-weight: bold;
             }
         }
     }
 
-    .body {
+    > .body {
         padding-top: size(1);
-
+        flex-grow: 1;
 
         > header {
             font-weight: bold;
             font-size: 18px;
+            margin-bottom: size(2);
         }
 
         > footer {

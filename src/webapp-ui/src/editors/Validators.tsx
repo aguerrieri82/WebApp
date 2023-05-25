@@ -15,6 +15,16 @@ export const ValidationResult = {
 }
 
 
+export async function validEmail(ctx: IValidationContext<any>, value: any) {
+
+    const regExp = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
+    const isValid = !value || value.trim().length == 0 ? true : regExp.test(value);
+    if (!isValid)
+        return ValidationResult.error(formatText("msg-invalid-email", ctx?.fieldName));
+
+    return ValidationResult.valid;
+}
+
 export async function required(ctx: IValidationContext<any>, value: any)  {
 
     if (value === null || value === undefined || Array.isArray(value) && value.length == 0 || typeof(value) == "string" && value.trim().length == 0)

@@ -26,10 +26,8 @@ export interface IWizardStepOptions {
 
     loadAsync?: () => Promise<any>;
 
-    validateAsync?: () => Promise<boolean>;
-
+    validateAsync?: (step?: WizardStep) => Promise<boolean>;
 }
-
 
 export class WizardStep implements IWizardStepOptions {
 
@@ -44,7 +42,7 @@ export class WizardStep implements IWizardStepOptions {
 
     }
 
-    async validateAsync(): Promise<boolean> {
+    async validateAsync(step: WizardStep): Promise<boolean> {
 
         if (isValidable(this.content))
             return await this.content.validateAsync();
@@ -157,18 +155,18 @@ export class Wizard extends Component<IWizardOptions> {
     nextAsync() {
 
         if (this.canGoNext())
-            this.goToAsync(this.activeStepIndex + 1);
+            this.goToAsync(this.activeStepIndex + 1, true);
     }
 
     prevAsync() {
 
         if (this.canGoPrev())
-            this.goToAsync(this.activeStepIndex - 1);
+            this.goToAsync(this.activeStepIndex - 1, false);
     }
 
-    async goToAsync(index: number) {
+    async goToAsync(index: number, validate: boolean) {
 
-        if (!await this.activeStep.validateAsync())
+        if (validate && !await this.activeStep.validateAsync(this.activeStep))
             return;
 
         this.activeStepIndex = index;

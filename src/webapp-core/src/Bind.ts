@@ -3,6 +3,11 @@ import type { BindExpression } from "./abstraction/IBinder";
 
 export namespace Bind {
 
+    export function action<T extends Function>(value: T): T {
+
+        return value;
+    }
+
     export function parent<T>(m: object): T {
 
         return (m as IBindable)[PARENT] as T;

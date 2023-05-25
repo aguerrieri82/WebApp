@@ -1,6 +1,6 @@
 ﻿import { IBindable } from "./IBindable";
 
-export type BindMode = "one-way" | "two-ways" | "no-bind";
+export type BindMode = "one-way" | "two-ways" | "no-bind" | "action";
 
 export interface IGetter<TObj, TValue> {
     (model: TObj): TValue;

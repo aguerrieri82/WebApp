@@ -5,6 +5,8 @@ import { CORE_MODULE, TemplateAttributes, TemplateElements } from "../Consts";
 import type { JsxCompiler } from "../JsxCompiler";
 import { toKebabCase } from "../TextUtils";
 import * as parser from "@babel/parser";
+import * as types from "@babel/types";
+
 
 type JsxNodeHandler = {
 
@@ -18,7 +20,7 @@ interface IStack {
 
 function TransfromNotModelRef(ctx: JsxParseContext, stage: "trans-exp", path: NodePath<Expression>) {
 
-    if (stage != "trans-exp" || !ctx.curModel || ctx.curAttribute?.name.startsWith("t:on-"))
+    if (stage != "trans-exp" /*|| ctx.curAttribute?.name.startsWith("t:on-")*/)
         return;
 
     if (!path.isMemberExpression())
@@ -37,7 +39,10 @@ function TransfromNotModelRef(ctx: JsxParseContext, stage: "trans-exp", path: No
 
     const exp = builder ? `${builder}.model` : obj.toString();
 
-    ctx.replaceNode(obj, `${ctx.curModel.name}[USE](${exp})`);
+    if (ctx.curModel) 
+        ctx.replaceNode(obj, `${ctx.curModel.name}[${ctx.useImport("USE")}](${exp})`);
+    else
+        ctx.replaceNode(obj, exp);
 
 
     path.shouldSkip = true;
@@ -166,11 +171,18 @@ function ExpressionHandler(ctx: JsxParseContext, stage: "enter", path: NodePath)
             return;
     }
 
-    const bindMode = ctx.transformExpression(path);
+    let createBind = !ctx.isBinding(path) && ctx.isBindable();
+
+    const bindMode = ctx.withModel(createBind ? ctx.curModel : null, () => ctx.transformExpression(path));
+
+    if (bindMode == "no-bind" || bindMode == "action") {
+        ctx.curModel = null;
+        createBind = false;
+    }
 
     let value = path.toString();
 
-    if (!ctx.isBinding(path) && ctx.isBindable()) {
+    if (createBind) {
 
         if (path.isObjectExpression())
             value = "(" + value + ")";
@@ -210,6 +222,31 @@ function ArrowTemplateExpressionHandler(ctx: JsxParseContext, stage: "exp", path
             return true;
         }
     }
+}
+
+function TransformEqualsExpressionHandler(ctx: JsxParseContext, stage: "trans-exp", path: NodePath<Expression>): boolean {
+
+    if (stage != "trans-exp" || !path.isBinaryExpression())
+        return;
+
+    const op = path.node.operator;
+
+    if (!(op == "==" || op == "===" || op == "!==" || op == "!="))
+        return;
+
+    const left = path.get("left");
+    const right = path.get("right");
+
+    if (ctx.hasModelRefs(left)) {
+        left.replaceWith(types.callExpression(types.identifier(ctx.useImport("cleanProxy")), [left.node as Expression]));
+    }
+
+    if (ctx.hasModelRefs(right)) {
+        right.replaceWith(types.callExpression(types.identifier(ctx.useImport("cleanProxy")), [right.node]));
+    }
+
+    return true;
+    
 }
 
 function CondictionalExpressionHandler(ctx: JsxParseContext, stage: "exp", path: NodePath<Expression>): boolean {
@@ -282,8 +319,18 @@ export class JsxParseContext {
         this.handlers.push(ArrowTemplateExpressionHandler);
         this.handlers.push(CondictionalExpressionHandler);
         this.handlers.push(AndExpressionHandler);
+        this.handlers.push(TransformEqualsExpressionHandler);
         
         this.compiler = compiler;
+        this.usedImports = [];
+    }
+
+    withModel<T>(model: Identifier,  action: () => T) : T{
+        const oldModel = this.curModel;
+        this.curModel = model;
+        const result = action();
+        this.curModel = oldModel;
+        return result;
     }
 
     isTemplateDefinition(path: NodePath) {
@@ -333,6 +380,10 @@ export class JsxParseContext {
         this.traverseFromRoot(template, {
 
             enter: path => {
+
+                if (path.shouldStop)
+                    debugger;
+
                 for (const handler of this.handlers) {
                     if (handler(this, "enter", path))
                         return;
@@ -373,7 +424,8 @@ export class JsxParseContext {
             this.curModel = tempModel;
 
         const helper = this.getHelper(exp);
-        if (helper?.name == "twoWays" || helper?.name == "noBind" || helper?.name == "oneWay") {
+
+        if (helper?.name == "twoWays" || helper?.name == "noBind" || helper?.name == "oneWay" || helper?.name == "action") {
             exp.replaceWith(helper.body);
             result = toKebabCase(helper.name) as BindMode;
         }
@@ -536,6 +588,31 @@ export class JsxParseContext {
         }
     }
 
+    hasModelRefs(exp: NodePath) {
+
+        let result = false;
+
+        this.traverseFromRoot(exp, {
+            enter: path => {
+                if (path.isIdentifier()) {
+
+                    const binding = path.scope.getBinding(path.toString());
+                    if (!binding)
+                        return;
+
+                    const builder = this.findBuilder(binding.identifier);
+
+                    if (builder) {
+                        result = true;
+                        exp.shouldStop = true;
+                    }
+                }
+            }
+        });
+
+        return result;
+    }
+
     generateBuilder() {
         this.curBuilder = "t" + (this.stack.length > 0 ? this.stack.length : "");
     }
@@ -550,6 +627,12 @@ export class JsxParseContext {
         obj.replaceWith(ast.program.body[0]);
     }
 
+    useImport(name: string) {
+        if (this.usedImports.indexOf(name) == -1)
+            this.usedImports.push(name);
+        return name;
+    }
+
     rootElement: ITemplateElement;
 
     curElement: ITemplateElement;
@@ -559,6 +642,8 @@ export class JsxParseContext {
     curModel: Identifier;
 
     curBuilder: string;
+
+    readonly usedImports: string[];
 
     readonly compiler: JsxCompiler;
 

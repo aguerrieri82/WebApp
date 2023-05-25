@@ -596,7 +596,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                         model[prop] = value;
                         if (callOnChange && !isClass(constructor))
                             constructor(model as TProps);
-                    }, prop == "builder" || mode == "no-bind" ? "no-bind" : undefined);
+                    }, prop == "builder" || mode == "no-bind" || mode == "action" ? "no-bind" : undefined);
                 }
             }
 

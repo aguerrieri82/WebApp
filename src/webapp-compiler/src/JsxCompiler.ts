@@ -99,7 +99,7 @@ export class JsxCompiler extends BaseCompiler {
 
         const replaces: ITextReplacement[] = [];
 
-        const toImport = ["USE", "PARENT"].filter(a => coreImports.indexOf(a) == -1);
+        const toImport = ["USE", "cleanProxy"].filter(a => coreImports.indexOf(a) == -1);
 
         if (toImport.length > 0)
             ctx.writer.writeImport("@eusoft/webapp-core", ...toImport);

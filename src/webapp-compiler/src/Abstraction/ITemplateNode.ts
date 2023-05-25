@@ -1,5 +1,5 @@
 
-export type BindMode = "two-ways" | "no-bind" | "one-way" | undefined;
+export type BindMode = "two-ways" | "no-bind" | "one-way" | "action" | undefined;
 
 export enum TemplateNodeType {
     Text,
