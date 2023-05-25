@@ -2,10 +2,10 @@ import { Bindable, IComponentOptions, IComponent, Component, ITemplateProvider, 
 import { Class, JsxNode, Template, forModel } from "@eusoft/webapp-jsx";
 import { Ripple } from "../../behavoirs/Ripple";
 import { IActionContext } from "../../abstraction/IAction";
-import "./index.scss";
 import { OperationManager } from "../../services";
 import { OPERATION_MANAGER } from "../../abstraction";
 import { ViewNode } from "../../Types";
+import "./index.scss";
 
 interface IActionOptions<TTarget> extends IComponentOptions {
 

@@ -1,11 +1,208 @@
-@import "../../themes/_Global";
+@import "../../themes/_vars";
+@import "../../editors/index";
+
 
 .input-field {
-    &.default {
-        
+    transition-duration: $duration-normal;
+    position: relative;
+
+    > * {
+        transition-duration: $duration-normal;
     }
 
-    .error{
-        color: red;
+    > label {
+        color: $label-color;
+    }
+
+    > .error {
+        opacity: 0;
+        color: $error-color;
+        transition-duration: $duration-fast;
+        padding-left: size(2);
+        font-size: $font-size-small;
+        height: 16px;
+
+        &:before {
+            line-height: 16px;
+            vertical-align: super;
+            content: "";
+        }
+    }
+
+
+    &.vertical-label {
+        display: flex;
+        flex-direction: column;
+        gap: size(0.5);
+
+        label {
+            font-size: $font-size-small;
+            font-weight: bold;
+        }
+    }
+
+    &.no-label {
+        label {
+            display: none;
+        }
+    }
+
+    &.invalid {
+
+        > .error {
+            opacity: 1;
+        }
+
+        > label {
+            color: $error-color;
+        }
+    }
+
+    &:has(input[type=checkbox]):not(:has(label:empty)) {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        column-gap: size(2);
+        align-items: center;
+
+        > label {
+            order: 1;
+        }
+
+        > .editor-container {
+            order: 0;
+        }
+
+        > .error {
+            order: 3;
+            width: 100%;
+        }
+    }
+
+    &:not(:has(.editor input[type=checkbox],.editor input[type=radio])) {
+
+        > .editor-container {
+            @include edit-box;
+            transition: all $duration-normal, border-width 0s;
+            position: relative;
+
+            > * {
+                border: none;
+                padding: 0;
+                outline: none;
+                background: transparent;
+                width: 100%;
+            }
+        }
+
+        &.outlined, &.border {
+
+            &:focus-within {
+                > .editor-container {
+                    border-width: 2px;
+                    border-color: $border-color-focus;
+                }
+            }
+
+            &.invalid {
+                > .editor-container {
+                    border-color: $error-color;
+                }
+            }
+        }
+
+
+        &.outlined, &.filled {
+
+            > label {
+                position: absolute;
+                left: size(2);
+                pointer-events: none;
+                z-index: 1;
+            }
+
+            &.empty:not(:focus-within) {
+                > label {
+                    top: calc(50% - 8px - 0.5em);
+                }
+            }
+
+            &:focus-within, &:not(.empty) {
+
+                > label {
+                    font-size: $font-size-small;
+                    line-height: unset;
+                }
+
+                &:not(.invalid) {
+                    > label {
+                        color: $border-color-focus;
+                    }
+                }
+            }
+        }
+
+
+        &.outlined {
+
+            > label {
+                display: inline-block;
+                padding: 0 size(0.5);
+            }
+
+            &:focus-within, &:not(.empty) {
+
+                > label {
+                    top: -6px;
+                    background-color: white;
+                }
+            }
+
+            > .editor-container {
+                padding-top: 16px;
+            }
+        }
+
+        &.filled {
+
+            &:not(.border) {
+                > .editor-container {
+                    border: none;
+
+                    &:after {
+                        content: "";
+                        width: 0%;
+                        height: 2px;
+                        bottom: 1px;
+                        left: 50%;
+                        background-color: $border-color-focus;
+                        position: absolute;
+                        transition: all ease $duration-fast;
+                    }
+                }
+
+                &:focus-within {
+                    > .editor-container {
+                        &:after {
+                            width: calc(100% - 8px);
+                            left: 4px;
+                        }
+                    }
+                }
+            }
+
+            > .editor-container {
+                background-color: $editor-filled-color;
+                padding-top: 21px;
+            }
+
+
+            &:focus-within, &:not(.empty) {
+
+                > label {
+                    top: 6px;
+                }
+            }
+        }
     }
 }

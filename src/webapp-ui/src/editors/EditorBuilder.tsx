@@ -2,7 +2,7 @@ import { Expression, BindExpression } from "@eusoft/webapp-core";
 import { ViewNode } from "../Types";
 import { IEditor, IEditorOptions } from "../abstraction/IEditor";
 import { Validator } from "../abstraction/Validator";
-import { InputField } from "../components";
+import { IInputFieldOptions, InputField } from "../components";
 
 interface EditorBuilderOptions<TModel, TModelContainer extends Record<string, any>> {
 
@@ -11,6 +11,8 @@ interface EditorBuilderOptions<TModel, TModelContainer extends Record<string, an
     container: TModelContainer;
 
     attach?: (editor: InputField<any, any>) => void;
+
+    inputField?: Partial<IInputFieldOptions<unknown, TModel>>;
 }
 
 export interface IBuilderEditorOptions<TModel, TValue, TEditorOptions extends IEditorOptions<TValue>> {
@@ -22,6 +24,8 @@ export interface IBuilderEditorOptions<TModel, TValue, TEditorOptions extends IE
     validators?: Validator<TValue, TModel>[];
 
     editor?: TEditorOptions;
+
+
 }
 
 export class EditorBuilder<TModel, TModelContainer extends Record<string, any>> {
@@ -45,7 +49,8 @@ export class EditorBuilder<TModel, TModelContainer extends Record<string, any>> 
             name: options?.name ?? propName,
             label: options?.label,
             validators: options?.validators,
-            value: undefined
+            value: undefined,
+            ...this._options?.inputField
         }); 
 
         input.bindTwoWays(m => m.value, this._options.container, m => bind(this._options.model(m)));

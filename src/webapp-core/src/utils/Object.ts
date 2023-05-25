@@ -83,6 +83,17 @@ export function getBaseType(objOrFun: object | Type<any>): Type<any> {
     return Object.getPrototypeOf(proto).constructor;
 }
 
+export function *objectHierarchy(obj: object) {
+
+    let curType = Object.getPrototypeOf(obj);
+
+    while (curType) {
+        yield curType.constructor;
+        curType = Object.getPrototypeOf(curType);
+    }
+    
+} 
+
 export function enumOverrides<TObj extends {}, TFunc extends Function, TKey extends KeyOfType<TObj, TFunc>>(obj: TObj, func: TKey): TFunc[] {
 
     let curType = Object.getPrototypeOf(obj);

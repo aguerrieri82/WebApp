@@ -29,7 +29,7 @@ export const PageTemplates: TemplateMap<Page> = {
         </div>
     </Template>)
 
-}
+}			
 export class Page<TOptions extends IPageOptions = IPageOptions, TArgs extends Record<string, any> = undefined> extends Component<TOptions> implements IPage<TArgs> {
 
     protected _loadState: LoadState;

@@ -1,0 +1,16 @@
+@import "../../themes/_vars";
+
+.boolean-editor {
+    
+    display: flex;
+    gap: size(2);
+    align-items: center;
+
+    input {
+        padding: 0;
+        margin: 0;
+        display: inline-block;
+        vertical-align: middle;
+        margin-top: 1px;
+    }
+}

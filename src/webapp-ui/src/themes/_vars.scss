@@ -1,0 +1,18 @@
+$primary-color: unset !default;
+
+$font-family: unset !default;
+$back-color: unset !default;
+$border-color: unset !default;
+$border-color-focus: $primary-color !default;
+$error-color: unset !default;
+$text-color: unset !default;
+
+$font-size: 16px !default;
+$font-size-small: 12px !default;
+
+$duration-normal: 0.3s !default;
+$duration-fast: 0.2s !default;
+
+@function size($value){
+    @return $value * 8px;
+}

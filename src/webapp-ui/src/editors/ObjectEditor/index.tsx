@@ -1,16 +1,15 @@
 import { ITemplate, TemplateMap, withCleanup } from "@eusoft/webapp-core";
 import { Content, Template, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "../EditorBuilder";
-import { InputField } from "../../components";
+import { IInputFieldOptions, InputField } from "../../components";
 import { IValidationContext } from "../../abstraction/Validator";
 import { CommitableEditor, ICommitableEditorOptions } from "../CommitableEditor";
 import { isCommitable } from "../../abstraction/ICommitable";
 import { IEditor } from "../../abstraction/IEditor";
 import { cloneObject } from "../../utils/Object";
+import "./index.scss";
 
 type ObjectEditorValidationMode = "manual" | "onInputChange";
-
-
 
 interface IObjectEditorOptions<TObj extends Record<string, any>> extends ICommitableEditorOptions<TObj, TObj> {
 
@@ -19,6 +18,8 @@ interface IObjectEditorOptions<TObj extends Record<string, any>> extends ICommit
     validationMode?: ObjectEditorValidationMode;
 
     isDynamic?: boolean;
+
+    inputField?: Partial<IInputFieldOptions<unknown, TObj>>;
 
 }
 
@@ -50,7 +51,7 @@ export class ObjectEditor<TObj extends Record<string, any>> extends CommitableEd
 
     protected updateOptions() {
 
-        this.bindOptions("builder", "isDynamic", "validationMode");
+        this.bindOptions("builder", "isDynamic", "validationMode", "inputField");
     }
 
     contentTemplate() { 
@@ -60,6 +61,7 @@ export class ObjectEditor<TObj extends Record<string, any>> extends CommitableEd
             const innerTemplate = this.builder(new EditorBuilder({
                 container: this,
                 model: a => a.editValue,
+                inputField: this.inputField,
                 attach: editor => {
 
                     this._inputs.push(editor);
@@ -151,6 +153,8 @@ export class ObjectEditor<TObj extends Record<string, any>> extends CommitableEd
     validationMode: ObjectEditorValidationMode;
 
     builder: (builder: EditorBuilder<TObj, this>) => JSX.Element;
+
+    inputField: Partial<IInputFieldOptions<unknown, TObj>>;
 }
 
 export default ObjectEditor;

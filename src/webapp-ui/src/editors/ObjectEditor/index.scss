@@ -1,0 +1,10 @@
+@import "../../themes/_vars";
+
+.object-editor {
+
+    &.vertical {
+        display: flex;
+        flex-direction: column;
+        gap: size(2);
+    }
+}

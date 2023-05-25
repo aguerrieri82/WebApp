@@ -4,6 +4,8 @@ import { MaterialIconName } from "./Material";
 export interface IIconOptions {
     content: ViewNode;
 }
+
+//TODO implement
 export function Icon(options: IIconOptions) {
 
     return <>

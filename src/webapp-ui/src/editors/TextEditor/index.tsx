@@ -4,14 +4,15 @@ import { IEditorOptions } from "../../abstraction/IEditor";
 import { LocalString } from "../../Types";
 import { EditorBuilder } from "../EditorBuilder";
 import { Editor } from "../Editor";
-
+import "./index.scss"; 
+  
 interface ITextEditorOptions extends IEditorOptions<string> {
 
     password?: Bindable<boolean>;
-
+     
     multiLine?: Bindable<boolean>;
 
-    rows?: Bindable<number>;
+    rows?: Bindable<number>; 
 
     placeholder?: LocalString;
 }

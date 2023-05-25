@@ -1,7 +1,7 @@
 import { IPropertyChangedHandler, isObservableProperty } from "./abstraction/IObservableProperty";
 import type { CatalogTemplate } from "./abstraction/ITemplateProvider";
 import { COMPONENT, IComponent, isComponent } from "./abstraction/IComponent";
-import { enumOverrides, getTypeName, isClass } from "./utils/Object";
+import { enumOverrides, getTypeName, isClass, objectHierarchy } from "./utils/Object";
 import { bindTwoWays, getOrCreateProp } from "./Properties";
 import { toKebabCase } from "./utils/String";
 import type { IBound } from "./abstraction/IBound";
@@ -102,7 +102,14 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     protected updateClass() {
 
-        const classes: ComponentStyle[] = [toKebabCase(getTypeName(this))];
+        const classes: ComponentStyle[] = [];
+
+        for (const type of objectHierarchy(this)) {
+
+            if (type == Component)
+                break;
+            classes.push(toKebabCase(getTypeName(type)));
+        } 
 
         if (this.style)
             classes.push(...this.style);

@@ -1,7 +1,19 @@
-@import "_Global";
+@import "_vars";
+@import "_utils";
 
-body { 
-    background: $backColor; 
+
+* {
+    font-family: $font-family;
+}
+
+button, input, select, textarea {
+    font-size: $font-size;
+}
+
+body {
+    background: $back-color;
+    font-size: $font-size;
+    color: $text-color;
 }
 
 .hidden {

@@ -7,7 +7,7 @@ import { IValidable, isValidable } from "../../abstraction/IValidable";
 import { NodeView } from "../NodeView";
 import "./index.scss";
 
-interface IInputFieldOptions<TValue, TTarget> extends IComponentOptions {
+export interface IInputFieldOptions<TValue, TTarget> extends IComponentOptions {
 
     name: string;
 
@@ -17,8 +17,8 @@ interface IInputFieldOptions<TValue, TTarget> extends IComponentOptions {
 
     validators?: Bindable<Validator<TValue, TTarget>[]>;
 
-    value: Bindable<TValue, "two-ways">;
-}
+    value: Bindable<TValue, "two-ways">; 
+} 
  
 
 export const InputFieldTemplates: TemplateMap<InputField<unknown, IEditor<any>>> = {
@@ -27,9 +27,12 @@ export const InputFieldTemplates: TemplateMap<InputField<unknown, IEditor<any>>>
         <div className={m.className} visible={m.visible}>
             <Class name="default" />
             <Class name="invalid" condition={m.isValid === false} />
+            <Class name="empty" condition={m.value === null || m.value === undefined || m.value === ""} />
 
             <label><NodeView>{m.label}</NodeView></label>
-            {m.content}
+            <div className="editor-container">
+                {m.content}
+            </div>
             <div className = "error">
                 <NodeView>{m.error}</NodeView>
             </div>
