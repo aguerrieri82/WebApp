@@ -1,4 +1,5 @@
-import { app, IPage } from "@eusoft/webapp-ui";
+import { IPage } from "@eusoft/webapp-ui";
+import { app } from "../App";
 
 type StringLike = { toString(): string } | string;
 

@@ -1,6 +1,6 @@
-import { PageHost } from "./components/PageHost";
 import { mount } from "@eusoft/webapp-core";
-import { OperationManager } from "./services";
+import { OperationManager, PageHost } from "@eusoft/webapp-ui";
+
 export interface IAppOptions {
 
 }

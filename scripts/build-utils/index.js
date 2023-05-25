@@ -101,6 +101,19 @@ export function configureRollup(options) {
         }
     };
 
+    const copyDts = {
+        buildStart() {
+
+            const files = fs.readdirSync("src").filter(fn => fn.endsWith(".d.ts"));
+
+            const dtsOut = "/src/" + libName + "/types/";
+
+            for (const src of files) {
+
+                fse.copySync(path.join("src", src), path.join(outPath, dtsOut, src), { overwrite: true });
+            }
+        }
+    };
 
     return [
         {
@@ -141,6 +154,7 @@ export function configureRollup(options) {
             output: [{ file: outPath + "/index.d.ts", format: "esm" }],
             external: [/\.scss$/, /\.html/, /\.svg/, ...external],
             plugins: [
+                copyDts,
                 dts(),
                 del({
                     targets: outPath + "/src",

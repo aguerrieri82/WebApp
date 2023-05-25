@@ -11,6 +11,6 @@
     "noEmit": true,
     "jsx": "preserve"
   },
-  "include": ["src"]
+  "include": ["src", "src/env.d.ts"]
 }
  

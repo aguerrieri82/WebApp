@@ -3,6 +3,5 @@ export * from "./components"
 export * from "./behavoirs"
 export * from "./editors"
 export * from "./services"
-export * from "./App"
 export * from "./Types"
 

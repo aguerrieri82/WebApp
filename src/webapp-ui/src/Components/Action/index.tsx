@@ -33,6 +33,7 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
 
         this.init(Action, {
             template: ActionTemplates.Button,
+            style: ["contained"],
             ...options 
         });
     }

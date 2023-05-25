@@ -87,6 +87,8 @@ export class ComponentElementHandler implements ITemplateHandler {
             {
                 const model = "m" + ctx.currentFrame.index;
 
+                ctx.enter(this, element);
+
                 contentWriter.beginInlineFunction(model)
                     .write("(")
                     .beginBlock()
@@ -95,6 +97,8 @@ export class ComponentElementHandler implements ITemplateHandler {
                     .endBlock()
                     .write(")")
                     .endInlineFunction()
+
+                ctx.exit();
             }
 
             props["content"] = contentWriter.out.toString();

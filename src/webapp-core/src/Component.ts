@@ -104,6 +104,13 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
         const classes: ComponentStyle[] = [];
 
+        const flat = (item: ComponentStyle) => {
+            if (typeof item == "string")
+                classes.push(item);
+            else
+                item.forEach(a => flat(a));
+        }
+
         for (const type of objectHierarchy(this)) {
 
             if (type == Component)
@@ -112,12 +119,12 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
         } 
 
         if (this.style)
-            classes.push(...this.style);
+            flat(this.style);
 
         if (this.name)
             classes.push(toKebabCase(this.name)); 
 
-        this.className = classes.flat().join(" ");
+        this.className = classes.join(" ");
     }
 
     provides<TServiceType extends ServiceType, TService extends IService<TServiceType>>(service: TService): void {

@@ -36,7 +36,7 @@ export class PageHost extends Component<IPageHostOptions> {
     async loadPageAsync<T>(page: IPage<T>, args?: T) {
 
         if (page?.loadAsync) {
-            if (!await page.loadAsync(page, args))
+            if (!await page.loadAsync(args)) 
                 return false;
         }
 
