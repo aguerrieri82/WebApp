@@ -1,5 +1,8 @@
 @import "../../themes/_vars";
 
 .page-host {
-
+    .content {
+        display: flex;
+        flex-direction: column;
+    }
 }

@@ -3,11 +3,11 @@
 
 
 .input-field {
-    transition-duration: $duration-normal;
+    transition-duration: $duration-fast;
     position: relative;
 
     > * {
-        transition-duration: $duration-normal;
+        transition-duration: $duration-fast;
     }
 
     > label {
