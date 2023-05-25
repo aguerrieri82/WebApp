@@ -19,7 +19,9 @@ export class App  {
 
     }
 
-    runAsync(root?: HTMLElement | string) {
+    async runAsync(root?: HTMLElement | string) {
+
+        await this.onStarted();
 
         if (typeof root == "string")
             root = document.querySelector(root) as HTMLElement;
@@ -30,8 +32,6 @@ export class App  {
         this.pageHost.provides(new OperationManager());
 
         mount(root, this.pageHost);
-
-        this.onStarted();
     }
 
     protected onStarted() {
