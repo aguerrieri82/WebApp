@@ -5,6 +5,11 @@ const app = express();
 app.use(express.static("./public"));
 app.use("/src", express.static("./src"));
 
+app.use((request, response, next) => {
+
+    response.sendFile(path.resolve("./public/index.html"));
+});
+
 stdout.write("\n\x1b[1mListening at \x1b[0m\x1b[36mhttp://localhost:$(port)/\x1b[0m\n");
 
 app.listen($(port));

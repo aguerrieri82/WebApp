@@ -104,12 +104,10 @@ export class Wizard extends Component<IWizardOptions> {
             template: forModel((m: this) => <div className={m.className} visible={m.visible}>
                 <Class name={"step-" + (m.activeStep?.name ?? "none")} />
                 <ol className="step-list">
-                    <Foreach src={m.content}>
-                        {i => <li>
-                            <Class name="active" condition={m.activeStep == i} />
-                            {i.shortTille ?? i.title}
-                        </li>}
-                    </Foreach>
+                    {m.content.forEach(i => <li>
+                        <Class name="active" condition={m.activeStep == i} />
+                        {i.shortTille ?? i.title}
+                    </li>)}
                 </ol>
                 <section className="body">
                     <header>

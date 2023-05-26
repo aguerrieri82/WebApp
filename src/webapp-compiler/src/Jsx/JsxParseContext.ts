@@ -5,7 +5,19 @@ import { CORE_MODULE, TemplateAttributes, TemplateElements } from "../Consts";
 import type { JsxCompiler } from "../JsxCompiler";
 import { toKebabCase } from "../TextUtils";
 import * as parser from "@babel/parser";
-import * as types from "@babel/types";
+import TransfromNotModelRef from "./Transform/TransfromNotModelRef";
+import JsxErrorHandler from "./Elements/JsxErrorHandler";
+import JsxOpenHandler from "./Elements/JsxOpenHandler";
+import JsxStringHandler from "./Elements/JsxStringHandler";
+import JsxTextHandler from "./Elements/JsxTextHandler";
+import JsxAttributeHandler from "./Elements/JsxAttributeHandler";
+import ArrowTemplateExpressionHandler from "./Expression/ArrowTemplateExpressionHandler";
+import ConditionalExpressionHandler from "./Expression/ConditionalExpressionHandler";
+import AndExpressionHandler from "./Expression/AndExpressionHandler";
+import TransformEqualsHandler from "./Transform/TransformEqualsHandler";
+import JsxExpressionHandler from "./Elements/JsxExpressionHandler";
+import TransformNestedTemplateHandler from "./Transform/TransformNestedTemplateHandler";
+import ForeachExpressionHandler from "./Expression/ForeachExpressionHandler";
 
 
 type JsxNodeHandler = {
@@ -18,291 +30,6 @@ interface IStack {
     builder: string;
 };
 
-function TransfromNotModelRef(ctx: JsxParseContext, stage: "trans-exp", path: NodePath<Expression>) {
-
-    if (stage != "trans-exp" /*|| ctx.curAttribute?.name.startsWith("t:on-")*/)
-        return;
-
-    if (!path.isMemberExpression())
-        return;
-
-    const obj = path.get("object");
-    if (!obj.isIdentifier() && !obj.isThisExpression())
-        return;
-
-    const binding = path.scope.getBinding(obj.toString());
-
-    if (binding && binding?.identifier == ctx.curModel)
-        return;
-
-    const builder = ctx.findBuilder(binding?.identifier);
-
-    const exp = builder ? `${builder}.model` : obj.toString();
-
-    if (ctx.curModel) 
-        ctx.replaceNode(obj, `${ctx.curModel.name}[${ctx.useImport("USE")}](${exp})`);
-    else
-        ctx.replaceNode(obj, exp);
-
-
-    path.shouldSkip = true;
-
-    return true;
-}
-
-function JsxErrorHandler(ctx: JsxParseContext, stage: "enter", path: NodePath) : boolean {
-
-    if (stage != "enter")
-        return;
-
-    if (ctx.curAttribute && (path.isJSXElement() || path.isJSXFragment())) 
-        throw path.buildCodeFrameError("JSX element or fragment in attributes is not supported");
-
-    if (path.isJSXSpreadAttribute() || path.isJSXSpreadChild()) 
-        throw path.buildCodeFrameError("Spread operator not supported in tsx/jsx (es. <div {...props}/>");
-}
-
-function JsxOpenHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
-
-    if (stage != "enter")
-        return;
-
-    if (!path.isJSXOpeningElement())
-        return;
-
-    const elName = path.get("name").toString();
-
-    const elBinding = path.scope.getBinding(elName);
-
-    const isTempEl = TemplateElements.indexOf(elName) != -1;
-
-    const newElement = ctx.enterNewElement(isTempEl ? "t:" + elName.toLowerCase() : elName);
-
-    if (elBinding && !isTempEl) {
-        newElement.name = "t:component";
-        ctx.createAttribute("t:type", elName, newElement);
-    }
-
-    return true;
-}
-
-function StringHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
-
-    if (stage != "enter" || !path.isStringLiteral())
-        return;
-
-    if (ctx.curAttribute)
-        ctx.curAttribute.value = JSON.stringify(path.node.value);
-    else {
-        ctx.curElement.childNodes.push({
-            type: TemplateNodeType.Text,
-            value: path.node.value
-        });
-    }
-
-    return true;
-}
-
-function JsxTextHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
-
-    if (stage != "enter" || !path.isJSXText())
-        return;
-
-    if (ctx.compiler.options.includeWhitespace || path.node.value.trim().length > 0) {
-
-        const item: ITemplateText = {
-            type: TemplateNodeType.Text,
-            value: path.node.value
-        }
-
-        if (ctx.curElement)
-            ctx.curElement.childNodes.push(item);
-    }
-
-    return true;
-}
-
-function JSXAttributeHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
-
-    if (stage != "enter" || !path.isJSXAttribute())
-        return;
-
-    let name = (path.node.name as JSXIdentifier).name;
-
-    if (ctx.curElement.name != "t:component")
-        name = ctx.transformIntrinsicAttribute(name);
-
-    ctx.curAttribute = ctx.createAttribute(name, null, ctx.curElement);
-
-    if (!path.node.value)
-        ctx.curAttribute.value = "true";
-
-    return true;
-}
-
-function NestedTemplateHandler(ctx: JsxParseContext, stage: "trans-exp", path: NodePath): boolean {
-
-    if (!(stage == "trans-exp" && ctx.curAttribute && (path.isJSXFragment() || path.isJSXElement())))
-        return;
-
-    const newCtx = new JsxParseContext(ctx.compiler);
-
-    const root = newCtx.parse(path);
-
-    const text = ctx.compiler.generateTemplate(root);
-
-    ctx.replaceNode(path, text);
-
-    ctx.curModel = null;
-    
-    return true;
-}
-
-function ExpressionHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
-
-    if (stage != "enter" || path.isJSXFragment() || path.isJSXElement() || !path.isExpression())
-        return;
-
-    if (!ctx.curElement && !ctx.curAttribute)
-        return;
-
-    for (const handler of ctx.handlers) {
-        if (handler(ctx, "exp", path))
-            return;
-    }
-
-    let createBind = !ctx.isBinding(path) && ctx.isBindable();
-
-    const bindMode = ctx.withModel(createBind ? ctx.curModel : null, () => ctx.transformExpression(path));
-
-    if (bindMode == "no-bind" || bindMode == "action") {
-        ctx.curModel = null;
-        createBind = false;
-    }
-
-    let value = path.toString();
-
-    if (createBind) {
-
-        if (path.isObjectExpression())
-            value = "(" + value + ")";
-
-        value = ctx.curModel.name + " => " + value;
-    }
-
-    if (ctx.curAttribute) {
-        ctx.curAttribute.value = value;
-        ctx.curAttribute.bindMode = bindMode;
-    }
-    else {
-
-        ctx.enterNewElement("t:content")
-        ctx.createAttribute("src", value, ctx.curElement);
-        ctx.exitElement();
-    }
-
-    path.shouldSkip = true;
-
-    return true;
-}
-
-function ArrowTemplateExpressionHandler(ctx: JsxParseContext, stage: "exp", path: NodePath<Expression>): boolean {
-
-    if (stage != "exp" || ctx.curAttribute)
-        return;
-
-    if (path.isArrowFunctionExpression() && ctx.isSingleElement(path.parentPath)) {
-        const body = path.get("body");
-        if (body.isJSXFragment() || body.isJSXElement()) {
-    
-            ctx.curModel = path.node.params[0] as Identifier;
-            ctx.generateBuilder();
-            if (ctx.curElement.name == "t:foreach" || ctx.curElement.name == "t:switch")
-                ctx.createAttribute("as", ctx.curBuilder, ctx.curElement);
-            return true;
-        }
-    }
-}
-
-function TransformEqualsExpressionHandler(ctx: JsxParseContext, stage: "trans-exp", path: NodePath<Expression>): boolean {
-
-    if (stage != "trans-exp" || !path.isBinaryExpression())
-        return;
-
-    const op = path.node.operator;
-
-    if (!(op == "==" || op == "===" || op == "!==" || op == "!="))
-        return;
-
-    const left = path.get("left");
-    const right = path.get("right");
-
-    if (ctx.hasModelRefs(left)) {
-        left.replaceWith(types.callExpression(types.identifier(ctx.useImport("cleanProxy")), [left.node as Expression]));
-    }
-
-    if (ctx.hasModelRefs(right)) {
-        right.replaceWith(types.callExpression(types.identifier(ctx.useImport("cleanProxy")), [right.node]));
-    }
-
-    return true;
-    
-}
-
-function CondictionalExpressionHandler(ctx: JsxParseContext, stage: "exp", path: NodePath<Expression>): boolean {
-
-    if (stage != "exp" || ctx.curAttribute || !path.isConditionalExpression())
-        return;
-
-    const curElement = ctx.curElement;
-
-    ctx.enterNewElement("t:if");
-    ctx.curAttribute = ctx.createAttribute("condition", null, ctx.curElement);
-
-    path.get("test").visit();
-    ctx.curAttribute = null;
-
-    path.get("consequent").visit();
-
-    ctx.enterNewElement("t:else");
-
-    path.get("alternate").visit();
-
-    while(ctx.curElement != curElement)
-        ctx.exitElement();
-
-    path.shouldSkip = true;
-
-    return true;
-}
-
-function AndExpressionHandler(ctx: JsxParseContext, stage: "exp", path: NodePath<Expression>): boolean {
-
-    if (stage != "exp" || ctx.curAttribute || !path.isLogicalExpression() || path.node.operator != "&&")
-        return;
-
-    const right = path.get("right");
-
-    if (!right.isJSXFragment() && !right.isJSXElement())
-        return;
-
-    ctx.enterNewElement("t:if");
-    ctx.curAttribute = ctx.createAttribute("condition", null, ctx.curElement);
-
-    const left = path.get("left");
-    left.visit();
-    ctx.curAttribute = null;
-
-    right.visit();
-
-    ctx.exitElement();
-
-    path.shouldSkip = true;
-
-    return true;
-}
-
-
 export class JsxParseContext {
 
     constructor(compiler: JsxCompiler) {
@@ -310,16 +37,16 @@ export class JsxParseContext {
         this.handlers.push(TransfromNotModelRef);
         this.handlers.push(JsxErrorHandler);
         this.handlers.push(JsxOpenHandler);
-        this.handlers.push(NestedTemplateHandler);
-        
-        this.handlers.push(StringHandler);
+        this.handlers.push(TransformNestedTemplateHandler);   
+        this.handlers.push(JsxStringHandler);
         this.handlers.push(JsxTextHandler);
-        this.handlers.push(JSXAttributeHandler);
-        this.handlers.push(ExpressionHandler);
+        this.handlers.push(JsxAttributeHandler);
+        this.handlers.push(JsxExpressionHandler);
         this.handlers.push(ArrowTemplateExpressionHandler);
-        this.handlers.push(CondictionalExpressionHandler);
+        this.handlers.push(ConditionalExpressionHandler);
         this.handlers.push(AndExpressionHandler);
-        this.handlers.push(TransformEqualsExpressionHandler);
+        this.handlers.push(ForeachExpressionHandler);
+        this.handlers.push(TransformEqualsHandler);
         
         this.compiler = compiler;
         this.usedImports = [];
@@ -651,3 +378,4 @@ export class JsxParseContext {
 
     readonly handlers: JsxNodeHandler[] = [];
 }
+

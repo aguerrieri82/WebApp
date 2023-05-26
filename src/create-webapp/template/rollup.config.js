@@ -8,6 +8,7 @@ import del from "rollup-plugin-delete";
 import path from "path";
 import scss from "rollup-plugin-scss"
 import { spawn } from "child_process";
+import virtual from "rollup-plugin-virtual";
 
 const outPath = "public/build";
 
@@ -56,6 +57,9 @@ export default [
                 targets: outPath + "/*",
                 hook: "buildStart",
                 runOnce: true
+            }),
+            virtual({
+                "environment": "export const ENV = " + JSON.stringify(process.env.NODE_ENV) + "; export default ENV;"
             }),
             resolve({
                 browser: true,
