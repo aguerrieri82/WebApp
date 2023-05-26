@@ -1,14 +1,15 @@
 import { SERVICE_TYPE, Services } from "@eusoft/webapp-core";
-import { ILocalization, LOCALIZATION } from "@eusoft/webapp-ui";
+import { ILocalization, LOCALIZATION, LocalizationContent, ViewNode } from "@eusoft/webapp-ui";
 
-interface IStringTableOptions{
+interface ILocalTableOptions{
     lang: string;
 }
-class StringTable implements ILocalization {
 
-    private _tables: Record<string, Record<string, string>> = {};
+class LocalTable implements ILocalization {
 
-    add(table: Record<string, string>, options: IStringTableOptions) {
+    private _tables: Record<string, Record<string, LocalizationContent>> = {};
+
+    add(table: Record<string, LocalizationContent>, options: ILocalTableOptions) {
 
         if (!(options.lang in this._tables))
             this._tables[options.lang] = {};
@@ -16,11 +17,11 @@ class StringTable implements ILocalization {
         Object.assign(this._tables[options.lang], table);
     }
 
-    getString(id: string): string {
+    getContent(id: string): LocalizationContent {
 
         if (this.language) {
             const table = this._tables[this.language];
-            if (table && id in table)
+            if (table && id in table) 
                 return table[id];
         }
 
@@ -33,11 +34,11 @@ class StringTable implements ILocalization {
 }
 
 
-export const stringTable = new StringTable();
+export const localTable = new LocalTable();
 
-export default stringTable;
+export default localTable;
 
-Services[LOCALIZATION] = stringTable;
+Services[LOCALIZATION] = localTable;
 
 declare module "@eusoft/webapp-core" {
     interface IServices {

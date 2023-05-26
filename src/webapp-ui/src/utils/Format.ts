@@ -1,17 +1,22 @@
 import { Services } from "@eusoft/webapp-core";
-import { LocalString } from "../Types";
+import { LocalString, ViewNode } from "../Types";
 import { ILocalization, LOCALIZATION } from "../abstraction";
 
 //TODO implement
 
-export function formatText(text: LocalString, ...args: any[]) : string {
+export function formatText(text: LocalString, ...args: any[]): ViewNode { 
 
     if (typeof text === "function")
         return text();
 
     const local = Services[LOCALIZATION] as ILocalization;
-    if (local) 
-        text = local.getString(text);
+    if (local) {
+        const content = local.getContent(text);
+        if (typeof content == "function")
+            return content(args);
+        if (typeof content == "string")
+            text = content;
+    }
 
     return replaceArgs(text, i => formatText(args[i]));
 }

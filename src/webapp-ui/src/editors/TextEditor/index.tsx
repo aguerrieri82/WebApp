@@ -5,10 +5,12 @@ import { LocalString } from "../../Types";
 import { EditorBuilder } from "../EditorBuilder";
 import { Editor } from "../Editor";
 import "./index.scss"; 
-  
+
+type TextEditorType = "text" | "password" | "tel";
+
 interface ITextEditorOptions extends IEditorOptions<string> {
 
-    password?: Bindable<boolean>;
+    type?: Bindable<TextEditorType>;
      
     multiLine?: Bindable<boolean>;
 
@@ -22,7 +24,7 @@ interface ITextEditorOptions extends IEditorOptions<string> {
 export const TextEditorTemplates: TemplateMap<TextEditor> = {
 
     "Default": forModel(m => <Template name="TextEditor">
-        <input autocomplete={m.autocomplete} className={m.className}  placeholder={m.placeholder} visible={m.visible} disabled={m.disabled} type={m.password ? "password" : "text"} value={m.value} >
+        <input autocomplete={m.autocomplete} className={m.className}  placeholder={m.placeholder} visible={m.visible} disabled={m.disabled} type={m.type} value={m.value} >
             <Class name="default"/>
         </input>
     </Template>)
@@ -36,20 +38,21 @@ export class TextEditor extends Editor<string, ITextEditorOptions> {
 
         this.init(TextEditor, {
             template: TextEditorTemplates.Default,
+            type: "text",
             ...options
         });
     }
 
     protected updateOptions() {
 
-        this.bindOptions("password", "rows", "placeholder", "autocomplete");
+        this.bindOptions("type", "rows", "placeholder", "autocomplete");
     }
 
     rows?: number;
 
     placeholder?: string;
 
-    password: boolean;
+    type: TextEditorType;
 
     autocomplete: string;
 }

@@ -19,6 +19,10 @@
                 color: $primary-color;
                 font-weight: bold;
             }
+
+            &:not(.completed):not(.active) {
+                opacity: 0.5;
+            }
         }
     }
 

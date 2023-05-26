@@ -121,13 +121,13 @@
                 z-index: 1;
             }
 
-            &.empty:not(:focus-within) {
+            &.empty:not(:focus-within):not(:has(input[type=date])) {
                 > label {
                     top: calc(50% - 8px - 0.5em);
                 }
             }
 
-            &:focus-within, &:not(.empty) {
+            &:focus-within, &:not(.empty), &:has(input[type=date]) {
 
                 > label {
                     font-size: $font-size-small;
@@ -150,7 +150,7 @@
                 padding: 0 size(0.5);
             }
 
-            &:focus-within, &:not(.empty) {
+            &:focus-within, &:not(.empty), &:has(input[type=date]) {
 
                 > label {
                     top: -6px;
@@ -197,7 +197,7 @@
             }
 
 
-            &:focus-within, &:not(.empty) {
+            &:focus-within, &:not(.empty), &:has(input[type=date]) {
 
                 > label {
                     top: 6px;

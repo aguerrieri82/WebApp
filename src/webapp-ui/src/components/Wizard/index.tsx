@@ -12,13 +12,15 @@ export interface IWizardStepOptions {
 
     title: ViewNode;
 
-    shortTille?: ViewNode;
+    shortTitle?: ViewNode;
 
     nextLabel?: ViewNode;
 
     prevLabel?: ViewNode;
 
     content: ViewNode;
+
+    visible?: boolean;
 
     canGoNext?: () => boolean;
 
@@ -35,7 +37,12 @@ export class WizardStep implements IWizardStepOptions {
 
     constructor(options?: IWizardStepOptions) {
 
-        this.options = options;
+        this.options = {
+            visible: true,
+            ...options
+        }
+
+        Object.assign(this, this.options);
     }
 
     async loadAsync(): Promise<any> {
@@ -62,11 +69,15 @@ export class WizardStep implements IWizardStepOptions {
 
     title: ViewNode;
 
-    shortTille?: ViewNode;
+    shortTitle?: ViewNode;
 
     nextLabel?: ViewNode;
 
     prevLabel?: ViewNode;
+
+    completed: boolean;
+
+    visible: boolean;
 
     content: ViewNode;
 
@@ -103,9 +114,10 @@ export class Wizard extends Component<IWizardOptions> {
                 <Class name={"step-" + (m.activeStep?.name ?? "none")}/>
                 <ol className="step-list">
                     <Foreach src={m.content}>
-                        {i => <li>
+                        {i => <li visible={i.visible}>
                             <Class name="active" condition={m.activeStep == i} /> 
-                            <NodeView>{i.shortTille ?? i.title}</NodeView>
+                            <Class name="completed" condition={i.completed} /> 
+                            <NodeView>{i.shortTitle ?? i.title}</NodeView>
                         </li>}
                     </Foreach>
                 </ol>
@@ -113,9 +125,9 @@ export class Wizard extends Component<IWizardOptions> {
                     <header>
                         <NodeView>{m.activeStep?.title}</NodeView>
                     </header>
-
+                    <div className="content">
                     {m.activeStep?.content}
-
+                    </div>
                     <footer>
                         {m.canGoPrev ?
                             <Action name="prev" executeAsync={() => m.prevAsync()}>
@@ -166,8 +178,11 @@ export class Wizard extends Component<IWizardOptions> {
 
     async goToAsync(index: number, validate: boolean) {
 
-        if (validate && !await this.activeStep.validateAsync(this.activeStep))
-            return;
+        if (validate) {
+            if (!await this.activeStep.validateAsync(this.activeStep))
+                return;
+            this.activeStep.completed = true;
+        }
 
         this.activeStepIndex = index;
     }
