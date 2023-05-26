@@ -6,6 +6,7 @@ import { OperationManager } from "../../services";
 import { OPERATION_MANAGER } from "../../abstraction";
 import { ViewNode } from "../../Types";
 import "./index.scss";
+import { NodeView } from "../NodeView";
 
 interface IActionOptions<TTarget> extends IComponentOptions {
 
@@ -20,7 +21,7 @@ export const ActionTemplates: TemplateMap<Action> = {
     "Button": forModel(m => <Template name="Action">
         <button visible={m.visible} behavoir={Ripple} className={m.className} on-click={m => m.doExecuteAsync()}>
             <Class name="executing" condition={m.isExecuting} />
-            {m.content}
+            <NodeView>{m.content}</NodeView>  
         </button>
     </Template>)
 }

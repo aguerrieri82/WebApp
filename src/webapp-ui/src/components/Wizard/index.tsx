@@ -105,13 +105,13 @@ export class Wizard extends Component<IWizardOptions> {
                     <Foreach src={m.content}>
                         {i => <li>
                             <Class name="active" condition={m.activeStep == i} /> 
-                            {i.shortTille ?? i.title}
+                            <NodeView>{i.shortTille ?? i.title}</NodeView>
                         </li>}
                     </Foreach>
                 </ol>
                 <section className="body">
                     <header>
-                        {m.activeStep?.title}
+                        <NodeView>{m.activeStep?.title}</NodeView>
                     </header>
 
                     {m.activeStep?.content}

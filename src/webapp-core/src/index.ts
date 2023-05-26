@@ -10,5 +10,6 @@ export * from "./Component"
 export * from "./Behavoir"
 export * from "./Expression" 
 export * from "./Templates"
+export * from "./Services"
 
 import "./Global"

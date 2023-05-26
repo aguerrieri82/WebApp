@@ -5,6 +5,7 @@ import { EditorBuilder } from "../EditorBuilder";
 import { Editor } from "../Editor";
 import { ViewNode } from "../../Types";
 import "./index.scss";
+import { NodeView } from "../../components";
 
 interface IBooleanEditorOptions extends IEditorOptions<boolean> {
 
@@ -18,7 +19,7 @@ export const BoolEditorTemplates: TemplateMap<BooleanEditor> = {
             <input visible={m.visible} disabled={m.disabled} type="checkbox" value={m.value} >
                 <Class name="default" />
             </input>
-            {m.label && <span>{m.label}</span>}
+            {m.label && <span><NodeView>{m.label}</NodeView></span>}
         </label>
      
     </Template>)

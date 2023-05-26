@@ -3,6 +3,7 @@ import { forModel, Template } from "@eusoft/webapp-jsx";
 import { IPage, LoadState } from "../../abstraction/IPage";
 import "./index.scss";
 import { IFeature } from "../../abstraction/IFeature";
+import { formatText } from "../../utils/Format";
 export interface IPageOptions extends IComponentOptions {
 
     title?: Bindable<string>;
@@ -21,7 +22,7 @@ export const PageTemplates: TemplateMap<Page> = {
     "Simple": forModel(m => <Template name="PageHost">
         <div className={m.className}>
             <header>
-                <h1 text={m.title} />
+                <h1 text={formatText(m.title)} />
             </header>
             <section className="body">
                 {m.content}
