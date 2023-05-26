@@ -5,8 +5,8 @@ import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObser
 import type { IObservableProperty, IPropertyChangedHandler } from "./abstraction/IObservableProperty";
 import { compareArray, forEachRev } from "./utils/Array";
 import { WebApp } from "./utils/Debug";
-import { cleanProxy, Expression, IExpressionProp } from "./Expression";
-import { getFunctionType } from "./utils/Object";
+import { cleanProxy, Expression, GetExpression, IExpressionProp } from "./Expression";
+import { getFunctionType, getPropertyDescriptor } from "./utils/Object";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
 import type { ArrayElement } from "./abstraction/Types";
@@ -120,6 +120,7 @@ export class Binder<TModel> {
         if (subscribe) {
 
             const refs = Array.from(exp.expression.references()).filter(a =>
+                !a.readonly &&
                 typeof a.value !== "function" &&
                 typeof a.object !== "function");
 
@@ -290,7 +291,13 @@ export class Binder<TModel> {
         if (propName === null || propName === undefined)
             return;
 
-        const propDesc = Object.getOwnPropertyDescriptor(obj, propName);
+        const propDesc = getPropertyDescriptor(obj as object, propName);
+
+        if (propDesc && (!propDesc.configurable)) {
+            if (!Array.isArray(obj))
+                console.warn("Property ", propName, " for object ", obj, " is not observable.");
+            return;
+        }
 
         if ((!propDesc && Array.isArray(obj)) || (propDesc && !propDesc.writable && !propDesc.set)) {
             console.warn("Property ", propName, " for object ", obj, " not exists or is not writeable.");

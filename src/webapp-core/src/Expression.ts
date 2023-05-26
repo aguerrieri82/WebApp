@@ -1,4 +1,5 @@
 import { BindExpression, TARGET, USE } from "./abstraction";
+import { getPropertyDescriptor } from "./utils/Object";
 
 type ExpressionType = Expression<any>;
 
@@ -16,6 +17,8 @@ export interface IExpressionProp {
     propName?: string;
 
     value?: any;
+
+    readonly?: boolean;
 }
 
 export interface IExpressionBuild<TModel, TValue> {
@@ -88,7 +91,7 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
         return innerExp;
     }
 
-    get(propName: string): ExpressionType {
+    get(propName: string, readonly = false): ExpressionType {
 
         const value = this._options.evaluate ? (this.value as Record<string, any>)[propName] : undefined;
 
@@ -96,7 +99,7 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
         if (!innerExp) {
 
-            innerExp = new GetExpression(value, propName, this);
+            innerExp = new GetExpression(value, propName, this, readonly);
 
             this.actions.push(innerExp);
         }
@@ -150,7 +153,8 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
                     curProps.push({
                         object: exp.parent.value,
                         propName: exp.propName,
-                        value: exp.value
+                        value: exp.value,
+                        readonly: exp.readonly
                     });
             }
 
@@ -263,7 +267,7 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
             (this._options.evaluate && (proxyValue === null || proxyValue === undefined)))
             return proxyValue;
 
-        return new Proxy(proxyValue, {
+        const proxy = new Proxy(proxyValue, {
 
             get: (target: any, prop, rec) : any => {
 
@@ -278,19 +282,29 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
                 let value: any;
 
-                if (this._options.evaluate) {
+                let readonly = false;
+
+                if (this._options.evaluate) { 
 
                     if (this._options.customProps && prop in this._options.customProps)
                         value = this._options.customProps[prop]();
-                    else
-                        value = target[prop];
+                    else {
+                        const desc = getPropertyDescriptor(target, prop);
+                        if (desc && desc.get && !desc.set) {
+                            value = desc.get.call(proxy);
+                            readonly = true;
+                        }
+                        else
+                            value = target[prop];
+                    }
+                      
                 }
 
 
                 if (typeof prop == "symbol")
                     return value;
 
-                const exp = this.get(prop);
+                const exp = this.get(prop, readonly);
 
                 return exp.createProxy();
             },
@@ -312,6 +326,8 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
                 return exp.createProxy();
             }
         });
+
+        return proxy;
     }
 
     static build<TModel, TValue>(model: TModel, bind: BindExpression<TModel, TValue>, options?: IExpressionOptions) {
@@ -335,7 +351,7 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
     readonly actions: ExpressionType[] = [];
 }
 
-class CallExpression<TFunc extends Function> extends Expression<TFunc> {
+export class CallExpression<TFunc extends Function> extends Expression<TFunc> {
     constructor(value: TFunc, args: [], parent: ExpressionType) {
         super(value, parent);
 
@@ -349,7 +365,7 @@ class CallExpression<TFunc extends Function> extends Expression<TFunc> {
     readonly type = "call";
 }
 
-class SetExpression<TObj extends Record<string, any>> extends Expression<TObj> {
+export class SetExpression<TObj extends Record<string, any>> extends Expression<TObj> {
     constructor(value: TObj, propName: string, parent: ExpressionType) {
         super(value, parent);
 
@@ -361,19 +377,22 @@ class SetExpression<TObj extends Record<string, any>> extends Expression<TObj> {
     readonly type = "set";
 }
 
-class GetExpression<TObj extends Record<string, any>> extends Expression<TObj> {
-    constructor(value: TObj, propName: string, parent?: ExpressionType) {
+export class GetExpression<TObj extends Record<string, any>> extends Expression<TObj> {
+    constructor(value: TObj, propName: string, parent?: ExpressionType, readonly?: boolean) {
         super(value, parent);
 
         this.propName = propName;
+        this.readonly = readonly;
     }
 
     readonly propName: string;
 
     readonly type = "get";
+
+    readonly readonly: boolean;
 }
 
-class UseExpression<TObj extends Record<string, any>> extends Expression<TObj> {
+export class UseExpression<TObj extends Record<string, any>> extends Expression<TObj> {
     constructor(value: TObj, parent?: ExpressionType, options?: IExpressionOptions ) {
         super(value, parent, options);
     }

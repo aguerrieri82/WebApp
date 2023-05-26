@@ -94,6 +94,24 @@ export function *objectHierarchy(obj: object) {
     
 } 
 
+export function getPropertyDescriptor(obj: object, prop: PropertyKey) {
+
+    let curObj = obj;
+
+    while (curObj) {
+
+        const desc = Object.getOwnPropertyDescriptor(curObj, prop);
+
+        if (desc)
+            return desc;
+
+        curObj = Object.getPrototypeOf(curObj);
+
+        if (curObj == Object)
+            return;
+    }
+}
+
 export function enumOverrides<TObj extends {}, TFunc extends Function, TKey extends KeyOfType<TObj, TFunc>>(obj: TObj, func: TKey): TFunc[] {
 
     let curType = Object.getPrototypeOf(obj);

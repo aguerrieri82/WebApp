@@ -1,9 +1,9 @@
 import { Action, Page } from "@eusoft/webapp-ui";
 import { Foreach, Template, Text, JsxNode, forModel } from "@eusoft/webapp-jsx";
-import { OptionsFor, TemplateBuilder, propOf } from "@eusoft/webapp-core";
+import { ITemplateContext, OptionsFor, TemplateBuilder, propOf } from "@eusoft/webapp-core";
 import { Behavoir } from "@eusoft/webapp-core/Behavoir";
 import { router } from "@eusoft/webapp-framework";
-import { Bind } from "@eusoft/webapp-core/Bind";
+import { Bind, TwoWays } from "@eusoft/webapp-core/Bind";
 function Log(props: { message: string }) {
 
     console.log(props.message);
@@ -17,14 +17,14 @@ function Bold(props: { content: JsxNode<string> }) {
 
 class Blink extends Behavoir<OptionsFor<Blink>> {
 
-    attach(element: HTMLElement) {
+    attach(ctx: ITemplateContext<unknown>) {
 
         const doBlink = () => {
              
-            if (element.style.background == "")
-                element.style.background = this.color;
+            if (ctx.element.style.background == "")
+                ctx.element.style.background = this.color;
             else
-                element.style.background = "";
+                ctx.element.style.background = "";
 
             if (!this._isDetach)
                 setTimeout(doBlink, this.time)
@@ -108,7 +108,7 @@ class SecondPage extends Page {
             console.log(a);
         });
 
-        this.configure({
+        this.init(SecondPage, {
             name: "second",
             title: "Seconda Pagina 2",
             route: "/second",

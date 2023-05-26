@@ -117,11 +117,11 @@ export class Wizard extends Component<IWizardOptions> {
                     {m.activeStep?.content}
 
                     <footer>
-                        {m.activeStepIndex !== undefined && m.canGoPrev() ?
+                        {m.canGoPrev ?
                             <Action name="prev" executeAsync={() => m.prevAsync()}>
                                 <NodeView>{m.activeStep?.prevLabel || m.prevLabel}</NodeView>
                             </Action> : <span />}
-                        {m.activeStepIndex !== undefined && m.canGoNext() ?
+                        {m.canGoNext ?
                             <Action name="next" executeAsync={() => m.nextAsync()}>
                                 <NodeView>{m.activeStep?.nextLabel || m.nextLabel}</NodeView>
                             </Action> : <span />}
@@ -154,13 +154,13 @@ export class Wizard extends Component<IWizardOptions> {
 
     nextAsync() {
 
-        if (this.canGoNext())
+        if (this.canGoNext)
             this.goToAsync(this.activeStepIndex + 1, true);
     }
 
     prevAsync() {
 
-        if (this.canGoPrev())
+        if (this.canGoPrev)
             this.goToAsync(this.activeStepIndex - 1, false);
     }
 
@@ -172,13 +172,13 @@ export class Wizard extends Component<IWizardOptions> {
         this.activeStepIndex = index;
     }
 
-    canGoNext() {
+    get canGoNext() {
         return this.content &&
             this.activeStepIndex < this.content.length - 1 &&
             (!this.activeStep?.canGoNext || this.activeStep.canGoNext());
     }
 
-    canGoPrev() {
+    get canGoPrev() {
         return this.content &&
                this.activeStepIndex > 0 &&
               (!this.activeStep?.canGoPrev || this.activeStep.canGoPrev());

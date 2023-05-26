@@ -2,7 +2,7 @@ import { IBindable, PROPS } from "./abstraction/IBindable";
 import type { IBound } from "./abstraction/IBound";
 import type { IObservableProperty } from "./abstraction/IObservableProperty";
 import type { IProperty } from "./abstraction/IProperty";
-import { getTypeName } from "./utils/Object";
+import { getPropertyDescriptor, getTypeName } from "./utils/Object";
 import { ObservableProperty } from "./ObservableProperty";
 
 export function propOf<TObj extends object, TKey extends keyof TObj & string>(obj: TObj, propName: TKey) {
@@ -67,7 +67,7 @@ export function bindTwoWays(dst: any, src: any, propName?: string) {
 
 export function createProp<TObj extends object, TKey extends (keyof TObj) & string, TValue extends TObj[TKey]>(obj: TObj, propName: TKey, property?: IObservableProperty<TValue>): IObservableProperty<TValue> {
 
-    let desc = Object.getOwnPropertyDescriptor(obj, propName);
+    let desc = getPropertyDescriptor(obj, propName);
 
     if (!desc) {
         console.warn("'", propName, "' not defined in ", getTypeName(obj));

@@ -15,12 +15,14 @@ interface ITextEditorOptions extends IEditorOptions<string> {
     rows?: Bindable<number>; 
 
     placeholder?: LocalString;
+
+    autocomplete?: Bindable<string>;
 }
 
 export const TextEditorTemplates: TemplateMap<TextEditor> = {
 
     "Default": forModel(m => <Template name="TextEditor">
-        <input className={m.className}  placeholder={m.placeholder} visible={m.visible} disabled={m.disabled} type={m.password ? "password" : "text"} value={m.value} >
+        <input autocomplete={m.autocomplete} className={m.className}  placeholder={m.placeholder} visible={m.visible} disabled={m.disabled} type={m.password ? "password" : "text"} value={m.value} >
             <Class name="default"/>
         </input>
     </Template>)
@@ -40,7 +42,7 @@ export class TextEditor extends Editor<string, ITextEditorOptions> {
 
     protected updateOptions() {
 
-        this.bindOptions("password", "rows", "placeholder");
+        this.bindOptions("password", "rows", "placeholder", "autocomplete");
     }
 
     rows?: number;
@@ -48,6 +50,8 @@ export class TextEditor extends Editor<string, ITextEditorOptions> {
     placeholder?: string;
 
     password: boolean;
+
+    autocomplete: string;
 }
 
 

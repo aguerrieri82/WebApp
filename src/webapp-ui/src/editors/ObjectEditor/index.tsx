@@ -26,7 +26,7 @@ interface IObjectEditorOptions<TObj extends Record<string, any>> extends ICommit
 export const ObjectEditorTemplates: TemplateMap<ObjectEditor<any>> = {
 
     "Default": forModel(m => <Template name="ObjectEditor">
-        <form className={m.className} visible={m.visible} > 
+        <form method="post" className={m.className} visible={m.visible} > 
             <Content src={m.editValue} template={m.contentTemplate()}/>
         </form>
     </Template>)

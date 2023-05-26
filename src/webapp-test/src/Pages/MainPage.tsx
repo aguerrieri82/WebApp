@@ -8,7 +8,7 @@ class MainPage extends Page {
 
         super();
 
-        this.configure({
+        this.init(MainPage, {
             name: "main",
             title: "Pagna Principale",
             route: "/",
