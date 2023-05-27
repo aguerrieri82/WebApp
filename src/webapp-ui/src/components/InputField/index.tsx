@@ -48,6 +48,7 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
         this.init(InputField, {
             template: InputFieldTemplates.Default,
             visible: true,
+            style: "filled",
             ...options,
         });
     }

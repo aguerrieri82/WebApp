@@ -12,6 +12,7 @@ import { cleanProxy, proxyEquals } from "./Expression";
 import { getTypeName, isClass, setTypeName } from "./utils/Object";
 import { ArrayTemplate, BehavoirCatalog, TemplateCatalog, TextTemplate } from "./Templates";
 import { getComponent } from "./Component";
+import Services from "./Services";
 
 type TemplateValueMap<TModel, TObj> = {
 
@@ -278,6 +279,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 if (parent)
                     return (parent.model as Record<ServiceType, TService>)[service];
 
+                return Services[service] as TService;
             },
 
             visitChildComponents: (visitor) => ctx.visitChildren(visitor, m => getComponent(m) != undefined),
@@ -729,7 +731,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                         template(childBuilder);
 
                         if (isMountListener(value))
-                            value.mount(this.getContext());
+                            value.mount(childBuilder.getContext());
                     }
                 }
 
@@ -963,6 +965,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     value(value: BindValue<TModel, string | boolean>, mode: InputValueMode = "change", poolTime: number = 500): this {
 
         const element = this.element as unknown as HTMLInputElement;
+
+        if (element.tagName == "OPTION")
+            return this.set("value", value);
 
         const valueProp = this.getBindingProperty(value);
 

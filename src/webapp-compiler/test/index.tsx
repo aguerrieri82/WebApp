@@ -1,198 +1,48 @@
-﻿import { CatalogTemplate, Component, IComponentOptions } from "@eusoft/webapp-core";
-import { ViewNode } from "../../Types";
-import { Class, Foreach, JsxTypedComponent, forModel } from "@eusoft/webapp-jsx";
-import { Action } from "../Action";
-import "./index.scss";
-import { NodeView } from "../NodeView";
-import { isValidable } from "../../abstraction/IValidable";
+﻿import { TemplateMap } from "@eusoft/webapp-core";
+import { Content } from "@eusoft/webapp-framework/content/Content";
+import { forModel } from "@eusoft/webapp-jsx";
+import { Action, IPageOptions, Page } from "@eusoft/webapp-ui";
 
-export interface IWizardStepOptions {
+interface IAppPageOptions extends IPageOptions {
 
-    name: string;
-
-    title: ViewNode;
-
-    shortTille?: ViewNode;
-
-    nextLabel?: ViewNode;
-
-    prevLabel?: ViewNode;
-
-    content: ViewNode;
-
-    canGoNext?: () => boolean;
-
-    canGoPrev?: () => boolean;
-
-    loadAsync?: () => Promise<any>;
-
-    validateAsync?: () => Promise<boolean>;
 
 }
 
+export const AppPageTemplates: TemplateMap<AppPage<unknown>> = {
 
-export class WizardStep implements IWizardStepOptions {
-
-    private options: IWizardStepOptions;
-
-    constructor(options?: IWizardStepOptions) {
-
-        this.options = options;
-    }
-
-    async loadAsync(): Promise<any> {
-
-    }
-
-    async validateAsync(): Promise<boolean> {
-
-        if (isValidable(this.content))
-            return await this.content.validateAsync();
-
-        return true;
-    }
-
-    canGoNext() {
-        return true;
-    }
-
-    canGoPrev() {
-        return true;
-    }
-
-    name: string;
-
-    title: ViewNode;
-
-    shortTille?: ViewNode;
-
-    nextLabel?: ViewNode;
-
-    prevLabel?: ViewNode;
-
-    content: ViewNode;
-
-    template: CatalogTemplate<WizardStep>;
+    "Default": forModel(m => <div className={m.className}>
+        <div className="body">
+            {m.content}
+        </div>
+    </div>)
 }
 
+export class AppPage<TArgs = unknown> extends Page<TArgs, IAppPageOptions> {
 
-export interface IWizardOptions extends IComponentOptions {
+    constructor(options?: IAppPageOptions) {
 
-    content?: (IWizardStepOptions | WizardStep | JsxTypedComponent<IWizardStepOptions>)[];
-
-    finishLabel?: ViewNode;
-
-    nextLabel?: ViewNode;
-
-    prevLabel?: ViewNode;
-
-    showStepList?: boolean;
-
-    activeStepIndex?: number;
-}
-
-export class Wizard extends Component<IWizardOptions> {
-
-    constructor(options?: IWizardOptions) {
         super();
 
-        this.init(Wizard, {
-
-            activeStepIndex: 0,
-            nextLabel: "next ❯",
-            prevLabel: "❮ prev",
-            template: forModel((m: this) => <div className={m.className} visible={m.visible}>
-                <Class name={"step-" + (m.activeStep?.name ?? "none")} />
-                <ol className="step-list">
-                    {m.content.forEach(i => <li>
-                        <Class name="active" condition={m.activeStep == i} />
-                        {i.shortTille ?? i.title}
-                    </li>)}
-                </ol>
-                <section className="body">
-                    <header>
-                        {m.activeStep?.title}
-                    </header>
-
-                    {m.activeStep?.content}
-
-                    <footer>
-                        {m.activeStepIndex !== undefined && m.canGoPrev() ?
-                            <Action name="prev" executeAsync={() => m.prevAsync()}>
-                                <NodeView>{m.activeStep?.prevLabel || m.prevLabel}</NodeView>
-                            </Action> : <span />}
-                        {m.activeStepIndex !== undefined && m.canGoNext() ?
-                            <Action name="next" executeAsync={() => m.nextAsync()}>
-                                <NodeView>{m.activeStep?.nextLabel || m.nextLabel}</NodeView>
-                            </Action> : <span />}
-                    </footer>
-                </section>
-            </div>),
+        this.init(AppPage, {
+            template: AppPageTemplates.Default,
             ...options
         });
     }
-
-
-    mount(ctx) {
-
-        this.activeStepIndex = 0;
-        super.mount(ctx);
-    }
-
-    protected initWork() {
-
-        this.onChanged("activeStepIndex", (v, o) => this.activeStep = this.content ? this.content[v] : undefined);
-
-        this.onChanged("activeStep", (v, o) => this.activeStepIndex = this.content ? this.content.indexOf(v) : -1);
-    }
-
-
-    protected updateOptions() {
-
-        this.bindOptions("nextLabel", "prevLabel", "showStepList", "activeStepIndex", "content");
-    }
-
-    nextAsync() {
-
-        if (this.canGoNext())
-            this.goToAsync(this.activeStepIndex + 1);
-    }
-
-    prevAsync() {
-
-        if (this.canGoPrev())
-            this.goToAsync(this.activeStepIndex - 1);
-    }
-
-    async goToAsync(index: number) {
-
-        if (!await this.activeStep.validateAsync())
-            return;
-
-        this.activeStepIndex = index;
-    }
-
-    canGoNext() {
-        return this.content &&
-            this.activeStepIndex < this.content.length - 1 &&
-            (!this.activeStep?.canGoNext || this.activeStep.canGoNext());
-    }
-
-    canGoPrev() {
-        return this.content &&
-            this.activeStepIndex > 0 &&
-            (!this.activeStep?.canGoPrev || this.activeStep.canGoPrev());
-    }
-
-    nextLabel: ViewNode;
-
-    prevLabel: ViewNode;
-
-    showStepList: boolean;
-
-    activeStep: WizardStep;
-
-    activeStepIndex: number;
-
-    content: WizardStep[] = [];
 }
+
+export function contentPage<TContent extends Content<unknown>>(content: TContent, route?: string) {
+
+    return new AppPage({
+        name: content.name,
+        title: content.title,
+        content: forModel(this, m => <>
+            {content}
+            <div className="actions">
+                {content.actions?.forEach(a => <Action executeAsync={a.executeAsync}>{a.text}</Action>)}
+            </div>
+        </>),
+        route
+    })
+}
+
+export default AppPage;

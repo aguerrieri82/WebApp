@@ -105,11 +105,17 @@ export class Router {
 
     async navigatePageAsync<TArgs extends RouteArgs>(page: IPage<TArgs>, args?: TArgs) {
 
-        let entry = this._entries.find(a => a.tag == page);
-        if (!entry)
-            entry = this.addPage(page);
+        if (!page.route) {
+            await app.pageHost.loadPageAsync(page, args);
+        } 
+        else {
+            let entry = this._entries.find(a => a.tag == page);
+            if (!entry)
+                entry = this.addPage(page);
 
-        await this.navigateEntryAsync(entry, args);
+            await this.navigateEntryAsync(entry, args);
+        }
+
     }
 
     protected async popStateAsync(state: IRouteState) {

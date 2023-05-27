@@ -38,8 +38,6 @@ export const localTable = new LocalTable();
 
 export default localTable;
 
-Services[LOCALIZATION] = localTable;
-
 declare module "@eusoft/webapp-core" {
     interface IServices {
 

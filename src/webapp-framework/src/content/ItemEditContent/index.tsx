@@ -1,0 +1,59 @@
+import { forModel } from "@eusoft/webapp-jsx";
+import { Content, IContentOptions } from "../Content";
+import { CommitableEditor, Editor, IEditor, IEditorOptions } from "@eusoft/webapp-ui";
+import { Bindable} from "@eusoft/webapp-core";
+
+export interface IItemEditOptions<TItem> extends IContentOptions {
+
+    saveAsync?: (value: TItem) => Promise<boolean>;
+
+    editor: IEditor<TItem>;
+
+    value: Bindable<TItem, "two-ways">;
+}
+
+export class ItemEditContent<TItem> extends Content<IItemEditOptions<TItem>> {
+
+    constructor(options?: IItemEditOptions<TItem>) {
+        super();
+
+        this.init(ItemEditContent, {
+            template: forModel(m => <>
+                {m.editor}
+            </>),
+            actions: [{
+                name: "save",
+                text: "save",
+                executeAsync: () => this.doSaveAsync()
+            }],
+            ...options
+        });
+    }
+
+    protected override initWork() {
+
+        this.bindTwoWays(a => a.value, this, a => a.editor?.value);
+    }
+
+    protected override updateOptions() {
+
+        this.bindOptions("editor", "value", "saveAsync");
+    }
+
+    async doSaveAsync() {
+
+        if (this.editor instanceof CommitableEditor) {
+
+            if (!await this.editor.commitAsync())
+                return;
+        }
+
+        this.saveAsync(this.value);
+    }
+
+    saveAsync?: (value: TItem) => Promise<boolean>;
+
+    editor: Editor<TItem, IEditorOptions<TItem>>;
+
+    value: TItem;
+}

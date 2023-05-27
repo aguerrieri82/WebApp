@@ -1,23 +1,25 @@
 import { NodePath } from "@babel/traverse";
 import type { JsxParseContext } from "../JsxParseContext";
-import { Expression, Identifier } from "@babel/types";
+import { CallExpression, Expression, Identifier, MemberExpression } from "@babel/types";
 
 export function ForeachExpressionHandler(ctx: JsxParseContext, stage: "exp", path: NodePath): boolean {
 
-    if (stage != "exp" || ctx.curAttribute || !path.isCallExpression())
+    if (stage != "exp" || ctx.curAttribute || (!path.isCallExpression() && !path.isOptionalCallExpression()))
         return;
 
-    const calle = path.get("callee");
+    const pathTsShit = path as NodePath<CallExpression>;
 
-    if (!calle.isMemberExpression())
+    const calle = pathTsShit.get("callee");
+
+    if (!(calle.isMemberExpression() || calle.isOptionalMemberExpression()))
         return;
 
-    const callProp = calle.get("property");
+    const callProp = (calle as NodePath<MemberExpression>).get("property");
 
     if (!callProp.isIdentifier() || callProp.node.name != "forEach")
         return;
 
-    const body = path.get("arguments")[0];
+    const body = pathTsShit.get("arguments")[0];
 
     if (!body.isArrowFunctionExpression())
         return;

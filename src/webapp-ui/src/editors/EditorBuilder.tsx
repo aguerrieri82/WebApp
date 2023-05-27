@@ -47,7 +47,7 @@ export class EditorBuilder<TModel, TModelContainer extends Record<string, any>> 
         const input = new InputField({
             content: editor,
             name: options?.name ?? propName,
-            label: options?.label,
+            label: options?.label ?? (options?.name ?? propName),
             validators: options?.validators,
             value: undefined,
             ...this._options?.inputField

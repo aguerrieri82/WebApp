@@ -140,6 +140,12 @@
                     }
                 }
             }
+
+            > .editor-container {
+               select{
+                   margin-left: -4px;
+               }
+            }
         }
 
 
@@ -193,7 +199,7 @@
 
             > .editor-container {
                 background-color: $editor-filled-color;
-                padding-top: 21px;
+                padding-top: 23px;
             }
 
 

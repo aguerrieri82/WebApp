@@ -1,16 +1,17 @@
-import { mount } from "@eusoft/webapp-core";
-import { OperationManager, PageHost } from "@eusoft/webapp-ui";
+import { Services, mount } from "@eusoft/webapp-core";
+import { LOCALIZATION, OPERATION_MANAGER, OperationManager, PageHost } from "@eusoft/webapp-ui";
+import localTable from "./services/LocalTable";
 
 export interface IAppOptions {
 
 }
+
 export interface IApp {
 
     runAsync(root?: HTMLElement | string);
 
     pageHost: PageHost;
 }
-
 
 export class App  {
 
@@ -21,6 +22,10 @@ export class App  {
 
     async runAsync(root?: HTMLElement | string) {
 
+
+        Services[OPERATION_MANAGER] = new OperationManager();
+        Services[LOCALIZATION] = localTable;
+
         await this.onStarted();
 
         if (typeof root == "string")
@@ -29,7 +34,6 @@ export class App  {
         else if (!root)
             root = document.body;
 
-        this.pageHost.provides(new OperationManager());
 
         mount(root, this.pageHost);
     }

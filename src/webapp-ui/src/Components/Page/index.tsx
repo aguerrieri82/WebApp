@@ -5,11 +5,12 @@ import "./index.scss";
 import { IFeature } from "../../abstraction/IFeature";
 import { formatText } from "../../utils/Format";
 import { NodeView } from "../NodeView";
+import { LocalString } from "../../Types";
 export interface IPageOptions extends IComponentOptions {
 
-    title?: Bindable<string>;
+    title?: Bindable<LocalString>;
 
-    content?: Bindable<ITemplateProvider>;
+    content?: Bindable<JSX.Element>;
 
     route?: string;
 
@@ -96,7 +97,7 @@ export class Page<TArgs extends Record<string, any> = unknown, TOptions extends 
 
     features: IFeature<this>[];
 
-    title: string;
+    title: LocalString;
 
     content: ITemplateProvider;
 
