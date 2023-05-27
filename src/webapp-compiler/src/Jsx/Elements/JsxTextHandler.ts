@@ -1,6 +1,6 @@
 import type  { NodePath } from "@babel/traverse";
 import type { JsxParseContext } from "../JsxParseContext";
-import type { ITemplateText, TemplateNodeType } from "../../Abstraction/ITemplateNode";
+import { ITemplateText, TemplateNodeType } from "../../Abstraction/ITemplateNode";
 
 export function JsxTextHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
 

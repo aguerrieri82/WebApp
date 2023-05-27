@@ -31,14 +31,14 @@ export class NumberEditor extends Editor<number, INumberEditorOptions> {
         });
     }
 
-    protected initWork() {
+    protected override initWork() {
 
         this.onChanged("editValue", v => this.value = v ? parseFloat(v) : undefined);
 
         this.onChanged("value", v => this.editValue = (v === null || v === undefined) ? undefined : v.toString());
     }
 
-    protected updateOptions() {
+    protected override updateOptions() {
 
         this.bindOptions("placeholder");
     }

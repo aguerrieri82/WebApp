@@ -21,7 +21,7 @@ export const ActionTemplates: TemplateMap<Action> = {
     "Button": forModel(m => <Template name="Action">
         <button visible={m.visible} behavoir={Ripple} className={m.className} on-click={m => m.doExecuteAsync()}>
             <Class name="executing" condition={m.isExecuting} />
-            <NodeView>{m.content}</NodeView>  
+            <NodeView>{m.content}</NodeView>
         </button>
     </Template>)
 }
@@ -39,7 +39,7 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
         });
     }
 
-    protected updateOptions() {
+    protected override updateOptions() {
 
         this.bindOptions("content", "executeAsync");
     }

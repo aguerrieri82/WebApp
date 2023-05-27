@@ -52,7 +52,7 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
         });
     }
 
-    protected initWork() {
+    protected override initWork() {
 
         this.bindTwoWays(a => a.value, this, a => a.content?.value);
 
@@ -62,7 +62,7 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
         });
     }
 
-    protected updateOptions() {
+    protected override updateOptions() {
 
         this.bindOptions("label", "validators", "content", "value");
     }

@@ -10,7 +10,8 @@
     "moduleResolution": "Node",
     "noEmit": true,
     "jsx": "preserve",
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitOverride": true
   },
   "include": ["src"]
 }

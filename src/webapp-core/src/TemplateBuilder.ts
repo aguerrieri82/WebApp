@@ -8,7 +8,6 @@ import { ITemplate, isTemplate } from "./abstraction/ITemplate";
 import { ITemplateContext } from "./abstraction/ITemplateContext";
 import { CatalogTemplate, ITemplateProvider, isTemplateProvider } from "./abstraction/ITemplateProvider";
 import { Binder } from "./Binder";
-import { WebApp } from "./utils/Debug";
 import { cleanProxy, proxyEquals } from "./Expression";
 import { getTypeName, isClass, setTypeName } from "./utils/Object";
 import { ArrayTemplate, BehavoirCatalog, TemplateCatalog, TextTemplate } from "./Templates";
@@ -67,9 +66,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     constructor(model: TModel, element: TElement, parent?: TemplateBuilder<unknown>) {
 
         super(model);
-
-        if (!WebApp.root)
-            WebApp.root = this;
 
         this.parent = parent;
 
@@ -486,10 +482,10 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             if (isClear)
                 return;
 
-            childBuilder.updateModel(value);
-
             if (isUpdate)
                 childBuilder.clear();
+
+            childBuilder.updateModel(value);
 
             for (const cond of builder.conditions) {
 
@@ -504,6 +500,31 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             if (builder.defaultTemplate)
                 childBuilder.template(builder.defaultTemplate);
         });
+
+        this.endTemplate(childBuilder);
+
+        return this;
+    }
+
+    enter<TInnerModel>(expression: BindValue<TModel, TInnerModel>, action: (t: TemplateBuilder<TInnerModel>) => any) {
+
+        const childBuilder = this.beginTemplate<TInnerModel>(undefined, undefined, undefined, this.createMarker(expression));
+        childBuilder._tag = "enter";
+
+        this.bind(expression, (value, oldValue, isUpdate, isClear) => {
+
+            if (isClear)
+                return;
+
+            if (isUpdate)
+                childBuilder.clear();
+
+            childBuilder.updateModel(value);
+
+            action(childBuilder);
+        });
+
+        this.endTemplate(childBuilder);
 
         return this;
     }
@@ -694,7 +715,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 else {
 
                     if (isUpdate)
-                        childBuilder.clear(false, false); //TODO WARN: cleanValue was true
+                        childBuilder.clear(); //TODO WARN: cleanValue was true
 
                     if (value) {
 
@@ -1077,7 +1098,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     protected createMarker(obj: any, baseName: string = ""): string {
 
-        return undefined;
+        return;
 
         if (typeof obj == "function")
             return this.createMarker(obj(this.model), baseName);
@@ -1091,11 +1112,11 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this.createMarker(getTypeName(obj), baseName);
     }
 
-    namespace: string = null;
+    namespace: string;
 
-    element: TElement = null;
+    element: TElement;
 
-    parent: TemplateBuilder<unknown> = null;
+    declare parent: TemplateBuilder<unknown>;
 
     isInline: boolean = false;
 
@@ -1181,7 +1202,11 @@ export function mount<TModel>(root: HTMLElement, templateOrProvider: CatalogTemp
             model = {} as TModel;
     }
 
+
+
     const builder = new TemplateBuilder(model, root);
+
+    webApp.root = builder;
 
     builder.begin();
 

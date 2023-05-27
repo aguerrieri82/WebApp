@@ -38,7 +38,7 @@ export class BooleanEditor extends Editor<boolean, IBooleanEditorOptions> {
     }
 
 
-    protected updateOptions() {
+    protected override updateOptions() {
 
         this.bindOptions("label");
     }

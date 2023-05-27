@@ -49,7 +49,7 @@ export class ObjectEditor<TObj extends Record<string, any>> extends CommitableEd
         });
     }
 
-    protected updateOptions() {
+    protected override updateOptions() {
 
         this.bindOptions("builder", "isDynamic", "validationMode", "inputField");
     }
@@ -92,7 +92,7 @@ export class ObjectEditor<TObj extends Record<string, any>> extends CommitableEd
     }
 
 
-    protected async commitAsyncWork() {
+    protected override async commitAsyncWork() {
 
         let isSuccess = true;
 
@@ -107,7 +107,7 @@ export class ObjectEditor<TObj extends Record<string, any>> extends CommitableEd
         return isSuccess;
     }
 
-    async validateAsync<TTarget>(ctx?: IValidationContext<TTarget>, force?: boolean): Promise<boolean> {
+    override async validateAsync<TTarget>(ctx?: IValidationContext<TTarget>, force?: boolean): Promise<boolean> {
 
         let isValid = true;
 
@@ -125,7 +125,7 @@ export class ObjectEditor<TObj extends Record<string, any>> extends CommitableEd
         return isValid;
     }
 
-    protected editToValue(editValue: TObj, clone: boolean) {
+    protected override editToValue(editValue: TObj, clone: boolean) {
 
         if (clone)
             return cloneObject(editValue);
@@ -138,7 +138,7 @@ export class ObjectEditor<TObj extends Record<string, any>> extends CommitableEd
         return value;
     }
 
-    protected valueToEdit(value: TObj, clone: boolean) {
+    protected override valueToEdit(value: TObj, clone: boolean) {
 
         const editValue = value ?? {} as TObj;
 

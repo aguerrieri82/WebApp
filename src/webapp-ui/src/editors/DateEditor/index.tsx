@@ -32,7 +32,7 @@ export class DateEditor extends Editor<Date, IDateEditorOptions> {
         });
     }
 
-    protected initWork() {
+    protected override initWork() {
 
         this.onChanged("editValue", v => {
             this.value = v ? new Date(v) : undefined
@@ -43,7 +43,7 @@ export class DateEditor extends Editor<Date, IDateEditorOptions> {
         });
     }
 
-    protected updateOptions() {
+    protected override updateOptions() {
 
         this.bindOptions("placeholder");
     }

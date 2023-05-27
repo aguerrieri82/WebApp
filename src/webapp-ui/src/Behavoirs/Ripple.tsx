@@ -2,7 +2,7 @@ import { Behavoir, defineBehavoir } from "@eusoft/webapp-core";
 
 export class Ripple extends Behavoir {
 
-    attach(ctx): void {
+    override attach(ctx): void {
 
     }
 }

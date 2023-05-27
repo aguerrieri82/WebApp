@@ -9,7 +9,8 @@
     "declarationDir": "types",
     "moduleResolution": "Node",
     "noEmit": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "noImplicitOverride": true
   },
   "include": ["src"]
 }

@@ -14,12 +14,12 @@ export abstract class Editor<TValue, TOptions extends IEditorOptions<TValue>> ex
         });
     }
 
-    protected initWork() {
+    protected override initWork() {
 
         this.onChanged("value", (v, o) => this.onValueChanged(v, o, this.changeReason));
     }
 
-    protected updateOptions() {
+    protected override updateOptions() {
 
         this.bindOptions("visible", "disabled", "value");
     }

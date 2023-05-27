@@ -26,16 +26,16 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
         });
     }
 
-    protected initWork() {
+    protected override initWork() {
         this.onChanged("commitMode", () => this.updateEditValue(this.value));
     }
 
-    protected updateOptions() {
+    protected override updateOptions() {
 
         this.bindOptions("commitMode");
     }
 
-    protected get changeReason() : ValueChangedReason {
+    protected override get changeReason() : ValueChangedReason {
         return this._editState == "committing" ? "edit" : undefined;
     }
 
@@ -48,7 +48,7 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
         this.isDirty = false;
     }
 
-    onValueChanged(value: TValue, oldValue: TValue, reason: ValueChangedReason) {
+    override onValueChanged(value: TValue, oldValue: TValue, reason: ValueChangedReason) {
 
         if (reason != "edit")
             this.updateEditValue(value);

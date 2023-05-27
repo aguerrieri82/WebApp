@@ -103,7 +103,7 @@ export class Router {
         });
     }
 
-    async navigateAsync<TArgs extends RouteArgs>(page: IPage<TArgs>, args?: TArgs) {
+    async navigatePageAsync<TArgs extends RouteArgs>(page: IPage<TArgs>, args?: TArgs) {
 
         let entry = this._entries.find(a => a.tag == page);
         if (!entry)

@@ -9,7 +9,8 @@
     "declarationDir": "types",
     "moduleResolution": "Node",
     "noEmit": true,
-    "incremental": true
+    "incremental": true,
+    "noImplicitOverride": true
   },
   "include": ["src"]
 }

@@ -113,13 +113,13 @@ export class Wizard extends Component<IWizardOptions> {
             template: forModel((m: this) => <div className={m.className} visible={m.visible}>
                 <Class name={"step-" + (m.activeStep?.name ?? "none")}/>
                 <ol className="step-list">
-                    <Foreach src={m.content}>
-                        {i => <li visible={i.visible}>
+                    {m.content.forEach(i =>
+                        <li visible={i.visible}>
                             <Class name="active" condition={m.activeStep == i} /> 
                             <Class name="completed" condition={i.completed} /> 
                             <NodeView>{i.shortTitle ?? i.title}</NodeView>
-                        </li>}
-                    </Foreach>
+                        </li>
+                    )}
                 </ol>
                 <section className="body">
                     <header>
@@ -131,11 +131,11 @@ export class Wizard extends Component<IWizardOptions> {
                     <footer>
                         {m.canGoPrev ?
                             <Action name="prev" executeAsync={() => m.prevAsync()}>
-                                <NodeView>{m.activeStep?.prevLabel || m.prevLabel}</NodeView>
+                                {m.activeStep?.prevLabel || m.prevLabel}
                             </Action> : <span />}
                         {m.canGoNext ?
                             <Action name="next" executeAsync={() => m.nextAsync()}>
-                                <NodeView>{m.activeStep?.nextLabel || m.nextLabel}</NodeView>
+                                {m.activeStep?.nextLabel || m.nextLabel}
                             </Action> : <span />}
                     </footer>
                 </section>
@@ -145,13 +145,13 @@ export class Wizard extends Component<IWizardOptions> {
     }
 
 
-    mount(ctx) {
+    override mount(ctx) {
 
         this.activeStepIndex = 0;
         super.mount(ctx);
     }
 
-    protected initWork() {
+    protected override initWork() {
 
         this.onChanged("activeStepIndex", (v, o) => this.activeStep = this.content ? this.content[v] : undefined);
 
@@ -159,7 +159,7 @@ export class Wizard extends Component<IWizardOptions> {
     }
 
 
-    protected updateOptions() {
+    protected override updateOptions() {
 
         this.bindOptions("nextLabel", "prevLabel", "showStepList", "activeStepIndex", "content");
     }

@@ -1,28 +1,39 @@
 import { Default, Foreach, Switch, Text, When } from "@eusoft/webapp-jsx";
-import { ViewNode } from "../../Types";
-import { ITemplateProvider } from "@eusoft/webapp-core";
+import { LocalString, ViewNode } from "../../Types";
+import { ITemplate, ITemplateProvider, TemplateBuilder, isTemplateProvider } from "@eusoft/webapp-core";
 import { formatText } from "../../utils";
 
 export interface INodeViewOptions {
     content: ViewNode;
 }
+
+type NodeType = LocalString | ITemplateProvider;
 export function NodeView(options: INodeViewOptions) {
 
-    return <>
-        <Foreach src={(Array.isArray(options.content) ? options.content : [options.content]) as []}>
-            {i => <Switch src={i}>
-                {v => <>
-                    <When condition={typeof v == "string"}>
-                        <Text src={formatText(v as string)} />
-                    </When>
-                    <When condition={typeof v == "function" && (v as Function).length == 0}>
-                        <Text src={(v as unknown as Function)()} />
-                    </When>
-                    <Default>{v as ITemplateProvider}</Default>
-                </>
-                }
-            </Switch>
-           }
-        </Foreach>
-    </>;
+    const singleNode = (t: TemplateBuilder<NodeType>) => {
+
+        if (typeof t.model == "string") {
+            const format = formatText(t.model);
+            if (typeof format == "string")
+                t.text(format);
+            else if (format)
+                format(t);
+        }
+        else if (isTemplateProvider(t.model))
+            t.content(t.model);
+
+        else if (typeof t.model == "function" && t.model.length == 0)
+            t.text(t.model());
+    }
+   
+
+    return (t: TemplateBuilder<INodeViewOptions>) =>
+        t.enter(m => m.content, t2 => {
+            if (t2.model === undefined || t2.model === null)
+                return;
+            if (Array.isArray(t2.model))
+                t2.model.forEach(item => t2.template(singleNode, item as NodeType));
+            else
+                singleNode(t2 as TemplateBuilder<NodeType>)
+        });
 }

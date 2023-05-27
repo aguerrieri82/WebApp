@@ -3,6 +3,7 @@ import { Class, forModel } from "@eusoft/webapp-jsx";
 import "./index.scss";
 import { ViewNode } from "../../Types";
 import { MaterialIcon } from "../Icon";
+import { NodeView } from "../NodeView";
 
 
 export const ProgressViewTemplates: TemplateMap<ProgressView> = {
@@ -12,9 +13,9 @@ export const ProgressViewTemplates: TemplateMap<ProgressView> = {
             <Class name="indeterminate" condition={m.isIndeterminate} />
             {m.isIndeterminate ?
                 <MaterialIcon name="donut_large" /> :
-                <>xxx</>
+                <>not implemented</>
             }
-            <div>{m.content}</div>
+            <div><NodeView>{m.content}</NodeView></div>
         </div>
     </>)
 }
@@ -42,7 +43,7 @@ export class ProgressView extends Component<IProgressViewOptions> {
         });
     }
 
-    protected updateOptions() {
+    protected override updateOptions() {
 
         this.bindOptions("content", "isIndeterminate", "min", "max", "value");
     }
