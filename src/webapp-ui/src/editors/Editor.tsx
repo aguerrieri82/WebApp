@@ -14,7 +14,7 @@ export abstract class Editor<TValue, TOptions extends IEditorOptions<TValue> = I
         });
     }
 
-    protected override initWork() {
+    protected override initProps() {
 
         this.onChanged("value", (v, o) => this.onValueChanged(v, o, this.changeReason));
     }

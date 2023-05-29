@@ -32,7 +32,7 @@ export class DateEditor extends Editor<Date, IDateEditorOptions> {
         });
     }
 
-    protected override initWork() {
+    protected override initProps() {
 
         this.onChanged("editValue", v => {
             this.value = v ? new Date(v) : undefined

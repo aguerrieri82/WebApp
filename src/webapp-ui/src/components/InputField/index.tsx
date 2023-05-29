@@ -53,7 +53,7 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
         });
     }
 
-    protected override initWork() {
+    protected override initProps() {
 
         this.bindTwoWays(a => a.value, this, a => a.content?.value);
 
@@ -75,7 +75,7 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
 
     async validateAsync<TInnerTarget>(ctx: IValidationContext<TInnerTarget & TTarget>, force?: boolean): Promise<boolean> {
 
-        if (!this.validators || this.validators?.length == 0 || this.content?.disabled || !this.content?.visible)
+        if (this.content?.disabled || !this.content?.visible)
             return true;
 
         const errors: ViewNode[] = [];
@@ -84,16 +84,18 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
 
         const newCtx = { ...ctx, fieldName: this.name };
 
-        for (const validator of this.validators) {
+        if (this.validators) {
+            for (const validator of this.validators) {
 
-            const result = await validator(newCtx, this.value);
-            if (!result.isValid) {
-                if (result.error)
-                    errors.push(result.error);
-                isValid = false;
+                const result = await validator(newCtx, this.value);
+                if (!result.isValid) {
+                    if (result.error)
+                        errors.push(result.error);
+                    isValid = false;
+                }
             }
         }
-
+  
         if (isValidable(this.content)) {
             if (!await this.content.validateAsync(ctx, force))
                 isValid = false;

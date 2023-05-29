@@ -36,7 +36,7 @@ export interface IBuilderEditorOptions<TModel, TValue, TEditorOptions extends IE
     editor?: Partial<TEditorOptions>;
 }
 
-export class EditorBuilder<TModel, TModelContainer extends {}> {
+export class EditorBuilder<TModel extends TemplateModel, TModelContainer extends {}> {
 
     protected _options: EditorBuilderOptions<TModel, TModelContainer>;
 
@@ -44,14 +44,12 @@ export class EditorBuilder<TModel, TModelContainer extends {}> {
         this._options = options;
     }
 
-    content(template: (model: TModel) => JSX.Element) {
+    content(template: JsxTypedElement<TModel, unknown>) {
 
         return {
             model: this._options.container,
             template: (t: TemplateBuilder<TModelContainer>) =>
-                t.enter(m => template(this._options.model(m)) as ITemplate<TModel>, t => {
-                    t.model(t as any);
-             })
+                t.enter(m => this._options.model(m), t => (template as ITemplate<TModel>)(t))
         }
         
     }
@@ -79,10 +77,10 @@ export class EditorBuilder<TModel, TModelContainer extends {}> {
         }); 
 
         if (editorHasLabel)
-            (this.editor as unknown as ILabel).label = label;
+            (editor as ILabel).label = label;
 
         input.bindTwoWays(m => m.value, this._options.container, m => bind(this._options.model(m)));
-
+         
         if (options.onChanged)
             input.prop("value").subscribe(v => {
                 const model = this._options.model(this._options.container);
@@ -90,12 +88,10 @@ export class EditorBuilder<TModel, TModelContainer extends {}> {
             })
 
         if (options.visible) 
-            input.bindOneWay(m => m.content?.visible, this._options.container, m => options.visible(this._options.model(m)));
+            input.bindOneWay(m => m.visible, this._options.container, m => options.visible(this._options.model(m)));
 
         if (options.disabled)
             input.bindOneWay(m => m.content?.disabled, this._options.container, m => options.disabled(this._options.model(m)));
-
-
 
         if (this._options.attach)
             this._options.attach(input);

@@ -1,13 +1,15 @@
 import { Bindable, IComponentOptions, Component, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
 import { forModel, Template } from "@eusoft/webapp-jsx";
 import { IPage, LoadState } from "../../abstraction/IPage";
-import "./index.scss";
 import { IFeature } from "../../abstraction/IFeature";
 import { formatText } from "../../utils/Format";
 import { NodeView } from "../NodeView";
-import { LocalString } from "../../Types";
+import { LocalString, ViewNode } from "../../Types";
 import { useOperation } from "../../utils";
-export interface IPageOptions extends IComponentOptions {
+import { IAction } from "../../abstraction";
+import "./index.scss";
+
+export interface IPageOptions<TArgs extends {}> extends IComponentOptions {
 
     title?: Bindable<LocalString>;
 
@@ -17,7 +19,7 @@ export interface IPageOptions extends IComponentOptions {
 
     features?: IFeature<IPage>[];
 
-    name: string;
+    loadAsync?: (args: TArgs) => Promise<any>; 
 }
 
 export const PageTemplates: TemplateMap<Page> = {
@@ -34,7 +36,7 @@ export const PageTemplates: TemplateMap<Page> = {
     </Template>)
 
 }			
-export class Page<TArgs extends Record<string, any> = unknown, TOptions extends IPageOptions = IPageOptions> extends Component<TOptions> implements IPage<TArgs> {
+export class Page<TArgs extends {} = unknown, TOptions extends IPageOptions<TArgs> = IPageOptions<TArgs>> extends Component<TOptions> implements IPage<TArgs> {
 
     protected _loadState: LoadState;
 
@@ -51,6 +53,8 @@ export class Page<TArgs extends Record<string, any> = unknown, TOptions extends 
     protected override updateOptions() {
 
         this.bindOptions("title", "content", "route", "features");
+        if (this.options.loadAsync)
+            this.loadAsyncWork = this.options.loadAsync;
     }
 
     async loadAsync(args?: TArgs)  {

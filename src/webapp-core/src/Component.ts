@@ -13,6 +13,7 @@ import { ITemplateContext } from "./abstraction/ITemplateContext";
 import { IService, SERVICE_TYPE, ServiceType } from "./abstraction/IService";
 import { IServiceProvider, ServiceContainer } from "./abstraction/IServiceProvider";
 import type { CommonKeys } from "./abstraction/Types";
+import { BindExpression, BindValue } from "./abstraction/IBinder";
 
 interface ISubscription {
     unsubscribe(): void;
@@ -44,7 +45,7 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
         for (const func of upOptions) 
             func.call(this);
 
-        const inits = enumOverrides(this, "initWork" as any);
+        const inits = enumOverrides(this, "initProps" as any);
 
         for (const func of inits) {
 
@@ -53,7 +54,7 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
         }
     }
 
-    protected initWork() {
+    protected initProps() {
 
         this.onChanged("style", () => this.updateClass());
 
@@ -135,19 +136,15 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
     }
 
 
-    bindTwoWays<TValue, TDestModel extends object>(src: (model: this) => TValue, dstModel: TDestModel, dst: (model: TDestModel) => TValue) {
+    bindTwoWays<TValue, TDestModel extends object>(src: BindValue<this, TValue>, dstModel: TDestModel, dst: BindExpression<TDestModel, TValue>) {
 
-        if (!this._binder)
-            this._binder = new Binder(this);
-        this._binder.bindTwoWays(src, dstModel, dst);
+        this.binder.bindTwoWays(src, dstModel, dst);
     }
 
 
-    bindOneWay<TValue, TDestModel extends object>(src: (model: this) => TValue, dstModel: TDestModel, dst: (model: TDestModel) => TValue) {
+    bindOneWay<TValue, TDestModel extends object>(dst: BindValue<this, TValue>, srcModel: TDestModel, src: BindExpression<TDestModel, TValue>) {
 
-        if (!this._binder)
-            this._binder = new Binder(this);
-        this._binder.bindOneWay(src, dstModel, dst);
+        this.binder.bindOneWay(dst, srcModel, src);
     }
 
     prop<TKey extends keyof this & string>(prop: TKey) {
@@ -215,6 +212,13 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     unmount() {
         console.debug("unmount", getTypeName(this));
+    }
+
+    get binder() {
+
+        if (!this._binder)
+            this._binder = new Binder(this);
+        return this._binder;
     }
 
     context: ITemplateContext<this, HTMLElement>;

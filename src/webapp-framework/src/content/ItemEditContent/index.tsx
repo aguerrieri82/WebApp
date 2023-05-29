@@ -9,12 +9,13 @@ export interface IItemEditOptions<TItem> extends IContentOptions {
 
     editor: BindValue<TItem, IEditor<TItem>>;
 
-    value: Bindable<TItem, "two-ways">;
+    value?: Bindable<TItem, "two-ways">;
 }
 
 export class ItemEditContent<TItem> extends Content<IItemEditOptions<TItem>> {
 
     constructor(options?: IItemEditOptions<TItem>) {
+
         super();
 
         this.init(ItemEditContent, {
@@ -30,17 +31,7 @@ export class ItemEditContent<TItem> extends Content<IItemEditOptions<TItem>> {
         });
     }
 
-    protected override initWork() {
-
-        this.bindTwoWays(a => a.value, this, a => a.editor?.value);
-    }
-
-    protected override updateOptions() {
-
-        this.bindOptions("editor", "value", "saveAsync");
-    }
-
-    async doSaveAsync() {
+    protected async doSaveAsync() {
 
         if (this.editor instanceof CommitableEditor) {
 
@@ -48,12 +39,18 @@ export class ItemEditContent<TItem> extends Content<IItemEditOptions<TItem>> {
                 return;
         }
 
-        this.saveAsync(this.value);
+        this.saveAsync(this.editor.value);
+    }
+
+    set value(value: TItem) {
+        this.editor.value = value;
+    }
+
+    get value() {
+        return this.editor.value;
     }
 
     saveAsync?: (value: TItem) => Promise<boolean>;
 
     editor: Editor<TItem, IEditorOptions<TItem>>;
-
-    value: TItem;
 }

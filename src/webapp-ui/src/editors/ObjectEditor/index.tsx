@@ -13,7 +13,7 @@ type ObjectEditorValidationMode = "manual" | "onInputChange";
 
 export interface IObjectEditorOptions<TObj extends Record<string, any>> extends ICommitableEditorOptions<TObj, TObj> {
 
-    builder: (builder: EditorBuilder<TObj, ObjectEditor<TObj>>) => ITemplate<TObj> | JSX.Element;
+    builder?: (builder: EditorBuilder<TObj, ObjectEditor<TObj>>) => ITemplate<TObj> | JSX.Element;
 
     validationMode?: ObjectEditorValidationMode;
 
@@ -44,9 +44,15 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
         this.init(ObjectEditor, {
             validationMode: "manual",
             template: ObjectEditorTemplates.Default,
-            value: {} as TObj,
             ...options,
         });
+    }
+
+
+    protected override initProps() {
+
+        if (!this.value)
+            this.value = {} as TObj;
     }
 
     protected override updateOptions() {
@@ -140,7 +146,7 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
 
     protected override valueToEdit(value: TObj, clone: boolean) {
 
-        const editValue = value ?? {} as TObj;
+        let editValue = value;
 
         if (clone)
             return cloneObject(editValue);

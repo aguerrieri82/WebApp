@@ -29,6 +29,8 @@ export function ForeachExpressionHandler(ctx: JsxParseContext, stage: "exp", pat
         return;
 
     ctx.enterNewElement("t:foreach");
+    ctx.generateBuilder();
+    ctx.createAttribute("as", ctx.curBuilder, ctx.curElement);
 
     ctx.curAttribute = ctx.createAttribute("src", null, ctx.curElement);
     calle.get("object").visit();

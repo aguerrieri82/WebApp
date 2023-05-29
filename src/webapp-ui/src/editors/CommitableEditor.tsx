@@ -26,7 +26,7 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
         });
     }
 
-    protected override initWork() {
+    protected override initProps() {
         this.onChanged("commitMode", () => this.updateEditValue(this.value));
     }
 
@@ -45,6 +45,7 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
             return;
 
         this.editValue = this.valueToEdit(value, this.commitMode != "auto");
+
         this.isDirty = false;
     }
 

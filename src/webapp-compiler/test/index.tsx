@@ -1,102 +1,39 @@
-﻿import { ItemEditContent } from "@eusoft/webapp-framework";
-import { contentPage } from "../../components/AppPage";
-import { ObjectEditor, enumItemsSource, formatText, required, staticItemsSource } from "@eusoft/webapp-ui";
-import { ICreateSaleCircuit, SaleCircuitType } from "../../entities/Commands";
-import { AddressEditor } from "../../components/AddressEditor";
-import { forModel } from "@eusoft/webapp-jsx";
-
-interface IEditSaleCircuit extends ICreateSaleCircuit {
-    useCurrency?: boolean;
-}
-
-
-export const saleCircuitEditor = value => new ItemEditContent<IEditSaleCircuit>({
-
-    name: "sale-circuit-create",
-    title: "create-sale-circuit",
-    editor: new ObjectEditor({
-
-        commitMode: "manual",
-        style: "vertical",
-        inputField: { style: "filled" },
-        builder: bld => <>
-
-            {bld.text(a => a.name, {
-                validators: [required]
-            })}
-
-            {bld.singleSelector(a => a.type, {
-                validators: [required],
-                editor: {
-                    itemsSource: enumItemsSource(SaleCircuitType)
-                }
-            })}
-
-            {bld.editor(a => a.address, AddressEditor, {
-                label: "address",
-                style: ["vertical-label", "no-box", "no-error"],
-                editor: {
-                    inputField: { style: "filled" },
-                }
-            })}
-
-            {bld.boolean(a => a.useCurrency, {
-                onChanged: (m, v) => {
-                    if (!v) {
-                        m.conversionRate = null;
-                        m.currency = null;
-                    }
-                },
-                editor: {
-                    label: "use-custom-currency"
-                }
-            })}
-
-            {bld.text(a => a.currency, {
-                validators: [required],
-                disabled: m => !m.useCurrency,
-                label: "currency-name",
-                editor: {
-                }
-            })}
-
-            {bld.singleSelector(a => a.conversionCurrency, {
-                validators: [required],
-                disabled: m => !m.useCurrency,
-                editor: {
-                    itemsSource: staticItemsSource(["Euro", "EUR"])
-                }
-            })}
-
-            {bld.number(a => a.conversionRate, {
-                validators: [required],
-                disabled: m => !m.useCurrency,
-                editor: {
-                }
-            })}
-
-            {bld.content(a => <>
-                {a.currency && a.conversionRate &&
-                    <span>{formatText("", a.currency, a.conversionCurrency, a.conversionRate)}</span>}
-            </>)}
-
-        </>
-    }),
-
-    saveAsync: async value => {
-
-        alert(JSON.stringify(value));
-
-        return true;
-    },
-
-    value
-
-})
+﻿import { Foreach, debug, forModel } from "@eusoft/webapp-jsx";
+import { Action, InputField, MaterialIcon, NumberEditor, ObjectEditor, Page, ValidationResult, ViewNode, Wizard, WizardStep, formatText, required, validEmail } from "@eusoft/webapp-ui";
+import "./SignUpPage.scss";
+import { Bind } from "@eusoft/webapp-core";
+import { IMerchantCreate, UserAccountType } from "../../entities/Commands";
+import { IValidationContext } from "@eusoft/webapp-ui/abstraction/Validator";
+import { apiClient } from "../../services/PmApiClient";
+import { router } from "@eusoft/webapp-framework";
+import { loginPage } from "./LoginPage";
+import { MerchantEditor } from "../merchant/EditMerchant";
 
 
-export const createSaleCircuitPage = contentPage(saleCircuitEditor({}), {
-    route: "/sale-circuit/create",
-    showBack: true,
-    style: ["panel"]
-});
+class SignUpPage extends Page {
+
+    constructor() {
+
+        super();
+
+        this.init(SignUpPage, {
+            name: "sign-up",
+            title: "sign-up",
+            style: "panel",
+            route: "/sign-up",
+            content: forModel(this, m => <>
+                <Wizard ref={m.wizard}>
+
+
+                    <WizardStep name="merchant-details" title="merchant-details" visible={m.data.accountType == UserAccountType.Business} validateAsync={Bind.action((step) => m.createAccountAsync(step))}>
+                        <MerchantEditor value={Bind.twoWays(m.data.merchant)} />
+                    </WizardStep>
+
+                </Wizard>
+            </>)
+        });
+
+
+    }
+
+};

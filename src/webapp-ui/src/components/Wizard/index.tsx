@@ -151,7 +151,7 @@ export class Wizard extends Component<IWizardOptions> {
         super.mount(ctx);
     }
 
-    protected override initWork() {
+    protected override initProps() {
 
         this.onChanged("activeStepIndex", (v, o) => this.activeStep = this.content ? this.content[v] : undefined);
 
@@ -166,14 +166,35 @@ export class Wizard extends Component<IWizardOptions> {
 
     nextAsync() {
 
-        if (this.canGoNext)
-            this.goToAsync(this.activeStepIndex + 1, true);
+        if (this.canGoNext) {
+
+            let curStep = this.activeStepIndex;
+
+            while (curStep < this.content.length - 1 ) {
+                curStep++;
+                if (this.content[curStep].visible) {
+                    this.goToAsync(curStep, true);
+                    break;
+                }
+            }
+        } 
     }
 
     prevAsync() {
 
-        if (this.canGoPrev)
-            this.goToAsync(this.activeStepIndex - 1, false);
+        if (this.canGoPrev) {
+
+            let curStep = this.activeStepIndex;
+
+            while (curStep > 0) {
+                curStep--;
+                if (this.content[curStep].visible) {
+                    this.goToAsync(curStep, false);
+                    break;
+                }
+
+            }
+        }
     }
 
     async goToAsync(index: number, validate: boolean) {

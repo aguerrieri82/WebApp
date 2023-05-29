@@ -10,6 +10,7 @@ import { getFunctionType, getPropertyDescriptor } from "./utils/Object";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
 import type { ArrayElement } from "./abstraction/Types";
+import { TemplateBuilder } from "./TemplateBuilder";
 
 
 interface IBindingSubscription<TSrc extends object | [], TValue> {
@@ -173,6 +174,8 @@ export class Binder<TModel> {
 
         let curValue: TValue;
 
+        let isFirstBinding = true;
+
         const realDst = (dstModel == this.model ? dst : (m: TModel & IBindable) => dst(m[USE](dstModel))) as BindExpression<TModel, TValue>;
 
         for (const bind of [src, realDst]) {
@@ -184,12 +187,12 @@ export class Binder<TModel> {
 
                 let isChanged = false;
 
-                if (value !== undefined) {
+                if (value !== undefined || !isFirstBinding) {
                     isChanged = curValue !== value;
                     curValue = value;
                 }
 
-                if (curValue === undefined)
+                if (curValue === undefined && isFirstBinding)
                     return;
 
                 isBinding = true;
@@ -206,9 +209,12 @@ export class Binder<TModel> {
                 }
                 finally {
                     isBinding = false;
+
                 }
             }, "exec-always");
         }
+
+        isFirstBinding = false;
     }
 
     protected executeBinding<TValue>(binding: IBinding<TModel, TValue>, isUpdate: boolean) {
@@ -381,8 +387,14 @@ export class Binder<TModel> {
         }
     }
 
-    get isRootModel() {
-        return !this.parent || this.parent.model != this.model;
+    isRootModel() {
+        let curParent = this.parent;
+        while (curParent) {
+            if (curParent.model == this.model)
+                return false;
+            curParent = curParent.parent;
+        }
+        return false;
     }
 
     cleanBindings(cleanValue: boolean, deep: boolean) {
@@ -392,7 +404,7 @@ export class Binder<TModel> {
 
         this._cleanActions.forEach(a => a());
 
-        if (this.isRootModel && isBindingContainer(this.model))
+        if (isBindingContainer(this.model) && this.isRootModel()) //TODO very weak, to rethnk
             this.model.cleanBindings(cleanValue);
 
         if (WebApp.isDebug)

@@ -1,30 +1,37 @@
-import { Bindable, Component, IComponentOptions } from "@eusoft/webapp-core";
-import { IAction, LocalString, ViewNode } from "@eusoft/webapp-ui";
+import {CatalogTemplate, ITemplate } from "@eusoft/webapp-core";
+import { IAction, IContent, LocalString, ViewNode } from "@eusoft/webapp-ui";
 
-export interface IContentOptions extends IComponentOptions {
+export interface IContentOptions  {
 
-    icon?: Bindable<ViewNode>;
+    template?: CatalogTemplate<any>;
 
-    shortTitle?: Bindable<LocalString>;
+    name?: string;
 
-    title?: Bindable<LocalString>;
+    icon?: ViewNode;
 
-    actions?: Bindable<IAction[]>;
+    shortTitle?: LocalString;
+
+    title?: LocalString;
+
+    actions?: IAction[];
 } 
 
-export abstract class Content<TOptions extends IContentOptions> extends Component<TOptions> {
+export abstract class Content<TOptions extends IContentOptions> implements IContent {
 
     constructor() {
-        super();
-        this.init(Content);
+
+
     }
 
+    protected init(caller: Function, options?: TOptions) {
 
-    protected override updateOptions() {
-
-        this.bindOptions("title", "shortTitle", "icon", "actions");
+        if (caller == this.constructor)
+            Object.assign(this, options);
     }
 
+    name: string;
+
+    template: ITemplate<this>;
 
     title: LocalString;
 

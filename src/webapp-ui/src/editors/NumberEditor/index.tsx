@@ -31,7 +31,7 @@ export class NumberEditor extends Editor<number, INumberEditorOptions> {
         });
     }
 
-    protected override initWork() {
+    protected override initProps() {
 
         this.onChanged("editValue", v => this.value = v ? parseFloat(v) : undefined);
 

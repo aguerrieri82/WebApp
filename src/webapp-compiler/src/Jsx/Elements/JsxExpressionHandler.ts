@@ -19,7 +19,6 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
     const bindMode = ctx.withModel(createBind ? ctx.curModel : null, () => ctx.transformExpression(path));
 
     if (bindMode == "no-bind" || bindMode == "action") {
-        ctx.curModel = null;
         createBind = false;
     }
 
