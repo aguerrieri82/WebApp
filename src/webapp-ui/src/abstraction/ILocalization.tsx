@@ -1,5 +1,4 @@
-import { IService, ITemplate } from "@eusoft/webapp-core";
-import { ViewNode } from "../Types";
+import { IService } from "@eusoft/webapp-core";
 import { JsxNode } from "@eusoft/webapp-jsx";
 
 

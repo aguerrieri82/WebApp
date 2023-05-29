@@ -1,10 +1,11 @@
 ﻿import { CatalogTemplate, Component, IComponentOptions } from "@eusoft/webapp-core";
 import { ViewNode } from "../../Types";
-import { Class, Foreach, JsxTypedComponent, forModel } from "@eusoft/webapp-jsx";
+import { Class, JsxTypedComponent, forModel } from "@eusoft/webapp-jsx";
 import { Action } from "../Action";
 import "./index.scss";
 import { NodeView } from "../NodeView";
 import { isValidable } from "../../abstraction/IValidable";
+import { isAsyncLoad } from "../../abstraction";
 
 export interface IWizardStepOptions {
 
@@ -47,6 +48,8 @@ export class WizardStep implements IWizardStepOptions {
 
     async loadAsync(): Promise<any> {
 
+        if (isAsyncLoad(this.content))
+            await this.content.loadAsync();
     }
 
     async validateAsync(step: WizardStep): Promise<boolean> {
@@ -153,9 +156,15 @@ export class Wizard extends Component<IWizardOptions> {
 
     protected override initProps() {
 
-        this.onChanged("activeStepIndex", (v, o) => this.activeStep = this.content ? this.content[v] : undefined);
+        this.onChanged("activeStepIndex", index => this.activeStep = this.content ? this.content[index] : undefined);
 
-        this.onChanged("activeStep", (v, o) => this.activeStepIndex = this.content ? this.content.indexOf(v) : -1);
+        this.onChanged("activeStep", step => {
+
+            this.activeStepIndex = this.content ? this.content.indexOf(step) : -1;
+
+            if (step)
+                step.loadAsync();
+        });
     }
 
 
@@ -200,8 +209,10 @@ export class Wizard extends Component<IWizardOptions> {
     async goToAsync(index: number, validate: boolean) {
 
         if (validate) {
+
             if (!await this.activeStep.validateAsync(this.activeStep))
                 return;
+
             this.activeStep.completed = true;
         }
 

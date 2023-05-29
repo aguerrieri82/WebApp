@@ -1,6 +1,5 @@
-import { Default, Foreach, Switch, Text, When } from "@eusoft/webapp-jsx";
 import { LocalString, ViewNode } from "../../Types";
-import { ITemplate, ITemplateProvider, TemplateBuilder, isTemplateProvider } from "@eusoft/webapp-core";
+import { ITemplateProvider, TemplateBuilder, isTemplateProvider } from "@eusoft/webapp-core";
 import { formatText } from "../../utils";
 
 export interface INodeViewOptions {

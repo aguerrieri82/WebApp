@@ -1,5 +1,5 @@
 
-export interface IServices {
+export interface IServices extends Record<symbol, unknown> {
 
 }
 

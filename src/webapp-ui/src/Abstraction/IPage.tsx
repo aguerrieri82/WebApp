@@ -1,6 +1,5 @@
 import { IComponent } from "@eusoft/webapp-core";
 import { IFeature } from "./IFeature";
-import { IContent } from "./IContent";
 
 export type LoadState = "loaded" | "loading" | "error" | undefined;
 

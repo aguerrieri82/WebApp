@@ -17,4 +17,6 @@ export interface IComponentOptions {
     name?: string;
 
     visible?: Bindable<boolean>;
+
+    isCacheEnabled?: boolean;
 }

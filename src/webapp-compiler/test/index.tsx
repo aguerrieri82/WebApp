@@ -1,39 +1,27 @@
-﻿import { Foreach, debug, forModel } from "@eusoft/webapp-jsx";
-import { Action, InputField, MaterialIcon, NumberEditor, ObjectEditor, Page, ValidationResult, ViewNode, Wizard, WizardStep, formatText, required, validEmail } from "@eusoft/webapp-ui";
-import "./SignUpPage.scss";
-import { Bind } from "@eusoft/webapp-core";
-import { IMerchantCreate, UserAccountType } from "../../entities/Commands";
-import { IValidationContext } from "@eusoft/webapp-ui/abstraction/Validator";
-import { apiClient } from "../../services/PmApiClient";
-import { router } from "@eusoft/webapp-framework";
-import { loginPage } from "./LoginPage";
-import { MerchantEditor } from "../merchant/EditMerchant";
+﻿import { ItemEditContent } from "@eusoft/webapp-framework";
+import { ObjectEditor, enumItemsSource, formatText, required, staticItemsSource } from "@eusoft/webapp-ui";
+import { IAddressData, ICreateSaleCircuit, SaleCircuitType } from "../../entities/Commands";
+import { AddressEditor } from "../../components/AddressEditor";
+import { forModel } from "@eusoft/webapp-jsx";
+import { appPage } from "../../components/AppPage";
 
 
-class SignUpPage extends Page {
+const SaleCircuitEditor = new ObjectEditor<IEditSaleCircuit>({
 
-    constructor() {
-
-        super();
-
-        this.init(SignUpPage, {
-            name: "sign-up",
-            title: "sign-up",
-            style: "panel",
-            route: "/sign-up",
-            content: forModel(this, m => <>
-                <Wizard ref={m.wizard}>
-
-
-                    <WizardStep name="merchant-details" title="merchant-details" visible={m.data.accountType == UserAccountType.Business} validateAsync={Bind.action((step) => m.createAccountAsync(step))}>
-                        <MerchantEditor value={Bind.twoWays(m.data.merchant)} />
-                    </WizardStep>
-
-                </Wizard>
-            </>)
-        });
+    commitMode: "manual",
+    style: "vertical",
+    inputField: { style: "filled" },
+    builder: bld => <>
+        {bld.boolean(a => a.useAddress, {
+            onChanged: (m, v) => {
+                alert(JSON.stringify(m));
+                m.address = {} as IAddressData;
+            },
+            editor: {
+                label: "specify-address"
+            }
+        })}
 
 
-    }
-
-};
+    </>
+});

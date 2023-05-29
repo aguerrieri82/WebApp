@@ -1,6 +1,6 @@
 ﻿import { Bindable, TemplateMap } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
-import { Action, IContent, IPageOptions, MaterialIcon, Page, formatText } from "@eusoft/webapp-ui";
+import { Action, IContent, IPageOptions, Page, formatText, isAsyncLoad } from "@eusoft/webapp-ui";
 import router from "../../services/Router";
 
 export interface IContentPageOptions<TArgs = {}, TContent extends IContent = IContent> extends IPageOptions<TArgs> {
@@ -60,7 +60,10 @@ export class ContentPage<TArgs, TContent extends IContent = IContent, TOptions e
         });
     }
 
-    protected doLoadContentAsync(content: TContent) {
+    protected async doLoadContentAsync(content: TContent) {
+
+        if (isAsyncLoad(content))
+            await content.loadAsync();
 
         this.activeContent = content.name;
 

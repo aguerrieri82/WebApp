@@ -1,6 +1,6 @@
 import { NodePath } from "@babel/traverse";
 import type { JsxParseContext } from "../JsxParseContext";
-import { CallExpression, Expression, Identifier, MemberExpression } from "@babel/types";
+import { CallExpression, Identifier, MemberExpression } from "@babel/types";
 
 export function ForeachExpressionHandler(ctx: JsxParseContext, stage: "exp", path: NodePath): boolean {
 
@@ -33,7 +33,7 @@ export function ForeachExpressionHandler(ctx: JsxParseContext, stage: "exp", pat
     ctx.createAttribute("as", ctx.curBuilder, ctx.curElement);
 
     ctx.curAttribute = ctx.createAttribute("src", null, ctx.curElement);
-    calle.get("object").visit();
+    (calle as NodePath<MemberExpression>).get("object").visit();
     ctx.curAttribute = null;
 
     ctx.curModel = params[0].node as Identifier; 

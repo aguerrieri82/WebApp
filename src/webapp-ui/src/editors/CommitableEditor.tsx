@@ -6,13 +6,13 @@ import { IValidationContext } from "../abstraction/Validator";
 import { ViewNode } from "../Types";
 
 
-type EditState = "" | "committed" | "committing" | "validating";
+type EditState = "" | "committed" | "committing" | "validating" | "editing";
 
 export interface ICommitableEditorOptions<TValue, TEditValue> extends IEditorOptions<TValue> {
     commitMode?: CommitMode;
 }
 
-export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICommitableEditorOptions<TValue, TEditValue>> extends Editor<TValue, TOptions> implements ICommitable<TEditValue>, IValidable {
+export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICommitableEditorOptions<TValue, TEditValue>> extends Editor<TValue, TOptions> implements ICommitable<TValue, TEditValue>, IValidable {
 
     protected _editState: EditState;
 
@@ -27,7 +27,7 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
     }
 
     protected override initProps() {
-        this.onChanged("commitMode", () => this.updateEditValue(this.value));
+        this.onChanged("commitMode", () => this.beginEdit(this.value));
     }
 
     protected override updateOptions() {
@@ -39,7 +39,7 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
         return this._editState == "committing" ? "edit" : undefined;
     }
 
-    protected updateEditValue(value: TValue) {
+    beginEdit(value?: TValue) : void {
 
         if (value === undefined)
             return;
@@ -47,12 +47,14 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
         this.editValue = this.valueToEdit(value, this.commitMode != "auto");
 
         this.isDirty = false;
+
+        this._editState = "editing";
     }
 
     override onValueChanged(value: TValue, oldValue: TValue, reason: ValueChangedReason) {
 
         if (reason != "edit")
-            this.updateEditValue(value);
+            this.beginEdit(value);
     }
 
     async validateAsync<TTarget>(ctx?: IValidationContext<TTarget>, force?: boolean): Promise<boolean> {
@@ -69,6 +71,7 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
 
         return value as unknown as TEditValue;
     }
+
 
     async commitAsync(): Promise<boolean> {
 

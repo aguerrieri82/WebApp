@@ -1,6 +1,16 @@
 import { IBindable, PARENT, USE } from "./abstraction/IBindable";
 import type { BindExpression } from "./abstraction/IBinder";
 
+interface IBindBuilder<TModel> {
+
+    use<TValue>(value: TValue): IBindBuilder<TValue>;
+
+    get<TValue > (exp: BindExpression<TModel, TValue>): IBindBuilder<TValue>;
+
+    value: TModel;
+}
+
+
 export namespace Bind {
 
     export function action<T extends Function>(value: T): T {
@@ -31,8 +41,8 @@ export namespace Bind {
 
     export function build(model: any) {
 
-        function builder<TModel>(curModel: TModel) {
-            return ({
+        function builder<TModel>(curModel: TModel): IBindBuilder<TModel> {
+            return {
 
                 use<TValue>(value: TValue) {
                     return builder((curModel as IBindable)[USE](value))
@@ -45,7 +55,7 @@ export namespace Bind {
                 get value() {
                     return curModel;
                 }
-            });
+            }
         }
 
         return builder(model);

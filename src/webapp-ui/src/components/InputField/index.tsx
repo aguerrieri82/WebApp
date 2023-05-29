@@ -3,9 +3,10 @@ import { Class, JsxTypedComponent, Template, forModel } from "@eusoft/webapp-jsx
 import { IEditor, IEditorOptions } from "../../abstraction/IEditor";
 import { ViewNode } from "../../Types";
 import { IValidationContext, Validator } from "../../abstraction/Validator";
-import { IValidable, isValidable } from "../../abstraction/IValidable";
+import { IValidable } from "../../abstraction/IValidable";
 import { NodeView } from "../NodeView";
 import "./index.scss";
+import { isCommitable } from "../../abstraction";
 
 export interface IInputFieldOptions<TValue, TTarget> extends IComponentOptions {
 
@@ -68,6 +69,12 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
         this.bindOptions("label", "validators", "content", "value");
     }
 
+    beginEdit() {
+
+        if (isCommitable(this.content))
+            this.content.beginEdit();
+    }
+
     resetValidation() {
         this.isValid = true;
         this.error = null;
@@ -84,6 +91,10 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
 
         const newCtx = { ...ctx, fieldName: this.name };
 
+        if (isCommitable(this.content))
+            if (!await this.content.commitAsync())
+                isValid = false;
+
         if (this.validators) {
             for (const validator of this.validators) {
 
@@ -96,11 +107,6 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
             }
         }
   
-        if (isValidable(this.content)) {
-            if (!await this.content.validateAsync(ctx, force))
-                isValid = false;
-        }
-
         this.isValid = isValid;
 
         this.error = isValid ? null : errors;

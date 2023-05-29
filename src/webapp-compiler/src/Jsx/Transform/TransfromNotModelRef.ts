@@ -16,7 +16,7 @@ export function TransfromNotModelRef(ctx: JsxParseContext, stage: "trans-exp", p
 
     const binding = path.scope.getBinding(obj.toString());
 
-    if (binding && binding?.identifier == ctx.curModel)
+    if (!binding?.identifier || binding.identifier == ctx.curModel)
         return;
 
     const builder = ctx.findBuilder(binding?.identifier);

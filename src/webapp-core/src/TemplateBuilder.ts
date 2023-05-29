@@ -196,9 +196,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     clear(remove: boolean = false, cleanValue = true): this {
 
-        if (isMountListener(this.model) && this.isRootModel)
-            this.model.unmount();
-
         this._childCount = 0;
 
         if (!this._endElement) {
@@ -217,17 +214,8 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
             const prev = curNode.previousSibling;
 
-            if (mustDelete) {
-
+            if (mustDelete) 
                 curNode.parentNode.removeChild(curNode);
-
-                this.execForSubBinders(builder => {
-
-                    for (const item of builder._behavoirs)
-                        item.detach(this.getContext());
-                    builder._behavoirs = [];
-                }, true);
-            }
 
             if (curNode == this._startElement)
                 break;
@@ -247,6 +235,14 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 bld._isRemoved = true;
             }
 
+            if (bld._behavoirs) {
+
+                for (const item of bld._behavoirs)
+                    item.detach(this.getContext());
+
+                bld._behavoirs = [];
+            }
+   
             bld.cleanBindings(cleanValue, false);
 
         }, true);
@@ -279,7 +275,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 if (parent)
                     return (parent.model as Record<ServiceType, TService>)[service];
 
-                return Services[service] as TService;
+                return (Services)[service] as TService; 
             },
 
             visitChildComponents: (visitor) => ctx.visitChildren(visitor, m => getComponent(m) != undefined),
@@ -340,7 +336,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
             model: this.model,
 
-            element: this.element
+            element: this._lastElement
 
         } as ITemplateContext
 
@@ -573,7 +569,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         const result: Node[] = [];
         for (const child of this.element.childNodes) {
             if (child != this._startElement && child != this._endElement)
-                result.push(child);
+                result.push(child.cloneNode(true));
         }
         return result;
     }
@@ -608,7 +604,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
                 if (mode == "two-ways") {
 
-                    this.bindTwoWays(propValue, model, m => m[prop], () => {
+                    this.bindTwoWays(propValue, model, m => m[prop], "srcToDst", () => {
                         if (callOnChange && !isClass(constructor))
                             constructor(model as TProps);
                     });
@@ -701,9 +697,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
             this.beginUpdate();
 
-            if (!childBuilder.isInline && isHTMLContainer(value) && value.nodes && value.isCacheEnabled === true)
+            if (!childBuilder.isInline && isHTMLContainer(value) && value.nodes && value.isCacheEnabled === true) {
                 childBuilder.replaceContent(value.nodes);
-
+            }
             else {
 
                 if (oldValue &&
@@ -730,13 +726,17 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
                         template(childBuilder);
 
-                        if (isMountListener(value))
+                        if (isMountListener(value)) {
                             value.mount(childBuilder.getContext());
+                            childBuilder.onClean(() => value.unmount());
+                        }
                     }
                 }
 
-                if (isHTMLContainer(value) && value.isCacheEnabled === true)
-                    value.nodes = this.extractContent();
+                if (isHTMLContainer(value) && value.isCacheEnabled === true) {
+                    value.nodes = childBuilder.extractContent();
+                }
+             
             }
 
             this.endUpdate();

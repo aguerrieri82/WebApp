@@ -1,10 +1,11 @@
-import { Expression, BindExpression, ComponentStyle, BindValue, toKebabCase, ITemplate, TemplateBuilder, ITemplateProvider, USE } from "@eusoft/webapp-core";
+import { Expression, BindExpression, ComponentStyle, toKebabCase, ITemplate, TemplateBuilder } from "@eusoft/webapp-core";
 import { ViewNode } from "../Types";
 import { IEditor, IEditorOptions } from "../abstraction/IEditor";
 import { Validator } from "../abstraction/Validator";
 import { IInputFieldOptions, InputField } from "../components";
 import { ILabel } from "../abstraction";
-import { JsxTypedElement, ModelBuilder, TemplateModel } from "@eusoft/webapp-jsx";
+import { JsxTypedElement, TemplateModel } from "@eusoft/webapp-jsx";
+import { emptyObject } from "../utils";
 
 interface EditorBuilderOptions<TModel, TModelContainer extends Record<string, any>> {
 
@@ -79,7 +80,7 @@ export class EditorBuilder<TModel extends TemplateModel, TModelContainer extends
         if (editorHasLabel)
             (editor as ILabel).label = label;
 
-        input.bindTwoWays(m => m.value, this._options.container, m => bind(this._options.model(m)));
+        input.bindTwoWays(m => m.value, this._options.container, m => bind(this._options.model(m) ?? emptyObject("editor") as TModel));
          
         if (options.onChanged)
             input.prop("value").subscribe(v => {

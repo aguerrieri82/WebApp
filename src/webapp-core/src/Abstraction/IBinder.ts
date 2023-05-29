@@ -2,6 +2,8 @@
 
 export type BindMode = "one-way" | "two-ways" | "no-bind" | "action";
 
+export type BindDirection = "srcToDst" | "dstToSrc";
+
 export interface IGetter<TObj, TValue> {
     (model: TObj): TValue;
 }

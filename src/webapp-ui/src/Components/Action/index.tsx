@@ -1,4 +1,4 @@
-import { Bindable, IComponentOptions, IComponent, Component, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
+import { Bindable, IComponentOptions, IComponent, Component, TemplateMap } from "@eusoft/webapp-core";
 import { Class, JsxNode, Template, forModel } from "@eusoft/webapp-jsx";
 import { Ripple } from "../../behavoirs/Ripple";
 import { IActionContext } from "../../abstraction/IAction";

@@ -6,8 +6,9 @@ import { IValidationContext } from "../../abstraction/Validator";
 import { CommitableEditor, ICommitableEditorOptions } from "../CommitableEditor";
 import { isCommitable } from "../../abstraction/ICommitable";
 import { IEditor } from "../../abstraction/IEditor";
-import { cloneObject } from "../../utils/Object";
+import { cloneObject, emptyObject } from "../../utils/Object";
 import "./index.scss";
+import { IAsyncLoad  } from "../../abstraction/IAsyncLoad";
 
 type ObjectEditorValidationMode = "manual" | "onInputChange";
 
@@ -32,7 +33,10 @@ export const ObjectEditorTemplates: TemplateMap<ObjectEditor<any>> = {
     </Template>)
 }
 
-export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, IObjectEditorOptions<TObj>>  {
+
+
+
+export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, IObjectEditorOptions<TObj>> implements IAsyncLoad {
 
     protected _inputs: InputField<unknown, IEditor<unknown>>[];
     protected _contentTemplate: ITemplate<TObj>;
@@ -48,16 +52,32 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
         });
     }
 
+    override beginEdit(value?: TObj) {
 
-    protected override initProps() {
+        if (!value && this.commitMode == "auto") {
+            this.value = emptyObject("beginEdit");
+            return;
+        }
 
-        if (!this.value)
-            this.value = {} as TObj;
+        console.group("beginEdit", value, this);
+
+        super.beginEdit(value);
+
+        console.groupEnd();
     }
 
     protected override updateOptions() {
 
         this.bindOptions("builder", "isDynamic", "validationMode", "inputField");
+    }
+
+    async loadAsync() {
+
+        console.group("loadAsync", this);
+
+        this.beginEdit(this.value);
+
+        console.groupEnd();
     }
 
     contentTemplate() { 
@@ -118,7 +138,7 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
         let isValid = true;
 
         const innerCtx = {
-            target: this.value
+            target: this.editValue
         } as IValidationContext<TObj>;
 
         for (const input of this._inputs) {
@@ -139,7 +159,7 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
         if (editValue == this.value)
             return editValue;
 
-        const value = this.value ?? {} as TObj;
+        const value = this.value ?? emptyObject("editToValue");
         Object.assign(value, editValue);
         return value;
     }
@@ -149,7 +169,7 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
         let editValue = value;
 
         if (clone)
-            return cloneObject(editValue);
+            return editValue ? cloneObject(editValue) : emptyObject("valueToEdit");
 
         return editValue;
     }

@@ -56,7 +56,7 @@ export class SingleSelector<TItem, TValue> extends Editor<TValue, ISingleSelecto
     override mount(ctx: ITemplateContext) {
 
         setTimeout(() => {
-            this.value = (ctx.element.querySelector("select")).value as TValue;
+            this.value = (ctx.element as HTMLSelectElement).value as TValue;
         }, 0);
 
         super.mount(ctx);

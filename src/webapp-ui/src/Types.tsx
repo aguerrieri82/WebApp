@@ -1,4 +1,4 @@
-import { ITemplate, ITemplateProvider } from "@eusoft/webapp-core"
+import { ITemplateProvider } from "@eusoft/webapp-core"
 
 
 export type LocalString = string | { (): string }

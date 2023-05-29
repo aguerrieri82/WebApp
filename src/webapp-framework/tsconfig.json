@@ -10,8 +10,7 @@
     "moduleResolution": "Node",
     "noEmit": true,
     "jsx": "preserve",
-    "noImplicitOverride": true,
-    "composite": true
+    "noImplicitOverride": true
   },
   "include": ["src", "src/env.d.ts"]
 }

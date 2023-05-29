@@ -14,12 +14,13 @@ import { IService, SERVICE_TYPE, ServiceType } from "./abstraction/IService";
 import { IServiceProvider, ServiceContainer } from "./abstraction/IServiceProvider";
 import type { CommonKeys } from "./abstraction/Types";
 import { BindExpression, BindValue } from "./abstraction/IBinder";
+import { IHTMLContainer } from "./abstraction";
 
 interface ISubscription {
     unsubscribe(): void;
 }
 
-export abstract class Component<TOptions extends IComponentOptions = IComponentOptions> implements IComponent<TOptions>, IBindingContainer, IMountListener, IServiceProvider {
+export abstract class Component<TOptions extends IComponentOptions = IComponentOptions> implements IComponent<TOptions>, IBindingContainer, IMountListener, IServiceProvider, IHTMLContainer {
 
     protected _bounds: IBound[];
     protected _subscriptions: ISubscription[];
@@ -64,7 +65,7 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     protected updateOptions() {
 
-        this.bindOptions("style", "template", "name", "visible");
+        this.bindOptions("style", "template", "name", "visible", "isCacheEnabled");
     }
 
     protected bindOptions<TKey extends keyof CommonKeys<TOptions, this>>(...keys: TKey[]) {
@@ -138,7 +139,7 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     bindTwoWays<TValue, TDestModel extends object>(src: BindValue<this, TValue>, dstModel: TDestModel, dst: BindExpression<TDestModel, TValue>) {
 
-        this.binder.bindTwoWays(src, dstModel, dst);
+        this.binder.bindTwoWays(src, dstModel, dst, "dstToSrc");
     }
 
 
@@ -220,6 +221,10 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
             this._binder = new Binder(this);
         return this._binder;
     }
+
+    nodes: Node[];
+
+    isCacheEnabled: boolean;
 
     context: ITemplateContext<this, HTMLElement>;
 

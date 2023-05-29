@@ -1,4 +1,4 @@
-import { SERVICE_TYPE, Services } from "@eusoft/webapp-core";
+import { SERVICE_TYPE } from "@eusoft/webapp-core";
 import { ILocalization, LOCALIZATION, LocalizationContent } from "@eusoft/webapp-ui";
 
 interface ILocalTableOptions{

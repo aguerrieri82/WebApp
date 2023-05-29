@@ -1,6 +1,6 @@
 import { forModel } from "@eusoft/webapp-jsx";
 import { Content, IContentOptions } from "../Content";
-import { CommitableEditor, Editor, IEditor, IEditorOptions } from "@eusoft/webapp-ui";
+import { CommitableEditor, Editor, IAsyncLoad, IEditor, IEditorOptions, isAsyncLoad } from "@eusoft/webapp-ui";
 import { BindValue, Bindable} from "@eusoft/webapp-core";
 
 export interface IItemEditOptions<TItem> extends IContentOptions {
@@ -12,7 +12,7 @@ export interface IItemEditOptions<TItem> extends IContentOptions {
     value?: Bindable<TItem, "two-ways">;
 }
 
-export class ItemEditContent<TItem> extends Content<IItemEditOptions<TItem>> {
+export class ItemEditContent<TItem> extends Content<IItemEditOptions<TItem>> implements IAsyncLoad {
 
     constructor(options?: IItemEditOptions<TItem>) {
 
@@ -29,6 +29,12 @@ export class ItemEditContent<TItem> extends Content<IItemEditOptions<TItem>> {
             }],
             ...options
         });
+    }
+
+    async loadAsync() {
+
+        if (isAsyncLoad(this.editor))
+            await this.editor.loadAsync();
     }
 
     protected async doSaveAsync() {

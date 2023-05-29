@@ -1,7 +1,7 @@
 import traverse, { NodePath, Visitor } from "@babel/traverse";
-import { JSXElement, Expression, JSXEmptyExpression, Identifier, ImportDeclaration, JSXFragment, JSXIdentifier } from "@babel/types";
-import { BindMode, ITemplateAttribute, ITemplateElement, ITemplateText, TemplateNodeType } from "../Abstraction/ITemplateNode";
-import { CORE_MODULE, TemplateAttributes, TemplateElements } from "../Consts";
+import { JSXElement, Expression, JSXEmptyExpression, Identifier, ImportDeclaration, JSXFragment } from "@babel/types";
+import { BindMode, ITemplateAttribute, ITemplateElement, TemplateNodeType } from "../Abstraction/ITemplateNode";
+import { CORE_MODULE, TemplateAttributes } from "../Consts";
 import type { JsxCompiler } from "../JsxCompiler";
 import { toKebabCase } from "../TextUtils";
 import * as parser from "@babel/parser";

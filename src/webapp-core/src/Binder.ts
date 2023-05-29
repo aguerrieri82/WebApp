@@ -1,17 +1,15 @@
 import { IBindable, PARENT, USE } from "./abstraction/IBindable";
-import type { BindExpression, BindValue, IGetter } from "./abstraction/IBinder";
+import type { BindDirection, BindExpression, BindValue, IGetter } from "./abstraction/IBinder";
 import { isBindingContainer } from "./abstraction/IBindingContainer";
 import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
 import type { IObservableProperty, IPropertyChangedHandler } from "./abstraction/IObservableProperty";
 import { compareArray, forEachRev } from "./utils/Array";
 import { WebApp } from "./utils/Debug";
-import { cleanProxy, Expression, GetExpression, IExpressionProp } from "./Expression";
+import { cleanProxy, Expression, IExpressionProp } from "./Expression";
 import { getFunctionType, getPropertyDescriptor } from "./utils/Object";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
 import type { ArrayElement } from "./abstraction/Types";
-import { TemplateBuilder } from "./TemplateBuilder";
-
 
 interface IBindingSubscription<TSrc extends object | [], TValue> {
 
@@ -165,10 +163,10 @@ export class Binder<TModel> {
             const dstProp = this.getBindingProperty(dst);
             if (dstProp)
                 dstProp.set(curValue);
-        }, "exec-always");
+        });
     }
 
-    bindTwoWays<TValue, TDestModel extends TModel|object>(src: BindValue<TModel, TValue>, dstModel: TDestModel, dst: BindExpression<TDestModel, TValue>, onChanged?: (value: TValue) => void): void { 
+    bindTwoWays<TValue, TDestModel extends TModel|object>(src: BindValue<TModel, TValue>, dstModel: TDestModel, dst: BindExpression<TDestModel, TValue>, direction: BindDirection, onChanged?: (value: TValue) => void): void { 
 
         let isBinding = false;
 
@@ -178,11 +176,13 @@ export class Binder<TModel> {
 
         const realDst = (dstModel == this.model ? dst : (m: TModel & IBindable) => dst(m[USE](dstModel))) as BindExpression<TModel, TValue>;
 
-        for (const bind of [src, realDst]) {
+        const binds = direction == "dstToSrc" ? [realDst, src] : [src, realDst];
 
-            this.bind(bind, value => {
+        for (const bind of binds) {
 
-                if (isBinding)
+            this.bind(bind, (value, oldValue, isUpdate, isClear) => {
+
+                if (isBinding || isClear)
                     return;
 
                 let isChanged = false;
@@ -211,7 +211,7 @@ export class Binder<TModel> {
                     isBinding = false;
 
                 }
-            }, "exec-always");
+            });
         }
 
         isFirstBinding = false;
@@ -382,8 +382,8 @@ export class Binder<TModel> {
             action(this as unknown as TBinder);
 
         for (const binder of allBinders) {
-            action(binder);
             binder.execForSubBinders(action, false);
+            action(binder);
         }
     }
 
@@ -394,7 +394,7 @@ export class Binder<TModel> {
                 return false;
             curParent = curParent.parent;
         }
-        return false;
+        return true;
     }
 
     cleanBindings(cleanValue: boolean, deep: boolean) {

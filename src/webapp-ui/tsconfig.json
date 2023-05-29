@@ -11,8 +11,7 @@
     "noEmit": true,
     "jsx": "preserve",
     "forceConsistentCasingInFileNames": true,
-    "noImplicitOverride": true,
-    "composite": true
+    "noImplicitOverride": true
   },
   "include": ["src"]
 }
