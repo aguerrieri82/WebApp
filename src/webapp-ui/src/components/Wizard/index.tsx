@@ -133,11 +133,11 @@ export class Wizard extends Component<IWizardOptions> {
                     </div>
                     <footer>
                         {m.canGoPrev ?
-                            <Action name="prev" executeAsync={() => m.prevAsync()}>
+                            <Action name="prev" onExecuteAsync={() => m.prevAsync()}>
                                 {m.activeStep?.prevLabel || m.prevLabel}
                             </Action> : <span />}
                         {m.canGoNext ?
-                            <Action name="next" executeAsync={() => m.nextAsync()}>
+                            <Action name="next" onExecuteAsync={() => m.nextAsync()}>
                                 {m.activeStep?.nextLabel || m.nextLabel}
                             </Action> : <span />}
                     </footer>

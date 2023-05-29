@@ -83,7 +83,7 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     protected bindValue<TKey extends keyof this & string, TValue extends this[TKey]>(key: TKey, value: Bindable<TValue>) {
 
-        if (value === null && value === undefined)
+        if (value === null || value === undefined)
             return;
 
         if (isObservableProperty(value)) {
@@ -177,7 +177,7 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     cleanBindings(cleanValue: boolean) {
 
-        if (this._isCleaning)
+        if (this._isCleaning || this.isCacheEnabled)
             return;
 
         console.debug("cleanBindings", getTypeName(this));
@@ -256,3 +256,15 @@ export function getComponent(obj: any): Function {
 
     return undefined;
 }
+
+export function declareComponent<TOptions extends IComponentOptions, TType extends { new(...args: any[]): Component<TOptions> }>(type: TType, options: TOptions) {
+    return class AnonymouseComponent extends type {
+        constructor(...args: any[]) {
+
+            super(args[0]);
+
+            this.init(AnonymouseComponent, options);
+        }
+    } as TType;
+}
+

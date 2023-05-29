@@ -6,6 +6,8 @@ export enum ActionPriority {
     Secondary
 }
 
+export type ActionType = "local" | "global"| undefined;
+
 export interface IActionContext<TTarget = unknown> {
     target?: TTarget;
 }

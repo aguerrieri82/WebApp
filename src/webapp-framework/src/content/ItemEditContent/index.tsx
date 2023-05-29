@@ -1,20 +1,22 @@
 import { forModel } from "@eusoft/webapp-jsx";
 import { Content, IContentOptions } from "../Content";
-import { CommitableEditor, Editor, IAsyncLoad, IEditor, IEditorOptions, isAsyncLoad } from "@eusoft/webapp-ui";
-import { BindValue, Bindable} from "@eusoft/webapp-core";
+import { CommitableEditor, IEditor, isAsyncLoad } from "@eusoft/webapp-ui";
 
-export interface IItemEditOptions<TItem> extends IContentOptions {
+export interface IItemEditArgs<TItem> {
 
-    saveAsync?: (value: TItem) => Promise<boolean>;
-
-    editor: BindValue<TItem, IEditor<TItem>>;
-
-    value?: Bindable<TItem, "two-ways">;
+    value?: TItem;
 }
 
-export class ItemEditContent<TItem> extends Content<IItemEditOptions<TItem>> implements IAsyncLoad {
+export interface IItemEditOptions<TItem, TArgs extends IItemEditArgs<TItem>> extends IContentOptions<TArgs> {
 
-    constructor(options?: IItemEditOptions<TItem>) {
+    onSaveAsync?: (value: TItem) => Promise<boolean>;
+
+    createEditor: (value: TItem) => IEditor<TItem>;
+}
+
+export class ItemEditContent<TItem, TArgs extends IItemEditArgs<TItem> = IItemEditArgs<TItem>> extends Content<IItemEditOptions<TItem, TArgs>, IItemEditArgs<TItem>> {
+
+    constructor(options?: IItemEditOptions<TItem, TArgs>) {
 
         super();
 
@@ -25,19 +27,14 @@ export class ItemEditContent<TItem> extends Content<IItemEditOptions<TItem>> imp
             actions: [{
                 name: "save",
                 text: "save",
-                executeAsync: () => this.doSaveAsync()
+                executeAsync: () => this.saveAsync()
             }],
             ...options
         });
     }
 
-    async loadAsync() {
 
-        if (isAsyncLoad(this.editor))
-            await this.editor.loadAsync();
-    }
-
-    protected async doSaveAsync() {
+    async saveAsync() {
 
         if (this.editor instanceof CommitableEditor) {
 
@@ -45,7 +42,32 @@ export class ItemEditContent<TItem> extends Content<IItemEditOptions<TItem>> imp
                 return;
         }
 
-        this.saveAsync(this.editor.value);
+        if (await this.onSaveAsync(this.editor.value)) {
+
+            await this.host.closeAsync(this.editor.value);
+        }
+    }
+
+    protected override async onOpenAsync(args?: TArgs) {
+
+        this.editor = this.createEditor(args.value);
+
+        this.editor.value = args.value;
+
+        if (isAsyncLoad(this.editor))
+            await this.editor.loadAsync();
+
+        return true;
+    }
+
+    createEditor(value: TItem): IEditor<TItem> {
+
+        throw new Error("createEditor not implemented");
+    }
+
+    async onSaveAsync?(value: TItem): Promise<boolean> {
+
+        return true;
     }
 
     set value(value: TItem) {
@@ -56,7 +78,6 @@ export class ItemEditContent<TItem> extends Content<IItemEditOptions<TItem>> imp
         return this.editor.value;
     }
 
-    saveAsync?: (value: TItem) => Promise<boolean>;
 
-    editor: Editor<TItem, IEditorOptions<TItem>>;
+    editor: IEditor<TItem>;
 }

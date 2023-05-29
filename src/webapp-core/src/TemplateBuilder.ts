@@ -581,8 +581,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         if (isClass(constructor))
             model = new constructor()
-        else
+        else 
             model = {}
+        
 
         if (props) {
 

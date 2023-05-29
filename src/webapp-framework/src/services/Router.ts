@@ -1,15 +1,15 @@
-import { IPage } from "@eusoft/webapp-ui";
+import { IPage, IPageConstructor, IPageInfo, isResultContainer } from "@eusoft/webapp-ui";
 import { app } from "../App";
 
 type StringLike = { toString(): string } | string;
 
-export type RouteArgs = Record<string, StringLike>;
+export type RouteArgs = {} ;
 
 export type RouteAction<TArgs extends RouteArgs> = (args: TArgs) => void | Promise<any>;
 
 interface IRounteEntry<TArgs extends RouteArgs>  {
 
-    path: string|RegExp;
+    route: string|RegExp;
 
     action: RouteAction<TArgs>;
 
@@ -33,6 +33,7 @@ function restoreState<T>(key: string, defValue: T) {
         return JSON.parse(value) as T;
     return defValue;
 }
+
 
 export class Router {
 
@@ -68,10 +69,10 @@ export class Router {
         return {} as TArgs;
     }
 
-    addAction<TArgs extends RouteArgs>(path: string, action: RouteAction<TArgs>) {
+    addAction<TArgs extends RouteArgs>(route: string, action: RouteAction<TArgs>) {
 
         const entry = {
-            path,
+            route,
             action,
         } as IRounteEntry<TArgs>;
 
@@ -79,14 +80,20 @@ export class Router {
         return entry;
     }
 
-    addPage<TArgs extends RouteArgs>(page: IPage<TArgs>) {
+    addPage(infoOrPage: IPageInfo | IPageConstructor) {
 
-        const result = this.addAction(page.route, async args => {
+        const info = typeof infoOrPage == "function" ? infoOrPage.info : infoOrPage;
+
+        const result = this.addAction(info.route, async args => {
+
+            const page = info.factory();
 
             await app.pageHost.loadPageAsync(page, args);
+
+            return page;
         });
 
-        result.tag = page;
+        result.tag = info;
 
         return result;
 
@@ -103,19 +110,51 @@ export class Router {
         });
     }
 
-    async navigatePageAsync<TArgs extends RouteArgs>(page: IPage<TArgs>, args?: TArgs) {
+    async navigatePageForResultAsync<TResult, TArgs extends RouteArgs>(pageOrName: string|IPage<TArgs>, args?: TArgs) {
 
-        if (!page.route) {
-            await app.pageHost.loadPageAsync(page, args);
+        return new Promise<TResult>(async res => {
+
+            const entry = this.getEntryForPage(pageOrName);
+
+            const page = (entry?.tag as IPageInfo).factory();
+
+            const onClose = page.onClose;
+
+            page.onClose = () => {
+
+                try {
+                    onClose.call(page); 
+                    res(isResultContainer(page) ? page.result as TResult : undefined);
+                }
+                finally {
+                    page.onClose = onClose;
+                }
+            }
+
+            await this.navigatePageAsync(page, args);
+        });
+    }
+
+    async navigatePageAsync<TArgs extends RouteArgs>(pageOrName: string | IPage<TArgs>, args?: TArgs) {
+
+        const entry = this.getEntryForPage(pageOrName);
+
+        if (!entry?.route && typeof pageOrName != "string") {
+
+            await app.pageHost.loadPageAsync(pageOrName, args);
+
+            return pageOrName;
         } 
-        else {
-            let entry = this._entries.find(a => a.tag == page);
-            if (!entry)
-                entry = this.addPage(page);
 
-            await this.navigateEntryAsync(entry, args);
-        }
+        return await this.navigateEntryAsync(entry, args);
+    }
 
+    protected getEntryForPage<TArgs>(pageOrName: string | IPage<TArgs>) {
+
+        if (typeof pageOrName == "string")
+            return this._entries.find(a => (a.tag as IPageInfo)?.name == pageOrName);
+
+        return this._entries.find(a => a.tag == pageOrName);
     }
 
     protected async popStateAsync(state: IRouteState) {
@@ -141,13 +180,13 @@ export class Router {
 
         const url = window.location.pathname;
 
-        const entry = this._entries.find(a => a.path == url);  //<-- TODO implement
+        const entry = this._entries.find(a => a.route == url);  //<-- TODO implement
 
         if (entry) {
 
-            const args = this.parseArgs(entry.path as string, url);
+            const args = this.parseArgs(entry.route as string, url);
 
-            await this.navigateEntryAsync(entry, args, true);
+            return await this.navigateEntryAsync(entry, args, true);
         }
     }
 
@@ -159,7 +198,7 @@ export class Router {
 
     protected async navigateEntryAsync<TArgs extends Record<string, StringLike>>(entry: IRounteEntry<TArgs>, args?: TArgs, replace = false) {
 
-        const url = this.replaceUrl(entry.path as string, args);
+        const url = this.replaceUrl(entry.route as string, args);
 
         if (!replace)
             this._activeIndex++;
@@ -183,7 +222,7 @@ export class Router {
         if (!replace)
             this._history.splice(this._activeIndex + 1, this._history.length - this._activeIndex);
 
-        await entry.action(args);
+        return await entry.action(args);
     }
 
 }

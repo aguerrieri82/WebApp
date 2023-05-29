@@ -1,6 +1,6 @@
 ﻿import { Bindable, TemplateMap } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
-import { Action, IContent, IPageOptions, Page, formatText, isAsyncLoad } from "@eusoft/webapp-ui";
+import { Action, IContent, IContentHost, IPageOptions, Page, formatText, isAsyncLoad } from "@eusoft/webapp-ui";
 import router from "../../services/Router";
 
 export interface IContentPageOptions<TArgs = {}, TContent extends IContent = IContent> extends IPageOptions<TArgs> {
@@ -13,14 +13,14 @@ export interface IContentPageOptions<TArgs = {}, TContent extends IContent = ICo
 
     content?: TContent;
 
-    loadContentAsync?: (content: TContent, args: TArgs) => Promise<any>;
+    onContentLoadAsync?: (content: TContent, args: TArgs) => Promise<any>;
 }
 
 export const ContentPageTemplates: TemplateMap<ContentPage<unknown>> = {
 
     "Default": forModel(m => <div className={m.className}>
         <header>
-            {m.showBack && <Action executeAsync={() => router.backAsync()} style="icon">❮</Action>}
+            {m.showBack && <Action onExecuteAsync={() => router.backAsync()} style="icon">❮</Action>}
             <span className="title">{formatText(m.title)}</span>
         </header>
         <div className="body">
@@ -28,7 +28,7 @@ export const ContentPageTemplates: TemplateMap<ContentPage<unknown>> = {
         </div>
         <footer>
             {m.content?.actions.forEach(a =>
-                <Action name={a.name} executeAsync={a.executeAsync}>
+                <Action name={a.name} onExecuteAsync={a.executeAsync}>
                     {[a.icon, a.text]}
                 </Action> 
             )}
@@ -36,7 +36,7 @@ export const ContentPageTemplates: TemplateMap<ContentPage<unknown>> = {
     </div>)
 }
 
-export class ContentPage<TArgs, TContent extends IContent = IContent, TOptions extends IContentPageOptions<TArgs> = IContentPageOptions<TArgs, TContent>> extends Page<TArgs, TOptions> {
+export class ContentPage<TArgs, TContent extends IContent = IContent, TOptions extends IContentPageOptions<TArgs> = IContentPageOptions<TArgs, TContent>> extends Page<TArgs, TOptions> implements IContentHost {
     constructor(options?: TOptions) {
 
         super();
@@ -45,25 +45,36 @@ export class ContentPage<TArgs, TContent extends IContent = IContent, TOptions e
             template: ContentPageTemplates.Default,
             ...options
         });
+    }
 
+    override onOpen() {
+
+        this.result = undefined;
+    }
+
+    async closeAsync(result?: unknown): Promise<void> {
+
+        this.result = result;
+        await router.backAsync();
     }
 
     override updateOptions() {
-        this.bindOptions("contentList", "activeContent", "showBack", "loadContentAsync");
+
+        this.bindOptions("contentList", "activeContent", "showBack", "onContentLoadAsync");
     }
 
     protected override initProps() {
+
         this.onChanged("activeContent", name => {
+
             const content = this.contentList.find(a => a.name == name);
+
             if (content)
-                this.doLoadContentAsync(content);
+                this.loadContentAsync(content);
         });
     }
 
-    protected async doLoadContentAsync(content: TContent) {
-
-        if (isAsyncLoad(content))
-            await content.loadAsync();
+    protected async loadContentAsync(content: TContent) {
 
         this.activeContent = content.name;
 
@@ -72,13 +83,20 @@ export class ContentPage<TArgs, TContent extends IContent = IContent, TOptions e
 
     override async loadAsyncWork(args: TArgs) {
 
-        if (this.content)
-            await this.loadContentAsync(this.content, args);
+        if (!args)
+            args = {} as TArgs;
+
+        if (this.content?.openAsync)
+            await this.content.openAsync(this, args);
+
+        await this.onContentLoadAsync(this.content, args);
     }
 
-    loadContentAsync(content: TContent, args: TArgs) {
+    async onContentLoadAsync(content: TContent, args: TArgs) {
 
     }
+
+    result: unknown;
 
     contentList: TContent[];
 

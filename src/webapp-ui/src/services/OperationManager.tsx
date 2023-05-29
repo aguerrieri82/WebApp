@@ -20,16 +20,21 @@ export class OperationManager implements IOperationManager {
 
     begin(options?: IOperationOptions): IOperation {
 
-        if (this._blockCount == 0)
-            this.blocker.visible = true;
+        if (!options?.isLocal) {
 
-        this._blockCount++;
+            if (this._blockCount == 0)
+                this.blocker.visible = true;
+
+            this._blockCount++;
+        }
 
         const result: IOperation = {
 
             progress: (message: ViewNode, value?: number, min?: number, max?: number) => {
 
             },
+
+            isLocal: options?.isLocal,
 
             name: options?.name,
 
@@ -40,6 +45,9 @@ export class OperationManager implements IOperationManager {
     }
 
     protected end(operation: IOperation) {
+
+        if (operation?.isLocal)
+            return;
 
         this._blockCount--;
 

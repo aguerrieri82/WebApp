@@ -1,8 +1,11 @@
 import { CatalogTemplate } from "@eusoft/webapp-core";
 import { LocalString, ViewNode } from "../Types";
 import { IAction } from "./IAction";
+import { IContentHost } from "./IContentHost";
 
-export interface IContent {
+export interface IContent<TArgs = unknown> {
+
+    openAsync?(host: IContentHost, args?: TArgs): Promise<boolean>;
 
     name?: string;
 

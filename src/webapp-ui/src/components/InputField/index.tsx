@@ -80,9 +80,20 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
         this.error = null;
     }
 
+    async commitAsync() {
+
+        if (this.content?.disabled || !this.visible)
+            return true;
+
+        if (isCommitable(this.content))
+            return await this.content.commitAsync();
+
+        return true;
+    }
+
     async validateAsync<TInnerTarget>(ctx: IValidationContext<TInnerTarget & TTarget>, force?: boolean): Promise<boolean> {
 
-        if (this.content?.disabled || !this.content?.visible)
+        if (this.content?.disabled || !this.visible)
             return true;
 
         const errors: ViewNode[] = [];
@@ -91,9 +102,8 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
 
         const newCtx = { ...ctx, fieldName: this.name };
 
-        if (isCommitable(this.content))
-            if (!await this.content.commitAsync())
-                isValid = false;
+        if (!await this.commitAsync())
+            isValid = false;
 
         if (this.validators) {
             for (const validator of this.validators) {

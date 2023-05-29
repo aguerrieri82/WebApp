@@ -5,12 +5,15 @@ export const OPERATION_MANAGER : any = Symbol.for("$operationManager");
 
 export interface IOperationOptions {
     name?: string;
+    isLocal?: boolean;
 }
 
 
 export interface IOperation {
 
     name?: string;
+
+    isLocal: boolean;
 
     progress(message: ViewNode, value?: number, min?: number, max?: number);
 

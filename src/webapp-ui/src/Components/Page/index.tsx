@@ -1,6 +1,6 @@
 import { Bindable, IComponentOptions, Component, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
 import { forModel, Template } from "@eusoft/webapp-jsx";
-import { IPage, LoadState } from "../../abstraction/IPage";
+import { IPage, IPageInfo, LoadState } from "../../abstraction/IPage";
 import { IFeature } from "../../abstraction/IFeature";
 import { formatText } from "../../utils/Format";
 import { NodeView } from "../NodeView";
@@ -111,6 +111,8 @@ export class Page<TArgs extends {} = unknown, TOptions extends IPageOptions<TArg
     route: string;
 
     declare name: string;
+
+    static info: IPageInfo;
 }
 
 

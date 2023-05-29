@@ -33,9 +33,6 @@ export const ObjectEditorTemplates: TemplateMap<ObjectEditor<any>> = {
     </Template>)
 }
 
-
-
-
 export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, IObjectEditorOptions<TObj>> implements IAsyncLoad {
 
     protected _inputs: InputField<unknown, IEditor<unknown>>[];
@@ -124,10 +121,8 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
 
         for (const input of this._inputs) {
 
-            if (isCommitable(input.content)) {
-                if (!await input.content.commitAsync())
-                    isSuccess = false;
-            }
+            if (!await input.commitAsync())
+                isSuccess = false;
         }
 
         return isSuccess;
@@ -182,6 +177,7 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
 
     inputField: Partial<IInputFieldOptions<unknown, TObj>>;
 }
+
 
 
 declare module "../EditorBuilder" {
