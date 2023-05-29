@@ -154,7 +154,7 @@ export class Router {
         if (typeof pageOrName == "string")
             return this._entries.find(a => (a.tag as IPageInfo)?.name == pageOrName);
 
-        return this._entries.find(a => a.tag == pageOrName);
+        return this._entries.find(a => (a.tag as IPageInfo)?.name == pageOrName.name);
     }
 
     protected async popStateAsync(state: IRouteState) {

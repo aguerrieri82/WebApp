@@ -74,7 +74,7 @@ export class Page<TArgs extends {} = unknown, TOptions extends IPageOptions<TArg
                         break;
                     }
             }
-        });
+        }, {name: "load page " + this.name});
 
         if (isValid)
             this._loadState = "loaded";

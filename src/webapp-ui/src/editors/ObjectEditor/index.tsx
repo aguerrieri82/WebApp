@@ -56,7 +56,8 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
             return;
         }
 
-        console.group("beginEdit", value, this);
+        console.group("beginEdit");
+        console.log(value, this);
 
         super.beginEdit(value);
 
@@ -70,7 +71,8 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
 
     async loadAsync() {
 
-        console.group("loadAsync", this);
+        console.group("loadAsync");
+        console.log(this);
 
         this.beginEdit(this.value);
 

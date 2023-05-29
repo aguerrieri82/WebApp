@@ -28,6 +28,8 @@ export class OperationManager implements IOperationManager {
             this._blockCount++;
         }
 
+        console.group(options?.name);
+
         const result: IOperation = {
 
             progress: (message: ViewNode, value?: number, min?: number, max?: number) => {
@@ -45,6 +47,8 @@ export class OperationManager implements IOperationManager {
     }
 
     protected end(operation: IOperation) {
+
+        console.groupEnd();
 
         if (operation?.isLocal)
             return;

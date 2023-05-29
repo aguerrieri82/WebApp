@@ -6,7 +6,7 @@ export async function useNetwork<T>(action: () => Promise<T>, ctx?: ITemplateCon
     const operation = (ctx ? ctx.require(OPERATION_MANAGER) : Services[OPERATION_MANAGER]) as IOperationManager;
 
     const newOp = operation?.begin({
-
+        name: "begin network"
     });
 
     try {
