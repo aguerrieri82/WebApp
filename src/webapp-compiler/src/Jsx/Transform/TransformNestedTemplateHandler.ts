@@ -3,7 +3,7 @@ import { JsxParseContext } from "../JsxParseContext";
 
 export function TransformNestedTemplateHandler(ctx: JsxParseContext, stage: "trans-exp", path: NodePath): boolean {
 
-    if (!(stage == "trans-exp" && ctx.curAttribute && (path.isJSXFragment() || path.isJSXElement())))
+    if (!(stage == "trans-exp" && (path.isJSXFragment() || path.isJSXElement())))
         return;
 
     const newCtx = new JsxParseContext(ctx.compiler);

@@ -57,7 +57,7 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
 
         this.bindTwoWays(a => a.value, this, a => a.content?.value);
 
-        this.onChanged("value", () => {
+        this.onChanged("value", v => {
 
             this.resetValidation();
         });
@@ -75,7 +75,7 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
 
     async validateAsync<TInnerTarget>(ctx: IValidationContext<TInnerTarget & TTarget>, force?: boolean): Promise<boolean> {
 
-        if (!this.validators || this.validators?.length == 0)
+        if (!this.validators || this.validators?.length == 0 || this.content?.disabled || !this.content?.visible)
             return true;
 
         const errors: ViewNode[] = [];

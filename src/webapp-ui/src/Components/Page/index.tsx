@@ -6,6 +6,7 @@ import { IFeature } from "../../abstraction/IFeature";
 import { formatText } from "../../utils/Format";
 import { NodeView } from "../NodeView";
 import { LocalString } from "../../Types";
+import { useOperation } from "../../utils";
 export interface IPageOptions extends IComponentOptions {
 
     title?: Bindable<LocalString>;
@@ -58,16 +59,19 @@ export class Page<TArgs extends Record<string, any> = unknown, TOptions extends 
 
         this._loadState = "loading";
 
-        await this.loadAsyncWork(args);
+        await useOperation(async () => {
 
-        if (this.features) {
+            await this.loadAsyncWork(args);
 
-            for (const loader of this.features)
-                if (!await loader(this)) {
-                    isValid = false;
-                    break;
-                }
-        }
+            if (this.features) {
+
+                for (const loader of this.features)
+                    if (!await loader(this)) {
+                        isValid = false;
+                        break;
+                    }
+            }
+        });
 
         if (isValid)
             this._loadState = "loaded";

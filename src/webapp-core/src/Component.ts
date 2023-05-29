@@ -142,6 +142,14 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
         this._binder.bindTwoWays(src, dstModel, dst);
     }
 
+
+    bindOneWay<TValue, TDestModel extends object>(src: (model: this) => TValue, dstModel: TDestModel, dst: (model: TDestModel) => TValue) {
+
+        if (!this._binder)
+            this._binder = new Binder(this);
+        this._binder.bindOneWay(src, dstModel, dst);
+    }
+
     prop<TKey extends keyof this & string>(prop: TKey) {
 
         return getOrCreateProp(this, prop);

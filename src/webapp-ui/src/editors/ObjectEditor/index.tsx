@@ -1,4 +1,4 @@
-import { ITemplate, TemplateMap, withCleanup } from "@eusoft/webapp-core";
+import { BindExpression, ITemplate, TemplateMap, withCleanup } from "@eusoft/webapp-core";
 import { Content, Template, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "../EditorBuilder";
 import { IInputFieldOptions, InputField } from "../../components";
@@ -11,7 +11,7 @@ import "./index.scss";
 
 type ObjectEditorValidationMode = "manual" | "onInputChange";
 
-interface IObjectEditorOptions<TObj extends Record<string, any>> extends ICommitableEditorOptions<TObj, TObj> {
+export interface IObjectEditorOptions<TObj extends Record<string, any>> extends ICommitableEditorOptions<TObj, TObj> {
 
     builder: (builder: EditorBuilder<TObj, ObjectEditor<TObj>>) => ITemplate<TObj> | JSX.Element;
 
@@ -32,7 +32,7 @@ export const ObjectEditorTemplates: TemplateMap<ObjectEditor<any>> = {
     </Template>)
 }
 
-export class ObjectEditor<TObj extends Record<string, any>> extends CommitableEditor<TObj, TObj, IObjectEditorOptions<TObj>>  {
+export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, IObjectEditorOptions<TObj>>  {
 
     protected _inputs: InputField<unknown, IEditor<unknown>>[];
     protected _contentTemplate: ITemplate<TObj>;
@@ -155,6 +155,20 @@ export class ObjectEditor<TObj extends Record<string, any>> extends CommitableEd
     builder: (builder: EditorBuilder<TObj, this>) => JSX.Element;
 
     inputField: Partial<IInputFieldOptions<unknown, TObj>>;
+}
+
+
+declare module "../EditorBuilder" {
+    interface EditorBuilder<TModel, TModelContainer> {
+        object<TValue>(value: BindExpression<TModel, TValue>, options?: IBuilderEditorOptions<TModel, TValue, IObjectEditorOptions<TValue>>);
+    }
+}
+
+EditorBuilder.prototype.object = function (this: EditorBuilder<any, any>, value, options) {
+    return this.editor(value, ObjectEditor, {
+        style: ["vertical-label", "no-box"],
+        ...options
+    });
 }
 
 export default ObjectEditor;

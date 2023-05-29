@@ -35,14 +35,20 @@
         flex-direction: column;
         gap: size(0.5);
 
-        label {
+        > label {
             font-size: $font-size-small;
             font-weight: bold;
         }
     }
 
+    &.no-error{
+        > .error{
+            display: none;
+        }
+    }
+
     &.no-label {
-        label {
+        > label {
             display: none;
         }
     }
@@ -56,6 +62,12 @@
         > label {
             color: $error-color;
         }
+    }
+
+
+    &:has(> .editor-container > *:disabled) {
+        opacity: 0.5;
+        pointer-events: none;
     }
 
     &:has(input[type=checkbox]):not(:has(label:empty)) {
@@ -79,7 +91,7 @@
         }
     }
 
-    &:not(:has(.editor input[type=checkbox],.editor input[type=radio])) {
+    &:not(:has(.editor > input[type=checkbox], .editor > input[type=radio]), .no-box) {
 
         > .editor-container {
             @include edit-box;
@@ -92,6 +104,10 @@
                 outline: none;
                 background: transparent;
                 width: 100%;
+
+                &:-webkit-autofill {
+                    -webkit-box-shadow: 0 0 0px 1000px white inset;
+                }
             }
         }
 
@@ -121,13 +137,13 @@
                 z-index: 1;
             }
 
-            &.empty:not(:focus-within):not(:has(input[type=date])) {
+            &.empty:not(:focus-within):not(:has(input[type=date])):not(:has(input:-webkit-autofill)) {
                 > label {
                     top: calc(50% - 8px - 0.5em);
                 }
             }
 
-            &:focus-within, &:not(.empty), &:has(input[type=date]) {
+            &:focus-within, &:not(.empty), &:has(input[type=date]), &:has(input:-webkit-autofill) {
 
                 > label {
                     font-size: $font-size-small;
@@ -142,9 +158,9 @@
             }
 
             > .editor-container {
-               select{
-                   margin-left: -4px;
-               }
+                select {
+                    margin-left: -4px;
+                }
             }
         }
 
@@ -156,7 +172,7 @@
                 padding: 0 size(0.5);
             }
 
-            &:focus-within, &:not(.empty), &:has(input[type=date]) {
+            &:focus-within, &:not(.empty), &:has(input[type=date]), &:has(input:-webkit-autofill) {
 
                 > label {
                     top: -6px;
@@ -203,7 +219,7 @@
             }
 
 
-            &:focus-within, &:not(.empty), &:has(input[type=date]) {
+            &:focus-within, &:not(.empty), &:has(input[type=date]), &:has(input:-webkit-autofill) {
 
                 > label {
                     top: 6px;

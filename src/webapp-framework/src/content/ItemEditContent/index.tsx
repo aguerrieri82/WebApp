@@ -1,13 +1,13 @@
 import { forModel } from "@eusoft/webapp-jsx";
 import { Content, IContentOptions } from "../Content";
 import { CommitableEditor, Editor, IEditor, IEditorOptions } from "@eusoft/webapp-ui";
-import { Bindable} from "@eusoft/webapp-core";
+import { BindValue, Bindable} from "@eusoft/webapp-core";
 
 export interface IItemEditOptions<TItem> extends IContentOptions {
 
     saveAsync?: (value: TItem) => Promise<boolean>;
 
-    editor: IEditor<TItem>;
+    editor: BindValue<TItem, IEditor<TItem>>;
 
     value: Bindable<TItem, "two-ways">;
 }

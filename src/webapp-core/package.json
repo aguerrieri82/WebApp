@@ -4,6 +4,7 @@
   "packageManager": "pnpm@8.4.0",
   "type": "module",
   "main": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
     "publish": "cd ../../dist/webapp-core/ && pnpm publish --access public --no-git-checks",
     "clean": "rimraf ../../dist/webapp-core/",

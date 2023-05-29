@@ -855,7 +855,11 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         this.bind(value, a => {
 
-            if (a !== null && a !== undefined) {
+            const mustRemove = a === null ||
+                a === undefined ||
+                (!a && attribute == "disabled");
+
+            if (!mustRemove) {
                 if (a instanceof Promise) {
                     a.then(newValue => this.element.setAttribute(attribute, newValue as string));
                 }
@@ -1031,7 +1035,10 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             if (element.type == "checkbox" || element.type == "radio")
                 this.bind(value, (a: boolean) => element.checked = a);
             else
-                this.bind(value, (a: string) => a ? element.value = a : element.value = null);
+                this.bind(value, (a: string) => {
+
+                    element.value = a ?? null;
+                });
         }
         return this;
     }

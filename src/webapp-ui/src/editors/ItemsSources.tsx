@@ -1,3 +1,4 @@
+import { toKebabCase } from "@eusoft/webapp-core";
 import { LocalString } from "../Types";
 import { IItemsSource } from "../abstraction/IItemsSource";
 import { ISimpleItem } from "../abstraction/ISimpleItem";
@@ -45,7 +46,7 @@ export function enumItemsSource<TEnum>(value: TEnum) {
         getValue: a => a.value,
         getItemsAsync: async () => Object.keys(value).filter(a=> isNaN(parseInt(a))).map(a => (
         {
-            text: formatText(a),
+            text: formatText(toKebabCase(a)),
             value: value[a]
         } as ISimpleItem<TEnum>)),
 

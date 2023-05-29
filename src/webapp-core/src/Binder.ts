@@ -121,8 +121,8 @@ export class Binder<TModel> {
 
             const refs = Array.from(exp.expression.references()).filter(a =>
                 !a.readonly &&
-                typeof a.value !== "function" &&
-                typeof a.object !== "function");
+                typeof a.object == "object" &&
+                typeof a.value !== "function");
 
             compareArray(binding.refs, refs, {
 
@@ -150,11 +150,13 @@ export class Binder<TModel> {
         return exp.value;
     }
 
-    bindOneWay<TValue>(src: (model: TModel) => TValue, dst: (model: TModel) => TValue) {
+    bindOneWay<TValue, TDestModel extends TModel | object>(dst: BindValue<TModel, TValue>, srcModel: TDestModel, src: BindExpression<TDestModel, TValue>): void { 
 
         let curValue: TValue;
 
-        this.bind(src, value => {
+        const realSrc = (srcModel == this.model ? dst : (m: TModel & IBindable) => src(m[USE](srcModel))) as BindExpression<TModel, TValue>;
+
+        this.bind(realSrc, value => {
 
             if (value !== undefined)
                 curValue = value;
@@ -162,7 +164,7 @@ export class Binder<TModel> {
             const dstProp = this.getBindingProperty(dst);
             if (dstProp)
                 dstProp.set(curValue);
-        });
+        }, "exec-always");
     }
 
     bindTwoWays<TValue, TDestModel extends TModel|object>(src: BindValue<TModel, TValue>, dstModel: TDestModel, dst: BindExpression<TDestModel, TValue>, onChanged?: (value: TValue) => void): void { 

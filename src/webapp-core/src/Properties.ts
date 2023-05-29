@@ -91,6 +91,8 @@ export function createProp<TObj extends object, TKey extends (keyof TObj) & stri
 
         enumerable: true,
 
+        configurable: true,
+
         get: () => property.get(),
 
         set: (newValue) => property.set(newValue)

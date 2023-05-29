@@ -5,7 +5,6 @@ $label-color: #666 !default;
 
 @mixin edit-box {
     padding: size(1) size(2);
-
     border-radius: 4px;
     border: solid 1px $border-color;
     line-height: 20px;
@@ -15,13 +14,5 @@ $label-color: #666 !default;
 
     &:focus-visible {
         outline: 1px auto $border-color-focus;
-    }
-
-    &.filled{
-
-    }
-
-    &.outlined{
-
     }
 }

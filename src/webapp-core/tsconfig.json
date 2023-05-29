@@ -10,7 +10,8 @@
     "moduleResolution": "Node",
     "noEmit": true,
     "incremental": true,
-    "noImplicitOverride": true
+    "noImplicitOverride": true,
+    "composite": true
   },
   "include": ["src"]
 }

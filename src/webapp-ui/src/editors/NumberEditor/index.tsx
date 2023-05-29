@@ -35,7 +35,9 @@ export class NumberEditor extends Editor<number, INumberEditorOptions> {
 
         this.onChanged("editValue", v => this.value = v ? parseFloat(v) : undefined);
 
-        this.onChanged("value", v => this.editValue = (v === null || v === undefined) ? undefined : v.toString());
+        this.onChanged("value", v => {
+            this.editValue = (v === null || v === undefined) ? null : v.toString();
+        });
     }
 
     protected override updateOptions() {

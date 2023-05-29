@@ -25,7 +25,7 @@ export const TextEditorTemplates: TemplateMap<TextEditor> = {
 
     "Default": forModel(m => <Template name="TextEditor">
         <input autocomplete={m.autocomplete} className={m.className}  placeholder={m.placeholder} visible={m.visible} disabled={m.disabled} type={m.type} value={m.value} >
-            <Class name="default"/>
+            <Class name="default" />
         </input>
     </Template>)
 } 

@@ -1,8 +1,10 @@
-import { Expression, BindExpression } from "@eusoft/webapp-core";
+import { Expression, BindExpression, ComponentStyle, BindValue, toKebabCase, ITemplate, TemplateBuilder, ITemplateProvider, USE } from "@eusoft/webapp-core";
 import { ViewNode } from "../Types";
 import { IEditor, IEditorOptions } from "../abstraction/IEditor";
 import { Validator } from "../abstraction/Validator";
 import { IInputFieldOptions, InputField } from "../components";
+import { ILabel } from "../abstraction";
+import { JsxTypedElement, ModelBuilder, TemplateModel } from "@eusoft/webapp-jsx";
 
 interface EditorBuilderOptions<TModel, TModelContainer extends Record<string, any>> {
 
@@ -21,14 +23,20 @@ export interface IBuilderEditorOptions<TModel, TValue, TEditorOptions extends IE
 
     label?: ViewNode;
 
+    onChanged?: (model: TModel, value: TValue) => void;
+
+    visible?: BindExpression<TModel, boolean>;
+
+    disabled?: BindExpression<TModel, boolean>;
+
     validators?: Validator<TValue, TModel>[];
 
-    editor?: TEditorOptions;
+    style?: ComponentStyle;
 
-
+    editor?: Partial<TEditorOptions>;
 }
 
-export class EditorBuilder<TModel, TModelContainer extends Record<string, any>> {
+export class EditorBuilder<TModel, TModelContainer extends {}> {
 
     protected _options: EditorBuilderOptions<TModel, TModelContainer>;
 
@@ -36,24 +44,58 @@ export class EditorBuilder<TModel, TModelContainer extends Record<string, any>> 
         this._options = options;
     }
 
+    content(template: (model: TModel) => JSX.Element) {
+
+        return {
+            model: this._options.container,
+            template: (t: TemplateBuilder<TModelContainer>) =>
+                t.enter(m => template(this._options.model(m)) as ITemplate<TModel>, t => {
+                    t.model(t as any);
+             })
+        }
+        
+    }
+
     editor<TValue,
         TEditor extends IEditor<TValue, TOptions>,
         TOptions extends IEditorOptions<TValue>>(bind: BindExpression<TModel, TValue>, type: { new(options: TOptions): TEditor }, options: IBuilderEditorOptions<TModel, TValue, TOptions>) {
 
-        const editor = new type(options.editor);
+        const editor = new type(options.editor as TOptions);
 
         const propName = Expression.build(null, bind).expression.property()?.propName;
+
+        const label = options?.label ?? toKebabCase(options?.name ?? propName);
+
+        const editorHasLabel = "label" in editor;
 
         const input = new InputField({
             content: editor,
             name: options?.name ?? propName,
-            label: options?.label ?? (options?.name ?? propName),
+            label: !editorHasLabel ? label: undefined,
             validators: options?.validators,
             value: undefined,
-            ...this._options?.inputField
+            ...this._options?.inputField,
+            style: options?.style ?? this._options?.inputField?.style,
         }); 
 
+        if (editorHasLabel)
+            (this.editor as unknown as ILabel).label = label;
+
         input.bindTwoWays(m => m.value, this._options.container, m => bind(this._options.model(m)));
+
+        if (options.onChanged)
+            input.prop("value").subscribe(v => {
+                const model = this._options.model(this._options.container);
+                options.onChanged(model, v as TValue);
+            })
+
+        if (options.visible) 
+            input.bindOneWay(m => m.content?.visible, this._options.container, m => options.visible(this._options.model(m)));
+
+        if (options.disabled)
+            input.bindOneWay(m => m.content?.disabled, this._options.container, m => options.disabled(this._options.model(m)));
+
+
 
         if (this._options.attach)
             this._options.attach(input);

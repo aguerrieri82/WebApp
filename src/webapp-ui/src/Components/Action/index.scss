@@ -13,6 +13,7 @@ button.action {
     transition-duration: $duration-normal;
     cursor: pointer;
 
+
     &:after {
         transition-duration: $duration-normal;
         position: absolute;
@@ -41,6 +42,8 @@ button.action {
         background-color: transparent;
         color: $button-back-color;
         font-weight: 500;
+        -webkit-tap-highlight-color: transparent;
+
 
         &:after {
             background: $button-back-color;

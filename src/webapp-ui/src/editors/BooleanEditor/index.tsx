@@ -6,6 +6,7 @@ import { Editor } from "../Editor";
 import { ViewNode } from "../../Types";
 import "./index.scss";
 import { NodeView } from "../../components";
+import { ILabel } from "../../abstraction/ILabel";
 
 interface IBooleanEditorOptions extends IEditorOptions<boolean> {
 
@@ -25,7 +26,7 @@ export const BoolEditorTemplates: TemplateMap<BooleanEditor> = {
     </Template>)
 } 
 
-export class BooleanEditor extends Editor<boolean, IBooleanEditorOptions> {
+export class BooleanEditor extends Editor<boolean, IBooleanEditorOptions> implements ILabel {
 
     constructor(options?: IBooleanEditorOptions) {
 
