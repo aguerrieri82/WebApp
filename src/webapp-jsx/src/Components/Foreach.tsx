@@ -3,7 +3,6 @@ import type { JsxComponentProps, JsxNode, TemplateModel } from "./../abstraction
 import { processNode } from "./../Runtime";
 
 
-
 export interface IForeachProps<TModel extends TemplateModel, TItem extends TemplateModel>
     extends JsxComponentProps<TModel, {(t: TItem) : JSX.Element } > {
     src: BindValue<TModel, TItem[]>;

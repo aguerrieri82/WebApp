@@ -180,7 +180,6 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
 }
 
 
-
 declare module "../EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {
         object<TValue>(value: BindExpression<TModel, TValue>, options?: IBuilderEditorOptions<TModel, TValue, IObjectEditorOptions<TValue>>);
