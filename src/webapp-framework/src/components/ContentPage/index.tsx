@@ -28,8 +28,9 @@ export const ContentPageTemplates: TemplateMap<ContentPage<unknown>> = {
         </div>
         <footer>
             {m.content?.actions.forEach(a =>
-                <Action name={a.name} onExecuteAsync={a.executeAsync}>
-                    {[a.icon, a.text]}
+                <Action name={a.name} type={a.type} onExecuteAsync={a.executeAsync}>
+                    {a.icon}
+                    {formatText(a.text)}
                 </Action> 
             )}
         </footer>
@@ -81,7 +82,7 @@ export class ContentPage<TArgs, TContent extends IContent = IContent, TOptions e
         this.content = content;
     }
 
-    override async loadAsyncWork(args: TArgs) {
+    override async onLoadAsync(args: TArgs) {
 
         if (!args)
             args = {} as TArgs;

@@ -3,6 +3,13 @@ import { ViewNode } from "../Types";
 
 export type ValueChangedReason = undefined | "edit";
 
+export enum DataType {
+    String,
+    Number,
+    Boolean,
+    Date
+}
+
 export interface IEditorOptions<TValue> extends IComponentOptions {
 
     label?: Bindable<ViewNode>;

@@ -1,3 +1,4 @@
+import { cleanProxy } from "./Expression";
 import { IBindable, PARENT, USE } from "./abstraction/IBindable";
 import type { BindExpression } from "./abstraction/IBinder";
 
@@ -12,6 +13,10 @@ interface IBindBuilder<TModel> {
 
 
 export namespace Bind {
+
+    export function noTrack<T>(value: T) : T {
+        return cleanProxy(value);
+    }
 
     export function action<T extends Function>(value: T): T {
 

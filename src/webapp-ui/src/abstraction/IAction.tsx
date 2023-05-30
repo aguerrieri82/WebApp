@@ -1,10 +1,7 @@
 import { LocalString, ViewNode } from "../Types";
 
 
-export enum ActionPriority {
-    Primary,
-    Secondary
-}
+export type ActionPriority = "primary" | "secondary";
 
 export type ActionType = "local" | "global"| undefined;
 
@@ -20,7 +17,11 @@ export interface IAction<TTarget = unknown> {
 
     icon?: ViewNode;
 
+    type?: ActionType;
+
     priority?: ActionPriority;
+
+    subActions?: IAction<TTarget>[];
 
     executeAsync: (ctx: IActionContext<TTarget>) => Promise<any>;
 }

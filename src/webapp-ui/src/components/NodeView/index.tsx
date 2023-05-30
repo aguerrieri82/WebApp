@@ -1,5 +1,5 @@
 import { LocalString, ViewNode } from "../../Types";
-import { ITemplateProvider, TemplateBuilder, isTemplateProvider } from "@eusoft/webapp-core";
+import { ITemplateProvider, TemplateBuilder, isTemplate, isTemplateProvider } from "@eusoft/webapp-core";
 import { formatText } from "../../utils";
 
 export interface INodeViewOptions {
@@ -23,6 +23,9 @@ export function NodeView(options: INodeViewOptions) {
 
         else if (typeof t.model == "function" && t.model.length == 0)
             t.text(t.model());
+
+        else if (isTemplate(t.model))
+            t.template(t.model);
     }
    
 

@@ -53,7 +53,7 @@ export class Page<TArgs extends {} = unknown, TOptions extends IPageOptions<TArg
 
         this.bindOptions("title", "content", "route", "features");
         if (this.options.loadAsync)
-            this.loadAsyncWork = this.options.loadAsync;
+            this.onLoadAsync = this.options.loadAsync;
     }
 
     async loadAsync(args?: TArgs)  {
@@ -64,7 +64,7 @@ export class Page<TArgs extends {} = unknown, TOptions extends IPageOptions<TArg
 
         await useOperation(async () => {
 
-            await this.loadAsyncWork(args);
+            await this.onLoadAsync(args);
 
             if (this.features) {
 
@@ -84,7 +84,7 @@ export class Page<TArgs extends {} = unknown, TOptions extends IPageOptions<TArg
         return isValid; 
     }
 
-    protected async loadAsyncWork(args?: TArgs) {
+    protected async onLoadAsync(args?: TArgs) {
 
     }
 

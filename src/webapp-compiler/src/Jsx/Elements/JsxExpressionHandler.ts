@@ -1,5 +1,6 @@
 import type { NodePath } from "@babel/traverse";
 import type { JsxParseContext } from "../JsxParseContext";
+import { BindMode } from "../../Abstraction/ITemplateNode";
 
 export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
 
@@ -14,9 +15,11 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
             return;
     }
 
-    let createBind = !ctx.isBinding(path) && ctx.isBindable();
+    const bindMode = ctx.getHelper(path)?.name as BindMode;
 
-    const bindMode = ctx.withModel(createBind ? ctx.curModel : null, () => ctx.transformExpression(path));
+    let createBind = !ctx.isBinding(path) && ctx.isBindable() && bindMode != "no-bind" && bindMode != "action";
+
+    ctx.withModel(createBind ? ctx.curModel : null, () => ctx.transformExpression(path));
 
     if (bindMode == "no-bind" || bindMode == "action") {
         createBind = false;

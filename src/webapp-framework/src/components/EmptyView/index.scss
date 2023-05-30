@@ -1,0 +1,12 @@
+.empty-view {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: size(1);
+
+    .icon {
+        color: $primary-color; 
+        opacity: 0.2;
+        font-size: 30vh;
+    }
+}

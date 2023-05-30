@@ -12,6 +12,14 @@ button.action {
     overflow: hidden;
     transition-duration: $duration-normal;
     cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    gap: size(1);
+    align-items: center;
+
+    >*{
+        line-height: 36px;
+    }
 
 
     &:after {

@@ -6,20 +6,20 @@ export interface ITemplateContext<TModel> {
 
 export type TemplateModel = object | string | number | boolean | { (): string };
 
-export type JsxElementType<TModel extends TemplateModel, TProps extends JsxComponentProps<TModel>> = keyof HTMLElementTagNameMap | JsxComponent<TModel, TProps> ;
+export type JsxElementType<TModel, TProps extends JsxComponentProps<TModel>> = keyof HTMLElementTagNameMap | JsxComponent<TModel, TProps> ;
 
-export type JsxComponent<TModel extends TemplateModel, TProps extends JsxComponentProps<TModel>> = (props: TProps) => (JsxElementInstance<TModel, TProps> | null | void | ITemplate<TModel>);
+export type JsxComponent<TModel, TProps extends JsxComponentProps<TModel>> = (props: TProps) => (JsxElementInstance<TModel, TProps> | null | void | ITemplate<TModel>);
 
-export type ModelBuilder<TModel extends TemplateModel> = { (t: TModel): JSX.Element };
+export type ModelBuilder<TModel> = { (t: TModel): JSX.Element };
 
-export type JsxNode<TModel extends TemplateModel> =
+export type JsxNode<TModel> =
     string |
     number |
     JsxTypedElement<TModel, JsxComponentProps<TModel>> | 
     JsxNode<TModel>[] |
     ModelBuilder<TModel> 
 
-export type JsxTypedElement<TModel extends TemplateModel, TProps> =
+export type JsxTypedElement<TModel, TProps> =
     JsxElementInstance<TModel, TProps> |
     null |
     void |
@@ -30,13 +30,13 @@ export type JsxTypedElement<TModel extends TemplateModel, TProps> =
 export type JsxTypedComponent<TOptions> = JsxTypedElement<IComponent<TOptions>, TOptions>;
 
 export type JsxComponentProps<
-        TModel extends TemplateModel,
+        TModel,
         TContent = any> = {
     content?: TContent;
     context?: ITemplateContext<TModel>;
 }
 
-export interface JsxElementInstance<TModel extends TemplateModel, TProps extends JsxComponentProps<TModel>> {
+export interface JsxElementInstance<TModel, TProps extends JsxComponentProps<TModel>> {
     type: JsxElementType<TModel, TProps>;
     props: TProps;
 }
@@ -53,7 +53,7 @@ type ElementAttributes<TModel, TElement> = {
     [K in WritableKeys<TElement, string | number | boolean>]?: BindValue<TModel, TElement[K]>
 }
 
-type ElementProps<TModel extends TemplateModel, TElement> =
+type ElementProps<TModel, TElement> =
     ElementEvents<TModel> &
     ElementStyles<TModel> &
     ElementAttributes<TModel, TElement> &
@@ -69,7 +69,7 @@ type ElementProps<TModel extends TemplateModel, TElement> =
         behavoir?: string | string[] | EmptyConstructor<IBehavoir> | EmptyConstructor<IBehavoir>[] | IBehavoir | IBehavoir[];
     }
 
-type InputProps<TModel extends TemplateModel, TElement> =
+type InputProps<TModel, TElement> =
     Omit< ElementProps<TModel, TElement>, "value"> &
     {
         "value"?: BindValue<TModel, string|boolean>;
