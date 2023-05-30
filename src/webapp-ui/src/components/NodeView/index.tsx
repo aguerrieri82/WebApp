@@ -34,7 +34,13 @@ export function NodeView(options: INodeViewOptions) {
             if (t2.model === undefined || t2.model === null)
                 return;
             if (Array.isArray(t2.model))
-                t2.model.forEach(item => t2.template(singleNode, item as NodeType));
+                t2.model.forEach(item => {
+
+                    if (isTemplate(item))
+                        t2.template(item);
+                    else
+                        t2.enter(item, t3 => singleNode(t3 as TemplateBuilder<NodeType>));
+                });
             else
                 singleNode(t2 as TemplateBuilder<NodeType>)
         });

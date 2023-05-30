@@ -207,6 +207,11 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         while (true) {
 
+            if (!curNode.parentElement) {
+                console.warn("orphan node:", curNode);
+                break;
+            }
+
             let mustDelete = true;
 
             if ((curNode == this._startElement || curNode == this._endElement) && !remove)
@@ -214,9 +219,10 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
             const prev = curNode.previousSibling;
 
+        
             if (mustDelete) 
                 curNode.parentNode.removeChild(curNode);
-
+            
             if (curNode == this._startElement)
                 break;
 

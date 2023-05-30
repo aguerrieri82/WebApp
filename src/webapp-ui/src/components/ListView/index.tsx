@@ -32,10 +32,6 @@ export class ListView<TItem> extends Component<IListViewOptions<TItem>> {
     }
 
 
-    protected override updateOptions() {
-
-        this.bindOptions("createItemView", "content");
-    }
 
     createItemView: (item: TItem) => ViewNode;
 

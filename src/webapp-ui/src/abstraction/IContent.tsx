@@ -1,21 +1,51 @@
-import { CatalogTemplate } from "@eusoft/webapp-core";
+import { IComponent, ITemplateProvider } from "@eusoft/webapp-core";
+import { IFeature } from "./IFeature";
 import { LocalString, ViewNode } from "../Types";
 import { IAction } from "./IAction";
 import { IContentHost } from "./IContentHost";
 
-export interface IContent<TArgs = unknown> {
+export type LoadState = "loaded" | "loading" | "error" | undefined;
 
-    openAsync?(host: IContentHost, args?: TArgs): Promise<boolean>;
 
-    name?: string;
+export interface IContent<TArgs extends {} = undefined> extends IComponent {
 
-    title?: LocalString;
+    loadAsync(host: IContentHost, args?: TArgs): Promise<boolean>;
+
+    onOpenAsync(): Promise<any>;
+
+    onCloseAsync(): Promise<any>;
+
+    route: string;
+
+    features: IFeature<this>[];
+
+    title: LocalString;
+
+    shortTitle: LocalString;
+
+    icon: ViewNode;
+
+    actions: IAction[];
+
+    body: ITemplateProvider;
+
+    readonly loadState: LoadState;
+}
+
+export interface IContentInfo {
+
+    name: string;
+
+    route: string;
 
     icon?: ViewNode;
 
-    shortTitle?: LocalString;
+    factory: () => IContent;
+}
 
-    actions?: IAction[];
+export interface IContentConstructor {
 
-    template: CatalogTemplate<this>;
+    new(): IContent;
+
+    info: IContentInfo;
 }

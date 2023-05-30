@@ -41,11 +41,6 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
         });
     }
 
-    protected override updateOptions() {
-
-        this.bindOptions("content", "onExecuteAsync");
-    }
-
     async executeAsync(ctx?: IActionContext<TTarget>) {
 
         if (this.isExecuting)

@@ -1,9 +1,7 @@
-import { IAction, IEditor, IItemsSource, ItemView, ListView, MaterialIcon, ViewNode } from "@eusoft/webapp-ui";
-import { Content, IContentOptions } from "../Content";
+import { Content, IAction, IContentOptions, IEditor, IItemsSource, ItemView, ListView, LocalString, MaterialIcon, ViewNode } from "@eusoft/webapp-ui";
 import { IFilterField } from "../../abstraction/IFilterEditor";
 import { Bind, Class } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
-import { contentPage } from "../../components";
 import router from "../../services/Router";
 
 export interface IListColumn<TItem, TValue> {
@@ -23,7 +21,7 @@ export type ListSelectionMode = "none" | "single" | "multiple";
 
 export type ListEditMode = "modal" | "page" | "auto";
 
-export interface IItemListOptions<TItem, TFilter> extends IContentOptions {
+export interface IItemListOptions<TItem, TFilter> extends IContentOptions<unknown> {
     canAdd?: boolean;
     canEdit?: boolean;
     canDelete?: boolean;
@@ -47,15 +45,16 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions {
     emptyView?: ViewNode;
 }
 
-export class ItemListContent<TItem, TFilter> extends Content<IItemListOptions<TItem, TFilter>, unknown> {
+export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListOptions<TItem, TFilter>> {
 
     constructor(options?: IItemListOptions<TItem, TFilter>) {
 
         super();
 
         this.init(ItemListContent, {
-            template: forModel<this>(m => <div className="item-list">
-                {m.items.length == 0 ?
+
+            body: forModel(this, m => <div className="item-list">
+                {m.items?.length == 0 ?
                     <>{m.emptyView}</> :
                     <>
                     </>
@@ -64,6 +63,7 @@ export class ItemListContent<TItem, TFilter> extends Content<IItemListOptions<TI
                     {this.items}
                 </ListView>
             </div>),
+
             ...options
         });
     }
@@ -81,9 +81,10 @@ export class ItemListContent<TItem, TFilter> extends Content<IItemListOptions<TI
         return result;
     }
 
-    override async onOpenAsync(args) {
+    override async onLoadAsync() {
 
         this.buildInActions = [];
+
         if (this.canDelete)
             this.buildInActions.push({
                 name: "delete",
@@ -105,7 +106,6 @@ export class ItemListContent<TItem, TFilter> extends Content<IItemListOptions<TI
             });
 
         await this.refreshAsync();
-        return true;
     }
 
     getColumnContent(item: TItem, column: IListColumn<TItem, unknown>) : ViewNode {
@@ -136,7 +136,9 @@ export class ItemListContent<TItem, TFilter> extends Content<IItemListOptions<TI
     }
 
     async refreshAsync() {
+
         const items = await this.itemsSource.getItemsAsync(this.prepareFilter());
+
         this.items = items;
     }
 
@@ -149,9 +151,7 @@ export class ItemListContent<TItem, TFilter> extends Content<IItemListOptions<TI
 
         const content = typeof builder == "function" ? new builder() : builder;
 
-        const page = contentPage(content);
-
-        const newItem = await router.navigatePageForResultAsync(page);    
+        const newItem = await router.navigatePageForResultAsync(content);    
 
         if (newItem)
             await this.refreshAsync();
@@ -166,7 +166,7 @@ export class ItemListContent<TItem, TFilter> extends Content<IItemListOptions<TI
         return false;
     }
 
-    addLabel?: ViewNode;
+    addLabel?: LocalString;
 
     buildInActions: IAction<TItem>[];
 

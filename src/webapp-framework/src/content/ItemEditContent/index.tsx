@@ -1,34 +1,36 @@
 import { forModel } from "@eusoft/webapp-jsx";
-import { Content, IContentOptions } from "../Content";
-import { CommitableEditor, IEditor, isAsyncLoad } from "@eusoft/webapp-ui";
+import { CommitableEditor, Content, IContentOptions, IEditor, isAsyncLoad } from "@eusoft/webapp-ui";
 
 export interface IItemEditArgs<TItem> {
 
     value?: TItem;
 }
 
-export interface IItemEditOptions<TItem, TArgs extends IItemEditArgs<TItem>> extends IContentOptions<TArgs> {
+export interface IItemEditOptions<TItem, TArgs extends IItemEditArgs<TItem> = IItemEditArgs<TItem>> extends IContentOptions<TArgs> {
 
     onSaveAsync?: (value: TItem) => Promise<boolean>;
 
     createEditor: (value: TItem) => IEditor<TItem>;
 }
 
-export class ItemEditContent<TItem, TArgs extends IItemEditArgs<TItem> = IItemEditArgs<TItem>> extends Content<IItemEditOptions<TItem, TArgs>, IItemEditArgs<TItem>> {
+export class ItemEditContent<TItem, TArgs extends IItemEditArgs<TItem> = IItemEditArgs<TItem>> extends Content<TArgs, IItemEditOptions<TItem, TArgs>> {
 
     constructor(options?: IItemEditOptions<TItem, TArgs>) {
 
         super();
 
         this.init(ItemEditContent, {
-            template: forModel(m => <>
+
+            body: forModel(this, m => <>
                 {m.editor}
             </>),
+
             actions: [{
                 name: "save",
                 text: "save",
                 executeAsync: () => this.saveAsync()
             }],
+
             ...options
         });
     }
@@ -48,7 +50,7 @@ export class ItemEditContent<TItem, TArgs extends IItemEditArgs<TItem> = IItemEd
         }
     }
 
-    protected override async onOpenAsync(args?: TArgs) {
+    protected override async onLoadAsync(args?: TArgs) {
 
         this.editor = this.createEditor(args.value);
 
@@ -56,8 +58,6 @@ export class ItemEditContent<TItem, TArgs extends IItemEditArgs<TItem> = IItemEd
 
         if (isAsyncLoad(this.editor))
             await this.editor.loadAsync();
-
-        return true;
     }
 
     createEditor(value: TItem): IEditor<TItem> {

@@ -30,11 +30,6 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
         this.onChanged("commitMode", () => this.beginEdit(this.value));
     }
 
-    protected override updateOptions() {
-
-        this.bindOptions("commitMode");
-    }
-
     protected override get changeReason() : ValueChangedReason {
         return this._editState == "committing" ? "edit" : undefined;
     }

@@ -38,12 +38,6 @@ export class BooleanEditor extends Editor<boolean, IBooleanEditorOptions> implem
         });
     }
 
-
-    protected override updateOptions() {
-
-        this.bindOptions("label");
-    }
-
     label: ViewNode;
 }
 

@@ -19,11 +19,6 @@ export abstract class Editor<TValue, TOptions extends IEditorOptions<TValue> = I
         this.onChanged("value", (v, o) => this.onValueChanged(v, o, this.changeReason));
     }
 
-    protected override updateOptions() {
-
-        this.bindOptions("visible", "disabled", "value");
-    }
-
     protected get changeReason(): ValueChangedReason {
         return undefined;
     }

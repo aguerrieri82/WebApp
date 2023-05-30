@@ -86,10 +86,6 @@ export class SingleSelector<TItem, TValue> extends Editor<TValue, ISingleSelecto
             this.value = (this.context.element as HTMLSelectElement).value as TValue;
     }
 
-    protected override updateOptions() {
-
-        this.bindOptions("itemsSource");
-    }
 
     itemsSource: IItemsSource<TItem, TValue, unknown>;
 

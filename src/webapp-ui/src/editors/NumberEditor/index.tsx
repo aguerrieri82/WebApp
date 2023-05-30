@@ -40,11 +40,6 @@ export class NumberEditor extends Editor<number, INumberEditorOptions> {
         });
     }
 
-    protected override updateOptions() {
-
-        this.bindOptions("placeholder");
-    }
-
     placeholder?: string;
 
     editValue: string;

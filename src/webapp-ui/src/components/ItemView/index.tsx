@@ -63,12 +63,6 @@ export class ItemView<TItem> extends Component<IItemViewOptions<TItem>> {
         })
     }
 
-
-    protected override updateOptions() {
-
-        this.bindOptions("maxActions", "icon", "primary", "secondary", "content", "actions");
-    }
-
     get primaryActions(): IAction[]{
 
         return this.actions?.filter(a => a.priority == "primary");

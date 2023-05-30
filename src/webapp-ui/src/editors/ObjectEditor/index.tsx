@@ -63,11 +63,6 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
         console.groupEnd();
     }
 
-    protected override updateOptions() {
-
-        this.bindOptions("builder", "isDynamic", "validationMode", "inputField");
-    }
-
     async loadAsync() {
 
         console.group("loadAsync");

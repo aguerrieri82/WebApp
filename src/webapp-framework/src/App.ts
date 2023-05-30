@@ -1,6 +1,7 @@
 import { Services, mount } from "@eusoft/webapp-core";
-import { LOCALIZATION, OPERATION_MANAGER, OperationManager, PageHost } from "@eusoft/webapp-ui";
+import { ContentHost, LOCALIZATION, OPERATION_MANAGER, OperationManager } from "@eusoft/webapp-ui";
 import localTable from "./services/LocalTable";
+import { RouteContentHost } from "./components/RouteContentHost";
 
 export interface IAppOptions {
 
@@ -10,13 +11,12 @@ export interface IApp {
 
     runAsync(root?: HTMLElement | string);
 
-    pageHost: PageHost;
+    contentHost: ContentHost;
 }
 
 export class App  {
 
     constructor(options?: IAppOptions) {
-
 
     }
 
@@ -35,14 +35,14 @@ export class App  {
             root = document.body;
 
 
-        mount(root, this.pageHost);
+        mount(root, this.contentHost);
     }
 
     protected onStarted() {
 
     }
 
-    readonly pageHost = new PageHost();
+    readonly contentHost = new RouteContentHost();
 }
 
 export function runApp<TApp extends IApp>(newApp: TApp) {

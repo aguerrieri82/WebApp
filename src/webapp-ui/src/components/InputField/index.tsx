@@ -64,11 +64,6 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
         });
     }
 
-    protected override updateOptions() {
-
-        this.bindOptions("label", "validators", "content", "value");
-    }
-
     beginEdit() {
 
         if (isCommitable(this.content))

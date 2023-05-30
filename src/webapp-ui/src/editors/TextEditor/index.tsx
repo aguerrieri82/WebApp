@@ -43,10 +43,6 @@ export class TextEditor extends Editor<string, ITextEditorOptions> {
         });
     }
 
-    protected override updateOptions() {
-
-        this.bindOptions("type", "rows", "placeholder", "autocomplete");
-    }
 
     rows?: number;
 

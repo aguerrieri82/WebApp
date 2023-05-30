@@ -41,10 +41,7 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
         if (caller != this.constructor)
             return;
 
-        const upOptions = enumOverrides(this, "updateOptions" as any);
-
-        for (const func of upOptions) 
-            func.call(this);
+        this.updateOptions();
 
         const inits = enumOverrides(this, "initProps" as any);
 
@@ -65,7 +62,9 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     protected updateOptions() {
 
-        this.bindOptions("style", "template", "name", "visible", "isCacheEnabled");
+        const validKeys = Object.keys(this.options).filter(a => a in this);
+
+        this.bindOptions(...validKeys as any);
     }
 
     protected bindOptions<TKey extends keyof CommonKeys<TOptions, this>>(...keys: TKey[]) {
@@ -258,12 +257,12 @@ export function getComponent(obj: any): Function {
 }
 
 export function declareComponent<TOptions extends IComponentOptions, TType extends { new(...args: any[]): Component<TOptions> }>(type: TType, options: TOptions) {
-    return class AnonymouseComponent extends type {
+    return class InlineComponent extends type {
         constructor(...args: any[]) {
 
             super(args[0]);
 
-            this.init(AnonymouseComponent, options);
+            this.init(InlineComponent, options);
         }
     } as TType;
 }

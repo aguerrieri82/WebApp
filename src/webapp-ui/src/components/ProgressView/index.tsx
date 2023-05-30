@@ -43,10 +43,6 @@ export class ProgressView extends Component<IProgressViewOptions> {
         });
     }
 
-    protected override updateOptions() {
-
-        this.bindOptions("content", "isIndeterminate", "min", "max", "value");
-    }
 
     content: ViewNode;
 

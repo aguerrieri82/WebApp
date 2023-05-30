@@ -111,7 +111,7 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
     call(...args: []): ExpressionType {
 
-        const result = this._options.evaluate ? (this.value as Function).call(this.parent.value, ...args) : null;
+        const result = this._options.evaluate ? (this.value as Function).call(this.parent.value, ...args?.map(a=> cleanProxy(a))) : null;
 
         let innerExp = this.actions.find(a => a instanceof CallExpression && a.value == result);
 
@@ -383,6 +383,9 @@ export class GetExpression<TObj extends Record<string, any>> extends Expression<
 
         this.propName = propName;
         this.readonly = readonly;
+
+        if (propName == "get")
+            debugger;
     }
 
     readonly propName: string;

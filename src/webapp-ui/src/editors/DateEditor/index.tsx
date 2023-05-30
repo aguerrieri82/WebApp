@@ -43,11 +43,6 @@ export class DateEditor extends Editor<Date, IDateEditorOptions> {
         });
     }
 
-    protected override updateOptions() {
-
-        this.bindOptions("placeholder");
-    }
-
     placeholder?: string;
 
     editValue: string;

@@ -168,11 +168,6 @@ export class Wizard extends Component<IWizardOptions> {
     }
 
 
-    protected override updateOptions() {
-
-        this.bindOptions("nextLabel", "prevLabel", "showStepList", "activeStepIndex", "content");
-    }
-
     nextAsync() {
 
         if (this.canGoNext) {
