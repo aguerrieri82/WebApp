@@ -1,5 +1,5 @@
-import { TemplateMap, BindExpression, ITemplateContext } from "@eusoft/webapp-core";
-import { forModel } from "@eusoft/webapp-jsx";
+import { TemplateMap, BindExpression, ITemplateContext, Bind } from "@eusoft/webapp-core";
+import { Class, forModel } from "@eusoft/webapp-jsx";
 import { IEditorOptions } from "../../abstraction/IEditor";
 import { EditorBuilder } from "../EditorBuilder";
 import { Editor } from "../Editor";
@@ -25,7 +25,21 @@ export const SingleSelectorTemplates: TemplateMap<SingleSelector<unknown, unknow
             <option value={m.itemsSource.getValue(i) as string}>
                 {m.itemsSource.getText(i)}
             </option>)}
-    </select>
+        </select>
+    ),
+
+    "Options": forModel(m => <fieldset
+        className={m.className}
+        visible={m.visible}>
+        <Class name="options"/> 
+        {m.content?.forEach(i =>
+            <label> 
+                <input type="radio" name="selector" checked={m.value == m.itemsSource.getValue(i)}
+                    on-change={Bind.action((_, ev) => (ev.currentTarget as HTMLInputElement).checked ? m.value = m.itemsSource.getValue(i) : undefined)} />
+                <span>{m.itemsSource.getText(i)}</span>
+            </label>
+        )}
+    </fieldset>
     )
 }
 
@@ -50,16 +64,26 @@ export class SingleSelector<TItem, TValue> extends Editor<TValue, ISingleSelecto
 
     async refreshAsync() {
 
+        const oldValue = this.value;
+
         this.content = this.itemsSource ? await this.itemsSource.getItemsAsync() : [];
+
+        if (oldValue)
+            this.value = oldValue;
+        else
+            this.getSelectedValue();
     }
 
     override mount(ctx: ITemplateContext) {
 
-        setTimeout(() => {
-            this.value = (ctx.element as HTMLSelectElement).value as TValue;
-        }, 0);
-
         super.mount(ctx);
+
+        this.getSelectedValue();
+    }
+
+    protected getSelectedValue() {
+        if (this.context?.element?.tagName == "SELECT")
+            this.value = (this.context.element as HTMLSelectElement).value as TValue;
     }
 
     protected override updateOptions() {

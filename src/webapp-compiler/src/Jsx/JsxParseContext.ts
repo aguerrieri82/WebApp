@@ -52,11 +52,14 @@ export class JsxParseContext {
         this.usedImports = [];
     }
 
-    withModel<T>(model: Identifier,  action: () => T) : T{
+    withModel<T>(model: Identifier, ignoreCurModel: boolean, action: () => T) : T{
         const oldModel = this.curModel;
+        const oldIgnore = this.ignoreCurModel;
         this.curModel = model;
+        this.ignoreCurModel = ignoreCurModel;
         const result = action();
         this.curModel = oldModel;
+        this.ignoreCurModel = oldIgnore;
         return result;
     }
 
@@ -367,6 +370,8 @@ export class JsxParseContext {
     curAttribute: ITemplateAttribute;
 
     curModel: Identifier;
+
+    ignoreCurModel: boolean;
 
     curBuilder: string;
 

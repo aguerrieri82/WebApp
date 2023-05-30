@@ -42,9 +42,9 @@ export interface JsxElementInstance<TModel, TProps extends JsxComponentProps<TMo
 }
 
 type ElementEvents<TModel> = {
-    [K in keyof HTMLElementEventMap as K extends string ? `on-${K}` : never]?: { (model: TModel, e?: HTMLElementEventMap[K]): object | number | boolean | void }
+    [K in keyof HTMLElementEventMap as K extends string ? `on-${K}` : never]?: { (model: TModel, e?: HTMLElementEventMap[K]): any }
 }
-
+ 
 type ElementStyles<TModel> = {
     [K in keyof CSSStyleDeclaration as K extends string ? `style-${K}` : never]?: BindValue<TModel, CSSStyleDeclaration[K]>;
 }
