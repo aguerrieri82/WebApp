@@ -5,7 +5,6 @@ export interface IBehavoir<TElement extends HTMLElement = HTMLElement, TModel = 
     attach(ctx: ITemplateContext<TModel, TElement>) : void;
 
     detach(ctx: ITemplateContext<TModel, TElement>): void;
-
 }
 
 export function isBehavoir(value: any): value is IBehavoir {

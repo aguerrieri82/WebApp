@@ -4,7 +4,6 @@ import { EditorBuilder } from "../EditorBuilder";
 import { IInputFieldOptions, InputField } from "../../components";
 import { IValidationContext } from "../../abstraction/Validator";
 import { CommitableEditor, ICommitableEditorOptions } from "../CommitableEditor";
-import { isCommitable } from "../../abstraction/ICommitable";
 import { IEditor } from "../../abstraction/IEditor";
 import { cloneObject, emptyObject } from "../../utils/Object";
 import "./index.scss";

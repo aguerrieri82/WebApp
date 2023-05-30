@@ -1216,7 +1216,6 @@ export function mount<TModel>(root: HTMLElement, templateOrProvider: CatalogTemp
     }
 
 
-
     const builder = new TemplateBuilder(model, root);
 
     webApp.root = builder;

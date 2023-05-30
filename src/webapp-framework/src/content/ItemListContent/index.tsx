@@ -1,7 +1,7 @@
 import { IAction, IEditor, IItemsSource, ItemView, ListView, MaterialIcon, ViewNode } from "@eusoft/webapp-ui";
 import { Content, IContentOptions } from "../Content";
 import { IFilterField } from "../../abstraction/IFilterEditor";
-import { Bind, Class, cleanProxy } from "@eusoft/webapp-core";
+import { Bind, Class } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
 import { contentPage } from "../../components";
 import router from "../../services/Router";

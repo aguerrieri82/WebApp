@@ -1,6 +1,6 @@
 ﻿import { Bindable, TemplateMap } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
-import { Action, IContent, IContentHost, IPageOptions, Page, formatText, isAsyncLoad } from "@eusoft/webapp-ui";
+import { Action, IContent, IContentHost, IPageOptions, Page, formatText } from "@eusoft/webapp-ui";
 import router from "../../services/Router";
 
 export interface IContentPageOptions<TArgs = {}, TContent extends IContent = IContent> extends IPageOptions<TArgs> {
