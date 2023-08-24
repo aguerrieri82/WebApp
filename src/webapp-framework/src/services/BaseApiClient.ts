@@ -8,7 +8,7 @@ export class HttpError extends Error {
     }
 
     readonly response: Response;
-}
+} 
 
 export class BaseApiClient {
 
@@ -84,7 +84,7 @@ export class BaseApiClient {
         return response;
     }
 
-    protected async requestTextAsync(path: string, method: HttpMethod = "GET", data?: object, query?: object): Promise<TResult> {
+    protected async requestTextAsync(path: string, method: HttpMethod = "GET", data?: object, query?: object): Promise<string> {
 
         const response = await this.requestAsync(path, method, data, query);
 
@@ -95,7 +95,7 @@ export class BaseApiClient {
 
     protected async requestJsonAsync<TResult>(path: string, method: HttpMethod = "GET", data?: object, query?: object): Promise<TResult> {
 
-        return JSON.parse(await this.requestTextAsync(path, method, data, query);
+        return JSON.parse(await this.requestTextAsync(path, method, data, query));
     }
 
     protected get authorization() {

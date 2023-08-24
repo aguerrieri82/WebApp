@@ -1,6 +1,6 @@
 {
   "name": "@eusoft/webapp-ui",
-  "version": "0.0.46",
+  "version": "0.0.47",
   "packageManager": "pnpm@8.3.1",
   "type": "module",
   "main": "src/index.ts",
@@ -13,20 +13,20 @@
     "build:prod": "rollup -c --environment NODE_ENV:prod",
     "lint:fix": "eslint ./src/**/*.ts* --fix",
     "install:pnpm": "pnpm install",
-    "upgrade": "ncu --upgrade && pnpm install"
+    "upgrade": "pnpm up -latest"
   },
   "keywords": [],
   "author": "Andrea Guerrieri",
   "devDependencies": {
     "@eusoft/webapp-compiler-rollup": "link:../../dist/webapp-compiler-rollup",
+    "@typescript-eslint/parser": "6.4.1",
     "build-utils": "link:../../scripts/build-utils",
-    "rollup": "^3.23.0",
-    "eslint": "^8.41.0",
-    "eslint-plugin-unused-imports": "^2.0.0",
-    "@typescript-eslint/parser": "5.59.8",
-    "eslint-config-standard-with-typescript": "34.0.1",
-    "npm-check-updates": "16.10.12",
-    "rimraf": "^5.0.1"
+    "eslint": "^8.47.0",
+    "eslint-config-standard-with-typescript": "38.0.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "npm-check-updates": "16.13.1",
+    "rimraf": "^5.0.1",
+    "rollup": "^3.28.1"
   },
   "dependencies": {
     "@eusoft/webapp-core": "link:../webapp-core",
