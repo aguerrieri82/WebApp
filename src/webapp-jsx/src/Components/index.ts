@@ -6,3 +6,4 @@ export * from "./Content";
 export * from "./Node";
 export * from "./Text";
 export * from "./Switch";
+export * from "./Style";

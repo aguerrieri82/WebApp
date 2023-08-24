@@ -85,18 +85,13 @@ export class ComponentElementHandler implements ITemplateHandler {
             }
             else
             {
-                const model = "m" + ctx.currentFrame.index;
-
                 ctx.enter(this, element);
-
-                contentWriter.beginInlineFunction(model)
-                    .write("(")
+                //TODO be carefull, before was a lambda passing dynamically the model
+                contentWriter
                     .beginBlock()
-                    .ensureNewLine().write("model: ").write(model).write(",")
+                    .ensureNewLine().write("model: ").write(ctx.currentFrame.builderNameJs + ".model").write(",")
                     .ensureNewLine().write("template: ").writeTemplate(element)
                     .endBlock()
-                    .write(")")
-                    .endInlineFunction()
 
                 ctx.exit();
             }

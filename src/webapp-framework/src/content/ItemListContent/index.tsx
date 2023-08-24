@@ -88,6 +88,7 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
         if (this.canDelete)
             this.buildInActions.push({
                 name: "delete",
+                text: "delete",
                 icon: <MaterialIcon name="delete" />,
                 priority: "secondary",
                 executeAsync: ctx => this.deleteItemAsync(ctx.target)

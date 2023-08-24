@@ -19,4 +19,5 @@ export * from "./BindingAttributeHandler";
 export * from "./TextElementHandler"; 
 export * from "./ValueAttributeHandler";
 export * from "./SwitchElementHandler";
+export * from "./StyleElementHandler";
 

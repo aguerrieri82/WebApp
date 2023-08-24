@@ -1,1 +1,2 @@
-export * from "./Ripple"
+
+export const EMPTY = null;

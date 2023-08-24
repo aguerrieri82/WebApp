@@ -84,13 +84,18 @@ export class BaseApiClient {
         return response;
     }
 
-    protected async requestJsonAsync<TResult>(path: string, method: HttpMethod = "GET", data?: object, query?: object): Promise<TResult> {
+    protected async requestTextAsync(path: string, method: HttpMethod = "GET", data?: object, query?: object): Promise<TResult> {
 
         const response = await this.requestAsync(path, method, data, query);
 
         const text = await response.text();
 
-        return JSON.parse(text);
+        return text;
+    }
+
+    protected async requestJsonAsync<TResult>(path: string, method: HttpMethod = "GET", data?: object, query?: object): Promise<TResult> {
+
+        return JSON.parse(await this.requestTextAsync(path, method, data, query);
     }
 
     protected get authorization() {

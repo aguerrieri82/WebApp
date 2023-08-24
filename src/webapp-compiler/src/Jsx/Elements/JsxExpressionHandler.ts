@@ -1,6 +1,7 @@
 import type { NodePath } from "@babel/traverse";
 import type { JsxParseContext } from "../JsxParseContext";
 import { BindMode } from "../../Abstraction/ITemplateNode";
+import { toKebabCase } from "../../TextUtils";
 
 export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
 
@@ -37,7 +38,7 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
 
     if (ctx.curAttribute) {
         ctx.curAttribute.value = value;
-        ctx.curAttribute.bindMode = bindMode;
+        ctx.curAttribute.bindMode = toKebabCase(bindMode) as BindMode;
     }
     else {
 

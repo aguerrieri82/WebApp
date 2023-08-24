@@ -27,7 +27,8 @@ export const TemplateElements = [
     "Node",
     "Switch",
     "When",
-    "Default"
+    "Default",
+    "Style"
 ];
 
 export const JSX_MODULE = "@eusoft/webapp-jsx";

@@ -1,9 +1,9 @@
-import { Component, IComponentOptions, TemplateMap } from "@eusoft/webapp-core";
+import { Bind, Component, IComponentOptions, TemplateMap } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
 import { ViewNode } from "../../Types";
 import { IAction } from "../../abstraction";
 import { MaterialIcon } from "../Icon";
-import { Action } from "../Action";
+import { Action, createAction } from "../Action";
 import { NodeView } from "../NodeView";
 import "./index.scss"
 
@@ -33,19 +33,11 @@ export const ItemViewTemplates: TemplateMap<ItemView<unknown>> = {
                 {m.secondary && <div className="secondary"><NodeView>{m.secondary}</NodeView></div>}
             </div>
             <div className="secondary-actions">
-                {m.secondaryActions.forEach(a =>
-                    <Action style="icon" name={a.name} onExecuteAsync={ctx => a.executeAsync(ctx)}>
-                        {a.icon}
-                    </Action>
-                )}
+                {m.secondaryActions.forEach(a => createAction(a, "text"))}
             </div>
         </div>
         <div className="primary-actions">
-            {m.primaryActions.forEach(a =>
-                <Action name={a.name} onExecuteAsync={ctx => a.executeAsync(ctx)}>
-                    {a.icon}{a.text}
-                </Action>
-            )}
+            {m.primaryActions.forEach(a => createAction(a, "text"))}
         </div>
     </div>)
 }
@@ -57,7 +49,7 @@ export class ItemView<TItem> extends Component<IItemViewOptions<TItem>> {
         super();
 
         this.init(ItemView, {
-            maxActions: 2,
+            maxActions: 0,
             template: ItemViewTemplates.Default,
             ...options
         })
