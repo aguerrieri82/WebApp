@@ -10,13 +10,15 @@ function ConditionalExpressionHandler(ctx: JsxParseContext, stage: "exp", path: 
 
     const curElement = ctx.curElement;
 
-    ctx.enterNewElement("t:if");
+    const ifElement = ctx.enterNewElement("t:if");
     ctx.curAttribute = ctx.createAttribute("condition", null, ctx.curElement);
 
     path.get("test").visit();
     ctx.curAttribute = null;
 
     path.get("consequent").visit();
+
+    ctx.tryEnterElement(ifElement);
 
     ctx.enterNewElement("t:else");
 

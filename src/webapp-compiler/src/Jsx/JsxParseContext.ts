@@ -175,6 +175,20 @@ export class JsxParseContext {
         return result;
     }
 
+    tryEnterElement(newElement: ITemplateElement) {
+
+        if (this.curElement == newElement)
+            return;
+
+        this.stack.push({
+            element: this.curElement,
+            model: this.curModel,
+            builder: this.curBuilder
+        });
+
+        this.curElement = newElement;
+    }
+
     enterNewElement(name: string) {
 
         const newElement = this.createElement(name);
@@ -185,13 +199,7 @@ export class JsxParseContext {
         if (this.curElement)
             this.curElement.childNodes.push(newElement);
 
-        this.stack.push({
-            element: this.curElement,
-            model: this.curModel,
-            builder: this.curBuilder
-        });
-
-        this.curElement = newElement;
+        this.tryEnterElement(newElement);
 
         if (name == "t:template")
             this.createAttribute("as", this.curBuilder, this.curElement);

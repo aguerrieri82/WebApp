@@ -9,12 +9,13 @@ import { EmptyView } from "@eusoft/webapp-framework/components/EmptyView";
 import "./BusinessHomePage.scss";
 import { Style } from "@eusoft/webapp-jsx";
 
-function ContentList(options: { src: INavAction[] }) {
-
-    return <div className="content-list">
-        {options.src.forEach(a => <Action onExecuteAsync={() => a.action()}>
-            <Style backgroundColor={a.color} />
-            {[a.icon, formatText(a.label as LocalString)]}
-        </Action>)}
-    </div>
-}
+forModel(this, m => <div className="item-list">
+    {m.items?.length == 0 ?
+        <>{m.emptyView}</> :
+        <>
+        </>
+    }
+    <ListView createItemView={Bind.action(item => m.createItemView(item, m.getItemActions(item)))}>
+        {this.items}
+    </ListView>
+</div>)

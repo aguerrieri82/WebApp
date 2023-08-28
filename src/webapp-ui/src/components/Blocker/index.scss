@@ -14,6 +14,7 @@
     align-items: center;
     justify-content: center;
 
+
     &.visible {
         opacity: 1;
         z-index: 1000;
@@ -21,13 +22,11 @@
     }
 
     &.hidden {
-        transition-delay: 0;
-        display: flex;
+        display: flex !important;
         opacity: 0;
         z-index: -1;
     }
 
     .progress-view {
-
     }
 }
