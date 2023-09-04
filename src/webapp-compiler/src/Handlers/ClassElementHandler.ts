@@ -11,8 +11,8 @@ export class ClassElementHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        const condition = element.attributes.condition?.value;
-        const name = element.attributes.name?.value;
+        const condition = element.attributes.condition?.value as string;
+        const name = element.attributes.name?.value as string;
 
         if (!name) {
             ctx.error("Name not specified in class.");

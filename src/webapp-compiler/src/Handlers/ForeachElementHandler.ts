@@ -11,8 +11,8 @@ export class ForeachElementHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        var source = element.attributes.src?.value;
-        var builderName = element.attributes.as?.value;
+        var source = element.attributes.src?.value as string;
+        var builderName = element.attributes.as?.value as string;
 
         if (!source) {
             ctx.error("Source not specified in foreach");

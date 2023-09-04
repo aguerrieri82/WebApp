@@ -11,9 +11,9 @@ export class ContentElementHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        const source = element.attributes.src?.value;
-        const template = element.attributes.template?.value;
-        const inline = element.attributes.inline?.value;
+        const source = element.attributes.src?.value as string;
+        const template = element.attributes.template?.value as string;
+        const inline = element.attributes.inline?.value as string;
 
         if (!source) {
             ctx.error("Source not specified in content.");

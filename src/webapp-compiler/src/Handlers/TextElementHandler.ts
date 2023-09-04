@@ -10,7 +10,7 @@ export class TextElementHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        const source = element.attributes.src?.value;
+        const source = element.attributes.src?.value as string;
 
         if (source)
             ctx.writer.write(".text(").writeBinding(source).write(")");

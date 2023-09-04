@@ -16,12 +16,12 @@ export class StyleAttributeHandler implements ITemplateHandler {
 
         if (ctx.isAttr(node, "style")) {
 
-            ctx.writer.write(".style(").writeBinding(node.value).write(")");
+            ctx.writer.write(".style(").writeBinding(node.value as string).write(")");
         }
         else {
             const styleName = formatStyle(node.name.substring(ctx.htmlNamespace.length + 7));
 
-            ctx.writer.write(".style(").writeJson(styleName).write(", ").writeBinding(node.value).write(")");
+            ctx.writer.write(".style(").writeJson(styleName).write(", ").writeBinding(node.value as string).write(")");
         }
 
         return HandleResult.Handled;

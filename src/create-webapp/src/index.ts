@@ -152,7 +152,7 @@ async function writeStep(text?: string, stepEffect = false) {
     }
 
     if (curStep?.timer) {
-        clearInterval(curStep.timer);
+        clearInterval(curStep.timer as any); //TODO Why?
         await doWrite("✓", THEME.check);
         curStep = null;
     }

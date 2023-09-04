@@ -12,7 +12,7 @@ export class StyleElementHandler implements ITemplateHandler {
     handle(ctx: TemplateContext, node: ITemplateElement): HandleResult {
 
         for (const attr in node.attributes) 
-            ctx.writer.write(".style(").writeJson(attr).write(", ").writeBinding(node.attributes[attr].value).write(")");
+            ctx.writer.write(".style(").writeJson(attr).write(", ").writeBinding(node.attributes[attr].value as string).write(")");
         
         return HandleResult.SkipChildren;
     }

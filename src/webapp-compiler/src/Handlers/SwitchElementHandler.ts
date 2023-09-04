@@ -11,8 +11,8 @@ export class SwitchElementHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        const src = element.attributes.src?.value;
-        const builderName = element.attributes.as?.value;
+        const src = element.attributes.src?.value as string;
+        const builderName = element.attributes.as?.value as string;
 
         if (element.childNodes.some(a => !ctx.isElement(a, "when") && !ctx.isElement(a, "default"))) {
             ctx.error("Switch can have only 'When' and 'Default' as child elements");
@@ -33,7 +33,7 @@ export class SwitchElementHandler implements ITemplateHandler {
 
             if (ctx.isElement(child, "when")) {
                 ctx.writer.write(".when(")
-                    .writeBinding(child.attributes.condition.value)
+                    .writeBinding(child.attributes.condition.value as string)
                     .write(", ");
             }
             else if (ctx.isElement(child, "default"))

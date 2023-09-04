@@ -11,8 +11,8 @@ export class BehavoirElementHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        var className = element.attributes.class?.value;
-        var name = element.attributes.name?.value;
+        var className = element.attributes.class?.value as string;
+        var name = element.attributes.name?.value as string;
 
         if ((name && className) ||
             (!name && !className)) {

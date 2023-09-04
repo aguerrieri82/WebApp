@@ -11,8 +11,8 @@ export class IfElementHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        let condition = element.attributes.condition?.value;
-        const has = element.attributes.has?.value;
+        let condition = element.attributes.condition?.value as string;
+        const has = element.attributes.has?.value as string;
 
         if ((!has && !condition) ||
             (has && condition)) {

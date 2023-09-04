@@ -18,7 +18,7 @@ export class FuncAttributeHandler implements ITemplateHandler {
 
         const funcName = node.name.substring(ctx.htmlNamespace.length + 1);
 
-        ctx.writer.write(".").write(funcName).write("(").writeBinding(node.value).write(")");
+        ctx.writer.write(".").write(funcName).write("(").writeBinding(node.value as string).write(")");
 
         return HandleResult.Handled;
     }

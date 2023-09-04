@@ -11,6 +11,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import fs from 'fs';
 import fse from 'fs-extra';
 
+
 const isProd = process.env.NODE_ENV == "prod";
 
 const libPkg = loadJson("package.json");
@@ -138,7 +139,8 @@ export function configureRollup(options) {
                 typescript(),
                 json(),
                 options?.components && scss({
-                    fileName: 'style.css'
+                    fileName: 'style.css',
+                    includePaths: [path.resolve('node_modules')]
                 }),
                 ...options?.plugins ?? [],
                 !isProd && sourcemaps(),

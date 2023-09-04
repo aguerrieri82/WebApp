@@ -12,7 +12,7 @@ export class OnAttributeHandler implements ITemplateHandler {
     handle(ctx: TemplateContext, node: ITemplateAttribute): HandleResult {
 
         const eventName = node.name.substring(ctx.htmlNamespace.length + 4);
-        ctx.writer.write(".on(").writeJson(eventName).write(", ").writeBinding(node.value).write(")");
+        ctx.writer.write(".on(").writeJson(eventName).write(", ").writeBinding(node.value as string).write(")");
         return HandleResult.Handled;
     }
 

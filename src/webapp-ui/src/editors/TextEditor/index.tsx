@@ -18,7 +18,7 @@ interface ITextEditorOptions extends IEditorOptions<string> {
 
     placeholder?: LocalString;
 
-    autocomplete?: Bindable<AutoFill>;
+    autocomplete?: Bindable<string>;
 }
 
 export const TextEditorTemplates: TemplateMap<TextEditor> = {
@@ -50,7 +50,7 @@ export class TextEditor extends Editor<string, ITextEditorOptions> {
 
     type: TextEditorType;
 
-    autocomplete: AutoFill;
+    autocomplete: string;
 }
 
 

@@ -16,10 +16,10 @@ export class ValueAttributeHandler implements ITemplateHandler {
         if (!ctx.isAttr(node, "value"))
             return HandleResult.Handled;
 
-        ctx.writer.write(".value(").writeBinding(node.value);
+        ctx.writer.write(".value(").writeBinding(node.value as string);
 
         const pool = ctx.attrValue(node.owner, "value-pool"); 
-        const mode = pool ? '"pool"' : ctx.attrValue(node.owner, "value-mode");
+        const mode = pool ? '"pool"' : ctx.attrValue(node.owner, "value-mode") as string;
         if (mode)
             ctx.writer.write(", ").writeString(mode);
         if (pool)

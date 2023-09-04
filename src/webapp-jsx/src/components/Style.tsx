@@ -12,7 +12,7 @@ export function Style<TModel extends TemplateModel>(props: StyleProps<TModel>): 
     const element = props.context.builder.element
 
     for (const prop in props)
-        element.style[prop] = props[prop];
+        element.style[prop as any] = (props as any)[prop]; //TODO any
 
     return null;
 }

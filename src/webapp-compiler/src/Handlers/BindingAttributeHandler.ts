@@ -14,7 +14,7 @@ export class BindingAttributeHandler implements ITemplateHandler {
 
         ctx.writer.write(".set(")
             .writeJson(node.name.substring(ctx.htmlNamespace.length + 1))
-            .write(",").writeBinding(node.value).write(")");
+            .write(",").writeBinding(node.value as string).write(")");
 
         return HandleResult.Handled;
     }

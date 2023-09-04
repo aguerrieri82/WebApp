@@ -12,9 +12,9 @@ export class TemplateElementHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, node: ITemplateElement): HandleResult {
 
-        var templateName = node.attributes.name?.value;
-        var modelType = node.attributes.for?.value;
-        var builderName = node.attributes.as?.value;
+        var templateName = node.attributes.name?.value as string;
+        var modelType = node.attributes.for?.value as string;
+        var builderName = node.attributes.as?.value as string;
 
         ctx.templates.push(templateName);
 

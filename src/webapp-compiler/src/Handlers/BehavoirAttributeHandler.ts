@@ -10,7 +10,7 @@ export class BehavoirAttributeHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, node: ITemplateAttribute): HandleResult {
 
-        for (const item of node.value.split(','))
+        for (const item of (node.value as string).split(','))
             ctx.writer.write(".behavoir(").writeString(item.trim()).write(")");
 
         return HandleResult.Handled;
