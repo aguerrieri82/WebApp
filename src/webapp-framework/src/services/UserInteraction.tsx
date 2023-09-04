@@ -8,7 +8,7 @@ class UserInteraction implements IUserInteraction {
     constructor() {
 
         mount(document.body, forModel(this, m => <div className="modal-container">
-            {m.dialogs.forEach(a => <>{a}</>)}
+            {m.dialogs?.forEach(a => <>{a}</>)}
         </div>));
     }
 

@@ -1,12 +1,14 @@
 import path from "path"
 import { HtmlCompiler, JsxCompiler } from "@eusoft/webapp-compiler"
 import MagicString from "magic-string";
+
 export default function (options) {
 
     return {
         name: 'template-loader',
 
-        async transform (code, id) {
+        async transform(code, id) {
+
             const ext = path.extname(id);
 
             if (ext == ".tsx" || ext == ".jsx") {
@@ -33,9 +35,21 @@ export default function (options) {
                             srcMap.update(rep.src.start, rep.src.end, text.substring(rep.dst.start, rep.dst.end));
                     }
 
+                    const newMap = srcMap.generateMap({
+                        hires: false,
+                        //source: id,
+                        includeContent: false
+                    });
+
+  
+                    if (id.indexOf("SwipeView") != -1) {
+                        console.log(this.getCombinedSourcemap());
+                    }
+
+       
                     return {
                         code: text,
-                        map: srcMap.generateMap({ hires: true })
+                        map: newMap
                     }
                 }
                 catch (ex) {

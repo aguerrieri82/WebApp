@@ -23,6 +23,11 @@ export function formatText(text: LocalString, ...args: any[]): string | ITemplat
     return replaceArgs(text, i => formatText(args[i]));
 }
 
+export function formatCurrency(value: number) {
+
+    return (Math.round(value * 100) / 100).toFixed(2);
+}
+
 export function replaceArgs(value: string, args: Record<string, unknown> | { (key: string) : unknown }): string {
 
     if (!value)

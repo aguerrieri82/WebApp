@@ -86,14 +86,19 @@ export function createObservableArray<T>(value: T[]): IObservableArray<T> {
 
     newValue.splice = function (this: IObservableArray<T>, start, deleteCount, ...items: T[]) {
 
+        const isClear = start == 0 && deleteCount >= newValue.length && (!items || items.length == 0);
+
         const result = Array.prototype.splice.call(newValue, start, deleteCount, ...items);
 
-        if (start == 0 && deleteCount >= newValue.length && (!items || items.length == 0))
-            newValue.raise(a => a.onClear && a.onClear());
-
         if (deleteCount > 0) {
-            for (let i = 0; i < deleteCount; i++)
-                newValue.raise(a => a.onItemRemoved && a.onItemRemoved(result[i], i + start, "remove"));
+
+            if (isClear)
+                newValue.raise(a => a.onClear && a.onClear());
+            else {
+                for (let i = 0; i < deleteCount; i++)
+                    newValue.raise(a => a.onItemRemoved && a.onItemRemoved(result[i], start, "remove"));
+            }
+
         }
 
         if (items.length > 0) {

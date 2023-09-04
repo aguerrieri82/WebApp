@@ -41,6 +41,7 @@ export class ComponentElementHandler implements ITemplateHandler {
 
             const isComponent = element.childNodes.every(a =>
                 ctx.isElement(a, "component") ||
+                (ctx.isElement(a) && !(a as ITemplateElement).name.toLowerCase().startsWith(ctx.htmlNamespace + ":")) ||
                 a.type == TemplateNodeType.Text);
 
             const oldWriter = ctx.writer;
@@ -72,6 +73,15 @@ export class ComponentElementHandler implements ITemplateHandler {
                             value: "true"
                         }
                         contentWriter.writeElement(item);
+                    }
+                    else {
+                        ctx.enter(this, item);
+                        contentWriter
+                            .beginBlock()
+                            .ensureNewLine().write("model: ").write(ctx.currentFrame.builderNameJs + ".model").write(",")
+                            .ensureNewLine().write("template: ").writeTemplate(item)
+                            .endBlock()
+                        ctx.exit();
                     }
                 });
 
