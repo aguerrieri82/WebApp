@@ -18,7 +18,7 @@ export interface ITemplateText extends ITemplateNode {
 export interface ITemplateAttribute extends ITemplateNode {
     type: TemplateNodeType.Attribute;
     name: string;
-    value: string;
+    value: string | ITemplateElement;
     owner: ITemplateElement;
     bindMode?: BindMode;
 }

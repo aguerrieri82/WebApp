@@ -617,12 +617,12 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                     });
                 }
                 else {
-                    //TODO call bindOneWay?
                     this.bind(propValue, value => {
                         model[prop] = value;
                         if (callOnChange && !isClass(constructor))
                             constructor(model as TProps);
                     }, prop == "builder" || mode == "no-bind" || mode == "action" ? "no-bind" : undefined);
+   
                 }
             }
 

@@ -22,6 +22,8 @@ export class ComponentElementHandler implements ITemplateHandler {
             return HandleResult.Error;
         }
 
+        const oldWriter = ctx.writer;
+
         const props: Record<string, any> = {};
 
         const modes: Record<string, string> = {};
@@ -29,7 +31,25 @@ export class ComponentElementHandler implements ITemplateHandler {
         for (const name in element.attributes) {
             if (!name.startsWith(`${ctx.htmlNamespace}:`)) {
                 const attr = element.attributes[name];
-                props[name] = attr.value;
+                if (typeof attr.value == "string")
+                    props[name] = attr.value;
+                else {
+                    const contentWriter = new TemplateWriter(new StringBuilder(), ctx);
+
+                    ctx.writer = contentWriter;
+
+                    contentWriter.beginBlock()
+                        .ensureNewLine().write("model: ").write(ctx.currentFrame.builderNameJs + ".model").write(",")
+                        .ensureNewLine().write("template: ").writeElement(attr.value)
+                        .endBlock();
+                    
+
+                    //contentWriter.writeElement(attr.value);
+
+                    props[name] = contentWriter.out.toString();
+
+                    ctx.writer = oldWriter;
+                }
                 if (attr.bindMode)
                     modes[name] = JSON.stringify(attr.bindMode);
             }
@@ -48,9 +68,6 @@ export class ComponentElementHandler implements ITemplateHandler {
                 element.childNodes.every(a =>
                     (ctx.isElement(a) && !(a as ITemplateElement).name.toLowerCase().startsWith(ctx.htmlNamespace + ":")));
 
-                
-            const oldWriter = ctx.writer;
-      
             const contentWriter = new TemplateWriter(new StringBuilder(), ctx);
 
             ctx.writer = contentWriter;

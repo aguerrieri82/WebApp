@@ -13,9 +13,7 @@ export interface IListViewOptions<TItem> extends IComponentOptions {
 export const ListViewTemplates: TemplateMap<ListView<unknown>> = {
 
     Default: forModel(m => <ol className={m.className} visible={m.visible}>
-        {m.content?.forEach(i => <li>
-            {m.createItemView(i)}
-        </li>)}
+        {m.content?.forEach(i => m.createItemView(i))}
     </ol>)
 }
 
@@ -31,7 +29,12 @@ export class ListView<TItem> extends Component<IListViewOptions<TItem>> {
         })
     }
 
+    scrollToLast() {
 
+        const list = this.context?.element;
+        if (list)
+            list.scrollTop = list.scrollHeight - list.clientHeight;
+    }
 
     createItemView: (item: TItem) => ViewNode;
 

@@ -25,9 +25,9 @@ export interface IItemViewOptions<TItem> extends IComponentOptions {
 
 export const ItemViewTemplates: TemplateMap<ItemView<unknown>> = {
 
-    Default: forModel(m => <div className={m.className} visible={m.visible}>
+    Default: forModel(m => <li className={m.className} visible={m.visible}>
         <div className="main">
-            <i>{m.icon}</i>
+            {m.icon && <i>{m.icon}</i>}
             <div className="body">
                 <div className="primary"><NodeView>{m.primary}</NodeView></div>
                 {m.secondary && <div className="secondary"><NodeView>{m.secondary}</NodeView></div>}
@@ -36,10 +36,10 @@ export const ItemViewTemplates: TemplateMap<ItemView<unknown>> = {
                 {m.secondaryActions.forEach(a => createAction(a, "text"))}
             </div>
         </div>
-        <div className="primary-actions">
+        {m.primaryActions.length > 0 && <div className="primary-actions">
             {m.primaryActions.forEach(a => createAction(a, "text"))}
-        </div>
-    </div>)
+        </div>}
+    </li>)
 }
 
 export class ItemView<TItem> extends Component<IItemViewOptions<TItem>> {
