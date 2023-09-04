@@ -129,7 +129,7 @@ export class Wizard extends Component<IWizardOptions> {
                         <NodeView>{m.activeStep?.title}</NodeView>
                     </header>
                     <div className="content">
-                    {m.activeStep?.content}
+                        <NodeView>{m.activeStep?.content}</NodeView>
                     </div>
                     <footer>
                         {m.canGoPrev ?

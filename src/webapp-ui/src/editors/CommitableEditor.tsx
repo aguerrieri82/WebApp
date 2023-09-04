@@ -36,14 +36,22 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
 
     beginEdit(value?: TValue) : void {
 
+        /*
         if (value === undefined)
             return;
+        */
+
+        console.group("beginEdit");
 
         this.editValue = this.valueToEdit(value, this.commitMode != "auto");
 
         this.isDirty = false;
 
         this._editState = "editing";
+
+        console.log(this.editValue, this.name, this);
+
+        console.groupEnd();
     }
 
     override onValueChanged(value: TValue, oldValue: TValue, reason: ValueChangedReason) {

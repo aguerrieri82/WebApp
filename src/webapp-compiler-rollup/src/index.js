@@ -36,14 +36,14 @@ export default function (options) {
                     }
 
                     const newMap = srcMap.generateMap({
-                        hires: false,
+                        hires: true,
                         //source: id,
                         includeContent: false
                     });
 
   
                     if (id.indexOf("SwipeView") != -1) {
-                        console.log(this.getCombinedSourcemap());
+                        //console.log(this.getCombinedSourcemap());
                     }
 
        

@@ -44,13 +44,18 @@ export class ComponentElementHandler implements ITemplateHandler {
                 (ctx.isElement(a) && !(a as ITemplateElement).name.toLowerCase().startsWith(ctx.htmlNamespace + ":")) ||
                 a.type == TemplateNodeType.Text);
 
+            const isSingleHtml = element.childNodes.length && 1 &&
+                element.childNodes.every(a =>
+                    (ctx.isElement(a) && !(a as ITemplateElement).name.toLowerCase().startsWith(ctx.htmlNamespace + ":")));
+
+                
             const oldWriter = ctx.writer;
       
             const contentWriter = new TemplateWriter(new StringBuilder(), ctx);
 
             ctx.writer = contentWriter;
 
-            if (isComponent) {
+            if (isComponent && !isSingleHtml) {
 
                 if (element.childNodes.length > 1) 
                     contentWriter.write("[");
@@ -75,12 +80,12 @@ export class ComponentElementHandler implements ITemplateHandler {
                         contentWriter.writeElement(item);
                     }
                     else {
-                        ctx.enter(this, item);
+                        ctx.enter(this, element);
                         contentWriter
                             .beginBlock()
                             .ensureNewLine().write("model: ").write(ctx.currentFrame.builderNameJs + ".model").write(",")
-                            .ensureNewLine().write("template: ").writeTemplate(item)
-                            .endBlock()
+                            .ensureNewLine().write("template: ").writeTemplate(item, undefined, true)
+                            .endBlock();
                         ctx.exit();
                     }
                 });

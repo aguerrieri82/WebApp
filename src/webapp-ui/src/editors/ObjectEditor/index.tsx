@@ -48,21 +48,6 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
         });
     }
 
-    override beginEdit(value?: TObj) {
-
-        if (!value && this.commitMode == "auto") {
-            this.value = emptyObject("beginEdit");
-            return;
-        }
-
-        console.group("beginEdit");
-        console.log(value, this);
-
-        super.beginEdit(value);
-
-        console.groupEnd();
-    }
-
     async loadAsync() {
 
         console.group("loadAsync");
@@ -159,8 +144,11 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
 
         let editValue = value;
 
-        if (clone)
-            return editValue ? cloneObject(editValue) : emptyObject("valueToEdit");
+        if (!editValue) 
+            editValue = emptyObject("valueToEdit");
+
+        else if (clone)
+            editValue = cloneObject(editValue);
 
         return editValue;
     }
