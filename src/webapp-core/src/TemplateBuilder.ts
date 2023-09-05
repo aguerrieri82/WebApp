@@ -580,7 +580,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return result;
     }
 
-    protected createComponent<TProps extends Record<string, unknown>, TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): IComponentInfo<TProps> {
+    protected createComponent<TProps extends Record<string, unknown>, TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: Partial<BoundObject<TProps>>, modes?: BoundObjectModes<TProps>): IComponentInfo<TProps> {
 
         let model: Record<string, unknown>;
         let callOnChange = false;
