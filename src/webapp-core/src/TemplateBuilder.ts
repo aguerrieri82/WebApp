@@ -667,7 +667,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         throw new Error(`Component '${getTypeName(constructor)}' not supported`);
     }
 
-    component<TProps extends Record<string, unknown>, TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): this {
+    component<TProps extends Record<string, unknown>, TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: Partial<BoundObject<TProps>>, modes?: Partial<BoundObjectModes<TProps>>): this {
 
         const result = this.createComponent(constructor, props, modes);
 
@@ -1141,7 +1141,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     inlineMode: TemplateInlineMode = "never";
 
-    index: number = 0;
+
 }
 
 /****************************************/

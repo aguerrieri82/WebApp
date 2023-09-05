@@ -95,6 +95,9 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
         }
     }
 
+    getPropEditor<TEditor extends IEditor<unknown>>(name: string) {
+        return this._inputs?.find(a => a.name == name)?.content as TEditor;
+    }
 
     protected override async commitAsyncWork() {
 

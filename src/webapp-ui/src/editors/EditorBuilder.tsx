@@ -100,3 +100,10 @@ export class EditorBuilder<TModel extends TemplateModel, TModelContainer extends
         return input;
     }
 }
+
+export function refreshOnChanged<TModel, TValue>(exp: BindExpression<TModel, TValue>) {
+
+    return (input: InputField<TValue, IEditor<TValue>>, model: TModel) => {
+        input.binder.model
+    }
+}

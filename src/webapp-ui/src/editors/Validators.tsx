@@ -1,5 +1,5 @@
 import { ViewNode } from "../Types";
-import { IValidationContext, IValidationResult } from "../abstraction/Validator";
+import { IValidationContext, IValidationResult, Validator } from "../abstraction/Validator";
 import { formatText } from "../utils/Format";
 
 
@@ -23,6 +23,14 @@ export async function validEmail(ctx: IValidationContext<any>, value: any) {
         return ValidationResult.error(formatText("msg-invalid-email", ctx?.fieldName));
 
     return ValidationResult.valid;
+}
+
+export function validateWhen<TValiator extends Validator<unknown, unknown>>(selector: () => boolean, validator: TValiator) {
+    return async (ctx: IValidationContext<any>, value: any) => {
+        if (!selector())
+            return ValidationResult.valid;
+        return await validator(ctx, value);
+    }
 }
 
 export async function required(ctx: IValidationContext<any>, value: any)  {

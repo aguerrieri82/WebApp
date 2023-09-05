@@ -27,7 +27,7 @@ export interface IContent<TArgs extends {} = undefined> extends IComponent {
 
     actions: IAction[];
 
-    body: ITemplateProvider;
+    body: ViewNode;
 
     readonly loadState: LoadState;
 }

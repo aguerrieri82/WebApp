@@ -1,4 +1,4 @@
-import { IBindable, PARENT, USE } from "./abstraction/IBindable";
+import { IBindable, INDEX, PARENT, USE } from "./abstraction/IBindable";
 import type { BindDirection, BindExpression, BindValue, IGetter } from "./abstraction/IBinder";
 import { isBindingContainer } from "./abstraction/IBindingContainer";
 import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
@@ -77,7 +77,8 @@ export class Binder<TModel> {
         return Expression.build<TModel, TValue>(this.model, binding, {
             evaluate: true,
             customProps: {
-                [PARENT]: () => this.findParentModel()
+                [PARENT]: () => this.findParentModel(),
+                [INDEX]: () => this.findIndex()
             }
         });
     }
@@ -429,8 +430,21 @@ export class Binder<TModel> {
         forEachRev(this._modelBinders, binder =>
             binder.updateModel(model));
     }
+
+    protected findIndex() {
+
+        let curBuilder = this as Binder<unknown>;
+
+        while (curBuilder) {
+            if (curBuilder.index != -1)
+                return curBuilder.index;
+            curBuilder = curBuilder.parent;
+        }
+    }
  
     model: TModel;
 
     parent: Binder<unknown>;
+
+    index: number = -1;
 }

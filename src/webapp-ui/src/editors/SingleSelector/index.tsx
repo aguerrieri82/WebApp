@@ -1,14 +1,16 @@
-import { TemplateMap, BindExpression, ITemplateContext, Bind } from "@eusoft/webapp-core";
+import { TemplateMap, BindExpression, ITemplateContext, Bind, INDEX } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
-import { IEditorOptions } from "../../abstraction/IEditor";
 import { EditorBuilder } from "../EditorBuilder";
-import { Editor } from "../Editor";
 import "./index.scss";
 import { IItemsSource } from "../../abstraction/IItemsSource";
 import { IAsyncLoad } from "../../abstraction/IAsyncLoad";
+import { CommitableEditor, ICommitableEditorOptions } from "../CommitableEditor";
+import { ValueChangedReason } from "../../abstraction/IEditor";
 
 
-interface ISingleSelectorOptions<TItem, TValue> extends IEditorOptions<TValue> {
+interface ISingleSelectorOptions<TItem, TValue> extends ICommitableEditorOptions<TValue, string> {
+
+    emptyItem?: string;
 
     itemsSource: IItemsSource<TItem, TValue, unknown>;
 
@@ -20,9 +22,12 @@ export const SingleSelectorTemplates: TemplateMap<SingleSelector<unknown, unknow
         className={m.className}
         visible={m.visible}
         disabled={m.disabled}
-        value={m.value as string}>
-        {m.content?.forEach(i =>
-            <option value={m.itemsSource.getValue(i) as string}>
+        value={m.editValue}>
+        {m.emptyItem && <option value="@empty">
+            {m.emptyItem}
+        </option>}
+        {m.content?.forEach(i => 
+            <option value={i[INDEX].toString()} selected={m.editValue == i[INDEX].toString()}>
                 {m.itemsSource.getText(i)}
             </option>)}
         </select>
@@ -43,7 +48,7 @@ export const SingleSelectorTemplates: TemplateMap<SingleSelector<unknown, unknow
     )
 }
 
-export class SingleSelector<TItem, TValue> extends Editor<TValue, ISingleSelectorOptions<TItem, TValue>> implements IAsyncLoad {
+export class SingleSelector<TItem, TValue> extends CommitableEditor<TValue, string, ISingleSelectorOptions<TItem, TValue>> implements IAsyncLoad {
 
     constructor(options?: ISingleSelectorOptions<TItem, TValue>) {
 
@@ -51,10 +56,33 @@ export class SingleSelector<TItem, TValue> extends Editor<TValue, ISingleSelecto
 
         this.init(SingleSelector, {
             template: SingleSelectorTemplates.Select,
+            commitMode: "auto",
             ...options
         });
 
         this.onChanged("itemsSource", () => this.refreshAsync());
+
+        this.onChanged("editValue", () => this.commitAsync());
+    }
+
+
+    protected override editToValue(value: string, clone?: boolean): TValue {
+
+        if (value == "@empty" || !this.content)
+            return null;
+        const item = this.content[parseInt(value)];
+        if (item === null || item === undefined)
+            return null
+        return this.itemsSource.getValue(item);
+    }
+
+    protected override valueToEdit(value: TValue, clone?: boolean): string {
+
+        var index = (value === null || value === undefined) ?
+            "@empty" :
+            (this.content?.findIndex(a => this.itemsSource.getValue(a) == value) ?? "@empty");
+
+        return index.toString();
     }
 
     async loadAsync() {
@@ -82,10 +110,13 @@ export class SingleSelector<TItem, TValue> extends Editor<TValue, ISingleSelecto
     }
 
     protected getSelectedValue() {
+
         if (this.context?.element?.tagName == "SELECT")
-            this.value = (this.context.element as HTMLSelectElement).value as TValue;
+            this.editValue = (this.context.element as HTMLSelectElement).value;
+        
     }
 
+    emptyItem?: string;
 
     itemsSource: IItemsSource<TItem, TValue, unknown>;
 

@@ -26,6 +26,9 @@ export class OperationManager implements IOperationManager {
                 this.blocker.visible = true;
 
             this._blockCount++;
+            //TODO reset _blockCount to  0
+            if (options.unblock)
+                this.blocker.visible = false;
         }
 
         console.group(options?.name);
@@ -35,6 +38,8 @@ export class OperationManager implements IOperationManager {
             progress: (message: ViewNode, value?: number, min?: number, max?: number) => {
 
             },
+
+            unblock: options?.unblock,
 
             isLocal: options?.isLocal,
 
@@ -48,6 +53,8 @@ export class OperationManager implements IOperationManager {
 
     protected end(operation: IOperation) {
 
+        console.log("End ", operation.name);
+
         console.groupEnd();
 
         if (operation?.isLocal)
@@ -57,6 +64,10 @@ export class OperationManager implements IOperationManager {
 
         if (this._blockCount == 0)
             this.blocker.visible = false;
+
+        else if (operation.unblock)
+            this.blocker.visible = true;
+
     }
 
     blocker: Blocker<ProgressView>;

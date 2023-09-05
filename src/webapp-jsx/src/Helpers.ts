@@ -16,6 +16,13 @@ export function forModel<TModel extends TemplateModel>(actionOrModel: ModelBuild
     return result as ITemplate<TModel>;
 }
 
+export function withTemplate<TModel>(template: ITemplate<TModel>) {
+    return {
+        template
+    } as ITemplateProvider<TModel>
+    
+}
+
 export function debug<T>(value: T, ...args: any[]) {
     debugger;
     return value;

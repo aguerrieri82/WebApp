@@ -1,5 +1,13 @@
 import { replaceArgs } from "./Format";
 
+
+export function stringOrUndef(value: unknown) {
+    if (typeof value == "string")
+        return value;
+    return undefined;
+}
+
+
 export function parseDate(value: Date | string): Date {
 
     if (!value)

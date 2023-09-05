@@ -37,12 +37,14 @@ export class ContentHost extends Component<IContentHostOptions> implements ICont
     async loadContentAsync<T>(page: IContent<T>, args?: T) {
 
         if (page?.loadAsync) {
-            if (!await page.loadAsync(this, args)) 
+            if (!await page.loadAsync(this, args)) {
                 return false;
+            }
         }
 
         if (this.content?.onCloseAsync)
             await this.content.onCloseAsync();
+
 
         this.content = page;
 

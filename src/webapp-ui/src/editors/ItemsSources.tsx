@@ -11,7 +11,6 @@ type StandardEnum<T> = {
     [nu: number]: string;
 }
 
-
 export function staticItemsSource<TValue>(...items: [LocalString, TValue][]) {
 
     const simpleItems = items.map(a => ({
@@ -53,6 +52,12 @@ export function enumItemsSource<TEnum>(value: TEnum) {
     } as IItemsSource<ISimpleItem<TEnum>, TEnum, any>
 }
 
+export function arrayItemsSource<TItem>(items: TItem[] | { (): TItem[] }, getText: (a: TItem)=> string) {
+    return itemsSource({
+        getText,
+        getItemsAsync: async ()=> Array.isArray(items) ? items : items(),
+    } as IItemsSource<TItem, TItem, undefined>)
+}
 
 export function itemsSource<TItem, TValue, TFilter, TSource extends IItemsSource<TItem, TValue, TFilter>>(props: TSource): TSource {
 

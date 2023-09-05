@@ -1,11 +1,11 @@
-import { IContent, IContentConstructor, IContentInfo, isResultContainer } from "@eusoft/webapp-ui";
+import { IContent, IContentConstructor, IContentInfo, formatText, isResultContainer } from "@eusoft/webapp-ui";
 import { app } from "../App";
 
 type StringLike = { toString(): string } | string;
 
 export type RouteArgs = {} ;
 
-export type RouteAction<TArgs extends RouteArgs> = (args: TArgs) => void | Promise<any>;
+export type RouteAction<TArgs extends RouteArgs> = (args: TArgs, content?: unknown) => void | Promise<any>;
 
 interface IRounteEntry<TArgs extends RouteArgs>  {
 
@@ -84,11 +84,14 @@ export class Router {
 
         const info = typeof infoOrPage == "function" ? infoOrPage.info : infoOrPage;
 
-        const result = this.addAction(info.route, async args => {
+        const result = this.addAction(info.route, async (args, content: IContent) => {
 
-            const page = info.factory();
+            const page = content ?? info.factory();
 
-            await app.contentHost.loadContentAsync(page, args);
+            if (!await app.contentHost.loadContentAsync(page, args))
+                return false;
+
+            document.title = formatText(page.title) as string;
 
             return page;
         });
@@ -146,7 +149,7 @@ export class Router {
             return pageOrName;
         } 
 
-        return await this.navigateEntryAsync(entry, args);
+        return await this.navigateEntryAsync(entry, args, false, typeof pageOrName == "string" ? undefined : pageOrName);
     }
 
     protected getEntryForPage<TArgs>(pageOrName: string | IContent<TArgs>) {
@@ -196,7 +199,7 @@ export class Router {
         return path;
     }
 
-    protected async navigateEntryAsync<TArgs extends Record<string, StringLike>>(entry: IRounteEntry<TArgs>, args?: TArgs, replace = false) {
+    protected async navigateEntryAsync<TArgs extends Record<string, StringLike>>(entry: IRounteEntry<TArgs>, args?: TArgs, replace = false, content?: unknown) {
 
         const url = this.replaceUrl(entry.route as string, args);
 
@@ -212,17 +215,22 @@ export class Router {
 
         const jsonState = JSON.stringify(state);
 
-        if (replace)
-            history.replaceState(jsonState, "", url);
-        else
-            history.pushState(jsonState, "", url);
+        const result = await entry.action(args, content);
 
-        this._history[this._activeIndex] = state;
+        if (result !== false)
+        {
+            if (replace)
+                history.replaceState(jsonState, "", url);
+            else
+                history.pushState(jsonState, "", url);
 
-        if (!replace)
-            this._history.splice(this._activeIndex + 1, this._history.length - this._activeIndex);
+            this._history[this._activeIndex] = state;
 
-        return await entry.action(args);
+            if (!replace)
+                this._history.splice(this._activeIndex + 1, this._history.length - this._activeIndex);
+        }
+
+        return result;
     }
 
 }

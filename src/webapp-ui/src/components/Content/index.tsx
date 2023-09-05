@@ -1,10 +1,10 @@
 ﻿import { Bindable, IComponentOptions, Component, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
-import { IContent, IContentInfo, LoadState } from "../../abstraction/IContent";
+import { IContent, IContentConstructor, IContentInfo, LoadState } from "../../abstraction/IContent";
 import { IFeature } from "../../abstraction/IFeature";
 import { formatText } from "../../utils/Format";
 import { LocalString, ViewNode } from "../../Types";
-import { useOperation } from "../../utils";
+import { stringOrUndef, useOperation } from "../../utils";
 import { IAction } from "../../abstraction/IAction";
 import { IContentHost } from "../../abstraction";
 import "./index.scss";
@@ -15,7 +15,7 @@ export interface IContentOptions<TArgs extends {}> extends IComponentOptions {
 
     shortTitle?: Bindable<LocalString>;
 
-    body?: Bindable<JSX.Element>;
+    body?: Bindable<ViewNode>;
 
     icon?: Bindable<ViewNode>;
 
@@ -62,6 +62,7 @@ export class Content<TArgs extends {} = unknown, TOptions extends IContentOption
 
         this.init(Content, {
             template: ContentTemplates.Page,
+            name: (this.constructor as IContentConstructor).info.name,
             ...options
         });
     }
@@ -93,7 +94,7 @@ export class Content<TArgs extends {} = unknown, TOptions extends IContentOption
                         break;
                     }
             }
-        }, {name: "load page " + this.name});
+        }, { name: "load page " + stringOrUndef(this.name) });
 
         if (isValid)
             this._loadState = "loaded";
@@ -105,9 +106,11 @@ export class Content<TArgs extends {} = unknown, TOptions extends IContentOption
 
     protected async onLoadAsync(args?: TArgs) {
 
+
     }
 
     protected async onLoadArgsAsync(args?: TArgs) {
+
 
     }
 
@@ -132,7 +135,7 @@ export class Content<TArgs extends {} = unknown, TOptions extends IContentOption
 
     shortTitle: LocalString;
 
-    body: ITemplateProvider;
+    body: ViewNode;
 
     route: string;
 
