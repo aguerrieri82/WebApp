@@ -1,6 +1,6 @@
-import { COMPONENT, ServiceType, StringLike, isComponent } from "./abstraction";
+import { BIND_MODES, COMPONENT, ServiceType, StringLike, isComponent } from "./abstraction";
 import { IBehavoir, isBehavoir } from "./abstraction/IBehavoir";
-import type { BindValue, BoundObject, BoundObjectModes } from "./abstraction/IBinder";
+import type { BindMode, BindValue, BoundObject, BoundObjectModes } from "./abstraction/IBinder";
 import { isHTMLContainer } from "./abstraction/IHTMLContainer";
 import { isMountListener } from "./abstraction/IMountListener";
 import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
@@ -607,7 +607,13 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                     continue;
                 }
 
-                const mode = modes ? modes[prop] : undefined;
+                let mode = modes ? modes[prop] : undefined;
+
+                if (!mode && BIND_MODES in model.constructor) {
+                    const defModes = model.constructor[BIND_MODES] as Record<string, BindMode>;
+                    if (prop in defModes)
+                        mode = defModes[prop];
+                }
 
                 if (mode == "two-ways") {
 

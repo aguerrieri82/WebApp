@@ -61,7 +61,7 @@ export class JsxCompiler extends BaseCompiler {
 
         const ast = parser.parse(js, {
             sourceType: "module",
-            plugins: ["jsx", "typescript"]
+            plugins: ["jsx", "typescript", "decorators"]
         });
 
         const templates: NodePath<JSXElement | JSXFragment>[] = [];

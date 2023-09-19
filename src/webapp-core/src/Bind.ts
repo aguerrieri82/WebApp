@@ -1,6 +1,7 @@
 import { cleanProxy } from "./Expression";
-import { IBindable, PARENT, USE } from "./abstraction/IBindable";
-import type { BindExpression } from "./abstraction/IBinder";
+import { IComponent } from "./abstraction";
+import { IBindable, PARENT, USE, BIND_MODES } from "./abstraction/IBindable";
+import type { BindExpression, BindMode } from "./abstraction/IBinder";
 
 interface IBindBuilder<TModel> {
 
@@ -11,14 +12,22 @@ interface IBindBuilder<TModel> {
     value: TModel;
 }
 
+export function bind(mode: BindMode) { 
+
+    return (target: IComponent, propertyName: any) => {
+
+        const constr = target.constructor as any;
+
+        if (!constr[BIND_MODES])
+            constr[BIND_MODES] = {};
+
+        constr[BIND_MODES][propertyName] = mode;
+    };
+}
+
 
 export namespace Bind {
 
-
-    export function track<T>(exp: T, ...params: any[]) {
-
-        return exp;
-    }
 
     export function noTrack<T>(value: T) : T {
         return cleanProxy(value);

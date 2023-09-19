@@ -1,5 +1,5 @@
 import { BindExpression, TARGET, USE } from "./abstraction";
-import { getPropertyDescriptor } from "./utils/Object";
+import { getPropertyDescriptor, getTypeName } from "./utils/Object";
 
 type ExpressionType = Expression<any>;
 
@@ -270,7 +270,7 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
         const proxy = new Proxy(proxyValue, {
 
             get: (target: any, prop, rec) : any => {
-
+  
                 if (prop == TARGET)
                     return target;
 
@@ -320,7 +320,7 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
             },
 
             apply: (target, thisArg, argArray: []): any => {
-                 
+
                 const exp = this.call(...argArray);
 
                 return exp.createProxy();
