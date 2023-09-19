@@ -28,8 +28,8 @@
     "rollup": "^3.28.1"
   },
   "dependencies": {
-    "@eusoft/webapp-core": "link:../webapp-core",
-    "@eusoft/webapp-jsx": "link:../webapp-jsx",
-    "@eusoft/webapp-ui": "link:../webapp-ui"
+    "@eusoft/webapp-core": "link:../webapp-core/src",
+    "@eusoft/webapp-jsx": "link:../webapp-jsx/src",
+    "@eusoft/webapp-ui": "link:../webapp-ui/src"
   }
 }

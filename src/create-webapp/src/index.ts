@@ -16,7 +16,7 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const PARAM_REXP = /\$\(([^\)]+)\)/gm;
 
-const BLOCK_REXP = /\/\*([a-zA-Z]+)\:([\s\S]+?)\*\//g;
+const BLOCK_REXP = /\/\*([a-zA-Z_\-]+)\:([\s\S]+?)\*\//g;
 
 var curStep: IStep;
 
@@ -77,6 +77,8 @@ interface ITemplateArgs {
     ui: boolean;
     jsx: boolean;
     vs: boolean;
+    https: boolean;
+    proxyPort: number;
     packManager: string;
     packVersion?: string;
     port?: number;
@@ -266,7 +268,7 @@ function clearLine() {
     return new Promise<void>(res => stdout.clearLine(0, res));
 }
 
-async function inputTextAsync<T>(prompt: string, defValue?: string, validate?: (v: string) => boolean) {
+async function inputTextAsync(prompt: string, defValue?: string, validate?: (v: string) => boolean) {
 
     const promptFull = getColor(THEME.bullet) + "• " + getColor(THEME.label) + prompt + ": " + getColor();
 
@@ -292,6 +294,22 @@ async function inputTextAsync<T>(prompt: string, defValue?: string, validate?: (
             return result;
         }
     }
+}
+
+
+async function inputIntAsync(prompt: string, defValue?: number, validate?: (v: number) => boolean) {
+
+    const result = await inputTextAsync(prompt, defValue?.toString(), text => {
+        const value = parseInt(text);
+        if (isNaN(value))
+            return false;
+        if (validate)
+            return validate(value);
+        return true;
+    });
+
+    if (result && result.length > 0)
+        return parseInt(result);
 }
 
 async function inputBoolAsync<T>(prompt: string, defValue?: boolean) {
@@ -573,10 +591,16 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
     const params = {
         "project-name": args.projectName,
         "port": args.port.toString(),
+        "proxy-port": args.proxyPort?.toString(),
         "lang": args.lang,
         "gitignore": ".gitignore",
         "pack-manager": args.packManager
     } as Record<string, string>;
+
+    if (args.https)
+        params["https"] = "true";
+    else
+        params["http"] = "true";
 
     params[args.lang] = "true";
 
@@ -694,6 +718,9 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
         if (args.jsx)
             pack.dependencies["@eusoft/webapp-jsx"] = lastPackagesVers["@eusoft/webapp-jsx"];
 
+        if (args.proxyPort)
+            pack.dependencies["express-http-proxy"] = "^1.6.3";
+
         if (args.packManager != "npm")
             pack.packageManager = args.packManager + "@" + args.packVersion;
 
@@ -718,6 +745,8 @@ async function queryArgsAsync()  {
     result.jsx = (await inputBoolAsync("Use JSX", true));
     result.ui = (await inputBoolAsync("Use UI component library", true));
     result.vs = (await inputBoolAsync("Visual studio/code support", true));
+    result.https = (await inputBoolAsync("Use https", true));
+    result.proxyPort = (await inputIntAsync("Use backend proxy (port number)"));
     result.packManager = await inputOptionAsync("Package manager",
         0,
         ["pnpm", "pnpm"],
@@ -776,6 +805,8 @@ async function runAsync() {
             projectName: "web-app",
             ui: true,
             vs: true,
+            proxyPort: undefined,
+            https: false,
             packManager: "pnpm"
         }
 

@@ -1056,8 +1056,11 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     style<TKey extends keyof CSSStyleDeclaration>(nameOrValue: TKey | StyleBinding<TModel>, value?: BindValue<TModel, CSSStyleDeclaration[TKey]>): this {
 
+
         if (typeof nameOrValue != "object")
-            this.bind(value, a => this.element.style[nameOrValue] = a);
+            this.bind(value, a => {
+                this.element.style[nameOrValue] = a
+            });
         else {
 
             for (const prop in nameOrValue)

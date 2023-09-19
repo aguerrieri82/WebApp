@@ -1,23 +1,28 @@
+import { Content, IContentInfo } from "@eusoft/webapp-ui";
 import { Template, forModel } from "@eusoft/webapp-jsx";
-import { Page } from "@eusoft/webapp-ui";
 import "./MainPage.scss";
-class MainPage extends Page {
+
+export class MainPage extends Content {
 
     constructor() {
 
         super();
 
-        this.configure({
-            name: "main",
-            title: "$(project-name) Home",
-            route: "/",
-            content: forModel(this, m => <Template name="MainPage">
+        this.init(MainPage, {
+            title: "VocalCoach.App Home",
+            style: [],
+            body: forModel(this, m => <Template name="MainPage">
                 <main>{m.message}</main>
             </Template>)
         });
+
     }
 
     message: string = "Hello World";
-}
 
-export const mainPage = new MainPage();
+    static override info = {
+        name: "main-page",
+        route: "/",
+        factory: () => new MainPage()
+    } as IContentInfo;
+}

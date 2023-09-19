@@ -21,6 +21,10 @@
     ],
     "ts": [
       "tsconfig.json"
+    ],
+    "https": [
+      "localhost-key.pem",
+      "localhost.pem"
     ]
   },
   "package": {
