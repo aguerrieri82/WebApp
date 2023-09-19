@@ -14,6 +14,12 @@ interface IBindBuilder<TModel> {
 
 export namespace Bind {
 
+
+    export function track<T>(exp: T, ...params: any[]) {
+
+        return exp;
+    }
+
     export function noTrack<T>(value: T) : T {
         return cleanProxy(value);
     }

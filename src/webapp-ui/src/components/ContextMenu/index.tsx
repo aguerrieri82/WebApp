@@ -8,11 +8,10 @@ import { NodeView } from "../NodeView";
 
 
 export interface IContextMenuOptions extends IComponentOptions {
-
+    content?: ViewNode;
 }
 
-
-export class ContextMenu extends Component {
+export class ContextMenu extends Component<IContextMenuOptions> {
 
     private _menuContainer: HTMLElement;
     private _clickHandler;
@@ -47,6 +46,13 @@ export class ContextMenu extends Component {
         this.content = newContent;
     }
 
+    override mount(ctx) {
+
+        super.mount(ctx);
+
+        this._menuContainer.appendChild(this.context.element);
+    }
+
     async showAsync(element?: HTMLElement, event?: MouseEvent | TouchEvent | PointerEvent) {
 
         const curOfs = { x: 0, y: 0 };
@@ -67,7 +73,8 @@ export class ContextMenu extends Component {
             }
         }
 
-        mount(this._menuContainer, this);
+        if (!this.context?.element)
+            mount(this._menuContainer, this);
 
         document.body.appendChild(this._menuContainer);
 
