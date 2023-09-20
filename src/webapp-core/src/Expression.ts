@@ -383,9 +383,6 @@ export class GetExpression<TObj extends Record<string, any>> extends Expression<
 
         this.propName = propName;
         this.readonly = readonly;
-
-        if (propName == "get")
-            debugger;
     }
 
     readonly propName: string;

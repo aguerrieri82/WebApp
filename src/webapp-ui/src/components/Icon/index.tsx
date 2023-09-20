@@ -4,10 +4,11 @@ import { MaterialIconName } from "./Material";
 export interface IIconOptions {
     content: ViewNode;
 }
+export type MaterialIconVariant = "filled" | "outlined" | "round" | "two-tone";
 
 export interface IMaterialIconOptions {
     name: MaterialIconName;
-    variant?: "filled" | "outlined" | "round" | "two-tone";
+    variant?: MaterialIconVariant;
 }
 
 //TODO implement

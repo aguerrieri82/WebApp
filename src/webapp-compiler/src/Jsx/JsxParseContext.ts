@@ -18,6 +18,7 @@ import TransformEqualsHandler from "./Transform/TransformEqualsHandler";
 import JsxExpressionHandler from "./Elements/JsxExpressionHandler";
 import TransformNestedTemplateHandler from "./Transform/TransformNestedTemplateHandler";
 import ForeachExpressionHandler from "./Expression/ForeachExpressionHandler";
+import { debug } from "console";
 
 
 type JsxNodeHandler = {
@@ -95,9 +96,19 @@ export class JsxParseContext {
             const func = template.getFunctionParent();
 
             if (func && func.type != "ArrowFunctionExpression") {
+          
                 const params = func.get("params");
 
-                if (params.length == 1 && params[0].isIdentifier())
+                //Skip lowercase
+                let isFuncComp = true;
+
+                if (func.isFunctionDeclaration()) {
+                    const id = func.get("id");
+                    if (id.isIdentifier() && id.node.name[0] == id.node.name[0].toLowerCase())
+                        isFuncComp = false; 
+                }
+   
+                if (isFuncComp && params.length == 1 && params[0].isIdentifier())
                     this.curModel = params[0].node as Identifier;
             }
         }
@@ -144,7 +155,7 @@ export class JsxParseContext {
 
     transformExpression(exp: NodePath<Expression | JSXEmptyExpression>) {
 
-        let result: BindMode;
+        let result: BindMode;   
 
         const curModel = this.curModel;
 

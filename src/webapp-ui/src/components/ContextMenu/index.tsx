@@ -21,7 +21,7 @@ export class ContextMenu extends Component<IContextMenuOptions> {
 
         this.init(ContextMenu, {
 
-            template: forModel<this>(m => <div className={m.className}>
+            template: forModel<this>(m => <div style-display="none" className={m.className}>
                 <NodeView>{m.content}</NodeView>
             </div>),
 
@@ -46,13 +46,6 @@ export class ContextMenu extends Component<IContextMenuOptions> {
         this.content = newContent;
     }
 
-    override mount(ctx) {
-
-        super.mount(ctx);
-
-        this._menuContainer.appendChild(this.context.element);
-    }
-
     async showAsync(element?: HTMLElement, event?: MouseEvent | TouchEvent | PointerEvent) {
 
         const curOfs = { x: 0, y: 0 };
@@ -75,6 +68,11 @@ export class ContextMenu extends Component<IContextMenuOptions> {
 
         if (!this.context?.element)
             mount(this._menuContainer, this);
+        else {
+            this._menuContainer.appendChild(this.context?.element);
+        }
+
+        this.context.element.style.removeProperty("display");
 
         document.body.appendChild(this._menuContainer);
 

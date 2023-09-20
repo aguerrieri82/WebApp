@@ -75,6 +75,9 @@ const external = [
     ...Object.keys(libPkg.dependencies ?? {}),
     ...Object.keys(libPkg.peerDependencies ?? {})
 ];
+
+console.log(external);
+
 export function configureRollup(options) {
 
     const typesPath = outPath + "/src/" + libName + "/types";
