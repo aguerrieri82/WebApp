@@ -70,7 +70,7 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
         }
     }
 
-    @bind("action")
+
     onExecuteAsync(ctx?: IActionContext<TTarget>) : Promise<void> | void {
     }
 
