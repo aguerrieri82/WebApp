@@ -70,7 +70,7 @@ export function createProp<TObj extends object, TKey extends (keyof TObj) & stri
     let desc = getPropertyDescriptor(obj, propName);
 
     if (!desc) {
-        console.warn("'", propName, "' not defined in ", getTypeName(obj), obj);
+        //console.warn("'", propName, "' not defined in ", getTypeName(obj), obj);
         desc = {};
     }
 
