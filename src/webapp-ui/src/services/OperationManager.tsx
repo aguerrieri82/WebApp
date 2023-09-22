@@ -27,7 +27,7 @@ export class OperationManager implements IOperationManager {
 
             this._blockCount++;
             //TODO reset _blockCount to  0
-            if (options.unblock)
+            if (options?.unblock)
                 this.blocker.visible = false;
         }
 
