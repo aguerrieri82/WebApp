@@ -5,7 +5,6 @@ import "./index.scss";
 import { IItemsSource } from "../../abstraction/IItemsSource";
 import { IAsyncLoad } from "../../abstraction/IAsyncLoad";
 import { CommitableEditor, ICommitableEditorOptions } from "../CommitableEditor";
-import { ValueChangedReason } from "../../abstraction/IEditor";
 
 
 interface ISingleSelectorOptions<TItem, TValue> extends ICommitableEditorOptions<TValue, string> {

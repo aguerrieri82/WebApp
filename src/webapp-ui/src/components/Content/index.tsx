@@ -1,4 +1,4 @@
-﻿import { Bindable, IComponentOptions, Component, ITemplateProvider, TemplateMap } from "@eusoft/webapp-core";
+﻿import { Bindable, IComponentOptions, Component, TemplateMap } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import { IContent, IContentConstructor, IContentInfo, LoadState } from "../../abstraction/IContent";
 import { IFeature } from "../../abstraction/IFeature";

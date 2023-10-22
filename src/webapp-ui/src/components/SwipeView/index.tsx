@@ -1,4 +1,4 @@
-import { Bindable, Component, IComponentOptions, ITemplateContext, TemplateMap, delayAsync } from "@eusoft/webapp-core";
+import { Bindable, Component, IComponentOptions, ITemplateContext, TemplateMap } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import { ViewNode } from "../../Types";
 import "./index.scss"

@@ -3,7 +3,6 @@ import { ViewNode } from "../../Types";
 import { forModel } from "@eusoft/webapp-jsx";
 import { Action } from "../Action";
 import "./index.scss";
-import { IAction } from "../../abstraction";
 import { formatText } from "../../utils/Format";
 
 

@@ -2,7 +2,7 @@ import { IBindable, PROPS } from "./abstraction/IBindable";
 import type { IBound } from "./abstraction/IBound";
 import type { IObservableProperty } from "./abstraction/IObservableProperty";
 import type { IProperty } from "./abstraction/IProperty";
-import { getPropertyDescriptor, getTypeName } from "./utils/Object";
+import { getPropertyDescriptor } from "./utils/Object";
 import { ObservableProperty } from "./ObservableProperty";
 
 export function propOf<TObj extends object, TKey extends keyof TObj & string>(obj: TObj, propName: TKey) {

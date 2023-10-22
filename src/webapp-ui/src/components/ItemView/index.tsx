@@ -1,9 +1,9 @@
-import { Bind, Component, IComponentOptions, TemplateMap } from "@eusoft/webapp-core";
+import { Component, IComponentOptions, TemplateMap } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
 import { ViewNode } from "../../Types";
 import { IAction } from "../../abstraction";
 import { MaterialIcon } from "../Icon";
-import { Action, createAction } from "../Action";
+import { createAction } from "../Action";
 import { NodeView } from "../NodeView";
 import "./index.scss"
 

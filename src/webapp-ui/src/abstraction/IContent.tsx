@@ -1,4 +1,4 @@
-import { IComponent, ITemplateProvider } from "@eusoft/webapp-core";
+import { IComponent } from "@eusoft/webapp-core";
 import { IFeature } from "./IFeature";
 import { LocalString, ViewNode } from "../Types";
 import { IAction } from "./IAction";
