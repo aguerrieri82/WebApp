@@ -20,5 +20,5 @@ export function Icon(options: IIconOptions) {
 }
 
 export function MaterialIcon(options: IMaterialIconOptions) {
-    return <i className={"icon material-icons" + (options.variant && options.variant != "filled" ? "-" + options.variant : "")}>{options.name}</i>
+    return <i className={"icon material-symbols-" + (options.variant ?? "outlined")}>{options.name}</i>
 }

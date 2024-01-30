@@ -58,8 +58,8 @@ export function createDistPackage(libPkg: IPackage, isProd: boolean, isBoundle: 
         author: libPkg.author,
         keywords: libPkg.keywords,
         type: "module",
-        main: "dist/index.js",
-        types: "dist/index.d.ts",
+        main: "index.js",
+        types: "index.d.ts",
         dependencies: processDeps(libPkg.dependencies, isProd, isBoundle),
         peerDependencies: processDeps(libPkg.peerDependencies, isProd, isBoundle)
     }
@@ -123,7 +123,7 @@ export async function buildAsync(options: IBuildOptions) {
 
         const outPath = "../../dist/" + libName;
 
-        const distPath = outPath + "/dist";
+        const distPath = outPath;
 
         if (options.isBundle) {
             logColor(`Boundle\n`, colours.fg.green);

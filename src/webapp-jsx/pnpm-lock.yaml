@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@eusoft/webapp-core':
-    specifier: link:../webapp-core/src
-    version: link:../webapp-core/src
+    specifier: link:../webapp-core/
+    version: link:../webapp-core
 
 devDependencies:
   '@typescript-eslint/parser':

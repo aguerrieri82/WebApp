@@ -6,14 +6,14 @@ settings:
 
 dependencies:
   '@eusoft/webapp-core':
-    specifier: link:../webapp-core/src
-    version: link:../webapp-core/src
+    specifier: link:../webapp-core
+    version: link:../webapp-core
   '@eusoft/webapp-jsx':
-    specifier: link:../webapp-jsx/src
-    version: link:../webapp-jsx/src
+    specifier: link:../webapp-jsx
+    version: link:../webapp-jsx
   '@eusoft/webapp-ui':
-    specifier: link:../webapp-ui/src
-    version: link:../webapp-ui/src
+    specifier: link:../webapp-ui
+    version: link:../webapp-ui
 
 devDependencies:
   '@eusoft/webapp-compiler-rollup':
