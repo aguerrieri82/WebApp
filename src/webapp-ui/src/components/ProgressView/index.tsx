@@ -13,9 +13,9 @@ export const ProgressViewTemplates: TemplateMap<ProgressView> = {
             <Class name="indeterminate" condition={m.isIndeterminate} />
             {m.isIndeterminate ?
                 <MaterialIcon name="donut_large" /> :
-                <>not implemented</>
+                <div className="progress-bar" style-width={((m.value - m.min) / (m.max - m.min)) * 100 + "%"} />
             }
-            <div><NodeView>{m.content}</NodeView></div>
+            <div className="content"><NodeView>{m.content}</NodeView></div>
         </div>
     </>)
 }

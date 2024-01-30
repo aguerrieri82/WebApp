@@ -1,8 +1,8 @@
 {
   "use": [ "jsx", "ui" ],
   "transforms": [
-    "js/pages/MainPage.jsx",
-    "ts/pages/MainPage.tsx"
+    "js/pages/MainPage.js",
+    "ts/pages/MainPage.ts"
   ],
-  "main": "index.$(lang)x"
+  "main": "index.$(lang)"
 }

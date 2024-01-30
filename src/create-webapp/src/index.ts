@@ -31,7 +31,7 @@ const THEME = {
     error: "F44336"
 }
 
-type ContentType = "vs" | "ts" | "common" | "ui" | "js" |"jsx";
+type ContentType = "vs" | "ts" | "common" | "ui" | "js" |"jsx" | "https";
 
 type Transform = (text: string) => string;
 
@@ -458,6 +458,8 @@ function extractContent(args: ITemplateArgs) {
         result.push("ui");
     if (args.jsx)
         result.push("jsx");
+    if (args.https)
+        result.push("https");
     result.push(args.lang);
     return result;
 }
@@ -594,18 +596,18 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
         "proxy-port": args.proxyPort?.toString(),
         "lang": args.lang,
         "gitignore": ".gitignore",
-        "pack-manager": args.packManager
-    } as Record<string, string>;
+        "pack-manager": args.packManager,
+    } as Record<string, string|boolean>;
 
-    if (args.https)
-        params["https"] = "true";
-    else
-        params["http"] = "true";
+    params["protocol"] = args.https ? "https" :"http";
+    params["https"] = args.https;
+    params["http"] = !args.https;
 
-    params[args.lang] = "true";
+
+    params[args.lang] = true;
 
     function replaceParams(text: string) {
-        text = text.replace(PARAM_REXP, (_, p1: string) => params[p1]);
+        text = text.replace(PARAM_REXP, (_, p1: string) => params[p1] as string);
         text = text.replace(BLOCK_REXP, (_, p1: string, p2: string) => {
             if (params[p1.toLowerCase()])
                 return p2;
@@ -689,6 +691,7 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
         args.packManager,
         "@eusoft/webapp-compiler-rollup",
         "@eusoft/webapp-ui",
+        "@eusoft/webapp-framework",
         "@eusoft/webapp-core",
         "@eusoft/webapp-jsx");
 
@@ -712,8 +715,10 @@ async function createTemplateAsync(template: ITemplate, args: ITemplateArgs, dir
         pack.dependencies["@eusoft/webapp-core"] = lastPackagesVers["@eusoft/webapp-core"];
         pack.devDependencies["@eusoft/webapp-compiler-rollup"] = lastPackagesVers["@eusoft/webapp-compiler-rollup"];
 
-        if (args.ui)
+        if (args.ui) {
             pack.dependencies["@eusoft/webapp-ui"] = lastPackagesVers["@eusoft/webapp-ui"];
+            pack.dependencies["@eusoft/webapp-framework"] = lastPackagesVers["@eusoft/webapp-framework"];
+        }
 
         if (args.jsx)
             pack.dependencies["@eusoft/webapp-jsx"] = lastPackagesVers["@eusoft/webapp-jsx"];

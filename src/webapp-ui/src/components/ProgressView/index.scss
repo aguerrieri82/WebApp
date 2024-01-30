@@ -4,9 +4,31 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+
 
     .icon {
         font-size: 48px;
         animation: rotation 2s infinite linear;
+    }
+
+    &.indeterminate {
+    }
+
+    .progress-bar {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        background-color: $primary-color;
+        transition-duration: 0.3s;
+    }
+
+    &:not(.indeterminate) {
+        background-color: $border-color;
+    }
+
+    &.small {
+        height: 5px;
     }
 }

@@ -1,7 +1,8 @@
 import { forModel } from "@eusoft/webapp-jsx";
-import { Page } from "@eusoft/webapp-ui";
+import { Content, IContentInfo } from "@eusoft/webapp-ui";
 
-class ThirdPage extends Page {
+
+export class ThirdPage extends Content {
 
     constructor() {
         super();
@@ -10,7 +11,7 @@ class ThirdPage extends Page {
             name: "third",
             title: "Terza Pagina",
             route: "/",
-            content: forModel(this, m => <div>
+            body: forModel(this, m => <div>
                 <input value={m.firstName}/>
                 {m.isMaria && <span>sono maria</span>}
             </div>)
@@ -22,6 +23,12 @@ class ThirdPage extends Page {
     }
 
     firstName: string;
+
+    static override info = {
+        name: "third-page",
+        route: "/third",
+        factory: () => thirdPage
+    } as IContentInfo;
 }
 
 export const thirdPage = new ThirdPage();

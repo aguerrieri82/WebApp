@@ -1,9 +1,8 @@
-import { Action, Page } from "@eusoft/webapp-ui";
+import { Action, Content, IContentInfo } from "@eusoft/webapp-ui";
 import { Foreach, Template, Text, JsxNode, forModel } from "@eusoft/webapp-jsx";
-import { ITemplateContext, OptionsFor, TemplateBuilder, propOf } from "@eusoft/webapp-core";
-import { Behavoir } from "@eusoft/webapp-core/Behavoir";
+import { Behavoir, Bind, ITemplateContext, OptionsFor, TemplateBuilder, TwoWays, propOf } from "@eusoft/webapp-core";
 import { router } from "@eusoft/webapp-framework";
-import { Bind, TwoWays } from "@eusoft/webapp-core/Bind";
+
 function Log(props: { message: string }) {
 
     console.log(props.message);
@@ -62,7 +61,7 @@ function Input(props: { text: TwoWays<string> }) {
     return <input value={props.text} value-mode="keyup" type="text" checked />
 }
 
-class SecondPage extends Page {
+export class SecondPage extends Content {
 
     constructor() {
         super();
@@ -87,10 +86,10 @@ class SecondPage extends Page {
                 <Input text={Bind.twoWays(this.text)} /> 
                 <Log message={m.text} />
 
-                <Action executeAsync={() => m.goBack()}>
+                <Action onExecuteAsync={() => m.goBack()}>
                     {m.text ? "Back: " + (m.text) : "Back"}
                 </Action>
-                <Action executeAsync={() => this.showText()}>
+                <Action onExecuteAsync={() => this.showText()}>
                     <Bold>{"Show Text" + m.text[0]}</Bold>
                 </Action>
                 <ul>
@@ -112,7 +111,7 @@ class SecondPage extends Page {
             name: "second",
             title: "Seconda Pagina 2",
             route: "/second",
-            content
+            body: content
         });
     }
 
@@ -126,6 +125,12 @@ class SecondPage extends Page {
     }
 
     text: string;
+
+    static override info = {
+        name: "second-page",
+        route: "/second",
+        factory: () => secondPage
+    } as IContentInfo;
 }
 
-export const secondPage = new SecondPage();
+const secondPage = new SecondPage();

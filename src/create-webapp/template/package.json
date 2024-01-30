@@ -20,7 +20,7 @@
     "@rollup/plugin-node-resolve": "^15.0.2",
     "@rollup/plugin-terser": "^0.4.1",
     "rollup-plugin-livereload": "^2.0.5",
-    "rollup-plugin-virtual": "^1.0.1",
+    "@rollup/plugin-virtual": "^3.0.2",
     "express": "^4.18.2",
     "rollup": "^3.21.5",
     "rollup-plugin-delete": "^2.0.0",

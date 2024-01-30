@@ -1,5 +1,6 @@
 ﻿import express from "express"
 import { stdout } from "process"
+import path from "path";
 /*HTTPS:import https from "https";
 import fs from "fs";*/
 /*proxy-port:import proxy from "express-http-proxy";*/
@@ -23,7 +24,7 @@ app.use((request, response, next) => {
     response.sendFile(path.resolve("./public/index.html"));
 });
 
-stdout.write("\n\x1b[1mListening at \x1b[0m\x1b[36mhttp://localhost:$(port)/\x1b[0m\n");
+stdout.write("\n\x1b[1mListening at \x1b[0m\x1b[36m$(protocol)://localhost:$(port)/\x1b[0m\n");
 /*HTTPS:
 var httpsServer = https.createServer(credentials, app);
 httpsServer.listen($(port));

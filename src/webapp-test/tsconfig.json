@@ -7,7 +7,8 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "noEmit": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "src/",

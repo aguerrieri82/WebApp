@@ -6,10 +6,10 @@
     "target": "ESNext",
     "module": "ESNext",
     "declaration": true,
-    "declarationDir": "types",
     "moduleResolution": "Node",
     "noEmit": true,
-    "noImplicitOverride": true
+    "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src"]
 }

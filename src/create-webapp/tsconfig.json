@@ -5,8 +5,7 @@
     "target": "ES2019",
     "module": "ESNext",
     "sourceMap": true,
-    "moduleResolution": "Node",
-    "outDir": "../../dist/create-webapp/"
+    "moduleResolution": "Node"
   },
   "compileOnSave": true,
   "include": ["src"]

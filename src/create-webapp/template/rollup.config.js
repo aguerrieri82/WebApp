@@ -8,7 +8,8 @@ import del from "rollup-plugin-delete";
 import path from "path";
 import scss from "rollup-plugin-scss"
 import { spawn } from "child_process";
-import virtual from "rollup-plugin-virtual";
+import virtual from "@rollup/plugin-virtual";
+/*HTTPS:import fs from "fs"*/
 
 const outPath = "public/build";
 
@@ -70,7 +71,14 @@ export default [
                 outputStyle: isProduction ? "compressed" : undefined,
             }),
             webapp(),
-            !isProduction && livereload("public"),
+            /*HTTPS:!isProduction && livereload({
+                watch: "public",
+                https: {
+                    key: fs.readFileSync('localhost-key.pem'),
+                    cert: fs.readFileSync('localhost.pem')
+                }
+            }),*/
+            /*HTTP:!isProduction && livereload("public"),*/
             !isProduction && sourcemaps(),
             !isProduction && serve(),
             isProduction && terser({

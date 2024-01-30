@@ -9,7 +9,7 @@ export class MainPage extends Content {
         super();
 
         this.init(MainPage, {
-            title: "VocalCoach.App Home",
+            title: "$(project-name) Home",
             style: [],
             body: forModel(this, m => <Template name="MainPage">
                 <main>{m.message}</main>

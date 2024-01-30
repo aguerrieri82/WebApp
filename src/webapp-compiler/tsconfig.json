@@ -6,9 +6,9 @@
     "target": "ESNext",
     "module": "ESNext",
     "declaration": true,
-    "declarationDir": "types",
     "moduleResolution": "Node",
-    "noEmit": true
+    "noEmit": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src"]
 }

@@ -1,8 +1,10 @@
-import { Page, Action } from "@eusoft/webapp-ui/components";
+
+import { Action, Content, IContentInfo } from "@eusoft/webapp-ui";
 import { secondPage } from "./SecondPage";
 import { router } from "@eusoft/webapp-framework";
 
-class MainPage extends Page {
+
+class MainPage extends Content {
 
     constructor() {
 
@@ -12,17 +14,24 @@ class MainPage extends Page {
             name: "main",
             title: "Pagna Principale",
             route: "/",
-            content: new Action({
+            body: new Action({
                 content: this.prop("actionLabel"),
-                executeAsync: async () => {
+                onExecuteAsync: async () => {
                     this.actionLabel = "cambiato";
-                    router.navigateAsync(secondPage);
+                    router.navigatePageAsync(secondPage);
                 }
             })
         });
     }
 
     actionLabel: string = "Click Me";
+
+
+    static override info = {
+        name: "main-page",
+        route: "/",
+        factory: () => mainPage
+    } as IContentInfo;
 }
 
 

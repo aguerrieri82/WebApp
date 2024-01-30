@@ -5,22 +5,9 @@
       "type": "chrome",
       "request": "launch",
       "name": "localhost (Chrome)",
-      "url": "http://localhost:4000",
+      "url": "https://localhost:5173",
       "webRoot": "${workspaceFolder}",
-      "userDataDir": "${workspaceFolder}/.vscode/userdatadir",
-      "env": {
-        "PUBLIC_URL": "/public"
-      }
-    }, 
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Build",
-      "skipFiles": [ "<node_internals>/**" ],
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [ "run-script", "start" ],
-      "cwd": "${workspaceFolder}",
-      "console": "externalTerminal"
+      "userDataDir": "${workspaceFolder}/.vscode/userdatadir"
     }
   ]
 }

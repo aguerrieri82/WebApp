@@ -5,38 +5,22 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "start": "node server",
-    "dev": "rollup -c -w --environment NODE_ENV:dev",
-    "dist:dev": "cd ../../scripts/build-utils/ && node dist",
-    "dist:prod": "cd ../../scripts/build-utils/ && node dist -prod",
-    "dist:pub": "cd ../../scripts/build-utils/ && node dist -n -p",
-    "build:dev": "rollup -c --environment NODE_ENV:dev",
-    "build:prod": "rollup -c --environment NODE_ENV:prod",
+    "dev": "vite dev --debug",
     "install:pnpm": "pnpm install",
     "upgrade": "pnpm up -latest"
   },
   "keywords": [],
   "author": "Andrea Guerrieri",
   "dependencies": {
-    "@eusoft/webapp-core": "link:../webapp-core/src",
-    "@eusoft/webapp-framework": "link:../webapp-framework/src",
-    "@eusoft/webapp-jsx": "link:../webapp-jsx/src",
-    "@eusoft/webapp-ui": "link:../webapp-ui/src"
+    "@eusoft/webapp-core": "../../dist/webapp-core",
+    "@eusoft/webapp-framework": "../../dist/webapp-framework",
+    "@eusoft/webapp-jsx": "../../dist/webapp-jsx",
+    "@eusoft/webapp-ui": "../../dist/webapp-ui"
   },
   "devDependencies": {
     "@eusoft/webapp-compiler-rollup": "../../dist/webapp-compiler-rollup",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-terser": "0.4.4",
-    "@rollup/plugin-typescript": "^11.1.5",
-    "@types/express": "4.17.20",
-    "express": "4.18.2",
-    "rollup": "^4.1.4",
-    "rollup-plugin-delete": "2.0.0",
-    "rollup-plugin-livereload": "2.0.5",
-    "rollup-plugin-scss": "4.0.0",
-    "rollup-plugin-sourcemaps": "0.6.3",
+    "vite": "5.0.12",
     "sass": "1.69.4",
-    "tslib": "^2.6.2",
     "typescript": "5.2.2"
   }
 }

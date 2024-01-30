@@ -10,7 +10,8 @@
     "moduleResolution": "Node",
     "noEmit": true,
     "jsx": "preserve",
-    "noImplicitOverride": true
+    "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src", "src/env.d.ts"]
 }
