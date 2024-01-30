@@ -23,6 +23,7 @@ export const TemplateElements = [
     "Content",
     "Html",
     "If",
+    "Else",
     "Text",
     "Node",
     "Switch",

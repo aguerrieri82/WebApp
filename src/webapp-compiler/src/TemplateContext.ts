@@ -1,9 +1,9 @@
-import type { ITemplateHandler } from "./Abstraction/ITemplateHandler";
-import { TemplateWriter } from "./Text/TemplateWriter";
-import { isLetterOrDigit } from "./TextUtils";
-import { StringBuilder } from "./StringBuilder";
-import { BaseCompiler } from "./BaseCompiler";
-import { ITemplateAttribute, ITemplateElement, ITemplateNode, TemplateNodeType } from "./Abstraction/ITemplateNode";
+import type { ITemplateHandler } from "./Abstraction/ITemplateHandler.js";
+import { TemplateWriter } from "./Text/TemplateWriter.js";
+import { isLetterOrDigit } from "./TextUtils.js";
+import { StringBuilder } from "./StringBuilder.js";
+import { BaseCompiler } from "./BaseCompiler.js";
+import { ITemplateAttribute, ITemplateElement, ITemplateNode, TemplateNodeType } from "./Abstraction/ITemplateNode.js";
 
 class StackFrame {
     builderNameJs: string;

@@ -1,7 +1,7 @@
-import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
-import { ITemplateElement, ITemplateNode } from "../Abstraction/ITemplateNode";
-import { HtmlCompiler } from "../HtmlCompiler";
-import { TemplateContext } from "../TemplateContext";
+import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler.js";
+import { ITemplateElement, ITemplateNode } from "../Abstraction/ITemplateNode.js";
+import { HtmlCompiler } from "../HtmlCompiler.js";
+import { TemplateContext } from "../TemplateContext.js";
 
 export class TemplateElementHandler implements ITemplateHandler {
 

@@ -1,5 +1,5 @@
 import type { NodePath } from "@babel/traverse";
-import { JsxParseContext } from "../JsxParseContext";
+import { JsxParseContext } from "../JsxParseContext.js";
 
 export function TransformNestedTemplateHandler(ctx: JsxParseContext, stage: "trans-exp", path: NodePath): boolean {
 

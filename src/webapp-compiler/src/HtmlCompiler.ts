@@ -1,9 +1,9 @@
 import { ReadStream } from "fs";
-import type { IWriteable } from "./Abstraction/IWriteable";
+import type { IWriteable } from "./Abstraction/IWriteable.js";
 import { JSDOM } from 'jsdom'
-import { readAllTextAsync } from "./TextUtils";
-import { BaseCompiler, ICompilerOptions } from "./BaseCompiler";
-import { ITemplateElement, ITemplateText, TemplateNodeType } from "./Abstraction/ITemplateNode";
+import { readAllTextAsync } from "./TextUtils.js";
+import { BaseCompiler, ICompilerOptions } from "./BaseCompiler.js";
+import { ITemplateElement, ITemplateText, TemplateNodeType } from "./Abstraction/ITemplateNode.js";
 
 export class HtmlCompiler extends BaseCompiler {
 

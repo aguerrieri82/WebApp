@@ -1,6 +1,6 @@
 import type { NodePath } from "@babel/traverse";
-import type { JsxParseContext } from "../JsxParseContext";
-import { TemplateElements } from "../../Consts";
+import type { JsxParseContext } from "../JsxParseContext.js";
+import { TemplateElements } from "../../Consts.js";
 
 export function JsxOpenHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
 

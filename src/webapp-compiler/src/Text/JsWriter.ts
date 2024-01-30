@@ -1,4 +1,4 @@
-import { TextWriter } from "./TextWriter";
+import { TextWriter } from "./TextWriter.js";
 export class JsWriter extends TextWriter {
 
     beginBlock() {

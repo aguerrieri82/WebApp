@@ -1,5 +1,5 @@
 import { ReadStream } from "fs";
-import { StringBuilder } from "./StringBuilder";
+import { StringBuilder } from "./StringBuilder.js";
 
 export function isLetterOrDigit(value: string) {
 

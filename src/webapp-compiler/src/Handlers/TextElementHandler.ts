@@ -1,6 +1,6 @@
-import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
-import { ITemplateElement, ITemplateText, TemplateNodeType } from "../Abstraction/ITemplateNode";
-import { TemplateContext } from "../TemplateContext";
+import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler.js";
+import { ITemplateElement, ITemplateText, TemplateNodeType } from "../Abstraction/ITemplateNode.js";
+import { TemplateContext } from "../TemplateContext.js";
 export class TextElementHandler implements ITemplateHandler {
      
     canHandle(ctx: TemplateContext, node: ITemplateElement): boolean {

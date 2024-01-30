@@ -1,15 +1,15 @@
 import { ReadStream } from "fs";
-import { IWriteable } from "./Abstraction/IWriteable";
+import { IWriteable } from "./Abstraction/IWriteable.js";
 import * as parser from "@babel/parser";
 import traverse, { NodePath } from "@babel/traverse";
-import { readAllTextAsync } from "./TextUtils";
-import { BaseCompiler, ICompilerOptions } from "./BaseCompiler";
+import { readAllTextAsync } from "./TextUtils.js";
+import { BaseCompiler, ICompilerOptions } from "./BaseCompiler.js";
 import { JSXElement, Identifier, ImportDeclaration, JSXFragment } from "@babel/types";
-import { ITemplateElement } from "./Abstraction/ITemplateNode";
-import { CORE_MODULE } from "./Consts";
-import { JsxParseContext } from "./Jsx/JsxParseContext";
+import { ITemplateElement } from "./Abstraction/ITemplateNode.js";
+import { CORE_MODULE } from "./Consts.js";
+import { JsxParseContext } from "./Jsx/JsxParseContext.js";
 
-const trav = (traverse as any).default as typeof traverse;
+const trav = (traverse as any).default as typeof import("@babel/traverse").default;
 
 interface ITextBlock {
     start: number;

@@ -1,4 +1,4 @@
-import type { IWriteable } from "../Abstraction/IWriteable";
+import type { IWriteable } from "../Abstraction/IWriteable.js";
 export class TextWriter {
 
     protected _indentLevel: number = 0;

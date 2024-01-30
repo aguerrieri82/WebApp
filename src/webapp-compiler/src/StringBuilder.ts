@@ -1,4 +1,4 @@
-import { IWriteable } from "./Abstraction/IWriteable";
+import { IWriteable } from "./Abstraction/IWriteable.js";
 
 
 export class StringBuilder implements IWriteable {

@@ -21,6 +21,6 @@ export function If<TModel extends TemplateModel>(props: IIfProps<TModel>): null 
     return null;
 }
 
-export function Else<TModel extends TemplateModel>(props: IElseProps<TModel>): JsxNode<any> {
+export function Else<TModel extends TemplateModel>(props: IElseProps<TModel>): null {
     return null;
 }

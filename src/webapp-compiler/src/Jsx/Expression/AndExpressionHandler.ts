@@ -1,5 +1,5 @@
 import { NodePath } from "@babel/traverse";
-import type { JsxParseContext } from "../JsxParseContext";
+import type { JsxParseContext } from "../JsxParseContext.js";
 import { Expression } from "@babel/types";
 
 export function AndExpressionHandler(ctx: JsxParseContext, stage: "exp", path: NodePath<Expression>): boolean {

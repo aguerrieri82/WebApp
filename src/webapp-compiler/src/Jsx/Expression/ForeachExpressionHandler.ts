@@ -1,5 +1,5 @@
 import { NodePath } from "@babel/traverse";
-import type { JsxParseContext } from "../JsxParseContext";
+import type { JsxParseContext } from "../JsxParseContext.js";
 import { CallExpression, Identifier, MemberExpression } from "@babel/types";
 
 export function ForeachExpressionHandler(ctx: JsxParseContext, stage: "exp", path: NodePath): boolean {

@@ -1,5 +1,5 @@
 import type { NodePath } from "@babel/traverse";
-import type { JsxParseContext } from "../JsxParseContext";
+import type { JsxParseContext } from "../JsxParseContext.js";
 import type  { Expression, Identifier } from "@babel/types";
 
 export function ArrowTemplateExpressionHandler(ctx: JsxParseContext, stage: "exp", path: NodePath<Expression>): boolean {

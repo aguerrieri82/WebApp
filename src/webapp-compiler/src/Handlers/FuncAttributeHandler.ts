@@ -1,7 +1,7 @@
-import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
-import { ITemplateAttribute } from "../Abstraction/ITemplateNode";
-import { FuncAttributes } from "../Consts";
-import { TemplateContext } from "../TemplateContext";
+import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler.js";
+import { ITemplateAttribute } from "../Abstraction/ITemplateNode.js";
+import { FuncAttributes } from "../Consts.js";
+import { TemplateContext } from "../TemplateContext.js";
 
 export class FuncAttributeHandler implements ITemplateHandler {
      

@@ -57,7 +57,8 @@ export default function (options) {
                 }
             }
 
-            else if (ext == ".html") { 
+            else if (ext == ".html" && !id.endsWith("index.html")) { 
+
 
                 const compiler = new HtmlCompiler();
 

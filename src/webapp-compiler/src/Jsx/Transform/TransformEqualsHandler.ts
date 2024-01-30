@@ -1,5 +1,5 @@
 import type { NodePath } from "@babel/traverse";
-import type { JsxParseContext } from "../JsxParseContext";
+import type { JsxParseContext } from "../JsxParseContext.js";
 import * as types from "@babel/types";
 import type { Expression } from "@babel/types";
 

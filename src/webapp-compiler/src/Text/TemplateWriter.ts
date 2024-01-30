@@ -1,7 +1,7 @@
-import { ITemplateAttribute, ITemplateElement, ITemplateNode, TemplateNodeType } from "../Abstraction/ITemplateNode";
-import { IWriteable } from "../Abstraction/IWriteable";
-import type { TemplateContext } from "../TemplateContext";
-import { JsWriter } from "./JsWriter";
+import { ITemplateAttribute, ITemplateElement, ITemplateNode, TemplateNodeType } from "../Abstraction/ITemplateNode.js";
+import { IWriteable } from "../Abstraction/IWriteable.js";
+import type { TemplateContext } from "../TemplateContext.js";
+import { JsWriter } from "./JsWriter.js";
 
 export class TemplateWriter extends JsWriter {
     constructor(stream: IWriteable, context: TemplateContext) {

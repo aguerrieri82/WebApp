@@ -1,7 +1,7 @@
-import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler";
-import { ITemplateAttribute } from "../Abstraction/ITemplateNode";
-import { TemplateContext } from "../TemplateContext";
-import { formatStyle } from "../TextUtils";
+import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler.js";
+import { ITemplateAttribute } from "../Abstraction/ITemplateNode.js";
+import { TemplateContext } from "../TemplateContext.js";
+import { formatStyle } from "../TextUtils.js";
 
 export class StyleAttributeHandler implements ITemplateHandler {
      

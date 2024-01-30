@@ -1,5 +1,5 @@
 import type { NodePath } from "@babel/traverse";
-import type { JsxParseContext } from "../JsxParseContext";
+import type { JsxParseContext } from "../JsxParseContext.js";
 
 export function JsxErrorHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
 
