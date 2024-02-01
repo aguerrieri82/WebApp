@@ -1,111 +1,72 @@
-﻿import { Content, IContentInfo, ProgressView } from "@eusoft/webapp-ui";
-import { Else, If, forModel } from "@eusoft/webapp-jsx";
-import "./MainPage.scss";
-import { ITemplateContext, delayAsync } from "@eusoft/webapp-core";
-import { SceneView } from "../view/SceneView";
-import { OrbitTool } from "../view/tools/OrbitTool";
-import { sceneManager } from "../services/SceneManager";
-import { RoomScene } from "../view/RoomScene";
-import { apiClient } from "../services/ApiClient";
-import { IOculusLogin, IOculusLoginResult } from "../services/Entities";
-import { appSettings } from "../services/AppSettings";
-import { actions } from "../services/Actions";
-import { vrConnector } from "../services/VrConnector";
-import { userSession } from "../services/UserSession";
+﻿import { forModel } from "@eusoft/webapp-jsx";
+import { EditorPropertyType, IEditorProperty } from "../abstraction/IEditorProperty";
+import { LocalString } from "@eusoft/webapp-ui/Types";
 
-export class MainPage extends Content {
 
-    constructor() {
+class PropertyBuilder<THost, TProp> {
 
-        super();
+    readonly _host: THost;
 
-        this.sceneView = new SceneView();
+    constructor(host: THost) {
+        this._host = host;
+    }
 
-        this.init(MainPage, {
-            title: "Room Designer",
-            style: [],
-            body: forModel(this, m => <div>
-                <div className="operation" visible={m.progressMessage != null}>
-                    <ProgressView style="small" ref={m.progress} content=" " />
-                    <div className="message">{m.progressMessage}</div>
-                </div>
-                <div className="login">
-                    <If condition={!m.isConnected}>
-                        <button on-click={() => m.connect()}>Connect</button>
+    value(get: (host: THost) => TProp, set: (value: TProp, host: THost) => void) {
 
-                        <Else>
-                            <span>{"Connesso (" + this.connectedUser + ")"}</span>
-                        </Else>
-                    </If>
-                </div>
-                <div className="scene-view" />
-            </div>)
+        Object.defineProperty(this.property, "value", {
+            get: () => get(this._host),
+            set: v => set(v, this._host)
         });
 
+        return this;
     }
 
-    async connect() {
 
-        if (!userSession.user?.accessToken) {
+    property = {} as IEditorProperty<TProp>;
+}
 
-            if (appSettings.isDev) {
-                userSession.openAsync({
-                    accessToken: "OCASsPbzZCrXOrdjUdwI5mhROuxok8gS8d68uuIUxSBb6Lhu4zaCF5ub4Ga0JOf47RwbRMIJ10NyZBc3I1f6nCwo2ItZBgalw3hZBSZBTknNgZDZD",
-                    userId: "7782456301782093"
-                });
-            }
-            else
-                await actions.loginAsync();
+
+class EditorPropertiesBuilder<TValue> {
+
+    readonly _host: TValue;
+
+    constructor(host: TValue) {
+        this._host = host;
+    }
+
+    boolean(label: LocalString, build: (bld: PropertyBuilder<TValue, boolean>) => void) {
+        const result = this.buildProperty("boolean", label, build);
+        result.showLabel = false;
+        if (!result.editor) {
+            result.editor = forModel(result, m => <label>
+                <input type="check" value={m.value} />
+                <span>{m.label}</span>
+            </label>);
         }
-
-        if (userSession.user?.accessToken) {
-            await vrConnector.startAsync(userSession.user?.accessToken);
-            this.connectedUser = userSession.user.userId;
-            this.isConnected = true;
-        }
+        return this;
     }
 
-    override mount(ctx: ITemplateContext) {
+    protected buildProperty<TProp>(type: EditorPropertyType, label: LocalString, build: (bld: PropertyBuilder<TValue, TProp>) => void) {
 
-        super.mount(ctx);
+        const builder = new PropertyBuilder<TValue, TProp>(this._host);
 
-        const element = ctx.element.querySelector(".scene-view") as HTMLDivElement;
+        builder.property.type = type;
+        builder.property.label = label;
 
-        this.sceneView.attach(element);
+        build(builder);
 
-        this.sceneView.addTool(new OrbitTool())
+        this.properties.push(builder.property);
 
-        this.loadSceneAsync("scenes/scene-andrea.json");
+        return builder.property;
     }
 
-    async loadSceneAsync(uri: string) {
 
-        this.progressMessage = "Download scene " + uri;
+    properties: IEditorProperty<unknown>[] = [];
+}
 
-        const sceneState = await sceneManager.loadAsync(uri);
-        const room = await RoomScene.fromStateAsync(sceneState, (item, count, msg) => {
-            this.progress.max = count;
-            this.progress.value = item;
-            this.progressMessage = msg;
-            if (count == 0)
-                return 0;
-        });
-        this.sceneView.loadRoom(room);
-    }
 
-    sceneView: SceneView;
-
-    progress: ProgressView;
-
-    progressMessage: string;
-
-    isConnected: boolean;
-
-    connectedUser: string;
-
-    static override info = {
-        name: "main-page",
-        route: "/",
-        factory: () => new MainPage()
-    } as IContentInfo;
+export function buildProps<TValue>(value: TValue, build: (bld: EditorPropertiesBuilder<TValue>) => void) {
+    const builder = new EditorPropertiesBuilder<TValue>(value);
+    build(builder);
+    return builder.properties;
 }

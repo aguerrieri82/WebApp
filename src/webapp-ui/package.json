@@ -11,7 +11,6 @@
     "build:watch": "build-utils --env:dev --watch",
     "build:dev": "build-utils --env:dev",
     "build:prod": "build-utils --env:prod",
-    "build:dev-module": "tsc --noEmit false",
     "lint:fix": "eslint ./src/**/*.ts* --fix",
     "install:pnpm": "pnpm install",
     "upgrade": "pnpm up -latest"

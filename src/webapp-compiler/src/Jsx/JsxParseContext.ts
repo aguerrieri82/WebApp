@@ -174,6 +174,8 @@ export class JsxParseContext {
         this.traverseFromRoot(exp, {
             enter: path => {
 
+                let x = 1;
+
                 for (const handler of this.handlers) {
                     if (handler(this, "trans-exp", path))
                         return;

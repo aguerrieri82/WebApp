@@ -23,6 +23,7 @@ export type JsxTypedElement<TModel, TProps> =
     JsxElementInstance<TModel, TProps> |
     null |
     void |
+    IComponent<TProps> |
     ITemplateProvider<TModel> |
     ITemplate<TModel>
 

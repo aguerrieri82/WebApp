@@ -342,7 +342,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
             model: this.model,
 
-            element: this._lastElement
+            element: this._lastElement ?? this.element
 
         } as ITemplateContext
 
@@ -1214,6 +1214,7 @@ export function withCleanup<T>(template: ITemplate<T>, action: () => void): ITem
         template(t);
     };
 }
+
 
 export function mount<TModel>(root: HTMLElement, template: CatalogTemplate<TModel>, model?: TModel): void;
 export function mount(root: HTMLElement, component: ITemplateProvider): void;

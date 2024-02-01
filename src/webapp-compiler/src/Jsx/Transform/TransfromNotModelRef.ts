@@ -7,8 +7,7 @@ export function TransfromNotModelRef(ctx: JsxParseContext, stage: "trans-exp", p
     if (stage != "trans-exp" /*|| ctx.curAttribute?.name.startsWith("t:on-")*/)
         return;
 
-    let id : NodePath<Identifier|ThisExpression>;
-
+    let id: NodePath<Identifier | ThisExpression>
     if (path.isMemberExpression() || path.isOptionalMemberExpression()) {
 
         const obj = (path as NodePath<MemberExpression>).get("object");
@@ -18,7 +17,11 @@ export function TransfromNotModelRef(ctx: JsxParseContext, stage: "trans-exp", p
 
         id = obj;
     }
-    else if ((path.isIdentifier() || path.isThisExpression()) && (path.parentPath.isCallExpression() || path.parentPath.isOptionalCallExpression())) {
+    else if ((path.isIdentifier() || path.isThisExpression()) && (
+        path.parentPath.isCallExpression() ||
+        path.parentPath.isOptionalCallExpression() ||
+        path.parentPath.isBinaryExpression() ||
+        path.parentPath.isAssignmentExpression())) {
 
         id = path;
     }

@@ -17,7 +17,7 @@ export function JsxOpenHandler(ctx: JsxParseContext, stage: "enter", path: NodeP
     if (ctx.curAttribute && !ctx.curAttribute.value) {
 
         if (ctx.curElement.name != "t:component") 
-            throw path.buildCodeFrameError("Jsx inside attrbutes is supported only in components.");
+            throw path.buildCodeFrameError("Jsx inside attributes is supported only in components.");
 
         const newElement = ctx.createElement(isTempEl ? "t:" + elName.toLowerCase() : elName);
         const attr = ctx.curAttribute;
@@ -31,7 +31,8 @@ export function JsxOpenHandler(ctx: JsxParseContext, stage: "enter", path: NodeP
 
         const newElement = ctx.enterNewElement(isTempEl ? "t:" + elName.toLowerCase() : elName);
 
-        if (elBinding && !isTempEl) {
+        //TODO check  elBinding.kind
+        if (elBinding && elBinding.kind != "param" && !isTempEl) {
             newElement.name = "t:component";
             ctx.createAttribute("t:type", elName, newElement);
         }

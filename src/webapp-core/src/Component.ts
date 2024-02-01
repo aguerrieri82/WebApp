@@ -1,7 +1,7 @@
 import { IPropertyChangedHandler, isObservableProperty } from "./abstraction/IObservableProperty";
 import type { CatalogTemplate } from "./abstraction/ITemplateProvider";
 import { COMPONENT, IComponent, isComponent } from "./abstraction/IComponent";
-import { enumOverrides, getTypeName, isClass, objectHierarchy } from "./utils/Object";
+import { enumOverrides, getTypeName, isClass, objectHierarchy, setTypeName } from "./utils/Object";
 import { bindTwoWays, getOrCreateProp } from "./Properties";
 import { toKebabCase } from "./utils/String";
 import type { IBound } from "./abstraction/IBound";
@@ -15,6 +15,7 @@ import { IServiceProvider, ServiceContainer } from "./abstraction/IServiceProvid
 import type { CommonKeys } from "./abstraction/Types";
 import { BindExpression, BindValue } from "./abstraction/IBinder";
 import { IHTMLContainer } from "./abstraction";
+import { buildStyle } from "./utils/Style";
 
 interface ISubscription {
     unsubscribe(): void;
@@ -105,13 +106,6 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
         const classes: ComponentStyle[] = [];
 
-        const flat = (item: ComponentStyle) => {
-            if (typeof item == "string")
-                classes.push(item);
-            else
-                item.forEach(a => flat(a));
-        }
-
         for (const type of objectHierarchy(this)) {
 
             if (type == Component)
@@ -119,13 +113,10 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
             classes.push(toKebabCase(getTypeName(type)));
         } 
 
-        if (this.style)
-            flat(this.style);
-
         if (this.name)
             classes.push(toKebabCase(this.name)); 
 
-        this.className = classes.join(" ");
+        this.className = buildStyle(classes, this.style);
     }
 
     provides<TServiceType extends ServiceType, TService extends IService<TServiceType>>(service: TService): void {
@@ -267,3 +258,7 @@ export function declareComponent<TOptions extends IComponentOptions, TType exten
     } as TType;
 }
 
+
+export function registerComponent<T extends Component<unknown>>(ctr: { new(...args: any[]): T }, name: string) {
+    setTypeName(ctr, name);
+}

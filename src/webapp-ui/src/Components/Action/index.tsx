@@ -1,4 +1,4 @@
-import { Bindable, IComponentOptions, IComponent, Component, TemplateMap, ComponentStyle } from "@eusoft/webapp-core";
+import { Bindable, IComponentOptions, IComponent, Component, TemplateMap, ComponentStyle, BIND_MODES, BindMode } from "@eusoft/webapp-core";
 import { Class, JsxNode, Template, forModel } from "@eusoft/webapp-jsx";
 import { ActionType, IAction, IActionContext } from "../../abstraction/IAction";
 import { OperationManager } from "../../services";
@@ -36,7 +36,7 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
 
         this.init(Action, {
             template: ActionTemplates.Button,
-            style: ["contained"],
+            style: ["contained", "action"],
             ...options 
         });
     }
@@ -79,6 +79,7 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
     isExecuting: boolean;
 
     content: ViewNode;
+
 }
 
 

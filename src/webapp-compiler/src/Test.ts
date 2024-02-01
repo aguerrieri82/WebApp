@@ -5,7 +5,7 @@ export async function runTest1(){
 
     const compiler = new HtmlCompiler();
 
-    await compiler.compileAsync("../../../src/webapp-compiler/test/spellListTable.html", null, true); 
+    await compiler.compileAsync("../../src/webapp-compiler/test/spellListTable.html", null, true); 
 
     debugger;
 
@@ -16,7 +16,7 @@ export async function runTest2() {
 
     const compiler = new JsxCompiler();
 
-    await compiler.compileAsync("../../../src/webapp-compiler/test/Index.tsx", null, true);
+    await compiler.compileAsync("../../src/webapp-compiler/test/Index.tsx", null, true);
 
     debugger; 
 

@@ -35,7 +35,7 @@ export function isClass(value: Function): value is { new(): any } {
     return getFunctionType(value) == "class";
 }
 
-export function setTypeName(obj: Record<symbol | string, unknown>, name: string) {
+export function setTypeName(obj: any, name: string) {
 
     obj[TYPE_NAME] = name;
 } 
@@ -47,7 +47,7 @@ export function getTypeName(obj: any): string {
 
     const type = typeof obj;
 
-    let name = type == "object" ? obj[TYPE_NAME] : undefined;
+    let name = type == "object" || type == "function" ? obj[TYPE_NAME] : undefined;
 
     if (!name) {
 

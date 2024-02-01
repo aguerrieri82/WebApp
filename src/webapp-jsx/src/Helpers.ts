@@ -1,5 +1,5 @@
 import {  ITemplate, ITemplateProvider } from "@eusoft/webapp-core";
-import { ModelBuilder, TemplateModel } from "./abstraction";
+import { JsxNode, ModelBuilder, TemplateModel } from "./abstraction";
 
 export function forModel<TModel extends TemplateModel>(action: ModelBuilder<TModel>): ITemplate<TModel>;
 export function forModel<TModel extends TemplateModel>(model: TModel, action: ModelBuilder<TModel>): ITemplateProvider<TModel>;
@@ -16,9 +16,9 @@ export function forModel<TModel extends TemplateModel>(actionOrModel: ModelBuild
     return result as ITemplate<TModel>;
 }
 
-export function withTemplate<TModel>(template: ITemplate<TModel>) {
+export function withTemplate<TModel>(template: JSX.Element | ITemplate<TModel>) {
     return {
-        template
+        template: template
     } as ITemplateProvider<TModel>
     
 }
