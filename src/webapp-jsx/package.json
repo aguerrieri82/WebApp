@@ -1,6 +1,6 @@
 {
   "name": "@eusoft/webapp-jsx",
-  "version": "0.0.56",
+  "version": "0.0.57",
   "packageManager": "pnpm@8.4.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -18,10 +18,10 @@
   "keywords": [],
   "author": "Andrea Guerrieri",
   "devDependencies": {
-    "@typescript-eslint/parser": "6.8.0",
+    "@typescript-eslint/parser": "6.20.0",
     "build-utils": "link:../../scripts/build-utils",
-    "eslint": "^8.52.0",
-    "eslint-config-standard-with-typescript": "39.1.1",
+    "eslint": "^8.56.0",
+    "eslint-config-standard-with-typescript": "43.0.1",
     "eslint-plugin-unused-imports": "^3.0.0"
   },
   "dependencies": {
