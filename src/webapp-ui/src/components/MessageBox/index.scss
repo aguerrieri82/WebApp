@@ -27,14 +27,14 @@
     }
 
     &.hidden {
-        .message {
-            transform: scale(0, 0);
-        }
-
         display: flex !important;
         opacity: 0;
         z-index: -1;
-    }
+
+        .message {
+            transform: scale(0, 0);
+        }
+    } 
 
     .message {
         background-color: $surface-color;

@@ -92,8 +92,13 @@ export class Binder<TModel> {
             sub.property.unsubscribe(sub.handler as IPropertyChangedHandler<TValue>);
             binding.subscriptions.splice(subIndex, 1);
         }
-        else
+        else {
+            //TODO check why
+            if (Array.isArray(source) && propName == "length")
+                return;
             console.warn("Subscription for property ", propName, " not found in object ", source);
+        }
+
 
 
         if (isObservableArray(source)) {

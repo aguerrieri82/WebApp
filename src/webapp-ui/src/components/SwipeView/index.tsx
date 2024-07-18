@@ -115,9 +115,14 @@ export class SwipeView extends Component<ISwipeViewOptions> {
             }
         });
 
-        wrapper.addEventListener("touchend", ev => {
+        wrapper.addEventListener("pointerup", ev => {
+            console.log("swipe up")
+        });
 
+        wrapper.addEventListener("touchend", ev => {
+                
             if (startPos !== undefined) {
+  
                 this.leftAlign = -(this.activeIndex * 100) + "%";
             }
 

@@ -1,7 +1,6 @@
-import { ComponentStyle } from "@eusoft/webapp-core";
+import { ComponentStyle, buildStyle } from "@eusoft/webapp-core";
 import { ViewNode } from "../../Types";
 import { MaterialIconName } from "./Material";
-import { buildStyle } from "@eusoft/webapp-core/src/utils/Style";
 
 export interface IIconOptions {
     content: ViewNode;
@@ -23,7 +22,7 @@ export function Icon(options: IIconOptions) {
 }
 
 export function MaterialIcon(options: IMaterialIconOptions) {
-    const style = buildStyle("icon", "material-symbols-" + + (options.variant ?? "outlined"), options.style);
+    const style = buildStyle("icon", "material-symbols-" + (options.variant ?? "outlined"), options.style);
 
     return <i className={style}>{options.name}</i>
 }

@@ -1236,9 +1236,18 @@ export function mount<TModel>(root: HTMLElement, templateOrProvider: CatalogTemp
 
     webApp.root = builder;
 
-    builder.begin();
+    if (isComponent(templateOrProvider)) {
+        builder.content(templateOrProvider);
+    }
+    else {
 
-    builder.loadTemplate(template)(builder);
+        builder.begin();
 
-    builder.end();
+        builder.loadTemplate(template)(builder);
+
+        builder.end();
+
+    }
+
+    
 }

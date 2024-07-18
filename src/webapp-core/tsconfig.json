@@ -2,6 +2,7 @@
   "compilerOptions": {
     "noImplicitAny": true,
     "noEmitOnError": false,
+    "allowJs": true,
     "sourceMap": true,
     "target": "ESNext",
     "module": "ESNext",

@@ -29,7 +29,7 @@
         }
     }
 
-    &.hidden{
+    &.hidden {
         display: flex !important;
         opacity: 0;
         overflow: hidden;
@@ -50,8 +50,8 @@
         }
     }
 
-    &.no-error{
-        > .error{
+    &.no-error {
+        > .error {
             display: none;
         }
     }
@@ -103,9 +103,11 @@
     &:not(:has(.editor > input[type=checkbox], .editor > input[type=radio]), .no-box) {
 
         > .editor-container {
-            @include edit-box;
             transition: all $duration-normal, border-width 0s;
             position: relative;
+             
+            @include edit-box;
+
 
             > * {
                 border: none;
