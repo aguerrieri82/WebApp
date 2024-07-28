@@ -20,7 +20,7 @@
         transition-duration: $duration-fast;
         padding-left: size(2);
         font-size: $font-size-small;
-        height: 16px;
+        /*height: 16px;*/
 
         &:before {
             line-height: 16px;
@@ -100,12 +100,12 @@
         }
     }
 
-    &:not(:has(.editor > input[type=checkbox], .editor > input[type=radio]), .no-box) {
+    &:not(:has(.editor-container > input[type=checkbox], .editor-container > input[type=radio], .no-box)) {
 
         > .editor-container {
             transition: all $duration-normal, border-width 0s;
             position: relative;
-             
+
             @include edit-box;
 
 

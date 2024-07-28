@@ -12,13 +12,11 @@ export function toKebabCase(name: string): string {
     for (let i = 0; i < name.length; i++) {
         const c = name.charAt(i);
         switch (s) {
-            //upper mode or begin 
             case 0:
                 result += c.toLowerCase();
                 if (!isUpperCase(c) || c == "-")
                     s = 1;
                 break;
-            //first-mode
             case 1:
                 if (isUpperCase(c) && c != "-") {
                     result += "-";

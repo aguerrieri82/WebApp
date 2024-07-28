@@ -1,4 +1,4 @@
-import { IContent, IContentConstructor, IContentInfo, formatText, isResultContainer } from "@eusoft/webapp-ui";
+import { IContent, IContentConstructor, IContentInfo, formatText, isResultContainer, replaceArgs } from "@eusoft/webapp-ui";
 import { app } from "../App";
 
 type StringLike = { toString(): string } | string;
@@ -195,8 +195,7 @@ export class Router {
 
     protected replaceUrl(path: string, args: RouteArgs) {
 
-        //TODO implement
-        return path;
+        return replaceArgs(path, args);
     }
 
     protected async navigateEntryAsync<TArgs extends Record<string, StringLike>>(entry: IRounteEntry<TArgs>, args?: TArgs, replace = false, content?: unknown) {

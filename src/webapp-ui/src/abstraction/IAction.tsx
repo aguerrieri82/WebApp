@@ -3,7 +3,7 @@ import { LocalString, ViewNode } from "../Types";
 
 export type ActionPriority = "primary" | "secondary";
 
-export type ActionType = "local" | "global"| undefined;
+export type ActionType = "local" | "global" | undefined;
 
 export interface IActionContext<TTarget = unknown> {
     target?: TTarget;

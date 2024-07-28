@@ -1,4 +1,4 @@
-import { BindExpression, ITemplate, TemplateMap, withCleanup } from "@eusoft/webapp-core";
+import { BindExpression, getProp, IObservableProperty, ITemplate, TemplateMap, withCleanup } from "@eusoft/webapp-core";
 import { Content, Template, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "../EditorBuilder";
 import { IInputFieldOptions, InputField } from "../../components";
@@ -73,6 +73,7 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
                     editor.onChanged("value", v => this.onInputChanged(editor, v));
                 }
             })) as ITemplate<TObj>;
+
 
             this._contentTemplate = withCleanup(innerTemplate, () => this._inputs = []);
         }
@@ -177,6 +178,11 @@ EditorBuilder.prototype.object = function (this: EditorBuilder<any, any>, value,
         style: ["vertical-label", "no-box"],
         ...options
     });
+}
+
+
+export function objectEditor<TObj extends {}>(builder: (builder: EditorBuilder<TObj, ObjectEditor<TObj>>) => ITemplate<TObj> | JSX.Element, options?: IObjectEditorOptions<TObj>) {
+    return new ObjectEditor<TObj>({ ...options, builder });
 }
 
 export default ObjectEditor;

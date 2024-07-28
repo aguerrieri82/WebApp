@@ -20,7 +20,7 @@ export type ArrayElement<ArrayType extends readonly unknown[]> =
 export type StringLike = string | number | object | boolean | { toString(): string }
 
 
-export type Class<T> = { new(...args: []): T };
+export type Class<T> = { new (...args: unknown[]): T };
 
 export type CommonKeys<TSrc, TDst> = {
     [K in (keyof TSrc & keyof TDst & string) /*as TSrc[K] extends Bindable<TDst[K]> ? K : never*/]: TSrc[K]

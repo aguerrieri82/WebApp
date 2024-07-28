@@ -5,7 +5,7 @@ export interface IEmptyViewOptions {
     message: LocalString;
     iconName: MaterialIconName;
     addLabel?: ViewNode;
-    addAction: () => any;
+    addAction?: () => any;
 }
 
 

@@ -12,7 +12,7 @@ interface IMessageBoxAction {
     executeAsync?: () => Promise<boolean>;
 }
 
-export interface IMessageBoxOptions extends IComponentOptions {
+export interface IPopupOptions extends IComponentOptions {
 
 
     title: ViewNode;
@@ -20,17 +20,19 @@ export interface IMessageBoxOptions extends IComponentOptions {
     body: ViewNode;
 
     actions: IMessageBoxAction[];
-  
+
+    hideOnClick?: boolean;
+ 
 }
 
-export class MessageBox extends Component<IMessageBoxOptions> {
+export class Popup extends Component<IPopupOptions> {
 
     protected _closePromise: (value: string) => void;
 
-    constructor(options?: IMessageBoxOptions) {
+    constructor(options?: IPopupOptions) {
         super();
 
-        this.init(MessageBox, {
+        this.init(Popup, {
 
             template: forModel((m: this) => <div className={m.className} visible={m.visible}>
                 <div className="message">
@@ -42,7 +44,7 @@ export class MessageBox extends Component<IMessageBoxOptions> {
                     </main>
                     <footer>
                         {m.actions?.forEach(a =>
-                            <Action name={a.name} type="local" onExecuteAsync={Bind.action(()=> m.onActionClick(a))}>
+                            <Action name={a.name} type="local" style="text" onExecuteAsync={Bind.action(() => m.onActionClick(a))}>
                                 {formatText(a.text)}
                             </Action>
                         )}
@@ -69,9 +71,12 @@ export class MessageBox extends Component<IMessageBoxOptions> {
 
     async showAsync() {
 
+        let isMounted = false;
+
         if (!this.context?.element) {
             mount(document.body, this);
             await delayAsync(100);
+            isMounted = true;
         }
 
         this.visible = true;
@@ -80,7 +85,7 @@ export class MessageBox extends Component<IMessageBoxOptions> {
 
         await delayAsync(500); 
 
-        if (this.context?.element) {
+        if (this.context?.element && isMounted) {
             this.context.element.remove();
             this.context.element = undefined;
         }
@@ -93,5 +98,7 @@ export class MessageBox extends Component<IMessageBoxOptions> {
 
     body: ViewNode;
 
-    actions: IMessageBoxAction[];
+    actions: IMessageBoxAction[]
+
+    hideOnClick: boolean;
 }

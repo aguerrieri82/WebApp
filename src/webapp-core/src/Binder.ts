@@ -10,6 +10,7 @@ import { getFunctionType, getPropertyDescriptor } from "./utils/Object";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
 import type { ArrayElement } from "./abstraction/Types";
+import { isTemplate } from "./abstraction/ITemplate";
 
 interface IBindingSubscription<TSrc extends object | [], TValue> {
 
@@ -237,7 +238,7 @@ export class Binder<TModel> {
 
     bind<TValue>(value: BindValue<TModel, TValue>, action: (newValue: TValue, oldValue?: TValue, isUpdate?: boolean, isClear?: boolean) => void, actionMode?: BindingActionMode) {
 
-        if (typeof value === "function" && getFunctionType(value) !== "class" && actionMode !== "no-bind") {
+        if (typeof value === "function" && getFunctionType(value) !== "class" && actionMode !== "no-bind" && !isTemplate(value)) {
 
             const binding: IBinding<TModel, TValue> = {
                 value: value as IGetter<TModel, TValue>,

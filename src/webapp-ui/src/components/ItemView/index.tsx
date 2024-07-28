@@ -33,11 +33,11 @@ export const ItemViewTemplates: TemplateMap<ItemView<unknown>> = {
                 {m.secondary && <div className="secondary"><NodeView>{m.secondary}</NodeView></div>}
             </div>
             <div className="secondary-actions">
-                {m.secondaryActions.forEach(a => createAction(a, "text"))}
+                {m.secondaryActions.forEach(a => m.createAction(a, "text"))}
             </div>
         </div>
         {m.primaryActions.length > 0 && <div className="primary-actions">
-            {m.primaryActions.forEach(a => createAction(a, "text"))}
+            {m.primaryActions.forEach(a => m.createAction(a, "text"))}
         </div>}
     </li>)
 }
@@ -73,6 +73,24 @@ export class ItemView<TItem> extends Component<IItemViewOptions<TItem>> {
         }
 
         return value;
+    }
+
+    protected patchAction(action: IAction): IAction {
+        const newAction = {
+            ...action,
+            executeAsync: () =>
+                action.executeAsync({ target: this.content })
+        }
+
+        if (newAction.subActions)
+            newAction.subActions = action.subActions.map(a => this.patchAction(a));
+
+        return newAction;
+    }
+
+    createAction(action: IAction, style = "text") {
+
+        return createAction(this.patchAction(action), style);
     }
 
     maxActions?: number;

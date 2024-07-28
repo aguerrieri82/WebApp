@@ -1,3 +1,4 @@
+import { template } from "@babel/core";
 import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler.js";
 import { ITemplateElement, ITemplateNode } from "../Abstraction/ITemplateNode.js";
 import { HtmlCompiler } from "../HtmlCompiler.js";
@@ -26,17 +27,20 @@ export class TemplateElementHandler implements ITemplateHandler {
                 .write("export const ").write(templateName).write(" = ");
         }
 
-        if (templateName)
-            ctx.writer.write("__defineTemplate(").writeString(templateName).write(", ");
+        ctx.writer.write("template(")
+            .writeTemplate(undefined, builderName);
 
-        ctx.writer.writeTemplate(undefined, builderName);
+        if (templateName) {
+            ctx.writer.write(", ")
+                .writeString(templateName)
 
-        if (templateName)
-            ctx.writer.write(")");
+        }
+
+        ctx.writer.write(")")
 
         if (ctx.compiler instanceof HtmlCompiler)
             ctx.writer.write(";");
-        
+
         return HandleResult.SkipChildren;
     }
 

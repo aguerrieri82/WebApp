@@ -29,7 +29,7 @@ export function NodeView(options: INodeViewOptions) {
     }
    
 
-    return (t: TemplateBuilder<INodeViewOptions>) =>
+    return template<INodeViewOptions>(t =>
         t.enter(m => m.content, t2 => {
             if (t2.model === undefined || t2.model === null)
                 return;
@@ -43,5 +43,5 @@ export function NodeView(options: INodeViewOptions) {
                 });
             else
                 singleNode(t2 as TemplateBuilder<NodeType>)
-        });
+        }));
 }

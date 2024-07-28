@@ -1,5 +1,6 @@
 export * from "./ObjectEditor"
 export * from "./TextEditor"
+export * from "./ArrayEditor"
 export * from "./NumberEditor"
 export * from "./BooleanEditor"
 export * from "./DateEditor"

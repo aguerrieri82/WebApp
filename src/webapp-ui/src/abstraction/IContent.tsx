@@ -1,4 +1,4 @@
-import { IComponent } from "@eusoft/webapp-core";
+import { Bindable, IComponent } from "@eusoft/webapp-core";
 import { IFeature } from "./IFeature";
 import { LocalString, ViewNode } from "../Types";
 import { IAction } from "./IAction";
@@ -32,7 +32,7 @@ export interface IContent<TArgs extends {} = undefined> extends IComponent {
     readonly loadState: LoadState;
 }
 
-export interface IContentInfo {
+export interface IContentInfo<TArgs extends {} = {}, TContent extends IContent<TArgs> = IContent<TArgs>> {
 
     name: string;
 
@@ -40,12 +40,19 @@ export interface IContentInfo {
 
     icon?: ViewNode;
 
-    factory: () => IContent;
+    factory: () => TContent;
 }
 
-export interface IContentConstructor {
+export interface IContentConstructor<TArgs extends {} = {}, TContent extends IContent<TArgs> = IContent<TArgs>> {
 
-    new(): IContent;
+    new(): TContent;
 
-    info: IContentInfo;
+    info: IContentInfo<TArgs, TContent>;
 }
+
+export interface IContentInstance<TArgs extends {} = {}, TContent extends IContent<TArgs> = IContent<TArgs>> {
+    args: TArgs;
+    factory: () => TContent
+}
+
+export type ContentRef<TArgs extends {} = {}, TContent extends IContent<TArgs> = IContent<TArgs>> = string | IContentInfo<TArgs, TContent> | IContentInstance<TArgs, TContent> | IContentConstructor<TArgs>;

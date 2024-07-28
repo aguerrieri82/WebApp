@@ -1,4 +1,4 @@
-import { ITemplate, defineTemplate } from "@eusoft/webapp-core";
+import { ITemplate, template } from "@eusoft/webapp-core";
 import type { JsxComponentProps, TemplateModel } from "./../abstraction";
 import { processNode } from "./../Runtime";
 
@@ -8,5 +8,5 @@ export interface ITemplateProps<TModel extends TemplateModel> extends JsxCompone
 
 export function Template<TModel extends TemplateModel>(props: ITemplateProps<TModel>) : ITemplate<TModel> {
 
-    return defineTemplate<TModel>(props.name, t => processNode({ builder: t }, props.content));
+    return template<TModel>(t => processNode({ builder: t }, props.content), props.name);
 }

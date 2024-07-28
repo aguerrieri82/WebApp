@@ -20,12 +20,10 @@ interface IActionOptions<TTarget> extends IComponentOptions {
 
 export const ActionTemplates: TemplateMap<Action> = {
 
-    "Button": forModel(m => <Template name="Action">
-        <button visible={m.visible} className={m.className} on-click={m => m.executeAsync()}>
+    "Button": forModel(m => <button type="button" visible={m.visible} className={m.className} on-click={m => m.executeAsync({target: m.target})}>
             <Class name="executing" condition={m.isExecuting} />
-            <NodeView>{m.content}</NodeView>
-        </button>
-    </Template>)
+        {m.content}
+        </button>)
 }
 
 export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>> {
@@ -73,6 +71,8 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
 
     onExecuteAsync(ctx?: IActionContext<TTarget>) : Promise<void> | void {
     }
+
+    target: TTarget;
 
     type: ActionType;
 

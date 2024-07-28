@@ -12,5 +12,5 @@ export * from "./Expression"
 export * from "./Templates"
 export * from "./Services"
 
-import "./Global"
+
 import "./Polyfill.js"

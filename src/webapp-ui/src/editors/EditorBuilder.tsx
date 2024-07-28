@@ -1,4 +1,4 @@
-import { Expression, BindExpression, ComponentStyle, toKebabCase, ITemplate, TemplateBuilder } from "@eusoft/webapp-core";
+import { Expression, BindExpression, ComponentStyle, toKebabCase, ITemplate, TemplateBuilder, getProp, IObservableProperty } from "@eusoft/webapp-core";
 import { ViewNode } from "../Types";
 import { IEditor, IEditorOptions } from "../abstraction/IEditor";
 import { Validator } from "../abstraction/Validator";

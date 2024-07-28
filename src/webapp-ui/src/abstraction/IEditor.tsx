@@ -25,10 +25,7 @@ export interface IEditor<TValue, TOptions extends IEditorOptions<TValue> = IEdit
 
     label?: ViewNode;
 
-    visible: boolean;
-
     disabled: boolean;
 
     value: TValue;
-
 }

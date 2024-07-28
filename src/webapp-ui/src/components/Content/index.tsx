@@ -1,6 +1,6 @@
 ﻿import { Bindable, IComponentOptions, Component, TemplateMap } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
-import { IContent, IContentConstructor, IContentInfo, LoadState } from "../../abstraction/IContent";
+import { IContent, IContentConstructor, IContentInfo, IContentInstance, LoadState } from "../../abstraction/IContent";
 import { IFeature } from "../../abstraction/IFeature";
 import { formatText } from "../../utils/Format";
 import { LocalString, ViewNode } from "../../Types";
@@ -17,7 +17,7 @@ export interface IContentOptions<TArgs extends {}> extends IComponentOptions {
 
     body?: Bindable<ViewNode>;
 
-    icon?: Bindable<ViewNode>;
+    icon?: ViewNode;
 
     actions?: Bindable<IAction[]>;
 
@@ -62,7 +62,7 @@ export class Content<TArgs extends {} = unknown, TOptions extends IContentOption
 
         this.init(Content, {
             template: ContentTemplates.Page,
-            name: (this.constructor as IContentConstructor).info.name,
+            name: (this.constructor as IContentConstructor).info?.name,
             ...options
         });
     }
@@ -88,8 +88,8 @@ export class Content<TArgs extends {} = unknown, TOptions extends IContentOption
 
             if (this.features) {
 
-                for (const loader of this.features)
-                    if (!await loader(this)) {
+                for (const feature of this.features)
+                    if (!await feature(this)) {
                         isValid = false;
                         break;
                     }
@@ -151,26 +151,15 @@ export class Content<TArgs extends {} = unknown, TOptions extends IContentOption
 
     static info: IContentInfo;
 }
-export function declareContent<TArgs, TOptions extends IContentOptions<TArgs>, TType extends { new (...args: any[]): Content<TArgs, TOptions> }>(type: TType, options: TOptions) {
 
-    const newContent = class InlineContent extends type {
-        constructor(...args: any[]) {
+export function content<TArgs extends {}, TContent extends IContent<TArgs>>(info: IContentInfo<TArgs, TContent>, args: TArgs) : IContentInstance<TArgs, TContent>;
 
-            super(args[0]);
-
-            this.init(InlineContent, options);
-        }
-
-    } as (TType & { info: IContentInfo });
-
-    newContent.info = {
-        name: options.name,
-        route: options.route,
-        icon: options.icon as any, //TODO fix
-        factory: () => new newContent()
-    };
-
-    return newContent;
+export function content(ref, args) {
+    return {
+        args,
+        factory: (ref as IContentInfo).factory,
+    } as IContentInstance;
 }
+
 
 export default Content;

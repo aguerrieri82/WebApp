@@ -1,72 +1,46 @@
-﻿import { forModel } from "@eusoft/webapp-jsx";
-import { EditorPropertyType, IEditorProperty } from "../abstraction/IEditorProperty";
-import { LocalString } from "@eusoft/webapp-ui/Types";
+﻿import { IItemListOptions, ItemListContent, declareContent } from "@eusoft/webapp-framework";
+import { IListProduct, IProductListView } from "../../entities/Commands";
+import { entityItemsSource } from "../../helpers/ItemsSources";
+import { EmptyView } from "@eusoft/webapp-framework";
+import { forModel } from "@eusoft/webapp-jsx";
+import { MaterialIcon } from "@eusoft/webapp-ui";
+import { CreateProductPage } from "./EditProduct";
+import { context } from "../../services/Context";
 
-
-class PropertyBuilder<THost, TProp> {
-
-    readonly _host: THost;
-
-    constructor(host: THost) {
-        this._host = host;
-    }
-
-    value(get: (host: THost) => TProp, set: (value: TProp, host: THost) => void) {
-
-        Object.defineProperty(this.property, "value", {
-            get: () => get(this._host),
-            set: v => set(v, this._host)
-        });
-
-        return this;
-    }
-
-
-    property = {} as IEditorProperty<TProp>;
+export interface IListProducttAgs {
 }
 
 
-class EditorPropertiesBuilder<TValue> {
+export const ListProductPage = declareContent(ItemListContent, {
 
-    readonly _host: TValue;
+    name: "product-list",
+    title: "product-list",
+    route: "/product",
+    style: ["panel"],
+    itemAddContent: CreateProductPage.factory,
+    itemsSource: entityItemsSource("ListProduct"),
+    prepareFilter: filter => ({
+        ...filter,
+        merchantId: context.merchant?.id
+    }),
+    canAdd: true,
+    canDelete: true,
+    canEdit: true,
+    pageSize: 50,
+    icon: <MaterialIcon name="shopping_cart" />, //TODO fix
+    emptyView: forModel(m => <EmptyView
+        iconName="shopping_cart"
+        message="msg-no-product"
+    />),
+    columns: [{
+        value: a => a.name,
+        priority: "primary",
+        header: "name",
+    }],
+    editMode: "page",
+    filterMode: "tags",
 
-    constructor(host: TValue) {
-        this._host = host;
-    }
+    onLoadArgsAsync: async args => {
 
-    boolean(label: LocalString, build: (bld: PropertyBuilder<TValue, boolean>) => void) {
-        const result = this.buildProperty("boolean", label, build);
-        result.showLabel = false;
-        if (!result.editor) {
-            result.editor = forModel(result, m => <label>
-                <input type="check" value={m.value} />
-                <span>{m.label}</span>
-            </label>);
-        }
-        return this;
-    }
-
-    protected buildProperty<TProp>(type: EditorPropertyType, label: LocalString, build: (bld: PropertyBuilder<TValue, TProp>) => void) {
-
-        const builder = new PropertyBuilder<TValue, TProp>(this._host);
-
-        builder.property.type = type;
-        builder.property.label = label;
-
-        build(builder);
-
-        this.properties.push(builder.property);
-
-        return builder.property;
-    }
-
-
-    properties: IEditorProperty<unknown>[] = [];
-}
-
-
-export function buildProps<TValue>(value: TValue, build: (bld: EditorPropertiesBuilder<TValue>) => void) {
-    const builder = new EditorPropertiesBuilder<TValue>(value);
-    build(builder);
-    return builder.properties;
-}
+    },
+} as IItemListOptions<IProductListView, IListProduct>);

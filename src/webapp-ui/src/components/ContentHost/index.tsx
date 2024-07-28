@@ -10,13 +10,11 @@ interface IContentHostOptions extends IComponentOptions {
 
 export const ContentHostTemplates: TemplateMap<ContentHost> = {
 
-    "Single": forModel(m => <Template name="PageHost">
-        <main className={m.className}>
-            <section className="content">
-                {m.content}
-            </section>
-        </main>
-    </Template>) 
+    "Single": forModel(m => <main className={m.className}>
+        <section className="content">
+            {m.content}
+        </section>
+    </main>) 
 
 }
 export class ContentHost extends Component<IContentHostOptions> implements IContentHost {
@@ -34,11 +32,11 @@ export class ContentHost extends Component<IContentHostOptions> implements ICont
     }
 
 
-    async loadContentAsync<T>(page: IContent<T>, args?: T) {
+    async loadContentAsync<T>(content: IContent<T>, args?: T) {
 
-        if (page?.loadAsync) {
+        if (content?.loadAsync) {
             try {
-                if (!await page.loadAsync(this, args)) {
+                if (!await content.loadAsync(this, args)) {
                     return false;
                 }
             }
@@ -53,10 +51,10 @@ export class ContentHost extends Component<IContentHostOptions> implements ICont
             await this.content.onCloseAsync();
 
 
-        this.content = page;
+        this.content = content;
 
         if (this.content.onOpenAsync)
-            await page.onOpenAsync();
+            await content.onOpenAsync();
 
         return true;
     }

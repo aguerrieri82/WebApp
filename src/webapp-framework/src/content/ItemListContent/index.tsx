@@ -1,8 +1,9 @@
-import { Content, IAction, IContentOptions, IEditor, IItemsSource, ItemView, ListView, LocalString, MaterialIcon, ViewNode } from "@eusoft/webapp-ui";
+import { Content, IAction, IContent, IContentInstance, IContentOptions, IEditor, IItemsSource, ItemView, ListView, LocalString, MaterialIcon, ViewNode } from "@eusoft/webapp-ui";
 import { IFilterField } from "../../abstraction/IFilterEditor";
 import { Bind, Class } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
 import router from "../../services/Router";
+import { ContentBuilder } from "../Builder";
 
 export interface IListColumn<TItem, TValue> {
     name?: string;
@@ -35,7 +36,7 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<unknow
     itemActions?: (item?: TItem) => IAction<TItem>[] | IAction<TItem>[];
     columns: IListColumn<TItem, unknown>[];
     openItem?: (item: TItem) => any;
-    itemEditContent?: (item: TItem) => Content<unknown> | Class<Content<unknown>>;
+    itemEditContent?: (item: TItem) => IContentInstance<unknown, IContent>;
     itemAddContent?: (item?: TItem) => Content<unknown> | Class<Content<unknown>>;
     createItemView?: (item: TItem, actions?: IAction<TItem>[]) => ViewNode | Class<Content<unknown>>;
     pageSize?: number;
@@ -70,7 +71,7 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
 
     getItemActions(item: TItem) {
 
-        const result = [...this.buildInActions];
+        const result = [...this.builtInActions];
 
         if (Array.isArray(this.itemActions))
             result.push(... this.itemActions);
@@ -83,15 +84,25 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
 
     override async onLoadAsync() {
 
-        this.buildInActions = [];
+        this.builtInActions = [];
 
         if (this.canDelete)
-            this.buildInActions.push({
+            this.builtInActions.push({
                 name: "delete",
                 text: "delete",
                 icon: <MaterialIcon name="delete" />,
                 priority: "secondary",
                 executeAsync: ctx => this.deleteItemAsync(ctx.target)
+            });
+
+        if (this.canEdit)
+            this.builtInActions.push({
+                name: "edit",
+                text: "edit",
+                type: "local",
+                icon: <MaterialIcon name="edit" />,
+                priority: "secondary",
+                executeAsync: ctx => this.editItemAsync(ctx.target)
             });
 
         this.actions = [];
@@ -143,6 +154,19 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
         this.items = items;
     }
 
+    async editItemAsync(item: TItem) {
+
+        if (!this.canEdit || !this.itemEditContent)
+            return;
+
+        const instance = this.itemEditContent(item);
+
+        const newItem = await router.navigatePageForResultAsync(instance.factory(), instance.args);    
+
+        if (newItem)
+            await this.refreshAsync();
+    }
+
     async addItemAsync() {
 
         if (!this.canAdd || !this.itemAddContent)
@@ -169,15 +193,19 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
 
     addLabel?: LocalString;
 
-    buildInActions: IAction<TItem>[];
+    builtInActions: IAction<TItem>[];
 
     canAdd: boolean;
 
     canDelete: boolean;
 
+    canEdit: boolean;
+
     itemsSource: IItemsSource<TItem, unknown, unknown>;
 
     itemAddContent?: (item?: TItem) => Content<unknown> | Class<Content<unknown>>;
+
+    itemEditContent?: (item: TItem) => IContentInstance<unknown, IContent>;
 
     emptyView: ViewNode;
 
@@ -187,3 +215,4 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
 
     itemActions: (item?: TItem) => IAction<TItem>[] | IAction<TItem>[];
 }
+

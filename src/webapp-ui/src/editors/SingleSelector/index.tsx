@@ -49,6 +49,8 @@ export const SingleSelectorTemplates: TemplateMap<SingleSelector<unknown, unknow
 
 export class SingleSelector<TItem, TValue> extends CommitableEditor<TValue, string, ISingleSelectorOptions<TItem, TValue>> implements IAsyncLoad {
 
+    protected _lastValue: TValue;
+
     constructor(options?: ISingleSelectorOptions<TItem, TValue>) {
 
         super();
@@ -67,8 +69,11 @@ export class SingleSelector<TItem, TValue> extends CommitableEditor<TValue, stri
 
     protected override editToValue(value: string, clone?: boolean): TValue {
 
-        if (value == "@empty" || !this.content)
+        if (value == "@empty" || !this.content) {
+            if (this._lastValue !== undefined)
+                return this._lastValue;
             return null;
+        }
         const item = this.content[parseInt(value)];
         if (item === null || item === undefined)
             return null
@@ -76,6 +81,8 @@ export class SingleSelector<TItem, TValue> extends CommitableEditor<TValue, stri
     }
 
     protected override valueToEdit(value: TValue, clone?: boolean): string {
+
+        this._lastValue = this.content ? undefined : value;
 
         var index = (value === null || value === undefined) ?
             "@empty" :
@@ -95,7 +102,7 @@ export class SingleSelector<TItem, TValue> extends CommitableEditor<TValue, stri
 
         this.content = this.itemsSource ? await this.itemsSource.getItemsAsync() : [];
 
-        if (oldValue)
+        if (oldValue !== null && oldValue !== undefined)
             this.value = oldValue;
         else
             this.getSelectedValue();

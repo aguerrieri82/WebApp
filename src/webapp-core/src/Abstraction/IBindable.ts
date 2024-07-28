@@ -7,6 +7,7 @@ export const PARENT: unique symbol = Symbol.for("@parent")
 export const INDEX: unique symbol = Symbol.for("@index")
 export const BIND_MODES: unique symbol = Symbol.for("@bindModes")
 
+
 export interface IBindable {
 
     [PROPS]?: Record<string, IObservableProperty<any>>;

@@ -52,6 +52,10 @@ export class TemplateWriter extends JsWriter {
 
         this.context.currentFrame.builderNameJs = builderNameJs ?? "t" + this.context.currentFrame.index;
 
+        const isTemplate = this.context.isElement(element, "template");
+        if (!isTemplate)
+            this.write("template(");
+
         this.beginInlineFunction(this.context.currentFrame.builderNameJs)
             .write(this.context.currentFrame.builderNameJs) 
             .indentAdd()
@@ -62,8 +66,14 @@ export class TemplateWriter extends JsWriter {
         else
             this.writeChildNodes(element);
 
-         return this.endInlineFunction()
-            .indentSub();
+        this.endInlineFunction();
+
+        if (!isTemplate)
+            this.write(")");
+
+        this.indentSub();
+
+        return this;
     }
 
     writeElement(node: ITemplateNode) {
