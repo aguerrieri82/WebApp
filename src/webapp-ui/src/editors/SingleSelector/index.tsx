@@ -35,7 +35,8 @@ export const SingleSelectorTemplates: TemplateMap<SingleSelector<unknown, unknow
     "Options": forModel(m => <fieldset
         className={m.className}
         visible={m.visible}>
-        <Class name="options"/> 
+        <Class name="options" /> 
+        <Class name="no-box" /> 
         {m.content?.forEach(i =>
             <label> 
                 <input type="radio" name="selector" checked={m.value == m.itemsSource.getValue(i)}

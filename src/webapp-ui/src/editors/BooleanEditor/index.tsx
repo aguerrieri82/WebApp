@@ -15,15 +15,13 @@ interface IBooleanEditorOptions extends IEditorOptions<boolean> {
 
 export const BoolEditorTemplates: TemplateMap<BooleanEditor> = {
 
-    "Default": forModel(m => <Template name="BooleanEditor">
-        <label className={m.className} >
-            <input visible={m.visible} disabled={m.disabled} type="checkbox" value={m.value} >
+    "Default": forModel(m => <label className={m.className} visible={m.visible} >
+            <Class name="no-box"/>
+            <input  disabled={m.disabled} type="checkbox" value={m.value} >
                 <Class name="default" />
             </input>
             {m.label && <span><NodeView>{m.label}</NodeView></span>}
-        </label>
-     
-    </Template>)
+        </label>)
 } 
 
 export class BooleanEditor extends Editor<boolean, IBooleanEditorOptions> implements ILabel {

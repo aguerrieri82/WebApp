@@ -22,7 +22,7 @@ export const ActionTemplates: TemplateMap<Action> = {
 
     "Button": forModel(m => <button type="button" visible={m.visible} className={m.className} on-click={m => m.executeAsync({target: m.target})}>
             <Class name="executing" condition={m.isExecuting} />
-        {m.content}
+        <NodeView>{m.content}</NodeView>
         </button>)
 }
 
