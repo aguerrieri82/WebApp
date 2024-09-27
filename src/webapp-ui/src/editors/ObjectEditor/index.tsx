@@ -1,5 +1,5 @@
 import { BindExpression, getProp, IObservableProperty, ITemplate, TemplateMap, withCleanup } from "@eusoft/webapp-core";
-import { Content, Template, forModel } from "@eusoft/webapp-jsx";
+import { Class, Content, Template, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "../EditorBuilder";
 import { IInputFieldOptions, InputField } from "../../components";
 import { IValidationContext } from "../../abstraction/Validator";
@@ -25,11 +25,10 @@ export interface IObjectEditorOptions<TObj extends Record<string, any>> extends 
 
 export const ObjectEditorTemplates: TemplateMap<ObjectEditor<any>> = {
 
-    "Default": forModel(m => <Template name="ObjectEditor">
-        <form method="post" className={m.className} visible={m.visible} > 
-            <Content src={m.editValue} template={m.contentTemplate()}/>
-        </form>
-    </Template>)
+    "Default": forModel(m => <form method="post" className={m.className} visible={m.visible} > 
+                <Class name="no-box"/> 
+                <Content src={m.editValue} template={m.contentTemplate()}/>
+            </form>)
 }
 
 export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, IObjectEditorOptions<TObj>> implements IAsyncLoad {

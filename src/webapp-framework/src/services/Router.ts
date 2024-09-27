@@ -51,6 +51,10 @@ export class Router {
         window.addEventListener("beforeunload", () => this.saveState());
     } 
 
+    getCurrentLocation() {
+        return location.pathname;
+    }
+
     startAsync() {
 
         const curState = JSON.parse(history.state) as IRouteState;
@@ -181,7 +185,7 @@ export class Router {
 
     protected async navigateActiveRouteAsync() {
 
-        const url = window.location.pathname;
+        const url = this.getCurrentLocation();
 
         const entry = this._entries.find(a => a.route == url);  //<-- TODO implement
 

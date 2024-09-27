@@ -4,7 +4,7 @@ import type { BindMode, BindValue, BoundObject, BoundObjectModes } from "./abstr
 import { isHTMLContainer } from "./abstraction/IHTMLContainer";
 import { isMountListener } from "./abstraction/IMountListener";
 import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
-import { ITemplate, TEMPLATE, isTemplate } from "./abstraction/ITemplate";
+import { ITemplate, isTemplate } from "./abstraction/ITemplate";
 import { ITemplateContext } from "./abstraction/ITemplateContext";
 import { CatalogTemplate, ITemplateProvider, isTemplateProvider } from "./abstraction/ITemplateProvider";
 import { Binder } from "./Binder";

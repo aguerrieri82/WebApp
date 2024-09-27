@@ -19,7 +19,7 @@
   "author": "Andrea Guerrieri",
   "devDependencies": {
     "@eusoft/webapp-compiler-rollup": "link:..\\..\\dist\\webapp-compiler-rollup",
-    "@typescript-eslint/parser": "8.0.0-alpha.42",
+    "@typescript-eslint/parser": "8.7.0",
     "build-utils": "link:..\\..\\scripts\\build-utils",
     "eslint": "8.57.0",
     "eslint-config-love": "56.0.0",

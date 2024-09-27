@@ -2120,4 +2120,5 @@ export type MaterialIconName = "10k" |
     "zoom_in" |
     "zoom_in_map" |
     "zoom_out" |
+    "deployed_code" |
     "zoom_out_map";
