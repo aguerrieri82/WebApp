@@ -64,8 +64,13 @@ export class Popup extends Component<IPopupOptions> {
                 return;
         }
 
-        this._closePromise(action.name);
+        this.close(action.name);
+    }
 
+    close(result?: string) {
+
+        if (this._closePromise)
+            this._closePromise(result);
         this.visible = false;
     }
 

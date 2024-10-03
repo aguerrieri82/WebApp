@@ -47,7 +47,7 @@ interface ISwitchCondition<TValue> {
     template: CatalogTemplate<TValue>;
 }
 
-export type InputValueMode = "focus" | "change" | "keyup" | "pool";
+export type InputValueMode = "focus" | "change" | "keyup" | "pool" | "input";
 
 
 /****************************************/
@@ -991,7 +991,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         if (valueProp) {
 
-            if (mode == "change" || mode == "keyup") {
+            if (mode == "change" || mode == "keyup" || mode=="input") {
 
                 if (element.tagName == "INPUT" || element.tagName == "TEXTAREA") {
 
@@ -1002,6 +1002,11 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                     else {
                         if (mode == "change") {
                             element.addEventListener("change", ev => {
+                                valueProp.set(element.value);
+                            });
+                        }
+                        else if (mode == "input") {
+                            element.addEventListener("input", ev => {
                                 valueProp.set(element.value);
                             });
                         }

@@ -84,6 +84,7 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
 
         this.isDirty = true;
 
+
         if (this.validationMode == "onInputChange") {
 
             const innerCtx = {
@@ -92,6 +93,10 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
 
             if (!await input.validateAsync(innerCtx))
                 this.isValid = false;
+        }
+
+        if (this.commitMode == "auto") {
+            await this.commitAsync();
         }
     }
 
