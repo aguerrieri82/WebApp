@@ -180,11 +180,16 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
             delete this._bounds;
         }
 
+        
+        /*
+        TODO problem: if i unmoint a component and remount later i need to keep subs
+
         if (this._subscriptions) {
             for (const item of this._subscriptions)
                 item.unsubscribe();
             delete this._subscriptions;
         }
+        */
 
         if (this._binder) {
             this._binder.cleanBindings(cleanValue, true);

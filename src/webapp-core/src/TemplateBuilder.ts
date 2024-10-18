@@ -775,6 +775,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         if (isTemplate(value))
             return value;
 
+        if (value instanceof HTMLElement) 
+            return bld => bld.appendChild(value);
+
         throw new Error("cannot determine template for model");
     }
 

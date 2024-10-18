@@ -1,6 +1,7 @@
 import { ComponentStyle, buildStyle } from "@eusoft/webapp-core";
 import { ViewNode } from "../../Types";
 import { MaterialIconName } from "./Material";
+import "./index.scss";
 
 export interface IIconOptions {
     content: ViewNode;
@@ -22,7 +23,8 @@ export function Icon(options: IIconOptions) {
 }
 
 export function MaterialIcon(options: IMaterialIconOptions) {
-    const style = buildStyle("icon", "material-symbols-" + (options.variant ?? "outlined"), options.style);
 
-    return <i className={style}>{options.name}</i>
+    return <i className={buildStyle("icon", "material-symbols-" + (options.variant ?? "outlined"), options.style)}>
+        {options.name}
+    </i>
 }

@@ -1,7 +1,15 @@
-import { Component, SERVICE_TYPE, mount } from "@eusoft/webapp-core";
+import { Component, SERVICE_TYPE, delayAsync, mount } from "@eusoft/webapp-core";
 import { IUserInteraction, USER_INTERACTION } from "../abstraction/IUserInteraction";
-import { forModel } from "@eusoft/webapp-jsx";
-import { LocalString, ViewNode, formatText } from "@eusoft/webapp-ui";
+import { debug, forModel } from "@eusoft/webapp-jsx";
+import { IEditor, LocalString, Popup, ViewNode, formatText, isCommitable } from "@eusoft/webapp-ui";
+
+export type MessageType = "info" | "error" | "warning" | "success";
+export enum MessageBoxButton {
+    Ok = 1,
+    Yes = 2,
+    No = 4,
+    YesNo = Yes | No,
+}
 
 class UserInteraction implements IUserInteraction {
 
@@ -12,12 +20,81 @@ class UserInteraction implements IUserInteraction {
         </div>));
     }
 
-    async confirmAsync(body: ViewNode, title: LocalString): Promise<boolean> {
 
-        return confirm(formatText(body as string) as string);
+    async messageBoxAsync(body: ViewNode, title: LocalString, buttons: MessageBoxButton): Promise<MessageBoxButton> {
+        var popup = new Popup();
+        popup.style = "message-box";
+        popup.title = formatText(title);
+        popup.body = body;
+        popup.actions = [];
+       
+        for (const item of [MessageBoxButton.Ok, MessageBoxButton.Yes, MessageBoxButton.No]) {
+            if ((buttons & item) != 0) {
+                popup.actions.push({
+                    text: formatText(MessageBoxButton[item].toLowerCase()) as string,
+                    name: MessageBoxButton[item],
+                    executeAsync: async () => true
+                });
+            }
+        }  
+
+        this.dialogs.push(popup);
+
+        await delayAsync(0);
+
+        const result = await popup.showAsync(); 
+
+        this.dialogs.splice(this.dialogs.indexOf(popup), 1); 
+
+
+        return MessageBoxButton[result];    
     }
 
-    dialogs: Component[];
+
+    async confirmAsync(body: ViewNode, title: LocalString): Promise<boolean> {
+
+        const result = await this.messageBoxAsync(body, title, MessageBoxButton.YesNo); 
+        console.log(result);    
+        return result == MessageBoxButton.Yes;
+    }
+
+    async messageAsync(body: ViewNode, title: LocalString, displayTimeMs = 500) {
+
+
+    }
+
+    async inputAsync<T>(body: IEditor<T>, title: LocalString): Promise<T> {
+
+        var popup = new Popup();
+        
+        popup.title = title;
+        popup.body = body;
+        popup.actions = [
+            {
+                text: "ok",
+                name: "ok",
+                executeAsync: async () => {
+
+                    if (isCommitable(body)) {
+                        await body.commitAsync();
+                        return true;
+                    }
+                },
+            },
+            {
+                text: "cancel",
+                name: "cancel",
+                executeAsync: async () => true
+            }
+        ]
+
+
+        const result = await popup.showAsync();  
+
+        return result == "ok" ? body.value : null;  
+    }
+
+    dialogs: Component[] = [];
 
     [SERVICE_TYPE] = USER_INTERACTION;
 

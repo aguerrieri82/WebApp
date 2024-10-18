@@ -7,7 +7,7 @@ import { CommitableEditor, ICommitableEditorOptions } from "../CommitableEditor"
 import { IEditor } from "../../abstraction/IEditor";
 import { cloneObject, emptyObject } from "../../utils/Object";
 import "./index.scss";
-import { IAsyncLoad  } from "../../abstraction/IAsyncLoad";
+import { IAsyncLoad } from "../../abstraction/IAsyncLoad";
 
 type ObjectEditorValidationMode = "manual" | "onInputChange";
 
@@ -25,17 +25,22 @@ export interface IObjectEditorOptions<TObj extends Record<string, any>> extends 
 
 export const ObjectEditorTemplates: TemplateMap<ObjectEditor<any>> = {
 
-    "Default": forModel(m => <form method="post" className={m.className} visible={m.visible} > 
-                <Class name="no-box"/> 
-                <Content src={m.editValue} template={m.contentTemplate()}/>
-            </form>)
+    "Default": forModel(m => <div className={m.className} visible={m.visible} >
+        <Class name="no-box" />
+        <Content src={m.editValue} template={m.contentTemplate()} />
+    </div>),
+    "Form": forModel(m => <form method="post" className={m.className} visible={m.visible} >
+        <Class name="no-box" />
+        <Content src={m.editValue} template={m.contentTemplate()} />
+    </form>),
+
 }
 
 export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, IObjectEditorOptions<TObj>> implements IAsyncLoad {
 
     protected _inputs: InputField<unknown, IEditor<unknown>>[];
     protected _contentTemplate: ITemplate<TObj>;
-     
+
     constructor(options?: IObjectEditorOptions<TObj>) {
 
         super();
@@ -57,7 +62,7 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
         console.groupEnd();
     }
 
-    contentTemplate() { 
+    contentTemplate() {
 
         if (!this._contentTemplate || this.isDynamic) {
 
@@ -152,7 +157,7 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
 
         let editValue = value;
 
-        if (!editValue) 
+        if (!editValue)
             editValue = emptyObject("valueToEdit");
 
         else if (clone)
