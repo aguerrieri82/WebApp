@@ -17,7 +17,7 @@ button.action {
     gap: size(1);
     align-items: center;
 
-    >*{
+    > * {
         line-height: 36px;
     }
 
@@ -60,6 +60,7 @@ button.action {
 
         &:hover {
             background: lighten($button-back-color, 55%);
+            //background: color.scale($button-back-color, $lightness: 55%);
         }
     }
 

@@ -4,9 +4,10 @@ import { CommitMode, ICommitable } from "../abstraction/ICommitable";
 import { IValidable } from "../abstraction/IValidable";
 import { IValidationContext } from "../abstraction/Validator";
 import { ViewNode } from "../Types";
+import { cleanProxy, getTypeName } from "@eusoft/webapp-core";
 
 
-type EditState = "" | "committed" | "committing" | "validating" | "editing";
+type EditState = "" | "committed" | "committing" | "validating" | "editing" | "loading";
 
 export interface ICommitableEditorOptions<TValue, TEditValue> extends IEditorOptions<TValue> {
     commitMode?: CommitMode;
@@ -27,11 +28,21 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
     }
 
     protected override initProps() {
-        this.onChanged("commitMode", () => this.beginEdit(this.value));
+
+        this._editState = "loading";
+
+       this.onChanged("commitMode", () => this.beginEdit(this.value));
     }
 
-    protected override get changeReason() : ValueChangedReason {
-        return this._editState == "committing" ? "edit" : undefined;
+    protected override get changeReason(): ValueChangedReason {
+
+        if (this._editState == "committing")
+            return "edit";
+
+        if (this._editState == "loading")
+            return "load";
+
+        return undefined;
     }
 
     beginEdit(value?: TValue) : void {
@@ -43,21 +54,26 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
 
         console.group("beginEdit");
 
-        this.editValue = this.valueToEdit(value, this.commitMode != "auto");
+        this._editState = "loading";
+
+        this.editValue = this.valueToEdit(value, this.commitMode != "auto-inplace" && this.commitMode != "manual-inplace");
 
         this.isDirty = false;
 
         this._editState = "editing";
 
-        console.log(this.editValue, this.name, this);
+        console.log(this.editValue, this.name ?? getTypeName(this));
 
         console.groupEnd();
     }
 
-    override onValueChanged(value: TValue, oldValue: TValue, reason: ValueChangedReason) {
+    protected override onValueChangedInternal(value: TValue, oldValue: TValue, reason: ValueChangedReason) {
 
-        if (reason != "edit")
+        console.log("onValueChangedInternal", reason);
+        if (reason != "edit") {
             this.beginEdit(value);
+        }
+        super.onValueChangedInternal(value, oldValue, reason);  
     }
 
     async validateAsync<TTarget>(ctx?: IValidationContext<TTarget>, force?: boolean): Promise<boolean> {
@@ -78,8 +94,14 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
 
     async commitAsync(): Promise<boolean> {
 
+ 
+        if (this._editState == "committing" || this._editState == "loading")
+            return;
+
         if (!await this.validateAsync())
             return false;
+
+        console.group("commit", this.name ?? getTypeName(this));
 
         this._editState = "committing";
 
@@ -87,13 +109,23 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
 
             if (await this.commitAsyncWork()) {
 
-                this.value = this.editToValue(this.editValue, this.commitMode != "manual-inplace");
+                console.log("editToValue");
+
+
+                const curValue = this.value;
+
+                this.value = this.editToValue(this.editValue, this.commitMode != "manual-inplace" && this.commitMode != "auto-inplace");
+
+                if (curValue == this.value) 
+                    this.onValueChanged(cleanProxy(this.value), cleanProxy(curValue), "edit");
 
                 this.isDirty = false;
             }
         }
         finally {
             this._editState = "committed";
+
+            console.groupEnd();
         }
 
         return true;

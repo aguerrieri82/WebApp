@@ -1,5 +1,5 @@
 
-export type CommitMode = "auto" | "manual" | "manual-inplace";
+export type CommitMode = "auto" | "manual" | "manual-inplace" | "auto-inplace";
 
 
 export interface ICommitable<TValue, TEditValue> {

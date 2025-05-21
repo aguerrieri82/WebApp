@@ -129,6 +129,8 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
 
     isValid: boolean;
 
+    isAttached: boolean;    
+
     value: TValue;
 }
 

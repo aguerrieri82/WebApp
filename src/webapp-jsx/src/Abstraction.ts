@@ -15,6 +15,7 @@ export type ModelBuilder<TModel> = { (t: TModel): JSX.Element };
 export type JsxNode<TModel> =
     string |
     number |
+    HTMLElement |
     JsxTypedElement<TModel, JsxComponentProps<TModel>> | 
     JsxNode<TModel>[] |
     ModelBuilder<TModel> 
@@ -99,7 +100,7 @@ declare global {
         type IntrinsicElements = Omit<{
 
             [P in keyof HTMLElementTagNameMap]: ElementProps<any, HTMLElementTagNameMap[P]>
-        }, "input"> & {
+        }, "input" | "select" |"textarea"> & {
 
             ["input"]: InputProps<any, HTMLElementTagNameMap["input"]>
             ["select"]: InputProps<any, HTMLElementTagNameMap["select"]>

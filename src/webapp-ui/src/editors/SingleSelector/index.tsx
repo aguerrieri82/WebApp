@@ -1,4 +1,4 @@
-import { TemplateMap, BindExpression, ITemplateContext, Bind, INDEX } from "@eusoft/webapp-core";
+import { TemplateMap, BindExpression, ITemplateContext, Bind, INDEX, USE } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "../EditorBuilder";
 import "./index.scss";
@@ -39,7 +39,7 @@ export const SingleSelectorTemplates: TemplateMap<SingleSelector<unknown, unknow
         <Class name="no-box" /> 
         {m.content?.forEach(i =>
             <label> 
-                <input type="radio" name="selector" checked={m.value == m.itemsSource.getValue(i)}
+                <input type="radio" name={m.name} value={i[USE](m).value == m.itemsSource.getValue(i)}
                     on-change={Bind.action((_, ev) => (ev.currentTarget as HTMLInputElement).checked ? m.value = m.itemsSource.getValue(i) : undefined)} />
                 <span>{m.itemsSource.getText(i)}</span>
             </label>

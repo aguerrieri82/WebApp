@@ -7,4 +7,15 @@
         flex-direction: column;
         gap: size(2);
     }
+
+    div.row {
+        display: flex;
+        flex-direction: row;
+        gap: size(2);
+
+        > * {
+            flex-basis: 0;
+            flex-grow: 1;
+        }
+    }
 }

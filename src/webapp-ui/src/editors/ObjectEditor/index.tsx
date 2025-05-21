@@ -55,7 +55,6 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
     async loadAsync() {
 
         console.group("loadAsync");
-        console.log(this);
 
         this.beginEdit(this.value);
 
@@ -89,7 +88,6 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
 
         this.isDirty = true;
 
-
         if (this.validationMode == "onInputChange") {
 
             const innerCtx = {
@@ -100,9 +98,17 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
                 this.isValid = false;
         }
 
-        if (this.commitMode == "auto") {
+        console.log("onInputChanged", input.name, this._editState);
+
+        if ((this.commitMode == "auto" || this.commitMode == "auto-inplace") &&
+            input.isAttached &&
+            this._editState != "loading" &&
+            this._editState != "committing") {
+
             await this.commitAsync();
         }
+
+        input.isAttached = true;
     }
 
     getPropEditor<TEditor extends IEditor<unknown>>(name: string) {
@@ -118,6 +124,8 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
             if (!await input.commitAsync())
                 isSuccess = false;
         }
+
+        console.log("commitAsyncWork", isSuccess);
 
         return isSuccess;
     }

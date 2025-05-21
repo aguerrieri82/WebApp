@@ -37,7 +37,12 @@ export function TransfromNotModelRef(ctx: JsxParseContext, stage: "trans-exp", p
 
     const exp = builder ? `${builder}.model` : id.toString();
 
-    if (ctx.curModel && !ctx.ignoreCurModel)
+    /*
+    TODO added && !builder in foreach if a refer a base model, and the item is not an object,
+    i cannot use [USE] (es. for strings)
+    */
+    
+    if (ctx.curModel && !ctx.ignoreCurModel && !builder)
         ctx.replaceNode(id, `${ctx.curModel.name}[${ctx.useImport("USE")}](${exp})`);
     else
         ctx.replaceNode(id, exp);
