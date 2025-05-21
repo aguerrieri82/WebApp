@@ -1,6 +1,6 @@
 import { Component, IComponentOptions, TemplateMap } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
-import { ViewNode } from "../../Types";
+import { type ViewNode } from "../../Types";
 import { IAction } from "../../abstraction";
 import { MaterialIcon } from "../Icon";
 import { createAction } from "../Action";

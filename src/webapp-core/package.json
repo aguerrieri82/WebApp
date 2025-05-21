@@ -18,10 +18,10 @@
   "keywords": [],
   "author": "Andrea Guerrieri",
   "devDependencies": {
-    "@typescript-eslint/parser": "8.7.0",
+    "@typescript-eslint/parser": "8.32.1",
     "build-utils": "link:..\\..\\scripts\\build-utils",
-    "eslint": "8.57.1",
-    "eslint-config-love": "71.0.0",
+    "eslint": "9.27.0",
+    "eslint-config-love": "120.0.0",
     "eslint-plugin-unused-imports": "^4.1.4"
   }
 }
