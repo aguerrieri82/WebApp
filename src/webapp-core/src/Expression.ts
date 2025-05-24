@@ -116,11 +116,9 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
             this.actions.push(innerExp);
         }
-        else {
+        else 
             innerExp.hitCount++;
-        }
   
-        
         return innerExp;
     }
 
@@ -335,8 +333,6 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
             },
 
             apply: (target, thisArg, argArray: []): any => {
-
-                //const argsProxy = argArray.map(a => this.use(a).createProxy()) as [];   
 
                 const exp = this.call(...argArray);
 
