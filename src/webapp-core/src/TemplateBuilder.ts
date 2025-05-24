@@ -390,6 +390,11 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 if (reason == "replace" || reason == "clear")
                     return;
 
+                if (index < 0 || index >= itemsBuilders.length) {
+                    console.warn(`Invalid item index ${index}`);
+                    return;
+                }
+
                 itemsBuilders[index].clear(true);
                 itemsBuilders.splice(index, 1);
             },

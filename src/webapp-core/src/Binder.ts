@@ -118,6 +118,16 @@ export class Binder<TModel> {
 
     protected getBindingValue<TValue>(binding: IBinding<TModel, TValue>, subscribe = true) {
 
+        const expStr = binding.value.toString();
+
+        /*
+        console.log(expStr);
+
+        if (expStr.includes("props.value.total")) {
+            debugger;
+        }
+        */
+
         const exp = this.getBindingExpression(binding.value);
 
         if (!exp)

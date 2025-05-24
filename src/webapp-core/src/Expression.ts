@@ -33,6 +33,17 @@ export function proxyEquals(a: any, b: any) {
     return cleanProxy(a) == cleanProxy(b);
 }
 
+export function isProxy(item: unknown) {
+
+    if (item && (typeof (item) === "object" || typeof (item) === "function")) {
+        const target = (item as any)[TARGET];
+        if (target)
+            return true;
+    }
+
+    return false;
+}
+
 export function cleanProxy<T>(item: T) : T {
 
     if (item && (typeof(item) === "object" || typeof(item) === "function")) {
@@ -53,12 +64,14 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
     constructor(value: TValue, parent?: ExpressionType, options?: IExpressionOptions) {
         this.parent = parent;
-        this.value = value;
+        this.value = cleanProxy(value);
         this._options = options || parent?._options || {};
         this.hitCount = 1;
     }
 
     use(model: TValue) : ExpressionType {
+
+        model = cleanProxy(model);
 
         let innerExp = this.actions.find(a => a instanceof UseExpression && a.value == model);
 
@@ -103,8 +116,10 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
             this.actions.push(innerExp);
         }
-        else
+        else {
             innerExp.hitCount++;
+        }
+  
         
         return innerExp;
     }
@@ -151,7 +166,7 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
                 if (!curProps.some(a => a.propName == exp.propName))
                     curProps.push({
-                        object: exp.parent.value,
+                        object: cleanProxy(exp.parent.value),
                         propName: exp.propName,
                         value: exp.value,
                         readonly: exp.readonly
@@ -258,7 +273,7 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
     protected createProxy() {
 
-        let proxyValue : object = this.value;
+        let proxyValue: object = cleanProxy(this.value);
 
         if (!this._options.evaluate && (this.value === undefined || this.value === null))
             proxyValue = EMPTY_FUNCTION;
@@ -320,6 +335,8 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
             },
 
             apply: (target, thisArg, argArray: []): any => {
+
+                //const argsProxy = argArray.map(a => this.use(a).createProxy()) as [];   
 
                 const exp = this.call(...argArray);
 
