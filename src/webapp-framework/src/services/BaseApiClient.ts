@@ -55,13 +55,13 @@ export class BaseApiClient {
         return url;
     }
 
-    protected async requestAsync(path: string, method: HttpMethod = "GET", data?: object, query?: object) {
+    protected async requestAsync(path: string, method: HttpMethod = "GET", data?: object, query?: object, headers?: Record<string, string>) {
 
         const url = this.buildUrl(path, query);
 
         let body: any = null;
 
-        const headers: Record<string, string> = {};
+        headers ??= {};
 
         if (data && method != "GET") {
             body = JSON.stringify(data);
@@ -84,18 +84,18 @@ export class BaseApiClient {
         return response;
     }
 
-    protected async requestTextAsync(path: string, method: HttpMethod = "GET", data?: object, query?: object): Promise<string> {
+    protected async requestTextAsync(path: string, method: HttpMethod = "GET", data?: object, query?: object, headers?: Record<string, string>): Promise<string> {
 
-        const response = await this.requestAsync(path, method, data, query);
+        const response = await this.requestAsync(path, method, data, query, headers);
 
         const text = await response.text();
 
         return text;
     }
 
-    protected async requestJsonAsync<TResult>(path: string, method: HttpMethod = "GET", data?: object, query?: object): Promise<TResult> {
+    protected async requestJsonAsync<TResult>(path: string, method: HttpMethod = "GET", data?: object, query?: object, headers?: Record<string, string>): Promise<TResult> {
 
-        return JSON.parse(await this.requestTextAsync(path, method, data, query));
+        return JSON.parse(await this.requestTextAsync(path, method, data, query, headers));
     }
 
     protected get authorization() {

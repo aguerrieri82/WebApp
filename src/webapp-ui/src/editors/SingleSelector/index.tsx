@@ -1,4 +1,4 @@
-import { TemplateMap, BindExpression, ITemplateContext, Bind, INDEX, USE } from "@eusoft/webapp-core";
+import { TemplateMap, BindExpression, ITemplateContext, Bind, INDEX, USE, delayAsync } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "../EditorBuilder";
 import "./index.scss";
@@ -15,6 +15,11 @@ interface ISingleSelectorOptions<TItem, TValue> extends ICommitableEditorOptions
 
 }
 
+function isEmpty(value: unknown) {
+
+    return value == "@empty" || value === undefined || value === null;
+}
+
 export const SingleSelectorTemplates: TemplateMap<SingleSelector<unknown, unknown>> = {
 
     "Select": forModel(m => <select
@@ -26,7 +31,7 @@ export const SingleSelectorTemplates: TemplateMap<SingleSelector<unknown, unknow
             {m.emptyItem}
         </option>}
         {m.content?.forEach(i => 
-            <option value={i[INDEX].toString()} selected={m.editValue == i[INDEX].toString()}>
+            <option value={i[INDEX].toString()}>
                 {m.itemsSource.getText(i)}
             </option>)}
         </select>
@@ -99,11 +104,16 @@ export class SingleSelector<TItem, TValue> extends CommitableEditor<TValue, stri
 
     async refreshAsync() {
 
-        const oldValue = this.value;
+        let oldValue = this.value;
 
         this.content = this.itemsSource ? await this.itemsSource.getItemsAsync() : [];
 
-        if (oldValue !== null && oldValue !== undefined)
+        await delayAsync(0);
+
+        if (this._lastValue !== undefined) {
+            this.editValue = this.valueToEdit(this._lastValue);
+        }
+        else if (oldValue !== null && oldValue !== undefined)
             this.value = oldValue;
         else
             this.getSelectedValue();
