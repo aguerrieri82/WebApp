@@ -1,4 +1,4 @@
-@import "../../_common";
+@use "../../_common" as *;
 
 .empty-view {
     display: flex;
@@ -7,7 +7,7 @@
     gap: size(1);
 
     .icon {
-        color: $primary-color; 
+        color: var(--primary-color); 
         opacity: 0.2;
         font-size: 30vh;
     }

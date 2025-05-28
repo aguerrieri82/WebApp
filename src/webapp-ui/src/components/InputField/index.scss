@@ -1,25 +1,25 @@
-@import "../../themes/_vars";
-@import "../../editors/index";
+@use "../../themes/_vars" as *;
+@use "../../editors/index" as *;
 
 
 .input-field {
-    transition-duration: $duration-fast;
+    transition-duration: var(--duration-fast);
     position: relative;
 
     > * {
-        transition-duration: $duration-fast;
+        transition-duration: var(--duration-fast);
     }
 
     > label {
-        color: $label-color;
+        color: var(--label-color);
     }
 
     > .error {
         opacity: 0;
-        color: $error-color;
-        transition-duration: $duration-fast;
+        color: var(--error-color);
+        transition-duration: var(--duration-fast);
         padding-left: size(2);
-        font-size: $font-size-small;
+        font-size: var(--font-size)-small;
         /*height: 16px;*/
 
         &:before {
@@ -45,7 +45,7 @@
         gap: size(0.5);
 
         > label {
-            font-size: $font-size-small;
+            font-size: var(--font-size)-small;
             font-weight: bold;
         }
     }
@@ -69,7 +69,7 @@
         }
 
         > label {
-            color: $error-color;
+            color: var(--error-color);
         }
     }
 
@@ -103,7 +103,7 @@
     &:not(:has(.editor-container > .no-box)) {
 
         > .editor-container {
-            transition: all $duration-normal, border-width 0s;
+            transition: all var(--duration-normal), border-width 0s;
             position: relative;
 
             @include edit-box;
@@ -127,13 +127,13 @@
             &:focus-within {
                 > .editor-container {
                     border-width: 2px;
-                    border-color: $border-color-focus;
+                    border-color: var(--border-color-focus);
                 }
             }
 
             &.invalid {
                 > .editor-container {
-                    border-color: $error-color;
+                    border-color: var(--error-color);
                 }
             }
         }
@@ -157,13 +157,13 @@
             &:focus-within, &:not(.empty), &:has(input[type=date]), &:has(input:-webkit-autofill) {
 
                 > label {
-                    font-size: $font-size-small;
+                    font-size: var(--font-size)-small;
                     line-height: unset;
                 }
 
                 &:not(.invalid) {
                     > label {
-                        color: $border-color-focus;
+                        color: var(--border-color-focus);
                     }
                 }
             }
@@ -178,7 +178,7 @@
 
         &.outlined {
 
-            &:first-child{
+            &:first-child {
                 margin-top: 6px;
             }
 
@@ -212,9 +212,9 @@
                         height: 2px;
                         bottom: 1px;
                         left: 50%;
-                        background-color: $border-color-focus;
+                        background-color: var(--border-color-focus);
                         position: absolute;
-                        transition: all ease $duration-fast;
+                        transition: all ease var(--duration-fast);
                     }
                 }
 
@@ -229,7 +229,7 @@
             }
 
             > .editor-container {
-                background-color: $editor-filled-color;
+                background-color: var(--editor-filled-color);
                 padding-top: 23px;
             }
 

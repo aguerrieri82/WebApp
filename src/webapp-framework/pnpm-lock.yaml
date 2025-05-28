@@ -1,9 +1,26 @@
 lockfileVersion: '6.0'
 
+dependencies:
+  '@eusoft/webapp-core':
+    specifier: link:..\webapp-core
+    version: link:../webapp-core
+  '@eusoft/webapp-jsx':
+    specifier: link:..\webapp-jsx
+    version: link:../webapp-jsx
+  '@eusoft/webapp-ui':
+    specifier: link:..\webapp-ui
+    version: link:../webapp-ui
+
 devDependencies:
+  '@eusoft/webapp-compiler-rollup':
+    specifier: link:..\..\dist\webapp-compiler-rollup
+    version: link:../../dist/webapp-compiler-rollup
   '@typescript-eslint/parser':
     specifier: 8.32.1
     version: 8.32.1(eslint@9.27.0)(typescript@5.8.3)
+  build-utils:
+    specifier: link:..\..\scripts\build-utils
+    version: link:../../scripts/build-utils
   eslint:
     specifier: 9.27.0
     version: 9.27.0

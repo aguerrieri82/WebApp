@@ -1,4 +1,4 @@
-@import "../../themes/_vars";
+@use "../../themes/_vars" as *;
 
 .blocker {
     position: fixed;

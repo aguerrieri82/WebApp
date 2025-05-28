@@ -1,7 +1,6 @@
-@import "../../themes/_vars";
+@use "../../themes/_vars" as *;
 
-$button-back-color: $primary-color !default;
-$button-text-color: #fff !default;
+
 
 button.action {
     min-width: 64px;
@@ -10,7 +9,7 @@ button.action {
     line-height: 36px;
     position: relative;
     overflow: hidden;
-    transition-duration: $duration-normal;
+    transition-duration: var(--duration-normal);
     cursor: pointer;
     display: flex;
     flex-direction: row;
@@ -23,7 +22,7 @@ button.action {
 
 
     &:after {
-        transition-duration: $duration-normal;
+        transition-duration: var(--duration-normal);
         position: absolute;
         top: 0;
         bottom: 0;
@@ -48,19 +47,18 @@ button.action {
     &.text, &.icon {
         border: none;
         background-color: transparent;
-        color: $button-back-color;
+        color: var(--button-back-color);
         font-weight: 500;
         -webkit-tap-highlight-color: transparent;
 
 
         &:after {
-            background: $button-back-color;
+            background: var(--button-back-color);
             filter: brightness(150%);
         }
 
         &:hover {
-            background: lighten($button-back-color, 55%);
-            //background: color.scale($button-back-color, $lightness: 55%);
+            background: color-mix(in srgb, var(--button-back-color) 45%, white);
         }
     }
 
@@ -80,11 +78,11 @@ button.action {
     }
 
     &.contained {
-        background-color: $button-back-color;
+        background-color: var(--button-back-color);
         border: none;
         text-transform: uppercase;
         box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-        color: $button-text-color;
+        color: var(--button-text-color);
 
         &:hover {
             filter: brightness(110%);

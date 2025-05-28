@@ -1,4 +1,4 @@
-@import "../../themes/_vars";
+@use "../../themes/_vars" as *;
 
 .swipe-view {
     overflow: hidden;
@@ -68,10 +68,10 @@
 
         span {
             color: #ddd;
-            transition-duration: $duration-fast;
+            transition-duration: var(--duration-fast);
 
             &.active {
-                color: $primary-color;
+                color: var(--primary-color);
             }
         }
 

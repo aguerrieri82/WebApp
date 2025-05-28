@@ -1,4 +1,4 @@
-@import "../../themes/_vars";
+@use "../../themes/_vars" as *;
 
 .wizard {
     display: flex;
@@ -13,10 +13,10 @@
 
         li {
             padding: size(1) size(1.5);
-            transition-duration: $duration-fast;
+            transition-duration: var(--duration-fast);
 
             &.active {
-                color: $primary-color;
+                color: var(--primary-color);
                 font-weight: bold;
             }
 
@@ -38,7 +38,7 @@
 
         > footer {
             margin-top: size(2);
-            border-top: solid 1px $border-color;
+            border-top: solid 1px var(--border-color);
             padding-top: size(2);
             display: flex;
             flex-direction: row;

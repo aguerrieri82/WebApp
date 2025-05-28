@@ -1,23 +1,5 @@
-$primary-color: #fff !default;
 
-$font-family: unset !default;
-$back-color: unset !default;
-$border-color: unset !default;
-$border-color-focus: $primary-color !default;
-$error-color: unset !default;
-$text-color: unset !default;
-$surface-color: #FFF !default;
 
-$font-size: 16px !default;
-$font-size-small: 12px !default;
-
-$duration-normal: 0.3s !default;
-$duration-fast: 0.2s !default;
-
-$z-index-popup: 1000 !default;
-
-$progress-dalay: 0.5s !default;
-
-@function size($value){
+@function size($value) {
     @return $value * 8px;
 }

@@ -1,18 +1,41 @@
-@import "_vars";
-@import "_utils";
+@use "_vars" as *;
+@use "_utils" as *;
+
+:root {
+    --back-color: transparent;
+    --primary-color: #fff;
+    --surface-color: #FFF;
+    --font-size: 16px;
+    --font-size-small: 12px;
+    --duration-normal: 0.3s;
+    --duration-fast: 0.2s;
+    --z-index-popup: 1000;
+    --progress-dalay: 0.5s;
+    --font-family: unset;
+    --back-color: unset;
+    --border-color: unset;
+    --border-color-focus: var(--primary-color);
+    --error-color: unset;
+    --text-color: unset;
+    --editor-filled-color: whitesmoke;
+    --label-color: w#666;
+    --button-back-color: var(--primary-color);
+    --button-text-color: #fff;
+}
+
 
 * {
-    font-family: $font-family;
+    font-family: var(--font-family);
 }
 
 button, input, select, textarea {
-    font-size: $font-size;
+    font-size: var(--font-size);
 }
 
 body {
-    background: $back-color;
-    font-size: $font-size;
-    color: $text-color;
+    background: var(--back-color);
+    font-size: var(--font-size);
+    color: var(--text-color);
     margin: 0;
     padding: 0;
 }
