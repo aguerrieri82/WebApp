@@ -1,10 +1,10 @@
-import { Expression, BindExpression, ComponentStyle, toKebabCase, ITemplate, TemplateBuilder, getProp, IObservableProperty } from "@eusoft/webapp-core";
-import { ViewNode } from "../Types";
-import { IEditor, IEditorOptions } from "../abstraction/IEditor";
-import { Validator } from "../abstraction/Validator";
-import { IInputFieldOptions, InputField } from "../components";
-import { ILabel } from "../abstraction";
-import { JsxTypedElement, TemplateModel } from "@eusoft/webapp-jsx";
+import { Expression, type BindExpression, type ComponentStyle, toKebabCase, type ITemplate, type TemplateBuilder } from "@eusoft/webapp-core";
+import { type ViewNode } from "../Types";
+import { type IEditor, type IEditorOptions } from "../abstraction/IEditor";
+import { type Validator } from "../abstraction/Validator";
+import { type IInputFieldOptions, InputField } from "../components";
+import { type ILabel } from "../abstraction";
+import { type JsxTypedElement, type TemplateModel } from "@eusoft/webapp-jsx";
 import { emptyObject } from "../utils";
 
 interface EditorBuilderOptions<TModel, TModelContainer extends Record<string, any>> {

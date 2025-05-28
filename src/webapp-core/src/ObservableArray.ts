@@ -1,4 +1,4 @@
-import { IObservableArray, IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
+import { type IObservableArray, type IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
 
 export function createObservableArray<T>(value: T[]): IObservableArray<T> {
 

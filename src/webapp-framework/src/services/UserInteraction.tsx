@@ -1,7 +1,7 @@
-import { Component, SERVICE_TYPE, delayAsync, mount } from "@eusoft/webapp-core";
-import { IUserInteraction, USER_INTERACTION } from "../abstraction/IUserInteraction";
-import { debug, forModel } from "@eusoft/webapp-jsx";
-import { IEditor, LocalString, Popup, ViewNode, formatText, isCommitable } from "@eusoft/webapp-ui";
+import { type Component, SERVICE_TYPE, delayAsync, mount } from "@eusoft/webapp-core";
+import { type IUserInteraction, USER_INTERACTION } from "../abstraction/IUserInteraction";
+import { forModel } from "@eusoft/webapp-jsx";
+import { type IEditor, type LocalString, Popup, type ViewNode, formatText, isCommitable } from "@eusoft/webapp-ui";
 
 export type MessageType = "info" | "error" | "warning" | "success";
 export enum MessageBoxButton {
@@ -22,7 +22,7 @@ class UserInteraction implements IUserInteraction {
 
 
     async messageBoxAsync(body: ViewNode, title: LocalString, buttons: MessageBoxButton): Promise<MessageBoxButton> {
-        var popup = new Popup();
+        const popup = new Popup();
         popup.style = "message-box";
         popup.title = formatText(title);
         popup.body = body;
@@ -65,7 +65,7 @@ class UserInteraction implements IUserInteraction {
 
     async inputAsync<T>(body: IEditor<T>, title: LocalString): Promise<T> {
 
-        var popup = new Popup();
+        const popup = new Popup();
         
         popup.title = title;
         popup.body = body;

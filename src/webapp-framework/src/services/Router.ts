@@ -1,4 +1,4 @@
-import { IContent, IContentConstructor, IContentInfo, formatText, isResultContainer, replaceArgs } from "@eusoft/webapp-ui";
+import { type IContent, type IContentConstructor, type IContentInfo, formatText, isResultContainer, replaceArgs } from "@eusoft/webapp-ui";
 import { app } from "../App";
 
 type StringLike = { toString(): string } | string;

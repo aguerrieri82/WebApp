@@ -1,5 +1,5 @@
-import { IBehavoir } from "./abstraction";
-import { ITemplateContext } from "./abstraction/ITemplateContext";
+import { type IBehavoir } from "./abstraction";
+import { type ITemplateContext } from "./abstraction/ITemplateContext";
 
 export abstract class Behavoir<TOptions extends {} = {}, TElement extends HTMLElement = HTMLElement, TModel = any> implements IBehavoir<TElement, TModel> {
 

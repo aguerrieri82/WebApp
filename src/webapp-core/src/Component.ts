@@ -1,20 +1,20 @@
-import { IPropertyChangedHandler, isObservableProperty } from "./abstraction/IObservableProperty";
+import { type IPropertyChangedHandler, isObservableProperty } from "./abstraction/IObservableProperty";
 import type { CatalogTemplate } from "./abstraction/ITemplateProvider";
-import { COMPONENT, IComponent, isComponent } from "./abstraction/IComponent";
+import { COMPONENT, type IComponent, isComponent } from "./abstraction/IComponent";
 import { enumOverrides, getTypeName, isClass, objectHierarchy, setTypeName } from "./utils/Object";
 import { bindTwoWays, getOrCreateProp } from "./Properties";
 import { toKebabCase } from "./utils/String";
 import type { IBound } from "./abstraction/IBound";
 import type { Bindable, ComponentStyle, IComponentOptions } from "./abstraction/IComponentOptions";
 import { Binder } from "./Binder";
-import { IBindingContainer } from "./abstraction/IBindingContainer";
-import { IMountListener } from "./abstraction/IMountListener";
-import { ITemplateContext } from "./abstraction/ITemplateContext";
-import { IService, SERVICE_TYPE, ServiceType } from "./abstraction/IService";
-import { IServiceProvider, ServiceContainer } from "./abstraction/IServiceProvider";
+import { type IBindingContainer } from "./abstraction/IBindingContainer";
+import { type IMountListener } from "./abstraction/IMountListener";
+import { type ITemplateContext } from "./abstraction/ITemplateContext";
+import { type IService, SERVICE_TYPE, type ServiceType } from "./abstraction/IService";
+import { type IServiceProvider, type ServiceContainer } from "./abstraction/IServiceProvider";
 import type { CommonKeys } from "./abstraction/Types";
-import { BindExpression, BindValue } from "./abstraction/IBinder";
-import { IHTMLContainer } from "./abstraction";
+import { type BindExpression, type BindValue } from "./abstraction/IBinder";
+import { type IHTMLContainer } from "./abstraction";
 import { buildStyle } from "./utils/Style";
 
 interface ISubscription {

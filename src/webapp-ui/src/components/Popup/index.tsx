@@ -1,5 +1,5 @@
-﻿import { Bind, Component, IComponentOptions, delayAsync, mount } from "@eusoft/webapp-core";
-import { ViewNode } from "../../Types";
+﻿import { Bind, Component, type IComponentOptions, delayAsync, mount } from "@eusoft/webapp-core";
+import { type ViewNode } from "../../Types";
 import { forModel } from "@eusoft/webapp-jsx";
 import { Action } from "../Action";
 import "./index.scss";

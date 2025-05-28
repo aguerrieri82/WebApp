@@ -1,12 +1,12 @@
-﻿import { Bindable, IComponentOptions, Component, TemplateMap } from "@eusoft/webapp-core";
+﻿import { type Bindable, type IComponentOptions, Component, type TemplateMap } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
-import { IContent, IContentConstructor, IContentInfo, IContentInstance, LoadState } from "../../abstraction/IContent";
-import { IFeature } from "../../abstraction/IFeature";
+import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, type LoadState } from "../../abstraction/IContent";
+import { type IFeature } from "../../abstraction/IFeature";
 import { formatText } from "../../utils/Format";
-import { LocalString, ViewNode } from "../../Types";
+import { type LocalString, type ViewNode } from "../../Types";
 import { stringOrUndef, useOperation } from "../../utils";
-import { IAction } from "../../abstraction/IAction";
-import { IContentHost } from "../../abstraction";
+import { type IAction } from "../../abstraction/IAction";
+import { type IContentHost } from "../../abstraction";
 import "./index.scss";
 import { Action } from "../Action";
 export interface IContentOptions<TArgs extends {}> extends IComponentOptions {

@@ -9,13 +9,11 @@
     "build": "tsc",
     "dist:dev": "node dist/index --dist --env:dev",
     "dist:prod": "node dist/index --dist --env:prod",
-    "dist:pub": "node dist/index --dist --env:prod --publish --new"
-  },
-  "dependencies": {
-
+    "dist:pub": "node dist/index --dist --env:prod --publish --new",
+    "upgrade": "pnpm up -latest"
   },
   "devDependencies": {
-    "@types/node": "20.11.10",
-    "typescript": "5.3.3"
+    "@types/node": "22.15.23",
+    "typescript": "5.8.3"
   }
 }

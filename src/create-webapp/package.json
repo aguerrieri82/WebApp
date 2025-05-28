@@ -1,6 +1,6 @@
 {
   "name": "@eusoft/create-webapp",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "packageManager": "pnpm@8.4.0",
   "type": "module",
   "main": "src/index.ts",
@@ -16,11 +16,11 @@
   "keywords": [],
   "author": "Andrea Guerrieri",
   "dependencies": {
-    "open": "10.0.3"
+    "open": "10.1.2"
   },
   "devDependencies": {
-    "@types/node": "20.11.16",
+    "@types/node": "22.15.23",
     "build-utils": "link:../../scripts/build-utils",
-    "typescript": "5.3.3"
+    "typescript": "5.8.3"
   }
 }

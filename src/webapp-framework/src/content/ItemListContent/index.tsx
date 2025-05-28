@@ -1,9 +1,8 @@
-import { Content, IAction, IContent, IContentInstance, IContentOptions, IEditor, IItemsSource, ItemView, ListView, LocalString, MaterialIcon, ViewNode } from "@eusoft/webapp-ui";
-import { IFilterField } from "../../abstraction/IFilterEditor";
-import { Bind, Class } from "@eusoft/webapp-core";
+import { Content, type IAction, type IContent, type IContentInstance, type IContentOptions, type IEditor, type IItemsSource, ItemView, ListView, type LocalString, MaterialIcon, type ViewNode } from "@eusoft/webapp-ui";
+import { type IFilterField } from "../../abstraction/IFilterEditor";
+import { Bind, type Class } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
 import router from "../../services/Router";
-import { ContentBuilder } from "../Builder";
 
 export interface IListColumn<TItem, TValue> {
     name?: string;

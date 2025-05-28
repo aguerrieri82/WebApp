@@ -1,5 +1,5 @@
-import { LocalString, ViewNode } from "../../Types";
-import { template, ITemplateProvider, TemplateBuilder, isTemplate, isTemplateProvider } from "@eusoft/webapp-core";
+import { type LocalString, type ViewNode } from "../../Types";
+import { template, type ITemplateProvider, type TemplateBuilder, isTemplate, isTemplateProvider } from "@eusoft/webapp-core";
 import { formatText } from "../../utils";
 
 export interface INodeViewOptions {

@@ -1,5 +1,5 @@
-import { IComponent, ITemplate, getFunctionType } from "@eusoft/webapp-core";
-import { ITemplateContext, JsxComponentProps, JsxElementInstance, JsxElementType, JsxNode, JsxTypedElement, TemplateModel } from "./abstraction";
+import { type IComponent, type ITemplate, getFunctionType } from "@eusoft/webapp-core";
+import { type ITemplateContext, type JsxComponentProps, type JsxElementInstance, type JsxElementType, type JsxNode, type JsxTypedElement, type TemplateModel } from "./abstraction";
 import { Template } from "./components/Template";
 export function isJsxElement(obj: any): obj is JsxElementInstance<any, JsxComponentProps<any>> {
 

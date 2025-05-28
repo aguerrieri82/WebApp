@@ -1,6 +1,6 @@
-import { ITemplate, Services } from "@eusoft/webapp-core";
-import { LocalString } from "../Types";
-import { ILocalization, LOCALIZATION } from "../abstraction";
+import { type ITemplate, Services } from "@eusoft/webapp-core";
+import { type LocalString } from "../Types";
+import { type ILocalization, LOCALIZATION } from "../abstraction";
 
 export function formatText(text: LocalString, ...args: any[]): string | ITemplate<unknown>  { 
 

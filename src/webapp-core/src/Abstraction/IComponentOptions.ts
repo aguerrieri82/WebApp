@@ -1,4 +1,4 @@
-﻿import { BindMode } from "./IBinder";
+﻿import { type BindMode } from "./IBinder";
 import type { IObservableProperty } from "./IObservableProperty";
 import type { CatalogTemplate } from "./ITemplateProvider";
 

@@ -1,7 +1,7 @@
-import { forModel, TemplateModel } from "@eusoft/webapp-jsx";
-import { CommitableEditor, Content, EditorBuilder, IContentOptions, IEditor, IObjectEditorOptions, isAsyncLoad, ObjectEditor } from "@eusoft/webapp-ui";
+import { forModel } from "@eusoft/webapp-jsx";
+import { CommitableEditor, Content, type EditorBuilder, type IContentOptions, type IEditor, type IObjectEditorOptions, isAsyncLoad, ObjectEditor } from "@eusoft/webapp-ui";
 import { ContentBuilder } from "../Builder";
-import { ITemplate } from "@eusoft/webapp-core";
+import { type ITemplate } from "@eusoft/webapp-core";
 
 export interface IItemEditArgs<TItem> {
 

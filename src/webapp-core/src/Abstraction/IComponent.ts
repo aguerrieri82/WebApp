@@ -1,6 +1,6 @@
-﻿import { IBindable } from "./IBindable";
+﻿import { type IBindable } from "./IBindable";
 import type { IComponentOptions } from "./IComponentOptions";
-import { ITemplateContext } from "./ITemplateContext";
+import { type ITemplateContext } from "./ITemplateContext";
 import type { CatalogTemplate } from "./ITemplateProvider";
 
 export const COMPONENT: unique symbol = Symbol.for("@component");

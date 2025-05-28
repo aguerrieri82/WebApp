@@ -97,7 +97,7 @@ function copyFiles(src: string, dst: string, filter: (a: string) => boolean) {
 }
 
 function tsc(outDir: string) {
-    spawnSync("tsc", ["--outDir " + outDir, "--declarationDir " + outDir, "--noEmit false"], {
+    spawnSync("tsc", ["--outDir " + outDir, "--declarationDir " + outDir, "--noEmit false", "--declaration"], {
         shell: true,
         stdio: "inherit",
     });

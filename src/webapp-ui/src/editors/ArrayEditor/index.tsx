@@ -1,13 +1,12 @@
-import { TemplateMap, BindExpression, IComponent } from "@eusoft/webapp-core";
+import { type TemplateMap, type BindExpression, type IComponent } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
-import { IEditor, IEditorOptions } from "../../abstraction/IEditor";
+import { type IEditor, type IEditorOptions } from "../../abstraction/IEditor";
 import { EditorBuilder } from "../EditorBuilder";
 import "./index.scss";
 import { CommitableEditor } from "../CommitableEditor";
-import TextEditor from "../TextEditor";
-import { LocalString, ViewNode } from "../../Types";
+import { type LocalString, type ViewNode } from "../../Types";
 import { createAction, ItemView, MaterialIcon, Popup } from "../../components";
-import { IAction, isCommitable, isValidable } from "../../abstraction";
+import { type IAction, isCommitable } from "../../abstraction";
 import { formatText } from "../../utils/Format";
 
 

@@ -1,4 +1,4 @@
-import { ViewNode } from "../Types";
+import { type ViewNode } from "../Types";
 
 export interface IValidationContext<TTarget = Record<string, unknown>> {
 

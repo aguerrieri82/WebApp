@@ -1,6 +1,6 @@
 import { cleanProxy } from "./Expression";
-import { IComponent } from "./abstraction";
-import { IBindable, PARENT, USE, BIND_MODES } from "./abstraction/IBindable";
+import { type IComponent } from "./abstraction";
+import { type IBindable, PARENT, USE, BIND_MODES } from "./abstraction/IBindable";
 import type { BindExpression, BindMode } from "./abstraction/IBinder";
 
 interface IBindBuilder<TModel> {

@@ -1,4 +1,4 @@
-import { ITemplate, template } from "@eusoft/webapp-core";
+import { type ITemplate, template } from "@eusoft/webapp-core";
 import type { JsxComponentProps, TemplateModel } from "./../abstraction";
 import { processNode } from "./../Runtime";
 

@@ -1,9 +1,9 @@
-import { Bindable, IComponentOptions, IComponent, Component, TemplateMap, ComponentStyle, BIND_MODES, BindMode } from "@eusoft/webapp-core";
-import { Class, JsxNode, Template, forModel } from "@eusoft/webapp-jsx";
-import { ActionType, IAction, IActionContext } from "../../abstraction/IAction";
-import { OperationManager } from "../../services";
+import { type Bindable, type IComponentOptions, type IComponent, Component, type TemplateMap, type ComponentStyle } from "@eusoft/webapp-core";
+import { Class, type JsxNode, forModel } from "@eusoft/webapp-jsx";
+import { type ActionType, type IAction, type IActionContext } from "../../abstraction/IAction";
+import { type OperationManager } from "../../services";
 import { OPERATION_MANAGER } from "../../abstraction";
-import { ViewNode } from "../../Types";
+import { type ViewNode } from "../../Types";
 import "./index.scss";
 import { NodeView } from "../NodeView";
 import { ContextMenu } from "../ContextMenu";

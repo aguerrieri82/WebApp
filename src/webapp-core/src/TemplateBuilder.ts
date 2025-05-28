@@ -1,12 +1,12 @@
-import { BIND_MODES, COMPONENT, ServiceType, StringLike, isComponent } from "./abstraction";
-import { IBehavoir, isBehavoir } from "./abstraction/IBehavoir";
+import { BIND_MODES, COMPONENT, type ServiceType, type StringLike, isComponent } from "./abstraction";
+import { type IBehavoir, isBehavoir } from "./abstraction/IBehavoir";
 import type { BindMode, BindValue, BoundObject, BoundObjectModes } from "./abstraction/IBinder";
 import { isHTMLContainer } from "./abstraction/IHTMLContainer";
 import { isMountListener } from "./abstraction/IMountListener";
-import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
-import { ITemplate, isTemplate } from "./abstraction/ITemplate";
-import { ITemplateContext } from "./abstraction/ITemplateContext";
-import { CatalogTemplate, ITemplateProvider, isTemplateProvider } from "./abstraction/ITemplateProvider";
+import { type IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
+import { type ITemplate, isTemplate } from "./abstraction/ITemplate";
+import { type ITemplateContext } from "./abstraction/ITemplateContext";
+import { type CatalogTemplate, type ITemplateProvider, isTemplateProvider } from "./abstraction/ITemplateProvider";
 import { Binder } from "./Binder";
 import { cleanProxy, proxyEquals } from "./Expression";
 import { getTypeName, isClass, setTypeName } from "./utils/Object";
@@ -372,7 +372,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         let itemsBuilders: TemplateBuilder<TItem>[] = [];
 
-        let template = templateOrName ? this.loadTemplate(templateOrName) : undefined;
+        const template = templateOrName ? this.loadTemplate(templateOrName) : undefined;
 
         const marker = document.createTextNode("");
 
@@ -902,9 +902,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     class(name: BindValue<TModel, string>): this;
 
-    class(name: string, condition: BindValue<TModel, Boolean>): this;
+    class(name: string, condition: BindValue<TModel, boolean>): this;
 
-    class(name: string | BindValue<TModel, string>, condition?: BindValue<TModel, Boolean>): this {
+    class(name: string | BindValue<TModel, string>, condition?: BindValue<TModel, boolean>): this {
         if (condition && typeof (name) == "string") {
             const nameParts: string[] = name ? name.split(" ") : [];
 

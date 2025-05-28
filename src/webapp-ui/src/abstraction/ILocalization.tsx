@@ -1,5 +1,5 @@
-import { IService } from "@eusoft/webapp-core";
-import { JsxNode } from "@eusoft/webapp-jsx";
+import { type IService } from "@eusoft/webapp-core";
+import { type JsxNode } from "@eusoft/webapp-jsx";
 
 
 export const LOCALIZATION: any = Symbol.for("$localization");

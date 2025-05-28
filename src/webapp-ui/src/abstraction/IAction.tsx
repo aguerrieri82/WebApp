@@ -1,4 +1,4 @@
-import { LocalString, ViewNode } from "../Types";
+import { type LocalString, type ViewNode } from "../Types";
 
 
 export type ActionPriority = "primary" | "secondary";

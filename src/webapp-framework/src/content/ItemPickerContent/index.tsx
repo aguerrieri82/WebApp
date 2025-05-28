@@ -1,9 +1,7 @@
-import { Action, Content, IAction, IContent, IContentInstance, IContentOptions, IEditor, IItemsSource, ItemView, ListView, LocalString, MaterialIcon, ViewNode } from "@eusoft/webapp-ui";
-import { IFilterField } from "../../abstraction/IFilterEditor";
-import { Bind, Class } from "@eusoft/webapp-core";
+import { Action, Content, type IAction, type IContentOptions, type IItemsSource, ItemView, ListView, type LocalString, type ViewNode } from "@eusoft/webapp-ui";
+import { Bind, type Class } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
 import router from "../../services/Router";
-import { ContentBuilder } from "../Builder";
 import "./index.scss"
 
 export interface IItemPickerOptions<TItem, TFilter> extends IContentOptions<unknown> {

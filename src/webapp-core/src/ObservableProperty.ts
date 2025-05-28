@@ -1,4 +1,4 @@
-﻿import { IObservableProperty, IPropertyChangedHandler } from "./abstraction/IObservableProperty";
+﻿import { type IObservableProperty, type IPropertyChangedHandler } from "./abstraction/IObservableProperty";
 import { forEachRev } from "./utils/Array";
 import { WebApp } from "./utils/Debug";
 

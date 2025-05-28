@@ -1,6 +1,16 @@
-import { Class, ComponentStyle } from "@eusoft/webapp-core";
-import { IContentOptions, Content, IContentInfo, IContent, IFeature, LocalString } from "@eusoft/webapp-ui";
+import { type Class, type ComponentStyle } from "@eusoft/webapp-core";
+import { type IContentOptions, type Content, type IContentInfo, type IContent, type IFeature, type LocalString, type IAction, type IActionContext } from "@eusoft/webapp-ui";
 
+type Extra<TContent, T> = {
+    [K in keyof T]:
+    T[K] extends (...args: any[]) => any
+    ? (this: TContent & T, ...args: Parameters<T[K]>) => ReturnType<T[K]>
+    : T[K];
+};
+
+type ActionWithThis<TThis, TTarget = unknown> = IAction<TTarget> & {
+    executeAsync: (this: TThis,  ctx: IActionContext<TTarget>) => Promise<any>;
+}
 
 export interface IContentBuilder {
 
@@ -30,6 +40,10 @@ export class ContentBuilder<TContent extends Content<TArgs, TOptions>, TArgs ext
         return this;
     }
 
+    action(action: IAction) {
+        this._options.actions ??= [];
+        return this;
+    }
 
     route(value: string) {
         this._options.route = value;
@@ -43,18 +57,20 @@ export class ContentBuilder<TContent extends Content<TArgs, TOptions>, TArgs ext
         return this;
     }
 
-    build() {
-        return this._factory(this._options);
+    build<TExtra extends object>(extra?: Extra<TContent, TExtra>) {
+        const res = this._factory(this._options);
+        Object.assign(res, extra);
+        return res as (TExtra & TContent);
     }
 
 
-    buildContent(): IContentInfo<TArgs, TContent> {
+    buildContent<TExtra extends object>(extra?: Extra<TContent, TExtra>) {
         return {
-            name: this._options.name,
+            name: this._options.name,            
             route: this._options.route,
-            icon: this._options.icon,
-            factory: () => this._factory(this._options)
-        }
+            icon: this._options.icon,            
+            factory: () => this.build(extra)
+        } as IContentInfo<TArgs, TContent & TExtra>
     }
 }
 

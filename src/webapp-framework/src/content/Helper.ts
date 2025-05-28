@@ -1,4 +1,4 @@
-import { IContentOptions, Content, IContentInfo } from "@eusoft/webapp-ui";
+import { type IContentOptions, type Content, type IContentInfo } from "@eusoft/webapp-ui";
 
 export function declareContent<TArgs, TOptions extends IContentOptions<TArgs>, TType extends { new(...args: any[]): Content<TArgs, TOptions> }>(type: TType, options: TOptions) {
 

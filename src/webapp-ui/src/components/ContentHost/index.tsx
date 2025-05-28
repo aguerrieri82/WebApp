@@ -1,7 +1,7 @@
-import { IComponentOptions, Component, TemplateMap } from "@eusoft/webapp-core";
-import { forModel, Template } from "@eusoft/webapp-jsx";
-import { IContent } from "../../abstraction/IContent";
-import { IContentHost } from "../../abstraction";
+import { type IComponentOptions, Component, type TemplateMap } from "@eusoft/webapp-core";
+import { forModel } from "@eusoft/webapp-jsx";
+import { type IContent } from "../../abstraction/IContent";
+import { type IContentHost } from "../../abstraction";
 import "./index.scss";
 
 interface IContentHostOptions extends IComponentOptions {

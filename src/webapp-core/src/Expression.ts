@@ -1,4 +1,4 @@
-import { BindExpression, TARGET, USE } from "./abstraction";
+import { type BindExpression, TARGET, USE } from "./abstraction";
 import { getPropertyDescriptor } from "./utils/Object";
 
 type ExpressionType = Expression<any>;

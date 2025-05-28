@@ -1,12 +1,12 @@
-import { TemplateMap, BindExpression, Bindable } from "@eusoft/webapp-core";
-import { Class, Template, forModel } from "@eusoft/webapp-jsx";
-import { IEditorOptions } from "../../abstraction/IEditor";
+import { type TemplateMap, type BindExpression, type Bindable } from "@eusoft/webapp-core";
+import { Class, forModel } from "@eusoft/webapp-jsx";
+import { type IEditorOptions } from "../../abstraction/IEditor";
 import { EditorBuilder } from "../EditorBuilder";
 import { Editor } from "../Editor";
-import { ViewNode } from "../../Types";
+import { type ViewNode } from "../../Types";
 import "./index.scss";
 import { NodeView } from "../../components";
-import { ILabel } from "../../abstraction/ILabel";
+import { type ILabel } from "../../abstraction/ILabel";
 
 interface IBooleanEditorOptions extends IEditorOptions<boolean> {
 

@@ -1,5 +1,5 @@
-import { IService } from "@eusoft/webapp-core";
-import { LocalString, ViewNode } from "@eusoft/webapp-ui";
+import { type IService } from "@eusoft/webapp-core";
+import { type LocalString, type ViewNode } from "@eusoft/webapp-ui";
 
 
 export const USER_INTERACTION: any = Symbol.for("$userInteraction");

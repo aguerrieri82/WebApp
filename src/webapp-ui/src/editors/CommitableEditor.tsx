@@ -1,9 +1,9 @@
-import { IEditorOptions, ValueChangedReason } from "../abstraction/IEditor";
+import { type IEditorOptions, type ValueChangedReason } from "../abstraction/IEditor";
 import { Editor } from "./Editor";
-import { CommitMode, ICommitable } from "../abstraction/ICommitable";
-import { IValidable } from "../abstraction/IValidable";
-import { IValidationContext } from "../abstraction/Validator";
-import { ViewNode } from "../Types";
+import { type CommitMode, type ICommitable } from "../abstraction/ICommitable";
+import { type IValidable } from "../abstraction/IValidable";
+import { type IValidationContext } from "../abstraction/Validator";
+import { type ViewNode } from "../Types";
 import { cleanProxy, getTypeName } from "@eusoft/webapp-core";
 
 

@@ -10,7 +10,9 @@
     "noEmit": true,
     "jsx": "preserve",
     "noImplicitOverride": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": true
+
   },
   "include": ["src"]
 }

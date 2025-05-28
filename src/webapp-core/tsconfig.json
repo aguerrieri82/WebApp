@@ -10,7 +10,8 @@
     "moduleResolution": "Node",
     "noEmit": true,
     "noImplicitOverride": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": true
   },
   "include": ["src"]
 }

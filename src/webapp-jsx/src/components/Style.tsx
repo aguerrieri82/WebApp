@@ -1,4 +1,4 @@
-import { BindValue } from "@eusoft/webapp-core";
+import { type BindValue } from "@eusoft/webapp-core";
 import type { JsxComponentProps, TemplateModel } from "../abstraction";
 
 

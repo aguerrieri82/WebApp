@@ -1,5 +1,5 @@
 import { Services, mount } from "@eusoft/webapp-core";
-import { ContentHost, LOCALIZATION, OPERATION_MANAGER, OperationManager } from "@eusoft/webapp-ui";
+import { type ContentHost, LOCALIZATION, OPERATION_MANAGER, OperationManager } from "@eusoft/webapp-ui";
 import localTable from "./services/LocalTable";
 import { RouteContentHost } from "./components/RouteContentHost";
 

@@ -1,4 +1,4 @@
-﻿import { IObservableProperty } from "./IObservableProperty";
+﻿import { type IObservableProperty } from "./IObservableProperty";
 
 export const PROPS: unique symbol = Symbol.for("@props");
 export const TARGET: unique symbol = Symbol.for("@target")

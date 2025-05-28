@@ -68,7 +68,7 @@ async function processLib(libName: string, options: IOptions) {
 
         logColor(`Install dist\n`, colours.fg.blue);
 
-        await pnpm(libDistPath, "install");
+        await pnpm  (libDistPath, "install", "--force");
 
         if (options.isPublish) {
 

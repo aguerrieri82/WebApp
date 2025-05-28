@@ -1,10 +1,10 @@
-import { TemplateMap, BindExpression, ITemplateContext, Bind, INDEX, USE, delayAsync } from "@eusoft/webapp-core";
+import { type TemplateMap, type BindExpression, type ITemplateContext, Bind, INDEX, USE, delayAsync } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "../EditorBuilder";
 import "./index.scss";
-import { IItemsSource } from "../../abstraction/IItemsSource";
-import { IAsyncLoad } from "../../abstraction/IAsyncLoad";
-import { CommitableEditor, ICommitableEditorOptions } from "../CommitableEditor";
+import { type IItemsSource } from "../../abstraction/IItemsSource";
+import { type IAsyncLoad } from "../../abstraction/IAsyncLoad";
+import { CommitableEditor, type ICommitableEditorOptions } from "../CommitableEditor";
 
 
 interface ISingleSelectorOptions<TItem, TValue> extends ICommitableEditorOptions<TValue, string> {
@@ -90,7 +90,7 @@ export class SingleSelector<TItem, TValue> extends CommitableEditor<TValue, stri
 
         this._lastValue = this.content ? undefined : value;
 
-        var index = (value === null || value === undefined) ?
+        const index = (value === null || value === undefined) ?
             "@empty" :
             (this.content?.findIndex(a => this.itemsSource.getValue(a) == value) ?? "@empty");
 
@@ -104,7 +104,7 @@ export class SingleSelector<TItem, TValue> extends CommitableEditor<TValue, stri
 
     async refreshAsync() {
 
-        let oldValue = this.value;
+        const oldValue = this.value;
 
         this.content = this.itemsSource ? await this.itemsSource.getItemsAsync() : [];
 

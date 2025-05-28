@@ -1,4 +1,4 @@
-﻿import { IBindable } from "./IBindable";
+﻿import { type IBindable } from "./IBindable";
 
 export type BindMode = "one-way" | "two-ways" | "no-bind" | "action";
 

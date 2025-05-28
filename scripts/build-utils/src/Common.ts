@@ -76,5 +76,9 @@ export function pnpm(libPath: string, ...command: string[]) {
         cwd: libPath,
         shell: true,
         stdio: "inherit",
+        env: {
+            ...process.env,
+            CI: 'true'
+        }
     });
 }

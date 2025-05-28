@@ -1,12 +1,12 @@
-import { TemplateMap, BindExpression, ITemplateContext, Bind, INDEX } from "@eusoft/webapp-core";
+import { type TemplateMap, type BindExpression } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "../EditorBuilder";
-import { IItemsSource } from "../../abstraction/IItemsSource";
-import { IAsyncLoad } from "../../abstraction/IAsyncLoad";
-import { CommitableEditor, ICommitableEditorOptions } from "../CommitableEditor";
-import { Action, Content, MaterialIcon } from "../../components";
+import { type IItemsSource } from "../../abstraction/IItemsSource";
+import { type IAsyncLoad } from "../../abstraction/IAsyncLoad";
+import { CommitableEditor, type ICommitableEditorOptions } from "../CommitableEditor";
+import { Action, type Content, MaterialIcon } from "../../components";
 import "./index.scss";
-import { ViewNode } from "../../Types";
+import { type ViewNode } from "../../Types";
 
 
 interface ISinglePickerOptions<TItem, TValue> extends ICommitableEditorOptions<TValue, TValue> {

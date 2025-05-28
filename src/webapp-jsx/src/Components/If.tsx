@@ -1,5 +1,5 @@
 import type { BindValue } from "@eusoft/webapp-core";
-import type { JsxComponentProps, JsxElementInstance, JsxNode, TemplateModel } from "./../abstraction";
+import type { JsxComponentProps, JsxElementInstance, TemplateModel } from "./../abstraction";
 import { isJsxElement, processNode } from "./../Runtime";
 
 export interface IElseProps<TModel extends TemplateModel> extends JsxComponentProps<TModel> {

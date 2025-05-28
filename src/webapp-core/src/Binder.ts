@@ -1,11 +1,11 @@
-import { IBindable, INDEX, PARENT, USE } from "./abstraction/IBindable";
+import { type IBindable, INDEX, PARENT, USE } from "./abstraction/IBindable";
 import type { BindDirection, BindExpression, BindValue, IGetter } from "./abstraction/IBinder";
 import { isBindingContainer } from "./abstraction/IBindingContainer";
-import { IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
+import { type IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
 import type { IObservableProperty, IPropertyChangedHandler } from "./abstraction/IObservableProperty";
 import { compareArray, forEachRev } from "./utils/Array";
 import { WebApp } from "./utils/Debug";
-import { cleanProxy, Expression, IExpressionProp } from "./Expression";
+import { cleanProxy, Expression, type IExpressionProp } from "./Expression";
 import { getFunctionType, getPropertyDescriptor } from "./utils/Object";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";

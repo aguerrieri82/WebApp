@@ -1,4 +1,4 @@
-import { IResultContainer } from "./IResultContainer";
+import { type IResultContainer } from "./IResultContainer";
 
 export interface IContentHost extends IResultContainer {
 

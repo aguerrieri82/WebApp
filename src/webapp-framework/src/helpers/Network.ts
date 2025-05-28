@@ -1,5 +1,5 @@
-import { ITemplateContext, Services } from "@eusoft/webapp-core";
-import { IOperationManager, OPERATION_MANAGER } from "@eusoft/webapp-ui";
+import { type ITemplateContext, Services } from "@eusoft/webapp-core";
+import { type IOperationManager, OPERATION_MANAGER } from "@eusoft/webapp-ui";
 
 export async function useNetwork<T>(action: () => Promise<T>, ctx?: ITemplateContext): Promise<T> {
 

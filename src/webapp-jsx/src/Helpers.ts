@@ -1,5 +1,5 @@
-import {  ITemplate, ITemplateProvider } from "@eusoft/webapp-core";
-import { JsxNode, ModelBuilder, TemplateModel } from "./abstraction";
+import {  type ITemplate, type ITemplateProvider } from "@eusoft/webapp-core";
+import { type ModelBuilder, type TemplateModel } from "./abstraction";
 
 export function forModel<TModel extends TemplateModel>(action: ModelBuilder<TModel>): ITemplate<TModel>;
 export function forModel<TModel extends TemplateModel>(model: TModel, action: ModelBuilder<TModel>): ITemplateProvider<TModel>;

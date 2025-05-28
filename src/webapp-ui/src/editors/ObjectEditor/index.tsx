@@ -1,13 +1,13 @@
-import { BindExpression, getProp, IObservableProperty, ITemplate, TemplateMap, withCleanup } from "@eusoft/webapp-core";
-import { Class, Content, Template, forModel } from "@eusoft/webapp-jsx";
+import { type BindExpression, type ITemplate, type TemplateMap, withCleanup } from "@eusoft/webapp-core";
+import { Class, Content, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "../EditorBuilder";
-import { IInputFieldOptions, InputField } from "../../components";
-import { IValidationContext } from "../../abstraction/Validator";
-import { CommitableEditor, ICommitableEditorOptions } from "../CommitableEditor";
-import { IEditor } from "../../abstraction/IEditor";
+import { type IInputFieldOptions, type InputField } from "../../components";
+import { type IValidationContext } from "../../abstraction/Validator";
+import { CommitableEditor, type ICommitableEditorOptions } from "../CommitableEditor";
+import { type IEditor } from "../../abstraction/IEditor";
 import { cloneObject, emptyObject } from "../../utils/Object";
 import "./index.scss";
-import { IAsyncLoad } from "../../abstraction/IAsyncLoad";
+import { type IAsyncLoad } from "../../abstraction/IAsyncLoad";
 
 type ObjectEditorValidationMode = "manual" | "onInputChange";
 

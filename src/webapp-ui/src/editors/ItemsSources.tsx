@@ -1,7 +1,7 @@
 import { toKebabCase } from "@eusoft/webapp-core";
-import { LocalString } from "../Types";
-import { IItemsSource } from "../abstraction/IItemsSource";
-import { ISimpleItem } from "../abstraction/ISimpleItem";
+import { type LocalString } from "../Types";
+import { type IItemsSource } from "../abstraction/IItemsSource";
+import { type ISimpleItem } from "../abstraction/ISimpleItem";
 import { formatText } from "../utils/Format";
 
 const LARGE_ITEMS_SIZE_VALUE = 50;

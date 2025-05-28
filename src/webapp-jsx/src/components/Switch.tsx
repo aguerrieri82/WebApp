@@ -1,6 +1,6 @@
-import { BindExpression, BindValue, ITemplate } from "@eusoft/webapp-core";
+import { type BindExpression, type BindValue, type ITemplate } from "@eusoft/webapp-core";
 import type {  JsxComponentProps, TemplateModel } from "../abstraction";
-import { JsxElementInstance } from "../abstraction";
+import { type JsxElementInstance } from "../abstraction";
 
 
 type BuildSwitch<TValue> = (value: TValue) => void;

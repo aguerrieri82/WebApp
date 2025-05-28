@@ -1,6 +1,6 @@
 {
   "name": "@eusoft/webapp-compiler",
-  "version": "0.0.56",
+  "version": "0.0.57",
   "packageManager": "pnpm@8.4.0",
   "type": "module",
   "main": "src/index.ts",
@@ -17,21 +17,21 @@
   "keywords": [],
   "author": "Andrea Guerrieri",
   "dependencies": {
-    "@babel/core": "7.23.9",
-    "@babel/parser": "7.23.9",
-    "@babel/traverse": "7.23.9",
-    "@babel/types": "7.23.9",
-    "jsdom": "24.0.0"
+    "@babel/core": "7.27.3",
+    "@babel/parser": "7.27.3",
+    "@babel/traverse": "7.27.3",
+    "@babel/types": "7.27.3",
+    "jsdom": "26.1.0"
   },
   "devDependencies": {
     "@types/babel__core": "7.20.5",
-    "@types/babel__traverse": "7.20.5",
-    "@types/jsdom": "21.1.6",
-    "@types/node": "20.11.16",
-    "@typescript-eslint/parser": "6.20.0",
+    "@types/babel__traverse": "7.20.7",
+    "@types/jsdom": "21.1.7",
+    "@types/node": "22.15.23",
+    "@typescript-eslint/parser": "8.33.0",
     "build-utils": "link:../../scripts/build-utils",
-    "eslint": "^8.56.0",
+    "eslint": "^9.27.0",
     "eslint-config-standard-with-typescript": "43.0.1",
-    "eslint-plugin-unused-imports": "^3.0.0"
+    "eslint-plugin-unused-imports": "^4.1.4"
   }
 }

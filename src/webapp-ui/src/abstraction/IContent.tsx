@@ -1,8 +1,8 @@
-import { Bindable, IComponent } from "@eusoft/webapp-core";
-import { IFeature } from "./IFeature";
-import { LocalString, ViewNode } from "../Types";
-import { IAction } from "./IAction";
-import { IContentHost } from "./IContentHost";
+import { type IComponent } from "@eusoft/webapp-core";
+import { type IFeature } from "./IFeature";
+import { type LocalString, type ViewNode } from "../Types";
+import { type IAction } from "./IAction";
+import { type IContentHost } from "./IContentHost";
 
 export type LoadState = "loaded" | "loading" | "error" | undefined;
 

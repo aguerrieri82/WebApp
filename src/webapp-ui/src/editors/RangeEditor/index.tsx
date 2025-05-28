@@ -1,6 +1,6 @@
-import { TemplateMap, BindExpression } from "@eusoft/webapp-core";
+import { type TemplateMap, type BindExpression } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
-import { IEditorOptions } from "../../abstraction/IEditor";
+import { type IEditorOptions } from "../../abstraction/IEditor";
 import { EditorBuilder } from "../EditorBuilder";
 import { Editor } from "../Editor";
 import "./index.scss";

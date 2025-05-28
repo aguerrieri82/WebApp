@@ -1,4 +1,4 @@
-import { ComponentStyle } from "../abstraction";
+import { type ComponentStyle } from "../abstraction";
 
 
 

@@ -1,6 +1,6 @@
-import { Component, IComponentOptions, TemplateMap } from "@eusoft/webapp-core";
+import { Component, type IComponentOptions, type TemplateMap } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
-import { ViewNode } from "../../Types";
+import { type ViewNode } from "../../Types";
 import "./index.scss"
 
 export interface IListViewOptions<TItem> extends IComponentOptions {

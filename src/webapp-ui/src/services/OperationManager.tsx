@@ -1,8 +1,8 @@
 import { SERVICE_TYPE, mount } from "@eusoft/webapp-core";
-import { IOperationManager, IOperation, OPERATION_MANAGER, IOperationOptions } from "../abstraction/IOperationManager";
+import { type IOperationManager, type IOperation, OPERATION_MANAGER, type IOperationOptions } from "../abstraction/IOperationManager";
 import { Blocker } from "../components/Blocker";
 import { ProgressView } from "../components/ProgressView";
-import { ViewNode } from "../Types";
+import { type ViewNode } from "../Types";
 
 export class OperationManager implements IOperationManager {
 

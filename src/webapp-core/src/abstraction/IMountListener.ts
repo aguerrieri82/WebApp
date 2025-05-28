@@ -1,4 +1,4 @@
-﻿import { ITemplateContext } from "./ITemplateContext";
+﻿import { type ITemplateContext } from "./ITemplateContext";
 
 export interface IMountListener {
 

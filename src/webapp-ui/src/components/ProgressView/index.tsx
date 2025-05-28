@@ -1,7 +1,7 @@
-import { Bindable, Component, IComponentOptions, TemplateMap } from "@eusoft/webapp-core";
+import { type Bindable, Component, type IComponentOptions, type TemplateMap } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import "./index.scss";
-import { ViewNode } from "../../Types";
+import { type ViewNode } from "../../Types";
 import { MaterialIcon } from "../Icon";
 import { NodeView } from "../NodeView";
 

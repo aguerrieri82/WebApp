@@ -1,5 +1,5 @@
-﻿import { Action, LocalString, MaterialIcon, ViewNode, formatText } from "@eusoft/webapp-ui"
-import { MaterialIconName } from "@eusoft/webapp-ui"
+﻿import { Action, type LocalString, MaterialIcon, type ViewNode, formatText } from "@eusoft/webapp-ui"
+import { type MaterialIconName } from "@eusoft/webapp-ui"
 import "./index.scss"
 export interface IEmptyViewOptions {
     message: LocalString;
