@@ -252,7 +252,6 @@ export function getComponent(obj: any): Function {
     return undefined;
 }
 
-
 export function declareComponent<TOptions extends IComponentOptions, TType extends { new(...args: any[]): Component<TOptions> }>(type: TType, options: TOptions) {
     return class InlineComponent extends type {
         constructor(...args: any[]) {

@@ -773,7 +773,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             return this.loadTemplate<TInnerModel>(TextTemplate);
 
         if (Array.isArray(value))
-            return this.loadTemplate<TInnerModel>(ArrayTemplate); 
+            return this.loadTemplate<TInnerModel>(ArrayTemplate as any); //TODO: TS shit
 
         if (isTemplateProvider(value))
             return this.loadTemplate<TInnerModel>(value.template);

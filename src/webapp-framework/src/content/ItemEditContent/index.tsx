@@ -112,7 +112,7 @@ export class ItemEditContentBuilder<
         return this;
     }
 
-    editor<TEdit = TItem>(builder: (builder: EditorBuilder<TItem, ObjectEditor<TItem>>) => ITemplate<TItem> | JSX.Element, options?: IObjectEditorOptions<TItem>) {
+    editor(builder: (builder: EditorBuilder<TItem, ObjectEditor<TItem>>) => ITemplate<TItem> | JSX.Element, options?: IObjectEditorOptions<TItem>) {
 
         const editor = new ObjectEditor({
             ...options,
