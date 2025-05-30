@@ -1,9 +1,10 @@
+import { TARGET } from "./abstraction";
 import { type IObservableArray, type IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
 
 export function createObservableArray<T>(value: T[]): IObservableArray<T> {
 
     if (isObservableArray(value))
-        return;
+        return value;
 
     let handlers: IObservableArrayHandler<T>[];
 
@@ -111,5 +112,27 @@ export function createObservableArray<T>(value: T[]): IObservableArray<T> {
         return result;
     }
 
-    return newValue;
+    return new Proxy(newValue, {
+        get: (t, p, r) => {
+            if (p == TARGET)
+                return t;
+            return Reflect.get(t, p, r);
+        },
+
+        set: (t, p, v, r) => {
+
+            const old = Reflect.get(t, p, r);
+            const retVal = Reflect.set(t, p, v, r);
+
+            if (typeof p == "string") {
+                let idx = parseInt(p);
+                if (!isNaN(idx)) {
+                    newValue.raise(a => a.onItemReplaced && a.onItemReplaced(v, old, idx));
+                    newValue.raise(a => a.onChanged && a.onChanged());
+                }
+            }
+            
+            return retVal;
+        }
+    });
 }

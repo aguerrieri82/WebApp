@@ -359,7 +359,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 this._lastElement.parentNode.insertBefore(node, this._lastElement.nextSibling);
             else
                 this._lastElement.parentNode.appendChild(node);
-
         }
         //TODO WARN: this line was inside else
         this._lastElement = node;
@@ -405,7 +404,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
             onItemReplaced: (newItem, oldItem, index) => {
 
-                itemsBuilders[index].updateModel(newItem);
+                if (newItem === oldItem)
+                    return;
+                itemsBuilders[index].updateModel(newItem, true);
             },
 
             onReorder: () => {
@@ -772,7 +773,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             return this.loadTemplate<TInnerModel>(TextTemplate);
 
         if (Array.isArray(value))
-            return this.loadTemplate<TInnerModel>(ArrayTemplate as any); //TODO: TS shit
+            return this.loadTemplate<TInnerModel>(ArrayTemplate); 
 
         if (isTemplateProvider(value))
             return this.loadTemplate<TInnerModel>(value.template);

@@ -1,22 +1,16 @@
 import { type Class, type ComponentStyle } from "@eusoft/webapp-core";
 import { type IContentOptions, type Content, type IContentInfo, type IContent, type IFeature, type LocalString, type IAction, type IActionContext } from "@eusoft/webapp-ui";
+import { type Extra } from "./Helper";
 
-type Extra<TContent, T> = {
-    [K in keyof T]:
-    T[K] extends (...args: any[]) => any
-    ? (this: TContent & T, ...args: Parameters<T[K]>) => ReturnType<T[K]>
-    : T[K];
-};
-
-type ActionWithThis<TThis, TTarget = unknown> = IAction<TTarget> & {
-    executeAsync: (this: TThis,  ctx: IActionContext<TTarget>) => Promise<any>;
-}
 
 export interface IContentBuilder {
 
 }
 
-export class ContentBuilder<TContent extends Content<TArgs, TOptions>, TArgs extends {}, TOptions extends IContentOptions<TArgs>> {
+export class ContentBuilder<
+    TContent extends Content<TArgs, TOptions>,
+    TArgs extends {},
+    TOptions extends IContentOptions<TArgs>> {
 
     protected _factory: (options: TOptions) => TContent;
     protected _options = {} as TOptions;

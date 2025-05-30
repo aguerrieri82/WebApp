@@ -1,4 +1,4 @@
-import {  type ITemplate, type ITemplateProvider } from "@eusoft/webapp-core";
+import { type ITemplate, type ITemplateProvider } from "@eusoft/webapp-core";
 import { type ModelBuilder, type TemplateModel } from "./abstraction";
 
 export function forModel<TModel extends TemplateModel>(action: ModelBuilder<TModel>): ITemplate<TModel>;
@@ -19,8 +19,7 @@ export function forModel<TModel extends TemplateModel>(actionOrModel: ModelBuild
 export function withTemplate<TModel>(template: JSX.Element | ITemplate<TModel>) {
     return {
         template: template
-    } as ITemplateProvider<TModel>
-    
+    } as ITemplateProvider<TModel>    
 }
 
 export function debug<T>(value: T, ...args: any[]) {

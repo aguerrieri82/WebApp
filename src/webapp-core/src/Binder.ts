@@ -5,7 +5,7 @@ import { type IObservableArrayHandler, isObservableArray } from "./abstraction/I
 import type { IObservableProperty, IPropertyChangedHandler } from "./abstraction/IObservableProperty";
 import { compareArray, forEachRev } from "./utils/Array";
 import { WebApp } from "./utils/Debug";
-import { cleanProxy, Expression, type IExpressionProp } from "./Expression";
+import { cleanProxy, Expression, UseExpression, type IExpressionBuild, type IExpressionProp } from "./Expression";
 import { getFunctionType, getPropertyDescriptor } from "./utils/Object";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
@@ -51,6 +51,8 @@ export class Binder<TModel> {
     protected _childBinders: Binder<unknown>[] = [];
     protected _cleanActions: CleanAction[] = [];
     protected _tag: string;
+    protected _expCache: Map<BindExpression<TModel, unknown>, IExpressionBuild<TModel, unknown>> = new Map();
+
     constructor(model?: TModel) {
 
         this.updateModel(model);
@@ -74,7 +76,7 @@ export class Binder<TModel> {
     }
 
     protected getBindingExpression<TValue>(binding: BindExpression<TModel, TValue>) {
-
+        
         return Expression.build<TModel, TValue>(this.model, binding, {
             evaluate: true,
             customProps: {
@@ -94,13 +96,13 @@ export class Binder<TModel> {
             binding.subscriptions.splice(subIndex, 1);
         }
         else {
+
             //TODO check why
             if (Array.isArray(source) && propName == "length")
                 return;
+
             console.warn("Subscription for property ", propName, " not found in object ", source);
         }
-
-
 
         if (isObservableArray(source)) {
             if (!binding.subscriptions.some(a => a.source == source && a.name)) {
@@ -421,20 +423,40 @@ export class Binder<TModel> {
         this._bindings = [];
         this._childBinders = [];
         this._cleanActions = [];
+        this._expCache.clear();
 
         if (deep)
             this.execForSubBinders(binder => binder.cleanBindings(cleanValue, true), false);
     }
 
-    updateModel(model: TModel) { 
+    updateModel(model: TModel, deep = false) { 
 
-        this.model = cleanProxy(model);
+        const curModel = this.model;
+
+        model = cleanProxy(model);
+
+        if (model === curModel) 
+            return;
+
+        this._expCache.clear();
+
+        this.model = model;
 
         forEachRev(this._bindings, binding => 
             this.executeBinding(binding, true));
 
-        forEachRev(this._modelBinders, binder =>
-            binder.updateModel(model));
+        if (deep) {
+            this.execForSubBinders(binder => {
+                if (binder.model == curModel)
+                    binder.updateModel(model, true)
+            }, false);
+        }
+        else {
+            forEachRev(this._modelBinders, binder =>
+                binder.updateModel(model));
+        }
+
+        
     }
 
     protected findIndex() {

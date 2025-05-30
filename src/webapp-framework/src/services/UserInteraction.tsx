@@ -46,15 +46,12 @@ class UserInteraction implements IUserInteraction {
 
         this.dialogs.splice(this.dialogs.indexOf(popup), 1); 
 
-
         return MessageBoxButton[result];    
     }
-
 
     async confirmAsync(body: ViewNode, title: LocalString): Promise<boolean> {
 
         const result = await this.messageBoxAsync(body, title, MessageBoxButton.YesNo); 
-        console.log(result);    
         return result == MessageBoxButton.Yes;
     }
 

@@ -19,7 +19,7 @@
         color: var(--error-color);
         transition-duration: var(--duration-fast);
         padding-left: size(2);
-        font-size: var(--font-size)-small;
+        font-size: var(--font-size-small);
         /*height: 16px;*/
 
         &:before {
@@ -45,7 +45,7 @@
         gap: size(0.5);
 
         > label {
-            font-size: var(--font-size)-small;
+            font-size: var(--font-size-small);
             font-weight: bold;
         }
     }
@@ -108,7 +108,6 @@
 
             @include edit-box;
 
-
             > * {
                 border: none;
                 padding: 0;
@@ -150,14 +149,14 @@
 
             &.empty:not(:focus-within):not(:has(input[type=date])):not(:has(input:-webkit-autofill)) {
                 > label {
-                    top: calc(50% - 8px - 0.5em);
+                    top: calc(50% - 2px - 0.5em);
                 }
             }
 
             &:focus-within, &:not(.empty), &:has(input[type=date]), &:has(input:-webkit-autofill) {
 
                 > label {
-                    font-size: var(--font-size)-small;
+                    font-size: var(--font-size-small);
                     line-height: unset;
                 }
 

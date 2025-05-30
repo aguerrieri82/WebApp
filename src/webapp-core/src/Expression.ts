@@ -410,6 +410,10 @@ export class UseExpression<TObj extends Record<string, any>> extends Expression<
         super(value, parent, options);
     }
 
+    evaluate<TVal>(bind: BindExpression<TObj, TVal>) {
+        return cleanProxy(bind(this.createProxy()));
+    }
+
     readonly type = "use";
 }
 

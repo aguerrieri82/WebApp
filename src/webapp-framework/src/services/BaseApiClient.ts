@@ -71,7 +71,6 @@ export class BaseApiClient {
         if (this.authorization) 
             headers["Authorization"] = this.authorization;
         
-
         const response = await fetch(url, {
             body,
             method,

@@ -1,4 +1,5 @@
-﻿
+﻿import { cleanProxy } from "../Expression";
+
 type ArrayAddReason = "add" | "insert" | "replace";
 
 type ArrayRemoveReason = "remove" | "clear" | "replace";
@@ -31,5 +32,6 @@ export interface IObservableArray<T> extends Array<T> {
 
 export function isObservableArray(value: any): value is IObservableArray<any>  {
 
+    value = cleanProxy(value);
     return Array.isArray(value) && "subscribe" in value && typeof (value["subscribe"]) == "function";
 }

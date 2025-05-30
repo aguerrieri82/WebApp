@@ -22,7 +22,6 @@ export class App  {
 
     async runAsync(root?: HTMLElement | string) {
 
-
         Services[OPERATION_MANAGER] = new OperationManager();
         Services[LOCALIZATION] = localTable;
 

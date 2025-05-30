@@ -28,7 +28,6 @@ export function bind(mode: BindMode) {
 
 export namespace Bind {
 
-
     export function noTrack<T>(value: T) : T {
         return cleanProxy(value);
     }

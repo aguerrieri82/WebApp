@@ -69,10 +69,10 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
 
     protected override onValueChangedInternal(value: TValue, oldValue: TValue, reason: ValueChangedReason) {
 
-        console.log("onValueChangedInternal", reason);
-        if (reason != "edit") {
+        //console.log("onValueChangedInternal", reason);
+
+        if (reason != "edit") 
             this.beginEdit(value);
-        }
         super.onValueChangedInternal(value, oldValue, reason);  
     }
 
@@ -93,7 +93,6 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
 
 
     async commitAsync(): Promise<boolean> {
-
  
         if (this._editState == "committing" || this._editState == "loading")
             return;
@@ -109,12 +108,13 @@ export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICom
 
             if (await this.commitAsyncWork()) {
 
-                console.log("editToValue");
-
+                //console.log("editToValue");
 
                 const curValue = this.value;
 
-                this.value = this.editToValue(this.editValue, this.commitMode != "manual-inplace" && this.commitMode != "auto-inplace");
+                this.value = this.editToValue(this.editValue,
+                    this.commitMode != "manual-inplace" &&
+                    this.commitMode != "auto-inplace");
 
                 if (curValue == this.value) 
                     this.onValueChanged(cleanProxy(this.value), cleanProxy(curValue), "edit");

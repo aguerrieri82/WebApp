@@ -15,7 +15,10 @@ export interface IItemEditOptions<TItem, TArgs extends IItemEditArgs<TItem> = II
     createEditor: (value: TItem) => IEditor<TItem>;
 }
 
-export class ItemEditContent<TItem, TArgs extends IItemEditArgs<TItem> = IItemEditArgs<TItem>> extends Content<TArgs, IItemEditOptions<TItem, TArgs>> {
+export class ItemEditContent<
+    TItem,
+    TArgs extends IItemEditArgs<TItem> = IItemEditArgs<TItem>>
+    extends Content<TArgs, IItemEditOptions<TItem, TArgs>> {
 
     constructor(options?: IItemEditOptions<TItem, TArgs>) {
 
