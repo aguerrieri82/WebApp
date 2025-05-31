@@ -28,3 +28,8 @@ export function toKebabCase(name: string): string {
     }
     return result;
 }
+
+export function generateRandomId(prefix = 'id'): string {
+    const randomStr = Math.random().toString(36).substr(2, 8);
+    return `${prefix}-${randomStr}`;
+}

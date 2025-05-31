@@ -6,7 +6,6 @@ import { type IContentHost } from "./IContentHost";
 
 export type LoadState = "loaded" | "loading" | "error" | undefined;
 
-
 export interface IContent<TArgs extends {} = undefined> extends IComponent {
 
     loadAsync(host: IContentHost, args?: TArgs): Promise<boolean>;
@@ -32,9 +31,12 @@ export interface IContent<TArgs extends {} = undefined> extends IComponent {
     readonly loadState: LoadState;
 }
 
-export interface IContentInfo<TArgs extends {} = {}, TContent extends IContent<TArgs> = IContent<TArgs>> {
+export interface IContentInfo<
+    TArgs extends {} = {},
+    TContent extends IContent<TArgs> = IContent<TArgs>,
+    TName extends string = string> {
 
-    name: string;
+    name: TName;
 
     route: string;
 
@@ -43,16 +45,38 @@ export interface IContentInfo<TArgs extends {} = {}, TContent extends IContent<T
     factory: () => TContent;
 }
 
-export interface IContentConstructor<TArgs extends {} = {}, TContent extends IContent<TArgs> = IContent<TArgs>> {
+export interface IContentConstructor<
+    TArgs extends {} = {},
+    TContent extends IContent<TArgs> = IContent<TArgs>> {
 
     new(): TContent;
 
     info: IContentInfo<TArgs, TContent>;
 }
 
-export interface IContentInstance<TArgs extends {} = {}, TContent extends IContent<TArgs> = IContent<TArgs>> {
+export interface IContentInstance<
+    TArgs extends {} = {},
+    TContent extends IContent<TArgs> = IContent<TArgs>> {
+
     args: TArgs;
+
     factory: () => TContent
 }
 
-export type ContentRef<TArgs extends {} = {}, TContent extends IContent<TArgs> = IContent<TArgs>> = string | IContentInfo<TArgs, TContent> | IContentInstance<TArgs, TContent> | IContentConstructor<TArgs>;
+export type ContentRef<
+    TArgs extends {} = {},
+    TContent extends IContent<TArgs> = IContent<TArgs>> =
+string |
+IContentInfo<TArgs, TContent> |
+IContentInstance<TArgs, TContent> |
+IContentConstructor<TArgs>;
+
+
+export function contentInfo<
+    TArgs extends {},
+    TContent extends IContent<TArgs>,
+    TName extends string,
+    TContentInfo extends IContentInfo<TArgs, TContent, TName>>(info: TContentInfo): TContentInfo {
+
+        return info;
+}

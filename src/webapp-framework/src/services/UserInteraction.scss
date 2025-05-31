@@ -1,0 +1,16 @@
+
+
+.message-box {
+    > .message{
+        > header{
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        > footer {
+            button{
+                text-transform: uppercase;
+            }
+        }
+    }
+}

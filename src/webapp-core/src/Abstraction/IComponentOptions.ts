@@ -8,13 +8,13 @@ export type Bindable<TValue, TBind extends BindMode = BindMode> =
 
 export type ComponentStyle = string | ComponentStyle[];
 
-export interface IComponentOptions {
+export interface IComponentOptions<TName extends string = string> {
 
     style?: Bindable<ComponentStyle>;
 
     template?: CatalogTemplate<any>;
 
-    name?: string;
+    name?: TName;
 
     visible?: Bindable<boolean>;
 

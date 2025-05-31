@@ -15,15 +15,22 @@ interface IActionOptions<TTarget> extends IComponentOptions {
     type?: ActionType;
 
     onExecuteAsync?: (ctx?: IActionContext<TTarget>) => Promise<void> | void;
+
+    enabled?: Bindable<boolean>;
 }
 
 
 export const ActionTemplates: TemplateMap<Action> = {
 
-    "Button": forModel(m => <button type="button" visible={m.visible} className={m.className} on-click={m => m.executeAsync({target: m.target})}>
-            <Class name="executing" condition={m.isExecuting} />
+    "Button": forModel(m => <button
+        type="button"
+        visible={m.visible}
+        className={m.className}
+        disabled={m.enabled === false}
+        on-click={m => m.executeAsync({ target: m.target })}>
+        <Class name="executing" condition={m.isExecuting} />
         <NodeView>{m.content}</NodeView>
-        </button>)
+    </button>)
 }
 
 export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>> {
@@ -35,7 +42,7 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
         this.init(Action, {
             template: ActionTemplates.Button,
             style: ["contained", "action"],
-            ...options 
+            ...options
         });
     }
 
@@ -69,7 +76,7 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
     }
 
 
-    onExecuteAsync(ctx?: IActionContext<TTarget>) : Promise<void> | void {
+    onExecuteAsync(ctx?: IActionContext<TTarget>): Promise<void> | void {
     }
 
     target: TTarget;
@@ -79,6 +86,8 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
     isExecuting: boolean;
 
     content: ViewNode;
+
+    enabled: boolean;
 
 }
 

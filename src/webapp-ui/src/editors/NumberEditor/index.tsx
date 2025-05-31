@@ -1,22 +1,24 @@
 import { type TemplateMap, type BindExpression } from "@eusoft/webapp-core";
-import { Class, Template, forModel } from "@eusoft/webapp-jsx";
+import { Class, forModel } from "@eusoft/webapp-jsx";
 import { type IEditorOptions } from "../../abstraction/IEditor";
 import { type LocalString } from "../../Types";
 import { EditorBuilder } from "../EditorBuilder";
 import { Editor } from "../Editor";
-
+import "./index.scss";
 interface INumberEditorOptions extends IEditorOptions<number> {
 
     placeholder?: LocalString;
+
 }
 
 export const NumberEditorTemplates: TemplateMap<NumberEditor> = {
 
-    "Default": forModel(m => <Template name="TextEditor">
+    "Default": forModel(m => <>
         <input placeholder={m.placeholder} visible={m.visible} disabled={m.disabled} type="number" value={m.editValue} >
             <Class name="default"/>
         </input>
-    </Template>)
+
+    </>)
 } 
 
 export class NumberEditor extends Editor<number, INumberEditorOptions> {
@@ -45,6 +47,8 @@ export class NumberEditor extends Editor<number, INumberEditorOptions> {
     placeholder?: string;
 
     editValue: string;
+
+
 }
 
 

@@ -9,7 +9,7 @@ import { type IAction } from "../../abstraction/IAction";
 import { type IContentHost } from "../../abstraction";
 import "./index.scss";
 import { Action } from "../Action";
-export interface IContentOptions<TArgs extends {}> extends IComponentOptions {
+export interface IContentOptions<TArgs extends {}, TName extends string = string> extends IComponentOptions<TName> {
 
     title?: Bindable<LocalString>;
 
@@ -52,7 +52,12 @@ export const ContentTemplates: TemplateMap<Content> = {
     </div>)
 
 }			
-export class Content<TArgs extends {} = unknown, TOptions extends IContentOptions<TArgs> = IContentOptions<TArgs>> extends Component<TOptions> implements IContent<TArgs> {
+export class Content<
+    TArgs extends {} = unknown,
+    TOptions extends IContentOptions<TArgs> = IContentOptions<TArgs>,
+    >
+
+    extends Component<TOptions> implements IContent<TArgs> {
 
     protected _loadState: LoadState;
 

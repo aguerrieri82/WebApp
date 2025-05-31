@@ -1,0 +1,39 @@
+@use "../../themes/_vars" as *;
+
+.toaster-manager {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    gap: size(2);
+    align-items: center;
+    z-index: 1000;
+    top: size(2);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+
+
+    > * {
+        padding: size(2) size(2);
+        background-color: #fff;
+        border-radius: 4px;
+        box-shadow: rgba(17, 17, 26, 0.05) 0px 4px 16px, rgba(17, 17, 26, 0.05) 0px 8px 32px;
+        top: -100%;
+        position: absolute;
+        transition-duration: 0.5s;
+        transition-timing-function: ease-in-out;
+        opacity: 0;
+
+        &.visible {
+            top: 0;
+            position: relative;
+            opacity: 1;
+        }
+
+        &.warning {
+            background-color: #FB8C00;
+            color: #fff;
+        }
+    }
+}

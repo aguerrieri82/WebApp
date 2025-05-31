@@ -7,6 +7,7 @@ export interface INodeViewOptions {
 }
 
 type NodeType = LocalString | ITemplateProvider;
+
 export function NodeView(options: INodeViewOptions) {
 
     const singleNode = (t: TemplateBuilder<NodeType>) => {

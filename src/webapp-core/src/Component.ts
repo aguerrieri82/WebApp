@@ -3,7 +3,7 @@ import type { CatalogTemplate } from "./abstraction/ITemplateProvider";
 import { COMPONENT, type IComponent, isComponent } from "./abstraction/IComponent";
 import { enumOverrides, getTypeName, isClass, objectHierarchy, setTypeName } from "./utils/Object";
 import { bindTwoWays, getOrCreateProp } from "./Properties";
-import { toKebabCase } from "./utils/String";
+import { generateRandomId, toKebabCase } from "./utils/String";
 import type { IBound } from "./abstraction/IBound";
 import type { Bindable, ComponentStyle, IComponentOptions } from "./abstraction/IComponentOptions";
 import { Binder } from "./Binder";
@@ -31,6 +31,7 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
     constructor() {
 
         this.options = {} as TOptions;
+        this.id = generateRandomId();
         this.init(Component);
     }
 
@@ -51,6 +52,8 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
             if (func != this.init)
                 func.call(this);
         }
+
+        
     }
 
     protected initProps() {
@@ -236,6 +239,8 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
     name?: string;
 
     model: never;
+
+    id: string;
 }
 
 export function getComponent(obj: any): Function {

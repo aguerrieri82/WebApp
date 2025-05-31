@@ -1,14 +1,17 @@
 import { forModel } from "@eusoft/webapp-jsx";
-import { CommitableEditor, Content, type EditorBuilder, type IContentOptions, type IEditor, type IObjectEditorOptions, isAsyncLoad, ObjectEditor } from "@eusoft/webapp-ui";
+import { CommitableEditor, type Constructor, Content, type EditorBuilder, type IContentOptions, type IEditor, type IObjectEditorOptions, isAsyncLoad, ObjectEditor } from "@eusoft/webapp-ui";
 import { ContentBuilder } from "../Builder";
 import { type ITemplate } from "@eusoft/webapp-core";
+import { declareContent } from "../Helper";
 
 export interface IItemEditArgs<TItem> {
 
     value?: TItem;
 }
 
-export interface IItemEditOptions<TItem, TArgs extends IItemEditArgs<TItem> = IItemEditArgs<TItem>> extends IContentOptions<TArgs> {
+export interface IItemEditOptions<TItem,
+    TArgs extends IItemEditArgs<TItem> = IItemEditArgs<TItem>,
+    TName extends string = string> extends IContentOptions<TArgs, TName> {
 
     onSaveAsync?: (value: TItem) => Promise<boolean>;
 
@@ -127,3 +130,4 @@ export class ItemEditContentBuilder<
         return this;
     }
 }
+
