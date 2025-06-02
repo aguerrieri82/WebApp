@@ -16,3 +16,9 @@ export async function useOperation<T>(action: () => Promise<T>, options?: IOpera
         newOp?.end();
     }
 }
+
+export async function withUnblock<T>(action: () => Promise<T>) {
+    return useOperation(action, {
+        unblock: true,
+    });
+}

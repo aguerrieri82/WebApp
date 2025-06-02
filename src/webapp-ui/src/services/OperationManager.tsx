@@ -7,6 +7,7 @@ import { type ViewNode } from "../Types";
 export class OperationManager implements IOperationManager {
 
     protected _blockCount = 0;
+    protected _unblockCount = 0;
 
     constructor() {
 
@@ -22,13 +23,11 @@ export class OperationManager implements IOperationManager {
 
         if (!options?.isLocal) {
 
-            if (this._blockCount == 0)
-                this.blocker.visible = true;
-
             this._blockCount++;
-            //TODO reset _blockCount to  0
             if (options?.unblock)
-                this.blocker.visible = false;
+                this._unblockCount++;
+
+            this.blocker.visible = this._blockCount > 0 && this._unblockCount == 0;
         }
 
         console.group(options?.name);
@@ -61,13 +60,10 @@ export class OperationManager implements IOperationManager {
             return;
 
         this._blockCount--;
+        if (operation.unblock)
+            this._unblockCount--;
 
-        if (this._blockCount == 0)
-            this.blocker.visible = false;
-
-        else if (operation.unblock)
-            this.blocker.visible = true;
-
+        this.blocker.visible = this._blockCount > 0 && this._unblockCount == 0;
     }
 
     blocker: Blocker<ProgressView>;

@@ -21,7 +21,7 @@
         z-index: 100;
 
 
-        .message {
+        > .message {
             transform: scale(1, 1);
         }
     }
@@ -31,12 +31,12 @@
         opacity: 0;
         z-index: -1;
 
-        .message {
+        > .message {
             transform: scale(0, 0);
         }
-    } 
+    }
 
-    .message {
+    > .message {
         background-color: var(--surface-color);
         transition-duration: 0.3s;
         border-radius: 5px;

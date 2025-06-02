@@ -1,0 +1,99 @@
+
+@keyframes shrink {
+    to {
+        scale: 0.8;
+        opacity: 0.0;
+    }
+}
+
+@keyframes grow {
+    from {
+        scale: 0.8;
+        opacity: 0.0;
+    }
+}
+
+@keyframes slide-in {
+    from {
+        translate: 100vw 0;
+    }
+}
+
+@keyframes slide-out {
+    to {
+        translate: 100vw 0;
+    }
+}
+
+@keyframes scale-up {
+    from {
+        scale: 0;
+    }
+}
+
+@keyframes scale-down {
+    to {
+        scale: 0;
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes fade-out {
+    to {
+        opacity: 0;
+    }
+}
+
+body {
+    view-transition-name: page;
+}
+
+
+::view-transition-group(page) {
+    animation-duration: 0.7s;
+
+}
+
+:root[data-transition="reload"] {
+    &::view-transition-old(page) {
+        display: none;
+    }
+
+    &::view-transition-new(page) {
+        animation-name: fade-in, scale-up;
+    }
+}
+
+:root[data-transition="push"] {
+    &::view-transition-old(page) {
+        animation-name: shrink;
+        transform-origin: 100% 50%;
+    }
+
+    &::view-transition-new(page) {
+        animation-name: slide-in;
+    }
+}
+
+:root[data-transition="pop"] {
+    &::view-transition-old(page) {
+        animation-name: slide-out;
+        z-index: 1;
+    }
+
+    &::view-transition-new(page) {
+        animation-name: grow;
+        transform-origin: 100% 50%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(page) {
+        animation-duration: 0s;
+    }
+}

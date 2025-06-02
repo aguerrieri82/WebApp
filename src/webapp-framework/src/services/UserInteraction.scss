@@ -1,16 +1,30 @@
+@use "../_common" as *;
 
+:root {
+    --message-box-back: var(--surface-color);
+}
 
-.message-box {
-    > .message{
-        > header{
-            text-transform: uppercase;
-            font-weight: bold;
+.popup.message-box {
+
+    > .message {
+        border-radius: 24px;
+        padding: size(2);
+        box-sizing: border-box;
+        background-color: var(--message-box-back);
+
+        > * {
+            padding: 0;
+        }
+
+        > header {
+            font-size: 28px;
+        }
+
+        > main {
+            padding: size(4) size(0);
         }
 
         > footer {
-            button{
-                text-transform: uppercase;
-            }
         }
     }
 }

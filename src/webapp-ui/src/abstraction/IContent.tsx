@@ -28,6 +28,8 @@ export interface IContent<TArgs extends {} = undefined> extends IComponent {
 
     body: ViewNode;
 
+    transition?: string;
+
     readonly loadState: LoadState;
 }
 
@@ -41,6 +43,8 @@ export interface IContentInfo<
     route: string;
 
     icon?: ViewNode;
+
+    transition?: string;
 
     factory: () => TContent;
 }

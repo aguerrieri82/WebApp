@@ -1,5 +1,6 @@
 import { type IContent, type IContentConstructor, type IContentInfo, formatText, isResultContainer, replaceArgs } from "@eusoft/webapp-ui";
 import { app } from "../App";
+import { delayAsync } from "@eusoft/webapp-core/src/utils/Async";
 
 type StringLike = { toString(): string } | string;
 
@@ -28,9 +29,11 @@ interface IRouteState {
 }
 
 function restoreState<T>(key: string, defValue: T) {
+
     const value = sessionStorage.getItem(key);
     if (value)
         return JSON.parse(value) as T;
+
     return defValue;
 }
 
@@ -45,10 +48,16 @@ export class Router {
     constructor() {
 
         this._history = restoreState("router.history", []);
+
         this._activeIndex = restoreState("router.activeIndex", -1);
 
         window.addEventListener("popstate", ev => this.popStateAsync(JSON.parse(ev.state) as IRouteState));
+
         window.addEventListener("beforeunload", () => this.saveState());
+
+        window.addEventListener("pageshow", ev => {
+            console.log(ev);
+        });
     } 
 
     getCurrentLocation() {
@@ -60,7 +69,7 @@ export class Router {
         const curState = JSON.parse(history.state) as IRouteState;
 
         if (this._activeIndex != -1 && curState)
-            return this.popStateAsync(curState);
+            return this.popStateAsync(curState, "reload");
 
         this._activeIndex++;
 
@@ -84,6 +93,24 @@ export class Router {
         return entry;
     }
 
+    protected async transactionAsync<T>(action: () => Promise<T>) {
+
+        if ("startViewTransition" in document && this.useTransition) {
+
+            let result: T;
+
+            const tr = document.startViewTransition(async () => {
+                result = await action();
+            });
+
+            await tr.updateCallbackDone;
+
+            return result;
+        }
+
+        return action();
+    }
+
     addPage(infoOrPage: IContentInfo | IContentConstructor) {
 
         const info = typeof infoOrPage == "function" ? infoOrPage.info : infoOrPage;
@@ -92,7 +119,7 @@ export class Router {
 
             const page = content ?? info.factory();
 
-            if (!await app.contentHost.loadContentAsync(page, args))
+            if (!await this.transactionAsync(() => app.contentHost.loadContentAsync(page, args)))
                 return false;
 
             document.title = formatText(page.title) as string;
@@ -148,7 +175,7 @@ export class Router {
 
         if (!entry?.route && typeof pageOrName != "string") {
 
-            await app.contentHost.loadContentAsync(pageOrName, args);
+            await this.transactionAsync(() => app.contentHost.loadContentAsync(pageOrName, args));
 
             return pageOrName;
         } 
@@ -164,13 +191,13 @@ export class Router {
         return this._entries.find(a => (a.tag as IContentInfo)?.name == pageOrName.name);
     }
 
-    protected async popStateAsync(state: IRouteState) {
+    protected async popStateAsync(state: IRouteState, transition = "pop") {
 
         this._activeIndex = state.historyIndex;
 
         const entry = this._entries[state.entryIndex];
 
-        await this.navigateEntryAsync(entry, state.args, true);
+        await this.navigateEntryAsync(entry, state.args, true, null, transition);
 
         if (this._popResolve) {
             this._popResolve();
@@ -193,7 +220,7 @@ export class Router {
 
             const args = this.parseArgs(entry.route as string, url);
 
-            return await this.navigateEntryAsync(entry, args, true);
+            return await this.navigateEntryAsync(entry, args, true, null, "reload");
         }
     }
 
@@ -202,7 +229,11 @@ export class Router {
         return replaceArgs(path, args);
     }
 
-    protected async navigateEntryAsync<TArgs extends Record<string, StringLike>>(entry: IRounteEntry<TArgs>, args?: TArgs, replace = false, content?: unknown) {
+    protected async navigateEntryAsync<TArgs extends Record<string, StringLike>>(entry: IRounteEntry<TArgs>, args?: TArgs, replace = false, content?: unknown, transition?: string) {
+
+        const activeTrans = transition ?? ((entry.tag as IContentInfo)?.transition ?? "push");
+
+        document.documentElement.dataset.transition = activeTrans;
 
         const url = this.replaceUrl(entry.route as string, args);
 
@@ -233,8 +264,12 @@ export class Router {
                 this._history.splice(this._activeIndex + 1, this._history.length - this._activeIndex);
         }
 
+       // delete document.documentElement.dataset.transition;
+
         return result;
     }
+
+    useTransition: boolean = true;
 
 }
 

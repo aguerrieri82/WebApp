@@ -12,7 +12,7 @@
     right: 0;
     bottom: 0;
     pointer-events: none;
-
+    padding: size(2);
 
     > * {
         padding: size(2) size(2);
@@ -24,6 +24,8 @@
         transition-duration: 0.5s;
         transition-timing-function: ease-in-out;
         opacity: 0;
+        text-align: center;
+        white-space: pre-wrap;
 
         &.visible {
             top: 0;
@@ -33,6 +35,16 @@
 
         &.warning {
             background-color: #FB8C00;
+            color: #fff;
+        }
+
+        &.error {
+            background-color: #E53935;
+            color: #fff;
+        }
+
+        &.success {
+            background-color: #43A047;
             color: #fff;
         }
     }

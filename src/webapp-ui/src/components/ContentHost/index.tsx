@@ -34,11 +34,13 @@ export class ContentHost extends Component<IContentHostOptions> implements ICont
 
     async loadContentAsync<T>(content: IContent<T>, args?: T) {
 
+
         if (content?.loadAsync) {
+
             try {
-                if (!await content.loadAsync(this, args)) {
+
+                if (!await content.loadAsync(this, args)) 
                     return false;
-                }
             }
             catch (ex) {
        
@@ -50,7 +52,6 @@ export class ContentHost extends Component<IContentHostOptions> implements ICont
         if (this.content?.onCloseAsync)
             await this.content.onCloseAsync();
 
-
         this.content = content;
 
         if (this.content.onOpenAsync)
@@ -61,8 +62,11 @@ export class ContentHost extends Component<IContentHostOptions> implements ICont
 
 
     push(page: IContent) {
+
         this._stack.push(this.content);
+
         this.loadContentAsync(page);
+
         return page;
     }
 

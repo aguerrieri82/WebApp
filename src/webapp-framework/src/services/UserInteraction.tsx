@@ -1,7 +1,7 @@
 import { type Component, SERVICE_TYPE, Services, delayAsync, mount } from "@eusoft/webapp-core";
 import { type IUserInteraction, USER_INTERACTION } from "../abstraction/IUserInteraction";
 import { forModel } from "@eusoft/webapp-jsx";
-import { type IEditor, type IOperationManager, type LocalString, OPERATION_MANAGER, Popup, Toaster, type ViewNode, formatText, isCommitable, useOperation } from "@eusoft/webapp-ui";
+import { type IEditor, type IOperationManager, type LocalString, OPERATION_MANAGER, Popup, Toaster, type ViewNode, formatText, isCommitable, useOperation, withUnblock } from "@eusoft/webapp-ui";
 import "./UserInteraction.scss";  
 
 export type MessageType = "info" | "error" | "warning" | "success";
@@ -33,6 +33,7 @@ class UserInteraction implements IUserInteraction {
     async messageBoxAsync<T extends MessageBoxCustomActions>(body: ViewNode, title: LocalString, buttons: T): Promise<keyof T>;
 
     async messageBoxAsync(body: ViewNode, title: LocalString, buttons) {
+
         const popup = new Popup();
         popup.style = "message-box";
         popup.title = formatText(title);
@@ -63,15 +64,13 @@ class UserInteraction implements IUserInteraction {
             }  
         }
 
-        this.dialogs.push(popup);
+        //this.dialogs.push(popup);
 
-        await delayAsync(0);
+        //await delayAsync(0);
       
-        const result = await useOperation(() => popup.showAsync(), {
-            unblock: true   
-        });
+        const result = await withUnblock(() => popup.showAsync());
 
-        this.dialogs.splice(this.dialogs.indexOf(popup), 1); 
+        //this.dialogs.splice(this.dialogs.indexOf(popup), 1); 
 
         if (typeof buttons == "object")
             return result;

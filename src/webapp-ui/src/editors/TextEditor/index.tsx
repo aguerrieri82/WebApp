@@ -6,7 +6,7 @@ import { EditorBuilder } from "../EditorBuilder";
 import { Editor } from "../Editor";
 import "./index.scss"; 
 
-type TextEditorType = "text" | "password" | "tel";
+type TextEditorType = "text" | "password" | "tel" |"email";
 
 interface ITextEditorOptions extends IEditorOptions<string> {
 
