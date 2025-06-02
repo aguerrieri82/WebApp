@@ -13,18 +13,19 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-
+    z-index: 1000;
+    pointer-events: none;
 
     &.visible {
         opacity: 1;
-        z-index: 1000;
         transition-delay: 0.5s;
+        pointer-events: unset;
     }
 
     &.hidden {
         display: flex !important;
         opacity: 0;
-        z-index: -1;
+        //z-index: -1;
 
         .progress-view {
             .icon {

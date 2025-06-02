@@ -31,7 +31,7 @@ export function JsxOpenHandler(ctx: JsxParseContext, stage: "enter", path: NodeP
 
         const newElement = ctx.enterNewElement(isTempEl ? "t:" + elName.toLowerCase() : elName);
 
-        //TODO check  elBinding.kind
+        //TODO check elBinding.kind
         if (elBinding && elBinding.kind != "param" && !isTempEl) {
             newElement.name = "t:component";
             ctx.createAttribute("t:type", elName, newElement);

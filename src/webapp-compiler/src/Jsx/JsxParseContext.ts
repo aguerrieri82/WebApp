@@ -266,7 +266,7 @@ export class JsxParseContext {
 
     isBindable() {
         return this.curModel &&
-            this.curElement.name != "t:content" &&
+            (this.curElement.name != "t:content" || this.curAttribute?.name == "src") &&
             this.curAttribute?.name != "t:value-pool" &&
             !this.curAttribute?.name.startsWith("t:on-") &&
             this.curAttribute?.name != "t:behavoir";

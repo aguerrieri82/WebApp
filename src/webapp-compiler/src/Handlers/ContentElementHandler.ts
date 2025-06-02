@@ -13,7 +13,8 @@ export class ContentElementHandler implements ITemplateHandler {
 
         const source = element.attributes.src?.value as string;
         const template = element.attributes.template?.value as string;
-        const inline = element.attributes.inline?.value as string;
+        const inline = element.attributes.inline?.value ?? "false" as string;
+        const update = element.attributes.update?.value as string;
 
         if (!source) {
             ctx.error("Source not specified in content.");
@@ -35,8 +36,9 @@ export class ContentElementHandler implements ITemplateHandler {
         }
         else {
             ctx.writer.write(".content(").writeBinding(source);
-            if (inline == "true")
-                ctx.writer.write(", true");
+            ctx.writer.write(", ").write(inline);
+            if (update)
+                ctx.writer.write(", ").write(update);
             ctx.writer.write(")");
         }
 

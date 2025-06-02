@@ -12,7 +12,7 @@ export const ContentHostTemplates: TemplateMap<ContentHost> = {
 
     "Single": forModel(m => <main className={m.className}>
         <section className="content">
-            <Content src={m.content} />
+            <Content src={m.content} update="replace" />
         </section>
     </main>)
 
@@ -29,7 +29,7 @@ export class ContentHost extends Component<IContentHostOptions > implements ICon
 
         this.init(ContentHost, {
             template: ContentHostTemplates.Single,
-            useTransition: false,
+            useTransition: true,
             ...options
         });
     }

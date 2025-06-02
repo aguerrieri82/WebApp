@@ -4,7 +4,7 @@ import type { TemplateBuilder } from "../TemplateBuilder";
 
 export const WebApp = {
     bindings: [] as IBinding<any>[],
-    isDebug: true,
+    isDebug: false,
     root: null as TemplateBuilder<unknown>,
     subs: [] as IPropertyChangedHandler<any>[]
 }

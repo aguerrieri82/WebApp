@@ -22,9 +22,8 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
 
     ctx.withModel(ctx.curModel, !createBind, () => ctx.transformExpression(path));
 
-    if (bindMode == "no-bind" || bindMode == "action") {
+    if (bindMode == "no-bind" || bindMode == "action") 
         createBind = false;
-    }
 
     let value = path.toString();
 

@@ -14,7 +14,6 @@ interface IMessageBoxAction {
 
 export interface IPopupOptions extends IComponentOptions {
 
-
     title: ViewNode;
 
     body: ViewNode;
@@ -22,7 +21,6 @@ export interface IPopupOptions extends IComponentOptions {
     actions: IMessageBoxAction[];
 
     hideOnClick?: boolean;
- 
 }
 
 export class Popup extends Component<IPopupOptions> {

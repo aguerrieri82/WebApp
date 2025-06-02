@@ -19,6 +19,8 @@ type TemplateValueMap<TModel, TObj> = {
     [TKey in keyof TObj]?: BindValue<TModel, TObj[TKey]>
 }
 
+export type ContentUpdateMode = "replace";
+
 type TemplateInlineMode = "never" | "always" | "auto" | "explicit" | "replace-parent" | "embed-child" | "inherit";
 
 type RefNodePosition = "after" | "before" | "inside";
@@ -195,7 +197,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this;
     }
 
-    clear(remove: boolean = false, cleanValue = true): this {
+    clear(remove: boolean = false, cleanValue = true, detach = true): this {
 
         this._childCount = 0;
 
@@ -219,8 +221,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 mustDelete = false;
 
             const prev = curNode.previousSibling;
-
-        
+ 
             if (mustDelete) 
                 curNode.parentNode.removeChild(curNode);
             
@@ -233,26 +234,35 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         if (!remove)
             this._lastElement = this._startElement;
 
-        this.execForSubBinders(bld => {
+        if (!detach) {
+            this._modelBinders = [];
+            this._bindings = [];
+            this._childBinders = [];
+            this._cleanActions = [];
+        }
+        else {
+            this.execForSubBinders(bld => {
 
-            if (remove) {
-                bld._endElement = null;
-                bld._startElement = null;
-                bld._lastElement = null;
-                bld._isRemoved = true;
-            }
+                if (remove) {
+                    bld._endElement = null;
+                    bld._startElement = null;
+                    bld._lastElement = null;
+                    bld._isRemoved = true;
+                }
 
-            if (bld._behavoirs) {
+                if (bld._behavoirs) {
 
-                for (const item of bld._behavoirs)
-                    item.detach(this.getContext());
+                    for (const item of bld._behavoirs)
+                        item.detach(this.getContext());
 
-                bld._behavoirs = [];
-            }
-   
-            bld.cleanBindings(cleanValue, false);
+                    bld._behavoirs = [];
+                }
 
-        }, true);
+                bld.cleanBindings(cleanValue, false);
+
+            }, true);
+        }
+        
 
         return this;
     }
@@ -700,7 +710,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     }
 
-    content<TInnerModel extends ITemplateProvider | string>(content: BindValue<TModel, TInnerModel>, inline?: boolean): this {
+    content<TInnerModel extends ITemplateProvider | string>(content: BindValue<TModel, TInnerModel>, inline?: boolean, updateMode?: ContentUpdateMode): this {
 
         const childBuilder = this.beginTemplate<TInnerModel>(undefined, undefined, undefined, this.createMarker(content));
 
@@ -724,6 +734,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
                 if (oldValue &&
                     value &&
+                    updateMode != "replace" &&
                     isTemplateProvider(oldValue) &&
                     isTemplateProvider(value) &&
                     proxyEquals(oldValue.template, value.template)) { //TODO proxy should be already clean...
@@ -733,7 +744,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 else {
 
                     if (isUpdate)
-                        childBuilder.clear(); //TODO WARN: cleanValue was true
+                        childBuilder.clear(false, true, updateMode != "replace" ); //TODO WARN: cleanValue was true
 
                     if (value) {
 
