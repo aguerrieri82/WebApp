@@ -631,11 +631,14 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                     continue;
                 }
 
-                let mode = modes ? modes[prop] : (isBindExpression(propValue) ? propValue[BIND_MODE] : undefined);
+                let mode : BindMode = (modes && modes[prop]) || undefined;
+
+                if (!mode && isBindExpression(propValue)) 
+                    mode = propValue[BIND_MODE]
                  
-                if (!mode && BIND_MODES in model.constructor) {
+                if (BIND_MODES in model.constructor) {
                     const defModes = model.constructor[BIND_MODES] as Record<string, BindMode>;
-                    if (prop in defModes)
+                    if (prop in defModes && (!mode || mode == "expression"))
                         mode = defModes[prop];
                 }
 
@@ -1249,6 +1252,15 @@ export function withCleanup<T>(template: ITemplate<T>, action: () => void): ITem
         template(t);
     };
 }
+
+export function withNotify<T>(template: ITemplate<T>, action: () => void): ITemplate<T> {
+
+    return t => {
+        template(t);
+        action();
+    };
+}
+
 
 export function mount<TModel>(root: HTMLElement, template: CatalogTemplate<TModel>, model?: TModel): void;
 export function mount(root: HTMLElement, component: ITemplateProvider): void;

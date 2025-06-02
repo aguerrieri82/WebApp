@@ -4,7 +4,7 @@ import { type CommitMode, type ICommitable } from "../abstraction/ICommitable";
 import { type IValidable } from "../abstraction/IValidable";
 import { type IValidationContext } from "../abstraction/Validator";
 import { type ViewNode } from "../Types";
-import { cleanProxy, getTypeName } from "@eusoft/webapp-core";
+import { BIND_MODES, cleanProxy, configureBindings, getTypeName, type BindMode } from "@eusoft/webapp-core";
 
 
 type EditState = "" | "committed" | "committing" | "validating" | "editing" | "loading";
@@ -13,7 +13,12 @@ export interface ICommitableEditorOptions<TValue, TEditValue> extends IEditorOpt
     commitMode?: CommitMode;
 }
 
-export abstract class CommitableEditor<TValue, TEditValue, TOptions extends ICommitableEditorOptions<TValue, TEditValue>> extends Editor<TValue, TOptions> implements ICommitable<TValue, TEditValue>, IValidable {
+export abstract class CommitableEditor<
+    TValue,
+    TEditValue,
+    TOptions extends ICommitableEditorOptions<TValue, TEditValue>>
+    extends Editor<TValue, TOptions>
+    implements ICommitable<TValue, TEditValue>, IValidable {
 
     protected _editState: EditState;
 

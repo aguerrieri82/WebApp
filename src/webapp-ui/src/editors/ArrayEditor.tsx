@@ -5,7 +5,7 @@ import { EditorBuilder } from "./EditorBuilder";
 import { CommitableEditor } from "./CommitableEditor";
 import { type LocalString, type ViewNode } from "../Types";
 import { createAction, ItemView, MaterialIcon, Popup } from "../components";
-import { type IAction, isCommitable } from "../abstraction";
+import { type IAction, isCommitable, isValidable } from "../abstraction";
 import { formatText } from "../utils/Format";
 
 
@@ -19,6 +19,7 @@ interface IArrayEditorOptions<TItem> extends IEditorOptions<TItem[]> {
 
     newItemLabel?: LocalString;
 
+    editMode: "inplace" | "popup";
 }
 
 export const ArrayEditorTemplates: TemplateMap<ArrayEditor<unknown>> = {
@@ -29,23 +30,35 @@ export const ArrayEditorTemplates: TemplateMap<ArrayEditor<unknown>> = {
         <div className="items">
             {m.editValue.forEach(a => <ItemView
                 actions={[{
+                    name: "edit",
+                    icon: <MaterialIcon name="edit" />,
+                    priority: "secondary",
+                    type: "local",
+                    executeAsync: c => m.updateItemAsync(c.target)
+                },{
                     name: "delete",
                     icon: <MaterialIcon name="delete" />,
                     priority: "secondary",
                     executeAsync: async c => m.deleteItem(c.target)
                 }]}
-                maxActions={1}
+                maxActions={2}
                 primary={m.itemView(a)}
                 content={a} />)}
         </div>
         <div className="actions">
-            {[m.addAction].forEach(a => createAction(a, "text"))}
+            {createAction(m.addAction, "text")}
         </div>
-        {m.activeEditor}
+        {m.editMode == "inplace" && <div className="editor-contaner">
+            {m.activeEditor}
+            {m.activeEditor && createAction(m.saveAction, "text")}
+        </div>}
     </div>)
 }
 
 export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArrayEditorOptions<TItem>> {
+
+    private _editPopup: Popup;
+    private _editPromise: (a: TItem) => void;
 
     constructor(options?: IArrayEditorOptions<TItem>) {
 
@@ -53,12 +66,15 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
 
         this.init(ArrayEditor, {
             template: ArrayEditorTemplates.Default,
+            editMode: "popup",
             ...options,
         });
     }
 
     override initProps() {
+
         super.initProps();
+
         this.addAction = {
             name: "add",
             text: this.newItemLabel ?? "add-item",
@@ -66,11 +82,28 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
             executeAsync: () => this.addItemAsync(),
             priority: "primary"
         }
+
+        this.saveAction = {
+            name: "save",
+            text: "save-item",
+            type: "local",
+            executeAsync: () => this.saveItemAsync(),
+            priority: "primary"
+        }
+    }
+
+    async updateItemAsync(item: TItem) {
+
+        const result = await this.editItemAsync(item, "save");
+        if (item !== result && typeof item == "object")
+            Object.assign(item, result);
+        return result;
     }
 
     async addItemAsync() {
 
         const item = await this.editItemAsync(this.newItem(), this.newItemLabel);
+
         if (!item)
             return;
 
@@ -80,39 +113,76 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
         this.editValue.push(item);  
     }
 
-    protected editItemAsync(item: TItem, title: LocalString) {
+    async saveItemAsync() {
+
+        if (isValidable(this.activeEditor) && !await this.activeEditor.validateAsync()) 
+            return;
+
+        if (isCommitable(this.activeEditor) && !await this.activeEditor.commitAsync())
+            return;
+
+        if (this._editPromise) {
+            this._editPromise((this.activeEditor as IEditor<TItem>).value);
+            this._editPromise = null;
+        }
+    }
+
+    protected async editItemAsync(item: TItem, title: LocalString) {
 
         const editor = this.itemEditor(item);
 
-        return new Promise<TItem>(async res => {
+        editor.value = item;
 
-            this.activeEditor = new Popup({
-                body: editor,
-                title: formatText(title),
-                actions: [{
-                    name: "save",
-                    text: "save",
-                    executeAsync: async () => {
+        if (this.editMode == "popup") {
 
-                        if (isCommitable(editor) && !await editor.commitAsync())
-                            return false;
+            return new Promise<TItem>(res => {
 
-                        res(editor.value);
+                this._editPopup = new Popup({
+                    body: editor,
+                    title: formatText(title),
+                    actions: [{
+                        name: "save",
+                        text: "save",
+                        executeAsync: async () => {
 
-                        return true;
-                    }
-                }, {
-                    name: "cancel",
-                    text: "cancel",
-                    executeAsync: async () => {
-                        res(undefined);
-                        return true;
-                    }
-                }]
+                            if (isCommitable(editor) && !await editor.commitAsync())
+                                return false;
+
+                            res(editor.value);
+
+                            return true;
+                        }
+                    }, {
+                        name: "cancel",
+                        text: "cancel",
+                        executeAsync: async () => {
+                            res(undefined);
+                            return true;
+                        }
+                    }]
+                });
+
+                this._editPopup.showAsync();
             });
 
-            await (this.activeEditor as Popup).showAsync();
-        });
+           
+        }
+        else {
+
+            this.activeEditor = editor;
+
+            let result = await new Promise<TItem>(res => this._editPromise = res);
+
+            this.activeEditor = null;
+
+            return result;
+        }
+    }
+
+    override unmount() {
+        //this._editPopup?.unmount();
+        //this._editPopup = undefined;
+        super.unmount();
     }
 
     deleteItem(item: TItem) {
@@ -134,7 +204,11 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
         throw new Error("Not implemented");
     }
 
+    editMode: IArrayEditorOptions<TItem>["editMode"];
+
     addAction: IAction;
+
+    saveAction: IAction;
 
     activeEditor: IComponent;
 

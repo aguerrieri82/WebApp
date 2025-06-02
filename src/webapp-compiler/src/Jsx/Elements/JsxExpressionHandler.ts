@@ -18,7 +18,12 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
 
     const bindMode = ctx.getHelper(path)?.name as BindMode;
 
-    let createBind = !ctx.isBinding(path) && ctx.isBindable() && bindMode != "no-bind" && bindMode != "action";
+    let createBind = !ctx.isBinding(path) &&
+        ctx.hasModelRefs(path) &&
+        !path.isArrayExpression() &&
+        ctx.isBindable() &&
+        bindMode != "no-bind" &&
+        bindMode != "action";
 
     ctx.withModel(ctx.curModel, !createBind, () => ctx.transformExpression(path));
 
@@ -32,7 +37,10 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
         if (path.isObjectExpression())
             value = "(" + value + ")";
 
-        value = "Bind.exp(" + ctx.curModel.name + " => " + value + ")";
+        if (!bindMode)
+            value = "Bind.exp(" + ctx.curModel.name + " => " + value + ")";
+        else
+            value = ctx.curModel.name + " => " + value;
     }
 
     if (ctx.curAttribute) {

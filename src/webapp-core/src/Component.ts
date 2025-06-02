@@ -13,8 +13,8 @@ import { type ITemplateContext } from "./abstraction/ITemplateContext";
 import { type IService, SERVICE_TYPE, type ServiceType } from "./abstraction/IService";
 import { type IServiceProvider, type ServiceContainer } from "./abstraction/IServiceProvider";
 import type { Class, CommonKeys } from "./abstraction/Types";
-import { type BindExpression, type BindValueUnchecked } from "./abstraction/IBinder";
-import { ATTRIBUTES, type IHTMLContainer } from "./abstraction";
+import { type BindExpression, type BindMode, type BindValueUnchecked } from "./abstraction/IBinder";
+import { ATTRIBUTES, BIND_MODES, type IHTMLContainer } from "./abstraction";
 import { buildStyle } from "./utils/Style";
 import { getBuilder, TemplateBuilder } from "./TemplateBuilder";
 
@@ -24,7 +24,13 @@ interface ISubscription {
 
 
 
-export abstract class Component<TOptions extends IComponentOptions = IComponentOptions> implements IComponent<TOptions>, IBindingContainer, IMountListener, IServiceProvider, IHTMLContainer {
+export abstract class Component<
+    TOptions extends IComponentOptions = IComponentOptions>
+    implements IComponent<TOptions>,
+        IBindingContainer,
+        IMountListener,
+        IServiceProvider,
+        IHTMLContainer {
 
     protected _bounds: IBound[];
     protected _subscriptions: ISubscription[];
@@ -349,4 +355,17 @@ export function registerElement<TComponent extends IComponent>(component: Class<
     customElements.define("wa-" + name, element);
 
     return name;
+}
+
+export function configureBindings<T>(component: Class<T>, values: Partial< Record<keyof T & string, BindMode>>) {
+
+    let modes = component[BIND_MODES];
+
+    if (!modes) {
+        modes = {};
+        component[BIND_MODES] = modes;
+    }
+
+    Object.assign(modes, values);
+
 }

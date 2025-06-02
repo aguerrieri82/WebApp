@@ -1,19 +1,32 @@
-﻿import { Component, type IComponentOptions, type TemplateMap } from "@eusoft/webapp-core";
-import { Content, forModel } from "@eusoft/webapp-jsx";
-import { type IContent } from "../abstraction/IContent";
-import "./ContentHost.scss";
-import type { IContentHost } from "../abstraction/IContentHost";
+﻿import { type TemplateMap, type BindExpression, type IComponent } from "@eusoft/webapp-core";
+import { Class, forModel } from "@eusoft/webapp-jsx";
+import { type IEditor, type IEditorOptions } from "../abstraction/IEditor";
+import { EditorBuilder } from "./EditorBuilder";
+import { CommitableEditor } from "./CommitableEditor";
+import { type LocalString, type ViewNode } from "../Types";
+import { createAction, ItemView, MaterialIcon, Popup } from "../components";
+import { type IAction, isCommitable } from "../abstraction";
+import { formatText } from "../utils/Format";
 
-interface IContentHostOptions extends IComponentOptions {
-    useTransition: boolean;
+
+interface IArrayEditorOptions<TItem> extends IEditorOptions<TItem[]> {
+
+    itemEditor: (item: TItem) => IEditor<TItem>;
+
+    newItem?: () => Partial<TItem>;
+
+    itemView?: (item: TItem) => ViewNode;
+
+    newItemLabel?: LocalString;
+
 }
 
-export const ContentHostTemplates: TemplateMap<ContentHost> = {
+export const ArrayEditorTemplates: TemplateMap<ArrayEditor<unknown>> = {
 
-    "Single": forModel(m => <main className={m.className}>
-        <section className="content">
-            <Content src={m.content} />
-        </section>
-    </main>)
-
+    "Default": forModel(m => <div >
+        <div className="actions">
+            {[m.addAction].forEach(a => createAction(a, "text"))}
+        </div>
+        {m.activeEditor}
+    </div>)
 }

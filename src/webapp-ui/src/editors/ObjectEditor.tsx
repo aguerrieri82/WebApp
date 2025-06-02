@@ -1,4 +1,4 @@
-import { type BindExpression, type ITemplate, type TemplateMap, withCleanup } from "@eusoft/webapp-core";
+import { BIND_MODES, type Bindable, type BindExpression, type BindMode, type BindValue, configureBindings, type ITemplate, type TemplateMap, withCleanup, withNotify } from "@eusoft/webapp-core";
 import { Class, Content, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "./EditorBuilder";
 import { type IInputFieldOptions, type InputField } from "../components";
@@ -20,6 +20,8 @@ export interface IObjectEditorOptions<TObj extends Record<string, any>> extends 
     isDynamic?: boolean;
 
     inputField?: Partial<IInputFieldOptions<unknown, TObj>>;
+
+    isValid?: Bindable<boolean>;
 
 }
 
@@ -78,7 +80,10 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
             })) as ITemplate<TObj>;
 
 
-            this._contentTemplate = withCleanup(innerTemplate, () => this._inputs = []);
+            this._contentTemplate = withNotify(
+                withCleanup(innerTemplate,
+                    () => this._inputs = []),
+                () => this.onReady());
         }
 
         return this._contentTemplate;
@@ -130,7 +135,7 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
         return isSuccess;
     }
 
-    override async validateAsync<TTarget>(ctx?: IValidationContext<TTarget>, force?: boolean): Promise<boolean> {
+    override async validateAsync<TTarget>(ctx?: IValidationContext<TTarget>, force?: boolean, noShowError = false): Promise<boolean> {
 
         let isValid = true;
 
@@ -139,7 +144,7 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
         } as IValidationContext<TObj>;
 
         for (const input of this._inputs) {
-            if (!await input.validateAsync(innerCtx, force))
+            if (!await input.validateAsync(innerCtx, force, noShowError))
                 isValid = false;
         }
 
@@ -171,7 +176,16 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
         else if (clone)
             editValue = cloneObject(editValue);
 
+        if (this.validationMode == "onInputChange" && this._inputs)
+            this.validateAsync(undefined, false, true);
+
         return editValue;
+    }
+
+    protected onReady() {
+
+        if (this.validationMode == "onInputChange")
+            this.validateAsync(undefined, false, true);
     }
 
     isDynamic: boolean;
@@ -181,8 +195,12 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
     builder: (builder: EditorBuilder<TObj, this>) => JSX.Element;
 
     inputField: Partial<IInputFieldOptions<unknown, TObj>>;
+
 }
 
+configureBindings(ObjectEditor, {
+    "isValid": "two-ways",
+});
 
 declare module "./EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {

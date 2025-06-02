@@ -146,7 +146,11 @@ export class JsxParseContext {
 
     }
 
-    findBuilder(model: Identifier) {
+    findBuilder(model: Identifier, includeCurrent = false) {
+
+        if (includeCurrent && this.curModel == model)
+            return this.curBuilder; 
+
         for (let i = this.stack.length - 1; i >= 0; i--) {
             if (this.stack[i].model == model)
                 return this.stack[i].builder;
@@ -173,9 +177,6 @@ export class JsxParseContext {
 
         this.traverseFromRoot(exp, {
             enter: path => {
-
-                let x = 1;
-
                 for (const handler of this.handlers) {
                     if (handler(this, "trans-exp", path))
                         return;
@@ -344,6 +345,35 @@ export class JsxParseContext {
         let result = false;
 
         this.traverseFromRoot(exp, {
+
+            enter: path => {
+
+                if (!path.isIdentifier())
+                    return;
+
+
+                const binding = path.scope.getBinding(path.toString());
+                if (!binding)
+                    return;
+
+                const builder = this.findBuilder(binding.identifier, true);
+
+                if (builder) {
+                    result = true;
+                    path.stop();
+                }
+            }
+        });
+
+        return result;
+    }
+
+    /*
+    hasModelRefs(exp: NodePath) {
+
+        let result = false;
+
+        this.traverseFromRoot(exp, {
             enter: path => {
                 if (path.isIdentifier()) {
 
@@ -363,6 +393,7 @@ export class JsxParseContext {
 
         return result;
     }
+    */
 
     generateBuilder() {
         this.curBuilder = "t" + (this.stack.length > 0 ? this.stack.length : "");

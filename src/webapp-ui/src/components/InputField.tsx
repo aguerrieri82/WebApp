@@ -86,7 +86,7 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
         return true;
     }
 
-    async validateAsync<TInnerTarget>(ctx: IValidationContext<TInnerTarget & TTarget>, force?: boolean): Promise<boolean> {
+    async validateAsync<TInnerTarget>(ctx: IValidationContext<TInnerTarget & TTarget>, force?: boolean, noShowError = false): Promise<boolean> {
 
         if (this.content?.disabled || !this.visible)
             return true;
@@ -114,7 +114,7 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
   
         this.isValid = isValid;
 
-        this.error = isValid ? null : errors;
+        this.error = isValid || noShowError ? null : errors;
 
         return isValid;
     }

@@ -21,6 +21,11 @@
         }
 
         > .secondary-actions {
+
+            display: flex;
+            flex-direction: row;
+            gap: size(0);
+
             &:empty {
                 display: none;
             }

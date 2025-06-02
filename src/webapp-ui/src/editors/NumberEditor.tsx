@@ -1,9 +1,9 @@
-import { type TemplateMap, type BindExpression } from "@eusoft/webapp-core";
+import { type BindExpression, type TemplateMap } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import { type IEditorOptions } from "../abstraction/IEditor";
 import { type LocalString } from "../Types";
-import { EditorBuilder } from "./EditorBuilder";
 import { Editor } from "./Editor";
+import { EditorBuilder } from "./EditorBuilder";
 import "./NumberEditor.scss";
 
 interface INumberEditorOptions extends IEditorOptions<number> {
