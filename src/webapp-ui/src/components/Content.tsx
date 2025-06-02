@@ -25,7 +25,7 @@ export interface IContentOptions<TArgs extends {}, TName extends string = string
 
     features?: IFeature<IContent>[];
 
-    onLoadArgsAsync?: (args: TArgs) => Promise<any>;
+    onLoadArgsAsync?: (args: TArgs) => Promise<unknown>;
 }
 
 export const ContentTemplates: TemplateMap<Content> = {
@@ -120,13 +120,15 @@ export class Content<
     }
 
 
-    async onOpenAsync(): Promise<any> {
+    async onOpenAsync(): Promise<unknown> {
 
+        return Promise.resolve();
         
     }
 
-    async onCloseAsync(): Promise<any> {
+    async onCloseAsync(): Promise<unknown> {
 
+        return Promise.resolve();
     }
 
     get loadState() {

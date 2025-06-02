@@ -64,7 +64,7 @@ declare module "./EditorBuilder" {
     }
 }
 
-EditorBuilder.prototype.text = function (this: EditorBuilder<any, any>, value, options) {
+EditorBuilder.prototype.text = function (this: EditorBuilder<string, unknown>, value, options) {
     return this.editor(value, TextEditor, options);
 }
 

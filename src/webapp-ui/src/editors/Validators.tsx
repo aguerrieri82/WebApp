@@ -15,7 +15,7 @@ export const ValidationResult = {
 }
 
 
-export async function validEmail(ctx: IValidationContext<any>, value: any) {
+export async function validEmail(ctx: IValidationContext<unknown>, value: string) {
 
     const regExp = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
     const isValid = !value || value.trim().length == 0 ? true : regExp.test(value);
@@ -26,14 +26,14 @@ export async function validEmail(ctx: IValidationContext<any>, value: any) {
 }
 
 export function validateWhen<TValiator extends Validator<unknown, unknown>>(selector: () => boolean, validator: TValiator) {
-    return async (ctx: IValidationContext<any>, value: any) => {
+    return async (ctx: IValidationContext<unknown>, value: unknown) => {
         if (!selector())
             return ValidationResult.valid;
         return await validator(ctx, value);
     }
 }
 
-export async function required(ctx: IValidationContext<any>, value: any)  {
+export async function required(ctx: IValidationContext<unknown>, value: unknown)  {
 
     if (value === null || value === undefined || Array.isArray(value) && value.length == 0 || typeof(value) == "string" && value.trim().length == 0)
         return ValidationResult.error(formatText("msg-field-required", ctx?.fieldName));
@@ -42,7 +42,7 @@ export async function required(ctx: IValidationContext<any>, value: any)  {
 }
 
 
-export async function integer(ctx: IValidationContext<any>, value: number) {
+export async function integer(ctx: IValidationContext<unknown>, value: number) {
 
     if (value !== null && value !== undefined && (isNaN(value) || Math.round(value) != value))
         return ValidationResult.error(formatText("msg-field-integer", ctx?.fieldName));
@@ -52,7 +52,7 @@ export async function integer(ctx: IValidationContext<any>, value: number) {
 
 export function range(min?: number, max?: number) {
 
-    return async (ctx: IValidationContext<any>, value: number) => {
+    return async (ctx: IValidationContext<unknown>, value: number) => {
 
         if (value !== undefined && value !== null) {
 
@@ -69,7 +69,7 @@ export function range(min?: number, max?: number) {
 
 export function maxLength(length: number) {
 
-    return async (ctx: IValidationContext<any>, value: string) => {
+    return async (ctx: IValidationContext<unknown>, value: string) => {
 
         if (value && value.length > length)
             return ValidationResult.error(formatText("msg-field-required", ctx?.fieldName, length));

@@ -534,7 +534,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
 
 
-    enter<TInnerModel>(expression: BindValue<TModel, TInnerModel>, action: (t: TemplateBuilder<TInnerModel>) => any) {
+    enter<TInnerModel>(expression: BindValue<TModel, TInnerModel>, action: (t: TemplateBuilder<TInnerModel>) => unknown) {
 
         const childBuilder = this.beginTemplate<TInnerModel>(undefined, undefined, undefined, this.createMarker(expression));
         childBuilder._tag = "enter";
@@ -1159,12 +1159,12 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return document.createElement(name);
     }
 
-    protected createMarker(obj: any, baseName: string = ""): string {
+    protected createMarker(obj: unknown, baseName: string = ""): string {
 
         return;
 
-        if (typeof obj == "function")
-            return this.createMarker(obj(this.model), baseName);
+        if (typeof obj == "function" )
+            return this.createMarker((obj as Function)(this.model), baseName);
 
         if (typeof obj == "string")
             return baseName + obj;

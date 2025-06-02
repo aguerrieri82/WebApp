@@ -7,15 +7,15 @@ import { type ILabel } from "../abstraction";
 import { type JsxTypedElement, type TemplateModel } from "@eusoft/webapp-jsx";
 import { emptyObject } from "../utils";
 
-interface EditorBuilderOptions<TModel, TModelContainer extends Record<string, any>> {
+interface EditorBuilderOptions<TModel, TModelContainer extends Record<string, unknown>> {
 
     model: BindExpression<TModelContainer, TModel>;
 
     container: TModelContainer;
 
-    attach?: (editor: InputField<any, any>) => void;
+    attach?: (editor: InputField<unknown, IEditor<unknown>>) => void;
 
-    inputField?: Partial<IInputFieldOptions<unknown, TModel>>;
+    inputField?: Partial<IInputFieldOptions<unknown, TModel>>; 
 }
 
 export interface IBuilderEditorOptions<TModel, TValue, TEditorOptions extends IEditorOptions<TValue>> {

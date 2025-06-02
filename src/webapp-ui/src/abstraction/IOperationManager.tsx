@@ -1,7 +1,7 @@
 import { type IService } from "@eusoft/webapp-core";
 import { type ViewNode } from "../Types";
 
-export const OPERATION_MANAGER : any = Symbol.for("$operationManager");
+export const OPERATION_MANAGER : symbol = Symbol.for("$operationManager");
 
 export interface IOperationOptions {
     name?: string;

@@ -59,7 +59,7 @@ declare module "./EditorBuilder" {
     }
 }
 
-EditorBuilder.prototype.number = function (this: EditorBuilder<any, any>, value, options) {
+EditorBuilder.prototype.number = function (this: EditorBuilder<number, unknown>, value, options) {
     return this.editor(value, NumberEditor, options);
 }
 

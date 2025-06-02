@@ -38,7 +38,7 @@ export function replaceArgs(value: string, args: Record<string, unknown> | { (ke
     if (typeof (args) != "function")
         map = key => args[key];
     else
-        map = <any>args;
+        map = args;
 
     let state = 0;
     let result = "";

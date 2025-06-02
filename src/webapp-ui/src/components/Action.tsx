@@ -14,7 +14,7 @@ interface IActionOptions<TTarget> extends IComponentOptions {
 
     type?: ActionType;
 
-    onExecuteAsync?: (ctx?: IActionContext<TTarget>) => Promise<void> | void;
+    onExecuteAsync?: (ctx?: IActionContext<TTarget>) => Promise<unknown> | void;
 
     enabled?: Bindable<boolean>;
 }
@@ -76,7 +76,7 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
     }
 
     @attribute()
-    onExecuteAsync(ctx?: IActionContext<TTarget>): Promise<void> | void {
+    onExecuteAsync(ctx?: IActionContext<TTarget>): Promise<unknown> | void {
     }
 
     @attribute()

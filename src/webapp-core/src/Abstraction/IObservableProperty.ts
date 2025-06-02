@@ -13,8 +13,7 @@ export interface IObservableProperty<TValue> extends IProperty<TValue> {
     notifyChanged(): void;
 }
 
-
-export function isObservableProperty(value: any): value is IObservableProperty<any> {
+export function isObservableProperty(value: unknown): value is IObservableProperty<unknown> {
 
     return value && typeof value == "object" &&
         typeof (value["get"]) == "function" &&

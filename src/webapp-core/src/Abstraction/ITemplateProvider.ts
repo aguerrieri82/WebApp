@@ -9,7 +9,7 @@ export interface ITemplateProvider<TModel = any> {
     template: CatalogTemplate<TModel>;
 }
 
-export function isTemplateProvider(obj: any): obj is ITemplateProvider {
+export function isTemplateProvider(obj: unknown): obj is ITemplateProvider {
 
     return obj && typeof obj == "object" && "template" in obj;
 }

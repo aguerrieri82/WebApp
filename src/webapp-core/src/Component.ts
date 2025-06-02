@@ -253,7 +253,7 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 }
 
 
-export function getComponent(obj: any): Function {
+export function getComponent(obj: unknown): Function {
 
     if (!obj || typeof obj != "object")
         return undefined;
@@ -262,7 +262,7 @@ export function getComponent(obj: any): Function {
         return obj.constructor;
 
     if (COMPONENT in obj)
-        return obj[COMPONENT];
+        return obj[COMPONENT] as Function; 
 
     return undefined;
 }

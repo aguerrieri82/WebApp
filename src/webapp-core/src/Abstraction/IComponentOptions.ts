@@ -12,7 +12,7 @@ export interface IComponentOptions<TName extends string = string> {
 
     style?: Bindable<ComponentStyle>;
 
-    template?: CatalogTemplate<any>;
+    template?: CatalogTemplate<unknown>;
 
     name?: TName;
 

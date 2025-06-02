@@ -5,7 +5,7 @@
     isCacheEnabled: boolean;
 }
 
-export function isHTMLContainer(value: any): value is IHTMLContainer {
+export function isHTMLContainer(value: unknown): value is IHTMLContainer {
 
     return value && typeof value == "object" && "nodes" in value;
 }

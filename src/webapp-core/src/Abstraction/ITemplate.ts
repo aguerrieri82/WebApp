@@ -11,7 +11,7 @@ export interface ITemplate<TModel> {
 
 export type TemplateMap<TModel> = Record<string, ITemplate<TModel>>;
 
-export function isTemplate(obj: any): obj is ITemplate<unknown> {
+export function isTemplate(obj: unknown): obj is ITemplate<unknown> {
 
     return obj &&
         typeof obj == "function" &&

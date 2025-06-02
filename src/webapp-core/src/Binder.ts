@@ -41,7 +41,7 @@ export interface IBinding<TModel, TValue = unknown> {
     suspend: number;
 }
 
-type CleanAction = () => any;
+type CleanAction = () => unknown;
 
 export class Binder<TModel> {
 

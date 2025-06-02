@@ -6,7 +6,7 @@ export interface IEmptyViewOptions {
     message: LocalString;
     iconName: MaterialIconName;
     addLabel?: ViewNode;
-    addAction?: () => any;
+    addAction?: () => unknown;
 }
 
 
@@ -19,7 +19,7 @@ export function EmptyView(options: IEmptyViewOptions) {
 
         {formatText(options.message)}
 
-        <Action style="text" type="local" onExecuteAsync={() => options.addAction()}>
+        <Action style="text" type="local" onExecuteAsync={async () => options.addAction()}>
             {options.addLabel}
         </Action>
     </div>

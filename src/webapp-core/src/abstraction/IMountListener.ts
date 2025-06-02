@@ -7,7 +7,7 @@ export interface IMountListener {
     unmount(): void;
 }
 
-export function isMountListener(obj: any): obj is IMountListener {
+export function isMountListener(obj: unknown): obj is IMountListener {
 
     return obj && typeof obj == "object" && "mount" in obj && typeof obj["mount"] == "function";
 }

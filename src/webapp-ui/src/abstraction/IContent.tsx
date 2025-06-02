@@ -10,9 +10,9 @@ export interface IContent<TArgs extends {} = undefined> extends IComponent {
 
     loadAsync(host: IContentHost, args?: TArgs): Promise<boolean>;
 
-    onOpenAsync(): Promise<any>;
+    onOpenAsync(): Promise<unknown>;
 
-    onCloseAsync(): Promise<any>;
+    onCloseAsync(): Promise<unknown>;
 
     route: string;
 

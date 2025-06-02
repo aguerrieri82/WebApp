@@ -27,7 +27,7 @@ export interface IWizardStepOptions {
 
     canGoPrev?: () => boolean;
 
-    loadAsync?: () => Promise<any>;
+    loadAsync?: () => Promise<unknown>;
 
     validateAsync?: (step?: WizardStep) => Promise<boolean>;
 }
@@ -46,7 +46,7 @@ export class WizardStep implements IWizardStepOptions {
         Object.assign(this, this.options);
     }
 
-    async loadAsync(): Promise<any> {
+    async loadAsync(): Promise<void> {
 
         if (isAsyncLoad(this.content))
             await this.content.loadAsync();

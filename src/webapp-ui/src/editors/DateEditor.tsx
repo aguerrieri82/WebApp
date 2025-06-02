@@ -56,7 +56,7 @@ declare module "./EditorBuilder" {
     }
 }
 
-EditorBuilder.prototype.date = function (this: EditorBuilder<any, any>, value, options) {
+EditorBuilder.prototype.date = function (this: EditorBuilder<Date, unknown>, value, options) {
     return this.editor(value, DateEditor, options);
 }
 

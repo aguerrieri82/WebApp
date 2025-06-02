@@ -24,7 +24,7 @@ export class BaseApiClient {
 
             let queryString = "";
 
-            const appendValue = (key: string, value: any) => {
+            const appendValue = (key: string, value: Date|string) => {
 
                 if (queryString.length > 0)
                     queryString += "&";
@@ -59,7 +59,7 @@ export class BaseApiClient {
 
         const url = this.buildUrl(path, query);
 
-        let body: any = null;
+        let body: string = null;
 
         headers ??= {};
 

@@ -22,7 +22,7 @@ export interface IInputFieldOptions<TValue, TTarget> extends IComponentOptions {
 } 
  
 
-export const InputFieldTemplates: TemplateMap<InputField<unknown, IEditor<any>>> = {
+export const InputFieldTemplates: TemplateMap<InputField<unknown, IEditor<unknown>>> = {
 
     "Default": forModel(m => <Template name="InputField">
         <div className={m.className} visible={m.visible}>

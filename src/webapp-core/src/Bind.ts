@@ -14,9 +14,9 @@ interface IBindBuilder<TModel> {
 
 export function bind(mode: BindMode) { 
 
-    return (target: IComponent, propertyName: any) => {
+    return (target: IComponent, propertyName: string) => {
 
-        const constr = target.constructor as any;
+        const constr = target.constructor;
 
         if (!constr[BIND_MODES])
             constr[BIND_MODES] = {};
@@ -65,16 +65,16 @@ export namespace Bind {
     }
 
 
-    export function build(model: any) {
+    export function build<TModel>(model: TModel) {
 
-        function builder<TModel>(curModel: TModel): IBindBuilder<TModel> {
+        function builder<TBuilder>(curModel: TBuilder): IBindBuilder<TBuilder> {
             return {
 
                 use<TValue>(value: TValue) {
                     return builder((curModel as IBindable)[USE](value))
                 },
 
-                get<TValue>(exp: BindExpression<TModel, TValue>) {
+                get<TValue>(exp: BindExpression<TBuilder, TValue>) {
                     return builder(exp(curModel));
                 },
 

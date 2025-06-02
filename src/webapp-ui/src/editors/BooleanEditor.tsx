@@ -46,7 +46,7 @@ declare module "./EditorBuilder" {
     }
 }
 
-EditorBuilder.prototype.boolean = function (this: EditorBuilder<any, any>, value, options) {
+EditorBuilder.prototype.boolean = function (this: EditorBuilder<boolean, unknown>, value, options) {
     return this.editor(value, BooleanEditor, {
         style: "no-error",
        ...options

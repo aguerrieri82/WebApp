@@ -26,7 +26,7 @@ export function staticItemsSource<TValue>(...items: [LocalString, TValue][]) {
         getValue: a => a.value,
         itemsSize: items.length > LARGE_ITEMS_SIZE_VALUE ? "small" : "large",
         id: null
-    } as IItemsSource<ISimpleItem<TValue>, TValue, any> & { id: string }
+    } as IItemsSource<ISimpleItem<TValue>, TValue, void> & { id: string }
 }
 
 export function stringItemsSource(...values: string[]) {
@@ -36,7 +36,7 @@ export function stringItemsSource(...values: string[]) {
         getItemByValueAsync: async a => a,
         getItemsAsync: async () => values,
         itemsSize: values.length > LARGE_ITEMS_SIZE_VALUE ? "small" : "large"
-    } as IItemsSource<string, string, any>
+    } as IItemsSource<string, string, void>
 }
 
 export function enumItemsSource<TEnum>(value: TEnum) {
@@ -49,7 +49,7 @@ export function enumItemsSource<TEnum>(value: TEnum) {
             value: value[a]
         } as ISimpleItem<TEnum>)),
 
-    } as IItemsSource<ISimpleItem<TEnum>, TEnum, any>
+    } as IItemsSource<ISimpleItem<TEnum>, TEnum, void>
 }
 
 export function arrayItemsSource<TItem>(items: TItem[] | { (): TItem[] }, getText: (a: TItem)=> string) {

@@ -7,7 +7,7 @@ export interface IBehavoir<TElement extends HTMLElement = HTMLElement, TModel = 
     detach(ctx: ITemplateContext<TModel, TElement>): void;
 }
 
-export function isBehavoir(value: any): value is IBehavoir {
+export function isBehavoir(value: unknown): value is IBehavoir {
 
     return value && typeof value === "object" &&
         "attach" in value && typeof value["attach"] === "function" &&

@@ -18,7 +18,7 @@ export interface IComponent<TOptions extends IComponentOptions = IComponentOptio
     name?: string;
 }
 
-export function isComponent(obj: any): obj is IComponent {
+export function isComponent(obj: unknown): obj is IComponent {
 
     return obj && typeof obj == "object" && "template" in obj;
 }

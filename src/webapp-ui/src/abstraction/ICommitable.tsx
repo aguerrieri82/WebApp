@@ -15,6 +15,6 @@ export interface ICommitable<TValue, TEditValue> {
     commitMode: CommitMode;
 }
 
-export function isCommitable(obj: any): obj is ICommitable<unknown, unknown> {
+export function isCommitable(obj: unknown): obj is ICommitable<unknown, unknown> {
     return obj && typeof obj == "object" && "commitAsync" in obj && typeof obj["commitAsync"] == "function";
 }

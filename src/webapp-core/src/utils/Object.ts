@@ -1,7 +1,7 @@
 
 const TYPE_NAME = Symbol.for("@typeName");
 
-type Type<T> = new (...args: any[]) => T;
+type Type<T> = new (...args: unknown[]) => T;
 
 type KeyOfType<TObj, TKey> = {
     [P in keyof TObj & string]: TObj[P] extends TKey ? P : never
@@ -31,16 +31,16 @@ export function getFunctionType(value: Function): "function" | "class" | "async"
         : undefined;
 }
 
-export function isClass(value: Function): value is { new(): any } {
+export function isClass(value: Function): value is { new(): unknown } {
     return getFunctionType(value) == "class";
 }
 
-export function setTypeName(obj: any, name: string) {
+export function setTypeName(obj: unknown, name: string) {
 
     obj[TYPE_NAME] = name;
 } 
 
-export function getTypeName(obj: any): string {
+export function getTypeName(obj: unknown): string {
 
     if (!obj)
         return undefined;
@@ -52,7 +52,7 @@ export function getTypeName(obj: any): string {
     if (!name) {
 
         if (type == "function")
-            name = getFunctionName(obj);
+            name = getFunctionName(obj as Function);
 
         else if (type == "object") {
 
@@ -69,11 +69,11 @@ export function getTypeName(obj: any): string {
     return name;
 }
 
-export function getBaseType(ctr: Type<any>): Type<any>;
-export function getBaseType(obj: object): Type<any>;
-export function getBaseType(objOrFun: object | Type<any>): Type<any> {
+export function getBaseType(ctr: Type<unknown>): Type<unknown>;
+export function getBaseType(obj: object): Type<unknown>;
+export function getBaseType(objOrFun: object | Type<unknown>): Type<unknown> {
 
-    let proto: any;
+    let proto: unknown;
 
     if (typeof objOrFun == "function")
         proto = objOrFun.prototype;

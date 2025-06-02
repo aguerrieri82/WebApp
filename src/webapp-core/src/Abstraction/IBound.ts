@@ -2,9 +2,9 @@
 
 export interface IBound {
 
-    src: IObservableProperty<any>;
+    src: IObservableProperty<unknown>;
 
-    dst: IObservableProperty<any>;
+    dst: IObservableProperty<unknown>;
 
     unbind(): void;
 }

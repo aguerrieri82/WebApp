@@ -11,7 +11,7 @@ export interface IListColumn<TItem, TValue> {
     value: (item: TItem) => TValue;
     sortValue?: (item: TItem) => string | number;
     content?: (item: TItem) => ViewNode;
-    filter?: Omit<IFilterField<TItem, TValue, any>, "name" | "value">;
+    filter?: Omit<IFilterField<TItem, TValue, boolean>, "name" | "value">;
     canSort?: boolean;
 }
 
@@ -34,7 +34,7 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<unknow
     itemsSource: IItemsSource<TItem, unknown, unknown>;
     itemActions?: (item?: TItem) => IAction<TItem>[] | IAction<TItem>[];
     columns: IListColumn<TItem, unknown>[];
-    openItem?: (item: TItem) => any;
+    openItem?: (item: TItem) => unknown;
     itemEditContent?: (item: TItem) => IContentInstance<unknown, IContent>;
     itemAddContent?: (item?: TItem) => Content<unknown> | Class<Content<unknown>>;
     createItemView?: (item: TItem, actions?: IAction<TItem>[]) => ViewNode | Class<Content<unknown>>;

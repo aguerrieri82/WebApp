@@ -148,7 +148,7 @@ declare module "./EditorBuilder" {
     }
 }
 
-EditorBuilder.prototype.array = function (this: EditorBuilder<any, any>, value, options) {
+EditorBuilder.prototype.array = function (this: EditorBuilder<unknown[], unknown>, value, options) {
     return this.editor(value, ArrayEditor, options);
 }
 

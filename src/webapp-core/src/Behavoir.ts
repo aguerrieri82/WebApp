@@ -1,7 +1,7 @@
 import { type IBehavoir } from "./abstraction";
 import { type ITemplateContext } from "./abstraction/ITemplateContext";
 
-export abstract class Behavoir<TOptions extends {} = {}, TElement extends HTMLElement = HTMLElement, TModel = any> implements IBehavoir<TElement, TModel> {
+export abstract class Behavoir<TOptions extends {} = {}, TElement extends HTMLElement = HTMLElement, TModel = unknown> implements IBehavoir<TElement, TModel> {
 
     protected _isDetach: boolean;
 
@@ -17,7 +17,7 @@ export abstract class Behavoir<TOptions extends {} = {}, TElement extends HTMLEl
         for (const key in this.options) {
 
             if (key in this)
-                (this as Record<string, any>)[key] = this.options[key];
+                (this as Record<string, unknown>)[key] = this.options[key];
         }
     }
 

@@ -12,7 +12,7 @@ export interface IFilterField<
     value: BindExpression<TFilter, TValue>;
     editor?: () => IEditor<TValue> | Class<IEditor<TValue>>;
     dataType?: DataType;
-    valuesSource?: IItemsSource<any, ItemType<TValue, Multiple>, any>;
+    valuesSource?: IItemsSource<unknown, ItemType<TValue, Multiple>, unknown>;
     required?: boolean;
     multipleValues?: Multiple;
     label?: ViewNode;
@@ -23,5 +23,5 @@ export interface IFilterField<
 
 export interface IFilterEditor<TFilter> {
 
-    fields: IFilterField<TFilter, unknown, any>[];
+    fields: IFilterField<TFilter, unknown, boolean>[];
 }

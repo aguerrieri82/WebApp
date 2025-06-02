@@ -3,10 +3,10 @@ import type { IBinding } from "../Binder";
 import type { TemplateBuilder } from "../TemplateBuilder";
 
 export const WebApp = {
-    bindings: [] as IBinding<any>[],
+    bindings: [] as IBinding<unknown>[],
     isDebug: false,
     root: null as TemplateBuilder<unknown>,
-    subs: [] as IPropertyChangedHandler<any>[]
+    subs: [] as IPropertyChangedHandler<unknown>[]
 }
 
 declare global {

@@ -6,6 +6,7 @@ export function cloneObject<T>(obj: T): T {
 
 
 let objTrack = 0;
+
 export function emptyObject(src: string) {
-    return cloneObject({ _track: objTrack++, _src: src } as any);
+    return cloneObject({ _track: objTrack++, _src: src }) as any;
 }

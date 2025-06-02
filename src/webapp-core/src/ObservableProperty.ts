@@ -2,7 +2,7 @@
 import { forEachRev } from "./utils/Array";
 import { WebApp } from "./utils/Debug";
 
-export class ObservableProperty<TValue = any> implements IObservableProperty<TValue> {
+export class ObservableProperty<TValue = unknown> implements IObservableProperty<TValue> {
 
     private _handlers: IPropertyChangedHandler<TValue>[];
     private _descriptor: PropertyDescriptor;

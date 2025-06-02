@@ -3,7 +3,7 @@ import { type IContentOptions, type Content, type IContentInfo, contentInfo } fr
 
 export type Extra<TContent, T> = {
     [K in keyof T]:
-    T[K] extends (...args: any[]) => any
+    T[K] extends (...args: any[]) => unknown
     ? (this: TContent & T, ...args: Parameters<T[K]>) => ReturnType<T[K]>
     : T[K];
 };
