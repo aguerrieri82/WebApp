@@ -1,0 +1,9 @@
+@use "../themes/_vars" as *;
+
+.content-host {
+
+    > .content {
+        display: flex;
+        flex-direction: column;
+    }
+}

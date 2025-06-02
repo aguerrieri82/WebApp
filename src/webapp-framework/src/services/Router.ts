@@ -93,23 +93,6 @@ export class Router {
         return entry;
     }
 
-    protected async transactionAsync<T>(action: () => Promise<T>) {
-
-        if ("startViewTransition" in document && this.useTransition) {
-
-            let result: T;
-
-            const tr = document.startViewTransition(async () => {
-                result = await action();
-            });
-
-            await tr.updateCallbackDone;
-
-            return result;
-        }
-
-        return action();
-    }
 
     addPage(infoOrPage: IContentInfo | IContentConstructor) {
 
@@ -119,7 +102,7 @@ export class Router {
 
             const page = content ?? info.factory();
 
-            if (!await this.transactionAsync(() => app.contentHost.loadContentAsync(page, args)))
+            if (!await app.contentHost.loadContentAsync(page, args))
                 return false;
 
             document.title = formatText(page.title) as string;
@@ -175,7 +158,7 @@ export class Router {
 
         if (!entry?.route && typeof pageOrName != "string") {
 
-            await this.transactionAsync(() => app.contentHost.loadContentAsync(pageOrName, args));
+            await app.contentHost.loadContentAsync(pageOrName, args);
 
             return pageOrName;
         } 

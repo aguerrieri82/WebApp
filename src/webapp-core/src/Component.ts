@@ -30,6 +30,7 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
 
     constructor() {
 
+        //this.isCacheEnabled = true;
         this.options = {} as TOptions;
         this.id = generateRandomId();
         this.init(Component);
@@ -184,15 +185,15 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
         }
 
         
-        /*
-        TODO problem: if i unmoint a component and remount later i need to keep subs
+
+        //TODO problem: if i unmoint a component and remount later i need to keep subs
 
         if (this._subscriptions) {
             for (const item of this._subscriptions)
                 item.unsubscribe();
             delete this._subscriptions;
         }
-        */
+    
 
         if (this._binder) {
             this._binder.cleanBindings(cleanValue, true);

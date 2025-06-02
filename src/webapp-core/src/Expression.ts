@@ -44,14 +44,17 @@ export function isProxy(item: unknown) {
     return false;
 }
 
-export function cleanProxy<T>(item: T) : T {
+export function cleanProxy<T>(item: T, assertNoProxy = false) : T {
 
     if (item && (typeof(item) === "object" || typeof(item) === "function")) {
 
         const target = (item as any)[TARGET];
 
-        if (target)
+        if (target) {
+            if (assertNoProxy)
+                debugger;
             return target;
+        }
     }
 
     return item;

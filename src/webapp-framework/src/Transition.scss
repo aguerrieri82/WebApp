@@ -49,6 +49,10 @@
     }
 }
 
+:root {
+    view-transition-name: none;
+}
+
 body {
     view-transition-name: page;
 }

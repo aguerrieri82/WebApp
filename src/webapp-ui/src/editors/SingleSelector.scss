@@ -1,0 +1,23 @@
+@use "index" as *;
+
+.single-selector {
+
+    &.options {
+        display: flex;
+        flex-direction: column;
+        gap: size(1);
+        border: none;
+        padding: 0;
+
+        label {
+            > * {
+                vertical-align: middle;
+            }
+
+            input{
+                display: inline-block;
+                margin-right: size(1);
+            }
+        }
+    }
+}
