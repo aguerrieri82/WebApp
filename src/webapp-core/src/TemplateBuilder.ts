@@ -1,6 +1,6 @@
-import { BIND_MODES, COMPONENT, type ServiceType, type StringLike, isComponent } from "./abstraction";
+import { BIND_MODE, BIND_MODES, COMPONENT, type ServiceType, type StringLike, isBindExpression, isComponent } from "./abstraction";
 import { type IBehavoir, isBehavoir } from "./abstraction/IBehavoir";
-import type { BindMode, BindValue, BoundObject, BoundObjectModes } from "./abstraction/IBinder";
+import type { BindMode, BindValue, BindValueUnchecked, BoundObject, BoundObjectModes } from "./abstraction/IBinder";
 import { isHTMLContainer } from "./abstraction/IHTMLContainer";
 import { isMountListener } from "./abstraction/IMountListener";
 import { type IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
@@ -18,8 +18,6 @@ type TemplateValueMap<TModel, TObj> = {
 
     [TKey in keyof TObj]?: BindValue<TModel, TObj[TKey]>
 }
-
-export type ContentUpdateMode = "replace";
 
 type TemplateInlineMode = "never" | "always" | "auto" | "explicit" | "replace-parent" | "embed-child" | "inherit";
 
@@ -49,7 +47,14 @@ interface ISwitchCondition<TValue> {
     template: CatalogTemplate<TValue>;
 }
 
+/****************************************/
+
+
 export type InputValueMode = "focus" | "change" | "keyup" | "pool" | "input";
+
+export type ContentUpdateMode = "replace";
+
+export const BUILDER: unique symbol = Symbol.for("@builder")
 
 
 /****************************************/
@@ -527,6 +532,8 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this;
     }
 
+
+
     enter<TInnerModel>(expression: BindValue<TModel, TInnerModel>, action: (t: TemplateBuilder<TInnerModel>) => any) {
 
         const childBuilder = this.beginTemplate<TInnerModel>(undefined, undefined, undefined, this.createMarker(expression));
@@ -624,8 +631,8 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                     continue;
                 }
 
-                let mode = modes ? modes[prop] : undefined;
-
+                let mode = modes ? modes[prop] : (isBindExpression(propValue) ? propValue[BIND_MODE] : undefined);
+                 
                 if (!mode && BIND_MODES in model.constructor) {
                     const defModes = model.constructor[BIND_MODES] as Record<string, BindMode>;
                     if (prop in defModes)
@@ -644,7 +651,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                         model[prop] = value;
                         if (callOnChange && !isClass(constructor))
                             constructor(model as TProps);
-                    }, prop == "builder" || mode == "no-bind" || mode == "action" ? "no-bind" : undefined);
+                    }, prop == "builder" || mode == "no-bind" || mode == "action" || !mode ? "no-bind" : undefined);
    
                 }
             }
@@ -859,6 +866,8 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             childBuilder._lastElement = this._lastElement;
 
         this.register(childBuilder, "beginChild");
+
+        childElement[BUILDER] = childBuilder;
 
         this._childCount++;
 
@@ -1086,7 +1095,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     style<TKey extends keyof CSSStyleDeclaration>(name: TKey, value: BindValue<TModel, CSSStyleDeclaration[TKey]>): this;
 
-    style<TKey extends keyof CSSStyleDeclaration>(nameOrValue: TKey | StyleBinding<TModel>, value?: BindValue<TModel, CSSStyleDeclaration[TKey]>): this {
+    style<TKey extends keyof CSSStyleDeclaration>(nameOrValue: TKey | StyleBinding<TModel>, value?: BindValueUnchecked<TModel, CSSStyleDeclaration[TKey]>): this {
 
 
         if (typeof nameOrValue != "object")
@@ -1241,7 +1250,6 @@ export function withCleanup<T>(template: ITemplate<T>, action: () => void): ITem
     };
 }
 
-
 export function mount<TModel>(root: HTMLElement, template: CatalogTemplate<TModel>, model?: TModel): void;
 export function mount(root: HTMLElement, component: ITemplateProvider): void;
 export function mount<TModel>(root: HTMLElement, templateOrProvider: CatalogTemplate<TModel> | ITemplateProvider, model?: TModel): void {
@@ -1272,8 +1280,17 @@ export function mount<TModel>(root: HTMLElement, templateOrProvider: CatalogTemp
         builder.loadTemplate(template)(builder);
 
         builder.end();
-
     }
+}
 
-    
+declare global {
+    interface HTMLElement {
+        [BUILDER]?: TemplateBuilder<unknown, HTMLElement> | ChildTemplateBuilder<unknown, HTMLElement, TemplateBuilder<unknown>>;
+    }
+}
+
+export function getBuilder<TElement extends HTMLElement>(el: TElement) {
+
+    if (BUILDER in el)
+        return el[BUILDER];
 }

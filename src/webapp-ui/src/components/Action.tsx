@@ -1,4 +1,4 @@
-import { type Bindable, type IComponentOptions, type IComponent, Component, type TemplateMap, type ComponentStyle } from "@eusoft/webapp-core";
+import { type Bindable, type IComponentOptions, type IComponent, Component, type TemplateMap, type ComponentStyle, registerElement, attribute } from "@eusoft/webapp-core";
 import { Class, type JsxNode, forModel } from "@eusoft/webapp-jsx";
 import { type ActionType, type IAction, type IActionContext } from "../abstraction/IAction";
 import { type OperationManager } from "../services";
@@ -75,20 +75,23 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
         }
     }
 
-
+    @attribute()
     onExecuteAsync(ctx?: IActionContext<TTarget>): Promise<void> | void {
     }
 
+    @attribute()
     target: TTarget;
 
+    @attribute()
     type: ActionType;
 
-    isExecuting: boolean;
-
+    @attribute()
     content: ViewNode;
 
+    @attribute()
     enabled: boolean;
 
+    isExecuting: boolean;
 }
 
 
@@ -112,4 +115,17 @@ export function createAction(action: IAction, style?: ComponentStyle) {
     }
 
     return new Action(mainAction);
+}
+
+
+registerElement(Action);
+
+declare global {
+
+    namespace JSX {
+
+        interface IntrinsicCustomElements {
+            "wa-action": IActionOptions<unknown>;
+        }
+    }
 }

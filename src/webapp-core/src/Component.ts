@@ -2,7 +2,7 @@ import { type IPropertyChangedHandler, isObservableProperty } from "./abstractio
 import type { CatalogTemplate } from "./abstraction/ITemplateProvider";
 import { COMPONENT, type IComponent, isComponent } from "./abstraction/IComponent";
 import { enumOverrides, getTypeName, isClass, objectHierarchy, setTypeName } from "./utils/Object";
-import { bindTwoWays, getOrCreateProp } from "./Properties";
+import { attribute, bindTwoWays, getOrCreateProp } from "./Properties";
 import { generateRandomId, toKebabCase } from "./utils/String";
 import type { IBound } from "./abstraction/IBound";
 import type { Bindable, ComponentStyle, IComponentOptions } from "./abstraction/IComponentOptions";
@@ -12,14 +12,17 @@ import { type IMountListener } from "./abstraction/IMountListener";
 import { type ITemplateContext } from "./abstraction/ITemplateContext";
 import { type IService, SERVICE_TYPE, type ServiceType } from "./abstraction/IService";
 import { type IServiceProvider, type ServiceContainer } from "./abstraction/IServiceProvider";
-import type { CommonKeys } from "./abstraction/Types";
-import { type BindExpression, type BindValue } from "./abstraction/IBinder";
-import { type IHTMLContainer } from "./abstraction";
+import type { Class, CommonKeys } from "./abstraction/Types";
+import { type BindExpression, type BindValueUnchecked } from "./abstraction/IBinder";
+import { ATTRIBUTES, type IHTMLContainer } from "./abstraction";
 import { buildStyle } from "./utils/Style";
+import { getBuilder, TemplateBuilder } from "./TemplateBuilder";
 
 interface ISubscription {
     unsubscribe(): void;
 }
+
+
 
 export abstract class Component<TOptions extends IComponentOptions = IComponentOptions> implements IComponent<TOptions>, IBindingContainer, IMountListener, IServiceProvider, IHTMLContainer {
 
@@ -131,13 +134,13 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
     }
 
 
-    bindTwoWays<TValue, TDestModel extends object>(src: BindValue<this, TValue>, dstModel: TDestModel, dst: BindExpression<TDestModel, TValue>) {
+    bindTwoWays<TValue, TDestModel extends object>(src: BindValueUnchecked<this, TValue>, dstModel: TDestModel, dst: BindExpression<TDestModel, TValue>) {
 
         this.binder.bindTwoWays(src, dstModel, dst, "dstToSrc");
     }
 
 
-    bindOneWay<TValue, TDestModel extends object>(dst: BindValue<this, TValue>, srcModel: TDestModel, src: BindExpression<TDestModel, TValue>) {
+    bindOneWay<TValue, TDestModel extends object>(dst: BindValueUnchecked<this, TValue>, srcModel: TDestModel, src: BindExpression<TDestModel, TValue>) {
 
         this.binder.bindOneWay(dst, srcModel, src);
     }
@@ -221,28 +224,34 @@ export abstract class Component<TOptions extends IComponentOptions = IComponentO
         return this._binder;
     }
 
-    nodes: Node[];
 
-    isCacheEnabled: boolean;
-
-    context: ITemplateContext<this, HTMLElement>;
-
+    @attribute()
     className: string;
 
-    template: CatalogTemplate<this>;
-
+    @attribute()
     style: ComponentStyle;
 
+    @attribute()
     visible: boolean;
 
-    options: TOptions;
-
+    @attribute()
     name?: string;
 
     model: never;
 
     id: string;
+
+    template: CatalogTemplate<this>;
+
+    options: TOptions;
+
+    nodes: Node[];
+
+    isCacheEnabled: boolean;
+
+    context: ITemplateContext<this, HTMLElement>;
 }
+
 
 export function getComponent(obj: any): Function {
 
@@ -269,7 +278,75 @@ export function declareComponent<TOptions extends IComponentOptions, TType exten
     } as TType;
 }
 
-
 export function registerComponent<T extends Component<unknown>>(ctr: { new(...args: any[]): T }, name: string) {
     setTypeName(ctr, name);
+}
+
+export function registerElement<TComponent extends IComponent>(component: Class<TComponent>, name?: string) {
+
+    const element = class InlineComponent extends HTMLElement {
+
+        private _model: TComponent;
+
+        constructor() {
+            super();
+
+            this._model = new component();
+
+            const attrs = this._model[ATTRIBUTES];
+
+            console.log(attrs);
+
+            for (const key of attrs) {
+
+                Reflect.defineProperty(this, key, {
+                    set: v => {
+                        console.log("Set ", key, v);
+                        this._model[key] = v;
+                    },
+                    get: () => this._model[key], 
+                });
+            }
+
+        }
+
+        connectedCallback() {
+
+            let parentBuilder = getBuilder(this.parentElement);
+
+            if (!parentBuilder) 
+                parentBuilder = new TemplateBuilder(this._model, this.parentElement);
+
+            parentBuilder.templateFor(this._model);
+
+            console.log("connected");
+        }
+
+        connectedMoveCallback() {
+            console.log("connectedMove");
+        }
+
+        disconnectedCallback() {
+
+            console.log("disconnected");
+        }
+
+        adoptedCallback() {
+            console.log("adopted");
+        }
+
+        attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+
+        }
+
+        static get observedAttributes() {
+            return ["color", "size"];
+        }
+    };
+
+    name ??= toKebabCase(getTypeName(component));
+
+    customElements.define("wa-" + name, element);
+
+    return name;
 }

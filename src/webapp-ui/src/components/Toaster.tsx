@@ -4,7 +4,7 @@ import type { ViewNode } from "../Types";
 import type { ComponentStyle } from "@eusoft/webapp-core/src/abstraction/IComponentOptions";
 import { buildStyle, delayAsync } from "@eusoft/webapp-core";
 import "./Toaster.scss";
-import { Class, Style } from "@eusoft/webapp-jsx";
+import { Class } from "@eusoft/webapp-jsx";
 
 interface IToasterOptions {
     content: ViewNode;

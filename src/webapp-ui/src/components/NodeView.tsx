@@ -40,7 +40,7 @@ export function NodeView(options: INodeViewOptions) {
                     if (isTemplate(item))
                         t2.template(item);
                     else
-                        t2.enter(item, t3 => singleNode(t3 as TemplateBuilder<NodeType>));
+                        t2.enter(item as object, t3 => singleNode(t3 as TemplateBuilder<NodeType>));
                 });
             else
                 singleNode(t2 as TemplateBuilder<NodeType>)

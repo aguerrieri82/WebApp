@@ -32,7 +32,7 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
         if (path.isObjectExpression())
             value = "(" + value + ")";
 
-        value = ctx.curModel.name + " => " + value;
+        value = "Bind.exp(" + ctx.curModel.name + " => " + value + ")";
     }
 
     if (ctx.curAttribute) {

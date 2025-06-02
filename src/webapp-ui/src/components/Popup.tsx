@@ -1,4 +1,4 @@
-﻿import { Bind, Component, type IComponentOptions, delayAsync, mount } from "@eusoft/webapp-core";
+﻿import { Component, type IComponentOptions, cleanProxy, delayAsync, mount } from "@eusoft/webapp-core";
 import { type ViewNode } from "../Types";
 import { forModel } from "@eusoft/webapp-jsx";
 import { Action } from "./Action";
@@ -41,9 +41,9 @@ export class Popup extends Component<IPopupOptions> {
                         {m.body}
                     </main>
                     <footer>
-                        {m.actions?.forEach(a =>
-                            <Action name={a.name} type="local" style="text" onExecuteAsync={Bind.action(() => m.onActionClick(a))}>
-                                {formatText(a.text)}
+                        {m.actions?.forEach(a => 
+                            <Action name={a.name} type="local" style="text" onExecuteAsync={() => m.onActionClick(a)}>
+                                {formatText(a.text)} 
                             </Action>
                         )}
                     </footer>
@@ -55,6 +55,8 @@ export class Popup extends Component<IPopupOptions> {
     }
 
     async onActionClick(action: IMessageBoxAction) {
+
+        action = cleanProxy(cleanProxy(action));
 
         if (action.executeAsync) {
 

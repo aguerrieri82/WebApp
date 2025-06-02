@@ -1,16 +1,15 @@
 import { type IBindable, INDEX, PARENT, USE } from "./abstraction/IBindable";
-import type { BindDirection, BindExpression, BindValue, IGetter } from "./abstraction/IBinder";
+import { isBindExpression, type BindDirection, type BindExpression, type BindValue, type BindValueUnchecked, type IGetter } from "./abstraction/IBinder";
 import { isBindingContainer } from "./abstraction/IBindingContainer";
 import { type IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
 import type { IObservableProperty, IPropertyChangedHandler } from "./abstraction/IObservableProperty";
 import { compareArray, forEachRev } from "./utils/Array";
 import { WebApp } from "./utils/Debug";
-import { cleanProxy, Expression, type IExpressionBuild, type IExpressionProp } from "./Expression";
-import { getFunctionType, getPropertyDescriptor } from "./utils/Object";
+import { cleanProxy, Expression, type IExpressionProp } from "./Expression";
+import { getPropertyDescriptor } from "./utils/Object";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
 import type { ArrayElement } from "./abstraction/Types";
-import { isTemplate } from "./abstraction/ITemplate";
 
 interface IBindingSubscription<TSrc extends object | [], TValue> {
 
@@ -155,7 +154,7 @@ export class Binder<TModel> {
         return exp.value;
     }
 
-    bindOneWay<TValue, TDestModel extends TModel | object>(dst: BindValue<TModel, TValue>, srcModel: TDestModel, src: BindExpression<TDestModel, TValue>): void { 
+    bindOneWay<TValue, TDestModel extends TModel | object>(dst: BindValueUnchecked<TModel, TValue>, srcModel: TDestModel, src: BindExpression<TDestModel, TValue>): void { 
 
         let curValue: TValue;
 
@@ -172,7 +171,7 @@ export class Binder<TModel> {
         });
     }
 
-    bindTwoWays<TValue, TDestModel extends TModel|object>(src: BindValue<TModel, TValue>, dstModel: TDestModel, dst: BindExpression<TDestModel, TValue>, direction: BindDirection, onChanged?: (value: TValue) => void): void { 
+    bindTwoWays<TValue, TDestModel extends TModel | object>(src: BindValueUnchecked<TModel, TValue>, dstModel: TDestModel, dst: BindExpression<TDestModel, TValue>, direction: BindDirection, onChanged?: (value: TValue) => void): void { 
 
         let isBinding = false;
 
@@ -235,12 +234,12 @@ export class Binder<TModel> {
         binding.lastValue = bindValue;
     }
 
-    bind<TValue>(value: BindValue<TModel, TValue>, action: (newValue: TValue, oldValue?: TValue, isUpdate?: boolean, isClear?: boolean) => void, actionMode?: BindingActionMode) {
+    bind<TValue>(value: BindValueUnchecked<TModel, TValue>, action: (newValue: TValue, oldValue?: TValue, isUpdate?: boolean, isClear?: boolean) => void, actionMode?: BindingActionMode) {
 
-        if (typeof value === "function" && getFunctionType(value) !== "class" && actionMode !== "no-bind" && !isTemplate(value)) {
+        if (isBindExpression(value) && actionMode !== "no-bind") {
 
             const binding: IBinding<TModel, TValue> = {
-                value: value as IGetter<TModel, TValue>,
+                value: value,
                 action: action,
                 subscriptions: [],
                 lastValue: undefined,
@@ -355,7 +354,7 @@ export class Binder<TModel> {
         }); 
     }
 
-    getBindingProperty<TValue>(value: BindValue<TModel, TValue>): IObservableProperty<TValue> {
+    getBindingProperty<TValue>(value: BindValueUnchecked<TModel, TValue>): IObservableProperty<TValue> {
 
         if (typeof value !== "function")
             return undefined;

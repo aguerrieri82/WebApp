@@ -79,8 +79,13 @@ type InputProps<TModel, TElement> =
         "value-pool"?: number;
     }
 
+
 declare global {
     namespace JSX {
+
+        interface IntrinsicCustomElements {
+
+        }
 
         interface ElementChildrenAttribute { content: {} }
 
@@ -100,11 +105,12 @@ declare global {
         type IntrinsicElements = Omit<{
 
             [P in keyof HTMLElementTagNameMap]: ElementProps<any, HTMLElementTagNameMap[P]>
-        }, "input" | "select" |"textarea"> & {
+        }, "input" | "select" | "textarea"> & {
 
             ["input"]: InputProps<any, HTMLElementTagNameMap["input"]>
             ["select"]: InputProps<any, HTMLElementTagNameMap["select"]>
             ["textarea"]: InputProps<any, HTMLElementTagNameMap["textarea"]>
-        }
+        } & IntrinsicCustomElements
+
     }
 }

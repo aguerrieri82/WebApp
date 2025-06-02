@@ -1,12 +1,11 @@
 import { type IContent, type IContentConstructor, type IContentInfo, formatText, isResultContainer, replaceArgs } from "@eusoft/webapp-ui";
 import { app } from "../App";
-import { delayAsync } from "@eusoft/webapp-core/src/utils/Async";
 
 type StringLike = { toString(): string } | string;
 
 export type RouteArgs = {} ;
 
-export type RouteAction<TArgs extends RouteArgs> = (args: TArgs, content?: unknown) => void | Promise<any>;
+export type RouteAction<TArgs extends RouteArgs> = (args: TArgs, content?: unknown) => void | Promise<unknown>;
 
 interface IRounteEntry<TArgs extends RouteArgs>  {
 
@@ -14,7 +13,7 @@ interface IRounteEntry<TArgs extends RouteArgs>  {
 
     action: RouteAction<TArgs>;
 
-    tag?: any;
+    tag?: unknown;
 }
 
 interface IRouteState {
@@ -41,7 +40,7 @@ function restoreState<T>(key: string, defValue: T) {
 export class Router {
 
     protected _history: IRouteState[];
-    protected _entries: IRounteEntry<any>[] = [];
+    protected _entries: IRounteEntry<unknown>[] = [];
     protected _activeIndex: number;
     protected _popResolve: () => void;
 
@@ -129,7 +128,7 @@ export class Router {
 
     async navigatePageForResultAsync<TResult, TArgs extends RouteArgs>(pageOrName: string|IContent<TArgs>, args?: TArgs) {
 
-        return new Promise<TResult>(async res => {
+        return new Promise<TResult>(res => {
 
             const entry = this.getEntryForPage(pageOrName);
 
@@ -148,7 +147,7 @@ export class Router {
                 }
             }
 
-            await this.navigatePageAsync(page, args);
+            this.navigatePageAsync(page, args);
         });
     }
 

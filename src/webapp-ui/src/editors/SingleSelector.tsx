@@ -1,4 +1,4 @@
-import { type TemplateMap, type BindExpression, type ITemplateContext, Bind, INDEX, USE, delayAsync } from "@eusoft/webapp-core";
+import { type TemplateMap, type BindExpression, type ITemplateContext, INDEX, USE, delayAsync } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "./EditorBuilder";
 import "./SingleSelector.scss";
@@ -45,7 +45,7 @@ export const SingleSelectorTemplates: TemplateMap<SingleSelector<unknown, unknow
         {m.content?.forEach(i =>
             <label> 
                 <input type="radio" name={m.name} value={i[USE](m).value == m.itemsSource.getValue(i)}
-                    on-change={Bind.action((_, ev) => (ev.currentTarget as HTMLInputElement).checked ? m.value = m.itemsSource.getValue(i) : undefined)} />
+                    on-change={(_, ev) => (ev.currentTarget as HTMLInputElement).checked ? m.value = m.itemsSource.getValue(i) : undefined} />
                 <span>{m.itemsSource.getText(i)}</span>
             </label>
         )}

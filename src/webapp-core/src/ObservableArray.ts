@@ -125,7 +125,7 @@ export function createObservableArray<T>(value: T[]): IObservableArray<T> {
             const retVal = Reflect.set(t, p, v, r);
 
             if (typeof p == "string") {
-                let idx = parseInt(p);
+                const idx = parseInt(p);
                 if (!isNaN(idx)) {
                     newValue.raise(a => a.onItemReplaced && a.onItemReplaced(v, old, idx));
                     newValue.raise(a => a.onChanged && a.onChanged());

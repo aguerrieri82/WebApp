@@ -1,4 +1,4 @@
-import { Expression, type BindExpression, type ComponentStyle, toKebabCase, type ITemplate, type TemplateBuilder } from "@eusoft/webapp-core";
+import { Expression, type BindExpression, type ComponentStyle, toKebabCase, type ITemplate, type TemplateBuilder, Bind } from "@eusoft/webapp-core";
 import { type ViewNode } from "../Types";
 import { type IEditor, type IEditorOptions } from "../abstraction/IEditor";
 import { type Validator } from "../abstraction/Validator";
@@ -50,7 +50,7 @@ export class EditorBuilder<TModel extends TemplateModel, TModelContainer extends
         return {
             model: this._options.container,
             template: (t: TemplateBuilder<TModelContainer>) =>
-                t.enter(m => this._options.model(m), t => (template as ITemplate<TModel>)(t))
+                t.enter(Bind.exp<TModelContainer, TModel>(m => this._options.model(m)), t => (template as ITemplate<TModel>)(t))
         }
         
     }

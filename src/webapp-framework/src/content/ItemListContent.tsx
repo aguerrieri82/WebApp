@@ -1,6 +1,6 @@
 import { Content, type IAction, type IContent, type IContentInstance, type IContentOptions, type IEditor, type IItemsSource, ItemView, ListView, type LocalString, MaterialIcon, type ViewNode } from "@eusoft/webapp-ui";
 import { type IFilterField } from "../abstraction/IFilterEditor";
-import { Bind, type Class } from "@eusoft/webapp-core";
+import { type Class } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
 import router from "../services/Router";
 
@@ -59,7 +59,7 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
                     <>
                     </>
                 }
-                <ListView createItemView={Bind.action(item => m.createItemView(item, m.getItemActions(item)))}>
+                <ListView createItemView={item => m.createItemView(item, m.getItemActions(item))}>
                     {this.items}
                 </ListView>
             </div>),

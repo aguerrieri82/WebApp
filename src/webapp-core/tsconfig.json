@@ -9,6 +9,7 @@
     "declaration": true,
     "moduleResolution": "Node",
     "noEmit": true,
+    "experimentalDecorators": true,
     "noImplicitOverride": true,
     "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true

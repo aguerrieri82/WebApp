@@ -1,7 +1,7 @@
 import { cleanProxy } from "./Expression";
 import { type IComponent } from "./abstraction";
-import { type IBindable, PARENT, USE, BIND_MODES } from "./abstraction/IBindable";
-import type { BindExpression, BindMode } from "./abstraction/IBinder";
+import { type IBindable, PARENT, USE, BIND_MODES, BIND_MODE } from "./abstraction/IBindable";
+import type { BindExpression, BindMode, BindValue } from "./abstraction/IBinder";
 
 interface IBindBuilder<TModel> {
 
@@ -32,8 +32,30 @@ export namespace Bind {
         return cleanProxy(value);
     }
 
-    export function action<T extends Function>(value: T): T {
+    export function exp<TModel, TValue = unknown>(value: BindExpression<TModel, TValue>) {
 
+        value[BIND_MODE] = "expression";
+        return value as BindExpression<TModel, TValue> & { [BIND_MODE]: "expression" };
+    }
+     
+    export function action<T extends BindValue<unknown, unknown>>(value: T): T {
+
+        value[BIND_MODE] = "action";
+        return value;
+    }
+
+    export function oneWay<T extends BindValue<unknown, unknown>>(value: T): T {
+        value[BIND_MODE] = "one-way";
+        return value;
+    }
+
+    export function twoWays<T extends BindValue<unknown, unknown>>(value: T): T {
+        value[BIND_MODE] = "two-ways"; 
+        return value;
+    }
+
+    export function noBind<T extends BindValue<unknown, unknown>>(value: T): T {
+        value[BIND_MODE] = "no-bind";
         return value;
     }
 
@@ -42,21 +64,6 @@ export namespace Bind {
         return (m as IBindable)[PARENT] as T;
     }
 
-    export function oneWay<T>(value: T): T {
-        return value;
-    }
-
-    export function twoWays<T>(value: T): T {
-        return value;
-    }
-
-    export function noBind<T>(value: T): T {
-        return value;
-    }
-
-    export function builder<T>(value: T): T {
-        return value;
-    }
 
     export function build(model: any) {
 

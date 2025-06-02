@@ -13,6 +13,7 @@
     "build:prod": "build-utils --env:prod",
     "lint:fix": "eslint ./src/**/*.ts* --fix",
     "install:pnpm": "pnpm install",
+    "update-icons": "node scripts/update-icons",
     "upgrade": "pnpm up -latest"
   },
   "keywords": [],
@@ -20,9 +21,11 @@
   "devDependencies": {
     "@eusoft/webapp-compiler-rollup": "link:..\\..\\dist\\webapp-compiler-rollup",
     "@typescript-eslint/parser": "8.33.0",
+    "@types/node": "22.15.29",
     "build-utils": "link:..\\..\\scripts\\build-utils",
     "typescript-eslint": "8.33.0",
     "eslint": "9.27.0",
+    "tslib": "^2.8.1",
     "eslint-plugin-unused-imports": "4.1.4"
   },
   "dependencies": {

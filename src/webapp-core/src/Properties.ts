@@ -1,9 +1,10 @@
-import { type IBindable, PROPS } from "./abstraction/IBindable";
+import { ATTRIBUTES, type IBindable, PROPS } from "./abstraction/IBindable";
 import type { IBound } from "./abstraction/IBound";
 import type { IObservableProperty } from "./abstraction/IObservableProperty";
 import type { IProperty } from "./abstraction/IProperty";
 import { getPropertyDescriptor } from "./utils/Object";
 import { ObservableProperty } from "./ObservableProperty";
+import type { IComponent } from "./abstraction";
 
 export function propOf<TObj extends object, TKey extends keyof TObj & string>(obj: TObj, propName: TKey) {
 
@@ -25,7 +26,7 @@ export function getOrCreateProp<TObj extends object, TKey extends keyof TObj & s
 export function getProp<TObj extends object, TKey extends keyof TObj & string, TValue extends TObj[TKey]>(obj: TObj, propName: TKey): IProperty<TValue> {
 
     if (PROPS in obj) 
-        return (obj as IBindable)[PROPS][propName];
+        return (obj as IBindable)[PROPS][propName] as IProperty<TValue>;
     return undefined;
 }
 
@@ -99,4 +100,14 @@ export function createProp<TObj extends object, TKey extends (keyof TObj) & stri
     });
 
     return property;
+}
+
+export function attribute<T extends IComponent>() {
+
+    return function (target: T, propertyKey: keyof T & string) {
+
+        const attrs = target[ATTRIBUTES] ?? [];
+        target[ATTRIBUTES] = attrs;
+        attrs.push(propertyKey);
+    };
 }

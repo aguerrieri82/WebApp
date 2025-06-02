@@ -5,17 +5,11 @@
     "sourceMap": true,
     "target": "ESNext",
     "module": "ESNext",
-    "declaration": true,
-    "declarationDir": "types",
     "moduleResolution": "Node",
-    "noEmit": true,
-    "jsx": "preserve",
-    "experimentalDecorators": true,
-    "noImplicitOverride": true,
     "forceConsistentCasingInFileNames": true,
+    "noImplicitOverride": true,
     "verbatimModuleSyntax": true
-
   },
-  "include": ["src", "src/env.d.ts"]
+  "compileOnSave": true
 }
  

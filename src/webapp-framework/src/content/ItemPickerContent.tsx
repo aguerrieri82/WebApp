@@ -1,5 +1,5 @@
 import { Action, Content, type IAction, type IContentOptions, type IItemsSource, ItemView, ListView, type LocalString, type ViewNode } from "@eusoft/webapp-ui";
-import { Bind, type Class } from "@eusoft/webapp-core";
+import { type Class } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
 import router from "../services/Router";
 import "./ItemPickerContent.scss"
@@ -36,7 +36,7 @@ export class ItemPickerContent<TItem, TFilter> extends Content<unknown, IItemPic
                     </>
                 }
 
-                <ListView createItemView={Bind.action(item => m.createItemView(item))}>
+                <ListView createItemView={item => m.createItemView(item)}>
                     {this.items}
                 </ListView>
             </div>),

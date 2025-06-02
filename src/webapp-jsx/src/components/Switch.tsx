@@ -44,7 +44,7 @@ export function Switch<TModel extends TemplateModel, TValue extends TemplateMode
 
             content.forEach(c => {
                 if ("condition" in c.props)
-                    bld.when(c.props.condition as BindExpression<TValue, boolean>, c.props.content as ITemplate<TValue>);
+                    bld.when(c.props.condition as BindValue<TValue, boolean>, c.props.content as ITemplate<TValue>);
                 else
                     bld.default(c.props.content as ITemplate<TValue>);
             })

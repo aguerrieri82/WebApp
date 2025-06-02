@@ -13,5 +13,9 @@ export type TemplateMap<TModel> = Record<string, ITemplate<TModel>>;
 
 export function isTemplate(obj: any): obj is ITemplate<unknown> {
 
-    return obj && typeof obj == "function" && getFunctionType(obj) != "class" && (obj as Function).length == 1 && TEMPLATE in obj;
+    return obj &&
+        typeof obj == "function" &&
+        getFunctionType(obj) != "class" &&
+        (obj as Function).length == 1 &&
+        TEMPLATE in obj;
 }
