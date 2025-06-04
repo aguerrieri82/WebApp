@@ -65,6 +65,8 @@ export class ItemEditContent<
 
         if (isAsyncLoad(this.editor))
             await this.editor.loadAsync();
+
+        return true;
     }
 
     createEditor(value: TItem): IEditor<TItem> {
@@ -104,7 +106,7 @@ export class ItemEditContentBuilder<
         super(options => new ItemEditContent(options));
     }
 
-    load(value: (args: TArgs) => Promise<unknown>) {
+    load(value: (args: TArgs) => Promise<boolean>) {
         this._options.onLoadArgsAsync = value;
         return this;
     }

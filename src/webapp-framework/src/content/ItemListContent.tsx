@@ -117,6 +117,8 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
             });
 
         await this.refreshAsync();
+
+        return true;
     }
 
     getColumnContent(item: TItem, column: IListColumn<TItem, unknown>) : ViewNode {

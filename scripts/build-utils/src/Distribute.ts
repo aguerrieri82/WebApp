@@ -60,7 +60,7 @@ async function processLib(libName: string, options: IOptions) {
 
         logColor(`Install\n`, colours.fg.blue);
 
-        await pnpm(libSrcPath, "install");
+        await pnpm(libSrcPath, "install", "--fix-lockfile");
 
         logColor(`Build\n`, colours.fg.blue);
 
@@ -68,7 +68,7 @@ async function processLib(libName: string, options: IOptions) {
 
         logColor(`Install dist\n`, colours.fg.blue);
 
-        await pnpm  (libDistPath, "install", "--force");
+        await pnpm(libDistPath, "install", "--fix-lockfile");
 
         if (options.isPublish) {
 

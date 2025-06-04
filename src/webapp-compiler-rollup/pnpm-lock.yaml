@@ -1,6 +1,9 @@
 lockfileVersion: '6.0'
 
 dependencies:
+  '@eusoft/webapp-compiler':
+    specifier: link:..\webapp-compiler
+    version: link:../webapp-compiler
   magic-string:
     specifier: 0.30.17
     version: 0.30.17
@@ -12,6 +15,9 @@ devDependencies:
   '@types/node':
     specifier: 22.15.23
     version: 22.15.23
+  build-utils:
+    specifier: link:..\..\scripts\build-utils
+    version: link:../../scripts/build-utils
   rollup:
     specifier: 4.41.1
     version: 4.41.1
@@ -580,7 +586,6 @@ packages:
   /resolve@1.22.10:
     resolution: {integrity: sha512-NPRy+/ncIMeDlTAsuqwKIiferiawhefFJtkNSW0qZJEqMEb+qBt/77B/jGeeek+F0uOeN05CDa6HXbbIgtVX4w==}
     engines: {node: '>= 0.4'}
-    hasBin: true
     dependencies:
       is-core-module: 2.16.1
       path-parse: 1.0.7
@@ -607,7 +612,6 @@ packages:
   /rollup@4.41.1:
     resolution: {integrity: sha512-cPmwD3FnFv8rKMBc1MxWCwVQFxwf1JEmSX3iQXrRVVG15zerAIXRjMFVWnd5Q5QvgKF7Aj+5ykXFhUl+QGnyOw==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
-    hasBin: true
     dependencies:
       '@types/estree': 1.0.7
     optionalDependencies:

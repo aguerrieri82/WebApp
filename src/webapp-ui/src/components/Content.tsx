@@ -25,7 +25,7 @@ export interface IContentOptions<TArgs extends {}, TName extends string = string
 
     features?: IFeature<IContent>[];
 
-    onLoadArgsAsync?: (args: TArgs) => Promise<unknown>;
+    onLoadArgsAsync?: (args: TArgs) => Promise<boolean>;
 }
 
 export const ContentTemplates: TemplateMap<Content> = {
@@ -87,7 +87,10 @@ export class Content<
             if (!args)
                 args = {} as TArgs;
 
-            await this.onLoadArgsAsync(args);
+            if (!await this.onLoadArgsAsync(args)) {
+                isValid = false;
+                return;
+            }
 
             await this.onLoadAsync(args);
 
@@ -110,13 +113,11 @@ export class Content<
     }
 
     protected async onLoadAsync(args?: TArgs) {
-
-
+        return true;
     }
 
     protected async onLoadArgsAsync(args?: TArgs) {
-
-
+        return true;
     }
 
 

@@ -162,7 +162,7 @@ export async function buildAsync(options: IBuildOptions) {
         saveJson(outPath + "/package.json", pack);
 
         logColor(`Install\n`, colours.fg.green);
-        pnpm(outPath, "install");
+        pnpm(outPath, "install", "--fix-lockfile");
 
         logColor(`DONE\n`, colours.fg.green);
     }

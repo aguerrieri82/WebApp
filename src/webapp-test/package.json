@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --debug",
-    "install:pnpm": "pnpm install",
+    "install:pnpm": "pnpm install --fix-lockfile",
     "upgrade": "pnpm up -latest"
   },
   "keywords": [],

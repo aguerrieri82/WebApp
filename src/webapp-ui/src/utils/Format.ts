@@ -2,7 +2,7 @@ import { type ITemplate, Services } from "@eusoft/webapp-core";
 import { type LocalString } from "../Types";
 import { type ILocalization, LOCALIZATION } from "../abstraction";
 
-export function formatText(text: LocalString, ...args: any[]): string | ITemplate<unknown>  { 
+export function formatTextSimple(text: LocalString, ...args: any[]) {
 
     if (typeof text === "function")
         return text();
@@ -20,7 +20,15 @@ export function formatText(text: LocalString, ...args: any[]): string | ITemplat
             text = content;
     }
 
-    return replaceArgs(text, i => formatText(args[i]));
+    return text;
+}
+
+export function formatText(text: LocalString, ...args: any[]): string | ITemplate<unknown>  { 
+
+    const simple = formatTextSimple(text, ...args);
+    if (typeof simple != "string")
+        return simple;
+    return replaceArgs(simple, i => formatText(args[i])); 
 }
 
 export function formatCurrency(value: number) {

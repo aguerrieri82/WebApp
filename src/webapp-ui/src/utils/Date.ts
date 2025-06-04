@@ -1,3 +1,5 @@
+import { Services } from "@eusoft/webapp-core";
+import { LOCALIZATION, type ILocalization } from "../abstraction";
 import { replaceArgs } from "./Format";
 
 
@@ -21,12 +23,17 @@ export function parseDate(value: Date | string): Date {
 
 export function formatDate(date: Date | string, format: string, lang?: string) {
     date = parseDate(date);
+    if (!lang) {
+        const local = Services[LOCALIZATION] as ILocalization;
+        lang = local.language;
+    }
+
     return replaceArgs(format, a => formatDateArgument(date, a, lang));
 }
 
 export function formatDateArgument(date: Date | string, arg: string, lang: string): string {
 
-    if (!(date = parseDate(date)))
+    if (!(date = parseDate(date))) 
         return null;
 
     switch (arg) {

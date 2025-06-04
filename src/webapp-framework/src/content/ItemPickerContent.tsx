@@ -48,6 +48,8 @@ export class ItemPickerContent<TItem, TFilter> extends Content<unknown, IItemPic
     override async onLoadAsync() {
 
         await this.refreshAsync();
+
+        return true;
     }
 
     createNewItem(): TItem {

@@ -8,7 +8,7 @@
     "publish": "build-utils --publish",
     "build:dev": "build-utils --env:dev",
     "build:prod": "build-utils --env:prod --bundle",
-    "install:pnpm": "pnpm install",
+    "install:pnpm": "pnpm install --fix-lockfile",
     "upgrade": "pnpm up -latest"
   },
   "keywords": [],

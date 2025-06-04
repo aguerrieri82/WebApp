@@ -68,8 +68,7 @@ export class BaseApiClient {
             headers["Content-Type"] = "application/json";
         }
 
-        if (this.authorization) 
-            headers["Authorization"] = this.authorization;
+        this.onPrepareHeaders(headers);
         
         const response = await fetch(url, {
             body,
@@ -99,6 +98,13 @@ export class BaseApiClient {
 
     protected get authorization() {
         return undefined;
+    }
+
+    protected onPrepareHeaders(headers: Record<string, string>) {
+
+        if (this.authorization)
+            headers["Authorization"] = this.authorization;
+
     }
 
     endpoint: string;

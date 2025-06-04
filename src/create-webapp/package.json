@@ -10,7 +10,7 @@
     "build:dev": "build-utils --env:dev --include:template",
     "build:prod": "build-utils --env:prod --include:template",
     "lint:fix": "eslint ./src/**/*.ts* --fix",
-    "install:pnpm": "pnpm install",
+    "install:pnpm": "pnpm install --fix-lockfile",
     "upgrade": "pnpm up -latest"
   },
   "keywords": [],
