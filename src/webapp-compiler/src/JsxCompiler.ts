@@ -20,6 +20,8 @@ interface ITextReplacement {
     dst: ITextBlock;
 }
 
+
+
 export class JsxCompiler extends BaseCompiler {
 
     constructor(options?: ICompilerOptions) {
@@ -35,7 +37,7 @@ export class JsxCompiler extends BaseCompiler {
     }
 
     onReplaces(replaces: ITextReplacement[]) {
-
+        
     }
 
 
@@ -65,6 +67,7 @@ export class JsxCompiler extends BaseCompiler {
         });
 
         const templates: NodePath<JSXElement | JSXFragment>[] = [];
+
 
         trav(ast, {
 

@@ -6,6 +6,7 @@ import { getPropertyDescriptor } from "./utils/Object";
 import { ObservableProperty } from "./ObservableProperty";
 import type { IComponent } from "./abstraction";
 
+
 export function propOf<TObj extends object, TKey extends keyof TObj & string>(obj: TObj, propName: TKey) {
 
     return getOrCreateProp(obj, propName);
@@ -110,4 +111,4 @@ export function attribute<T extends IComponent>() {
         target[ATTRIBUTES] = attrs;
         attrs.push(propertyKey);
     };
-}
+} 

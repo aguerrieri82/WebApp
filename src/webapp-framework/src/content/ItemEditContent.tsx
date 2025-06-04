@@ -32,16 +32,23 @@ export class ItemEditContent<
                 {m.editor}
             </>),
 
-            actions: [{
-                name: "save",
-                text: "save",
-                executeAsync: () => this.saveAsync()
-            }],
-
             ...options
         });
     }
 
+    override initProps() {
+
+        super.initProps();
+
+        this.actions ??= [];
+
+        this.actions.push({
+            name: "save",
+            text: "save",
+            type: "global",
+            executeAsync: () => this.saveAsync()
+        });
+    }
 
     async saveAsync() {
 

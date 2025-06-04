@@ -200,6 +200,7 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
 
 configureBindings(ObjectEditor, {
     "isValid": "two-ways",
+    "builder": "action"
 });
 
 declare module "./EditorBuilder" {

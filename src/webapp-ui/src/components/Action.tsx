@@ -1,4 +1,4 @@
-import { type Bindable, type IComponentOptions, type IComponent, Component, type TemplateMap, type ComponentStyle, registerElement, attribute } from "@eusoft/webapp-core";
+import { type Bindable, type IComponentOptions, type IComponent, Component, type TemplateMap, type ComponentStyle, registerElement, attribute, configureBindings } from "@eusoft/webapp-core";
 import { Class, type JsxNode, forModel } from "@eusoft/webapp-jsx";
 import { type ActionType, type IAction, type IActionContext } from "../abstraction/IAction";
 import { type OperationManager } from "../services";
@@ -27,7 +27,7 @@ export const ActionTemplates: TemplateMap<Action> = {
         visible={m.visible}
         className={m.className}
         disabled={m.enabled === false}
-        on-click={m => m.executeAsync({ target: m.target })}>
+        on-click={(_, ev) => m.executeAsync({ target: m.target }, ev)}>
         <Class name="executing" condition={m.isExecuting} />
         <NodeView>{m.content}</NodeView>
     </button>)
@@ -46,10 +46,13 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
         });
     }
 
-    async executeAsync(ctx?: IActionContext<TTarget>) {
+    async executeAsync(ctx: IActionContext<TTarget>, ev: MouseEvent) {
 
         if (this.isExecuting)
             return;
+
+        ev.stopPropagation();
+        ev.stopImmediatePropagation();
 
         const operation = this.context.require<OperationManager>(OPERATION_MANAGER);
 
@@ -94,6 +97,11 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
     isExecuting: boolean;
 }
 
+/*
+configureBindings(Action, {
+    "onExecuteAsync": "action",
+});
+*/
 
 export function createAction(action: IAction, style?: ComponentStyle) {
 
@@ -115,17 +123,4 @@ export function createAction(action: IAction, style?: ComponentStyle) {
     }
 
     return new Action(mainAction);
-}
-
-
-registerElement(Action);
-
-declare global {
-
-    namespace JSX {
-
-        interface IntrinsicCustomElements {
-            "wa-action": IActionOptions<unknown>;
-        }
-    }
 }

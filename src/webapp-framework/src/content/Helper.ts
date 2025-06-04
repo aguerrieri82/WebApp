@@ -23,6 +23,11 @@ export function declareContent<
 
             super(args[0]);
 
+            /*
+            if (typeof (options) == "function")
+                options = options();
+            */
+
             this.init(InlineContent, options);
 
             if (options.extends)

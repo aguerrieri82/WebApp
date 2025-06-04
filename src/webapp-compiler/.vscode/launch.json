@@ -7,7 +7,10 @@
       "name": "Launch Program",
       "skipFiles": [ "<node_internals>/**" ],
       "program": "index.js",
-      "args": ["-test"],
+      "args": [ "-test" ],
+      "env": {
+        "DEBUG": "babel"
+      },
       "cwd": "${workspaceFolder}/../../dist/webapp-compiler/",
       "console": "externalTerminal"
     }

@@ -1,8 +1,9 @@
-import { Content, type IAction, type IContent, type IContentInstance, type IContentOptions, type IEditor, type IItemsSource, ItemView, ListView, type LocalString, MaterialIcon, type ViewNode } from "@eusoft/webapp-ui";
+import { Content, formatText, type IAction, type IContent, type IContentInstance, type IContentOptions, type IEditor, type IItemsSource, ItemView, ListView, type LocalString, MaterialIcon, useOperation, type ViewNode } from "@eusoft/webapp-ui";
 import { type IFilterField } from "../abstraction/IFilterEditor";
 import { type Class } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
 import router from "../services/Router";
+import { userInteraction } from "../services/UserInteraction";
 
 export interface IListColumn<TItem, TValue> {
     name?: string;
@@ -60,7 +61,7 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
                     </>
                 }
                 <ListView createItemView={item => m.createItemView(item, m.getItemActions(item))}>
-                    {this.items}
+                    {m.items}
                 </ListView>
             </div>),
 
@@ -91,7 +92,7 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
                 text: "delete",
                 icon: <MaterialIcon name="delete" />,
                 priority: "secondary",
-                executeAsync: ctx => this.deleteItemAsync(ctx.target)
+                executeAsync: ctx => this.deleteItemInternalAsync(ctx.target)
             });
 
         if (this.canEdit)
@@ -192,6 +193,20 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
         return false;
     }
 
+    protected deleteItemInternalAsync(item: TItem) {
+
+        return useOperation(async () => {
+
+            if (this.confirmDeleteMessage) {
+                if (!await userInteraction.confirmAsync(this.confirmDeleteMessage, "confirm"))
+                    return;
+            }
+
+            if (await this.deleteItemAsync(item))
+                await this.refreshAsync();
+        });
+    }
+
     addLabel?: LocalString;
 
     builtInActions: IAction<TItem>[];
@@ -201,6 +216,8 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
     canDelete: boolean;
 
     canEdit: boolean;
+
+    confirmDeleteMessage: ViewNode;
 
     itemsSource: IItemsSource<TItem, unknown, unknown>;
 

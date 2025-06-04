@@ -21,33 +21,28 @@
     padding: 0;
     list-style: none;
 
-    li {
-        margin: 0;
+    .action {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: size(1) size(2);
+        transition: background-color var(--duration-fast);
+        box-sizing: border-box;
+        width: 100%;
 
+        &:hover {
+            background-color: var(--border-color);
+        }
 
-        .action {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            padding: size(2);
-            transition: background-color var(--duration-fast);
-            box-sizing: border-box;
-            width: 100%;
+        .icon {
+            color: var(--surface-color-light);
+            width: 24px;
+        }
 
-            &:hover {
-                background-color: var(--border-color);
-            }
-
-            .icon {
-                /*/color: $on-surface-color-light;*/
-                width: 24px;
-            }
-
-            .text {
-                line-height: normal;
-                margin-left: size(1);
-                flex-grow: 1;
-            }
+        .text {
+            line-height: normal;
+            margin-left: size(1);
+            flex-grow: 1;
         }
     }
 }

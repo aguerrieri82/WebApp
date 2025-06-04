@@ -32,6 +32,9 @@ export class OperationManager implements IOperationManager {
 
         console.group(options?.name);
 
+        console.debug("blockCount: ", this._blockCount);
+        console.debug("unblockCount: ", this._unblockCount); 
+
         const result: IOperation = {
 
             progress: (message: ViewNode, value?: number, min?: number, max?: number) => {
@@ -54,6 +57,7 @@ export class OperationManager implements IOperationManager {
 
         console.log("End ", operation.name);
 
+
         console.groupEnd();
 
         if (operation?.isLocal)
@@ -62,6 +66,9 @@ export class OperationManager implements IOperationManager {
         this._blockCount--;
         if (operation.unblock)
             this._unblockCount--;
+
+        console.debug("blockCount: ", this._blockCount);
+        console.debug("unblockCount: ", this._unblockCount); 
 
         this.blocker.visible = this._blockCount > 0 && this._unblockCount == 0;
     }

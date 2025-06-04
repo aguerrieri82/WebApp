@@ -1,5 +1,5 @@
 import { type Class, type ComponentStyle } from "@eusoft/webapp-core";
-import { type IContentOptions, type Content, type IContentInfo, type IContent, type IFeature, type LocalString, type IAction } from "@eusoft/webapp-ui";
+import { type IContentOptions, type Content, type IContentInfo, type IContent, type IFeature, type LocalString, type IAction, formatText } from "@eusoft/webapp-ui";
 import { type Extra } from "./Helper";
 
 
@@ -19,6 +19,11 @@ export class ContentBuilder<
         this._factory = factory;
     }
 
+    options(value: Partial<TOptions>) {
+        Object.assign(this._options, value);
+        return this;
+    }
+
     name(value: string) {
         this._options.name = value;
         return this;
@@ -35,7 +40,12 @@ export class ContentBuilder<
     }
 
     action(action: IAction) {
+
         this._options.actions ??= [];
+
+        if (Array.isArray(this._options.actions))
+            this._options.actions.push(action);
+
         return this;
     }
 
@@ -52,6 +62,9 @@ export class ContentBuilder<
     }
 
     build<TExtra extends object>(extra?: Extra<TContent, TExtra>) {
+
+        if (!this._options.title)
+            this._options.title = formatText(this._options.name) as string;
         const res = this._factory(this._options);
         Object.assign(res, extra);
         return res as (TExtra & TContent);

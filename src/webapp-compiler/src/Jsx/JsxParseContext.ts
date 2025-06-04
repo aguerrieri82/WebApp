@@ -344,13 +344,14 @@ export class JsxParseContext {
 
         let result = false;
 
+        let stopPoint: NodePath;
+
         this.traverseFromRoot(exp, {
 
             enter: path => {
 
                 if (!path.isIdentifier())
                     return;
-
 
                 const binding = path.scope.getBinding(path.toString());
                 if (!binding)
@@ -360,10 +361,16 @@ export class JsxParseContext {
 
                 if (builder) {
                     result = true;
+                    stopPoint = path;
                     path.stop();
                 }
             }
         });
+
+        if (stopPoint) {
+            stopPoint["_traverseFlags"] = 0;
+        }
+
 
         return result;
     }
