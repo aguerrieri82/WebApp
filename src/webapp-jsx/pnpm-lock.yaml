@@ -18,6 +18,9 @@ devDependencies:
   eslint-plugin-unused-imports:
     specifier: 4.1.4
     version: 4.1.4(eslint@9.27.0)
+  typescript:
+    specifier: 5.8.3
+    version: 5.8.3
   typescript-eslint:
     specifier: 8.33.0
     version: 8.33.0(eslint@9.27.0)(typescript@5.8.3)

@@ -27,3 +27,4 @@ export type CommonKeys<TSrc, TDst> = {
 };
 
 export type FunctionLike = (...args: any[]) => any;
+

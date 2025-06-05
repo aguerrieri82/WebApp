@@ -1,4 +1,4 @@
-import { type IBehavoir, type ITemplate, TEMPLATE, type StringLike, type BindValue } from "./abstraction";
+import { type IBehavoir, type ITemplate, TEMPLATE, type StringLike } from "./abstraction";
 
 
 export const TemplateCatalog: { [key: string]: ITemplate<unknown> } = {};
@@ -15,6 +15,6 @@ export function template<TModel, TTemplate extends ITemplate<TModel> = ITemplate
 
 export const TextTemplate = template<StringLike>(t => t.text(t.model), "Text");
 
-export const ArrayTemplate = template<[]>(t => {
+export const ArrayTemplate = template<any[]>(t => {
     t.model?.forEach(a => t.content(a)); 
 }, "Array");

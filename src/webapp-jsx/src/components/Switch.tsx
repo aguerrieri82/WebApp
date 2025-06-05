@@ -1,4 +1,4 @@
-import { type BindExpression, type BindValue, type ITemplate } from "@eusoft/webapp-core";
+import { type BindValue, type ITemplate } from "@eusoft/webapp-core";
 import type {  JsxComponentProps, TemplateModel } from "../abstraction";
 import { type JsxElementInstance } from "../abstraction";
 

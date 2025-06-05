@@ -35,7 +35,7 @@ export function bindTwoWays<TValue>(dst: IObservableProperty<TValue>, src: IObse
 
 export function bindTwoWays<TSrc extends {}, TDst extends {}, TProp extends keyof TSrc & keyof TDst & string>(dst: TSrc, src: TDst, propName: TProp): IBound;
 
-export function bindTwoWays(dst, src, propName?: string) {
+export function bindTwoWays(dst: any, src: any, propName?: string) {
 
     const srcProp = propName ? getOrCreateProp(src, propName) : src;
 

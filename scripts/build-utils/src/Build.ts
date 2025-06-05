@@ -103,9 +103,9 @@ function tsc(outDir: string) {
     });
 }
 
-function rollup(outDir: string) {
+function rollup(isWatch: boolean) {
 
-    spawnSync("rollup", ["-c"], {
+    spawnSync("rollup", ["-c", isWatch ? "-w" : undefined], {
         shell: true,
         stdio: "inherit",
     });
@@ -127,7 +127,7 @@ export async function buildAsync(options: IBuildOptions) {
 
         if (options.isBundle) {
             logColor(`Boundle\n`, colours.fg.green);
-            rollup(distPath);
+            rollup(options.isWatch);
         }
         else {
             if (fs.existsSync("tsconfig.json")) {
@@ -139,6 +139,10 @@ export async function buildAsync(options: IBuildOptions) {
                 logColor(`Copy SCSS\n`, colours.fg.green);
 
                 copyFiles("./src", distPath, a => a.endsWith(".scss"));
+
+                logColor(`Copy d.ts\n`, colours.fg.green);
+
+                copyFiles("./src", distPath, a => a.endsWith(".d.ts"));
             }
             else {
                 logColor(`Copy JS\n`, colours.fg.green);

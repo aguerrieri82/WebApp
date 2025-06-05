@@ -1,4 +1,4 @@
-import { Content, formatText, type IAction, type IContent, type IContentInstance, type IContentOptions, type IEditor, type IItemsSource, ItemView, ListView, type LocalString, MaterialIcon, useOperation, type ViewNode } from "@eusoft/webapp-ui";
+import { Content, type IAction, type IContent, type IContentInstance, type IContentOptions, type IEditor, type IItemsSource, ItemView, ListView, type LocalString, MaterialIcon, useOperation, type ViewNode } from "@eusoft/webapp-ui";
 import { type IFilterField } from "../abstraction/IFilterEditor";
 import { type Class } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";

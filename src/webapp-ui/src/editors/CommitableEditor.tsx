@@ -4,7 +4,7 @@ import { type CommitMode, type ICommitable } from "../abstraction/ICommitable";
 import { type IValidable } from "../abstraction/IValidable";
 import { type IValidationContext } from "../abstraction/Validator";
 import { type ViewNode } from "../Types";
-import { BIND_MODES, cleanProxy, configureBindings, getTypeName, type BindMode } from "@eusoft/webapp-core";
+import { cleanProxy, getTypeName } from "@eusoft/webapp-core";
 
 
 type EditState = "" | "committed" | "committing" | "validating" | "editing" | "loading";

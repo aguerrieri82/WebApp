@@ -43,11 +43,13 @@ export interface IBinding<TModel, TValue = unknown> {
 
 type CleanAction = () => unknown;
 
-export class Binder<TModel> {
+type BindModel = any;
+
+export class Binder<TModel extends BindModel> {
 
     protected _bindings: IBinding<TModel>[] = [];
     protected _modelBinders: Binder<TModel>[] = [];
-    protected _childBinders: Binder<unknown>[] = [];
+    protected _childBinders: Binder<BindModel>[] = [];
     protected _cleanActions: CleanAction[] = [];
     protected _tag: string;
 
@@ -379,7 +381,7 @@ export class Binder<TModel> {
         }
     }
 
-    protected execForSubBinders<TBinder extends Binder<unknown> = this>(action: (binder: TBinder) => void, includeSelf: boolean) {
+    protected execForSubBinders<TBinder extends Binder<BindModel> = this>(action: (binder: TBinder) => void, includeSelf: boolean) {
 
         const allBinders = [...this._childBinders, ...this._modelBinders] as TBinder[];
 
@@ -455,7 +457,7 @@ export class Binder<TModel> {
 
     protected findIndex() {
 
-        let curBuilder = this as Binder<unknown>;
+        let curBuilder = this as Binder<BindModel>;
 
         while (curBuilder) {
             if (curBuilder.index != -1)
@@ -466,7 +468,7 @@ export class Binder<TModel> {
  
     model: TModel;
 
-    parent: Binder<unknown>;
+    parent: Binder<BindModel>;
 
     index: number = -1;
 }

@@ -2,10 +2,11 @@ import type { Class } from "../abstraction";
 
 const TYPE_NAME = Symbol.for("@typeName");
 
-
 type KeyOfType<TObj, TKey> = {
     [P in keyof TObj & string]: TObj[P] extends TKey ? P : never
 }[keyof TObj & string];
+
+export type WithTypeName = { [TYPE_NAME]?: string } & (object | Function);
 
 const funcNameRegex = /function\s([^(]{1,})\(/;
 
@@ -35,12 +36,12 @@ export function isClass(value: Function): value is { new(...args: any): any } {
     return getFunctionType(value) == "class";
 }
 
-export function setTypeName(obj: unknown, name: string) {
+export function setTypeName(obj: WithTypeName, name: string) {
 
     obj[TYPE_NAME] = name;
 } 
 
-export function getTypeName(obj: unknown): string {
+export function getTypeName(obj: WithTypeName): string {
 
     if (!obj)
         return undefined;

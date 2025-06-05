@@ -9,7 +9,7 @@ import { type ITemplateContext } from "./abstraction/ITemplateContext";
 import { type CatalogTemplate, type ITemplateProvider, isTemplateProvider } from "./abstraction/ITemplateProvider";
 import { Binder } from "./Binder";
 import { cleanProxy, proxyEquals } from "./Expression";
-import { getTypeName, isClass, setTypeName } from "./utils/Object";
+import { getTypeName, isClass, setTypeName, type WithTypeName } from "./utils/Object";
 import { ArrayTemplate, BehavoirCatalog, TemplateCatalog, TextTemplate } from "./Templates";
 import { getComponent } from "./Component";
 import Services from "./Services";
@@ -145,9 +145,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     logTempatesTree() {
 
-        console.group(`[${this._tag ?? ""}] ${this.element?.nodeName} (${getTypeName(this.model)})`);
+        console.group(`[${this._tag ?? ""}] ${this.element?.nodeName} (${getTypeName(this.model as WithTypeName)})`);
 
-        console.log("Model", getTypeName(this.model));
+        console.log("Model", getTypeName(this.model as WithTypeName));
 
         console.group(`Bindings (${this._bindings.length})`);
 
@@ -831,8 +831,8 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         if (typeof value == "string" || typeof value == "number" || typeof value == "boolean")
             return this.loadTemplate<TInnerModel>(TextTemplate);
 
-        if (Array.isArray(value)) 
-            return this.loadTemplate<TInnerModel>(ArrayTemplate);
+        if (Array.isArray(value))
+            return this.loadTemplate<TInnerModel>(ArrayTemplate as ITemplate<TInnerModel>); // Mistery
 
         if (isTemplateProvider(value))
             return this.loadTemplate<TInnerModel>(value.template);
@@ -846,16 +846,16 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         throw new Error("cannot determine template for model");
     }
 
-    loadTemplate<TInnerModel>(templateOrName: CatalogTemplate<TInnerModel>): ITemplate<TInnerModel> {
+    loadTemplate<TInnerModel, TTemplate extends ITemplate<TInnerModel> = ITemplate<TInnerModel>>(templateOrName: CatalogTemplate<TInnerModel>): TTemplate  {
 
         if (typeof templateOrName == "string") {
             const result = TemplateCatalog[templateOrName];
             if (!result)
                 console.error("Template ", templateOrName, " not found.");
-            return result;
+            return result as TTemplate;
         }
 
-        return templateOrName as ITemplate<TInnerModel>;
+        return templateOrName as TTemplate;
     }
 
     template(templateOrName: CatalogTemplate<TModel>): this;
@@ -1213,7 +1213,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         if (obj == null)
             return baseName + "null";
 
-        return this.createMarker(getTypeName(obj), baseName);
+        return this.createMarker(getTypeName(obj as WithTypeName), baseName);
     }
 
     namespace: string;

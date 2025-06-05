@@ -1,4 +1,4 @@
-import { BIND_MODES, type Bindable, type BindExpression, type BindMode, type BindValue, configureBindings, type ITemplate, type TemplateMap, withCleanup, withNotify } from "@eusoft/webapp-core";
+import { type Bindable, type BindExpression, configureBindings, type ITemplate, type TemplateMap, withCleanup, withNotify } from "@eusoft/webapp-core";
 import { Class, Content, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "./EditorBuilder";
 import { type IInputFieldOptions, type InputField } from "../components";

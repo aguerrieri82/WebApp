@@ -1,4 +1,4 @@
-import { type TemplateMap, type BindExpression, type ITemplateContext, INDEX, USE, delayAsync } from "@eusoft/webapp-core";
+import { type TemplateMap, type BindExpression, type ITemplateContext, INDEX, delayAsync } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "./EditorBuilder";
 import "./SingleSelector.scss";

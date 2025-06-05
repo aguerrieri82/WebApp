@@ -171,7 +171,7 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
 
             this.activeEditor = editor;
 
-            let result = await new Promise<TItem>(res => this._editPromise = res);
+            const result = await new Promise<TItem>(res => this._editPromise = res);
 
             this.activeEditor = null;
 

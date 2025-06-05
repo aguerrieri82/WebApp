@@ -7,6 +7,8 @@ interface Window {
     readonly navigation: Navigation;
 }
 
+
+
 interface Navigation extends EventTarget {
     readonly currentEntry: NavigationHistoryEntry | null;
     readonly canGoBack: boolean;

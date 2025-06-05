@@ -1,6 +1,6 @@
 import { type IPropertyChangedHandler, isObservableProperty } from "./abstraction/IObservableProperty";
 import type { CatalogTemplate } from "./abstraction/ITemplateProvider";
-import { COMPONENT, type IComponent, isComponent } from "./abstraction/IComponent";
+import { COMPONENT, type IComponent, type IComponentConstructor, isComponent } from "./abstraction/IComponent";
 import { enumOverrides, getTypeName, isClass, objectHierarchy, setTypeName } from "./utils/Object";
 import { attribute, bindTwoWays, getOrCreateProp } from "./Properties";
 import { generateRandomId, toKebabCase } from "./utils/String";
@@ -12,11 +12,10 @@ import { type IMountListener } from "./abstraction/IMountListener";
 import { type ITemplateContext } from "./abstraction/ITemplateContext";
 import { type IService, SERVICE_TYPE, type ServiceType } from "./abstraction/IService";
 import { type IServiceProvider, type ServiceContainer } from "./abstraction/IServiceProvider";
-import type { Class, CommonKeys } from "./abstraction/Types";
+import type { CommonKeys } from "./abstraction/Types";
 import { type BindExpression, type BindMode, type BindValueUnchecked } from "./abstraction/IBinder";
-import { ATTRIBUTES, BIND_MODES, type IHTMLContainer } from "./abstraction";
+import { BIND_MODES, type IHTMLContainer } from "./abstraction";
 import { buildStyle } from "./utils/Style";
-import { getBuilder, TemplateBuilder } from "./TemplateBuilder";
 
 interface ISubscription {
     unsubscribe(): void;
@@ -288,6 +287,7 @@ export function registerComponent<T extends Component<unknown>>(ctr: { new(...ar
     setTypeName(ctr, name);
 }
 
+/*
 export function registerElement<TComponent extends IComponent>(component: Class<TComponent>, name?: string) {
 
     const element = class InlineComponent extends HTMLElement {
@@ -356,8 +356,9 @@ export function registerElement<TComponent extends IComponent>(component: Class<
 
     return name;
 }
+*/
 
-export function configureBindings<T>(component: Class<T>, values: Partial< Record<keyof T & string, BindMode>>) {
+export function configureBindings<T extends IComponent>(component: IComponentConstructor<unknown, T>, values: Partial< Record<keyof T & string, BindMode>>) {
 
     let modes = component[BIND_MODES];
 

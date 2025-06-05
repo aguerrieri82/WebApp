@@ -1,5 +1,5 @@
-import { cleanProxy, isProxy } from "./Expression";
-import { type IComponent } from "./abstraction";
+import { cleanProxy } from "./Expression";
+import { isBindExpression, type IComponent, type IComponentConstructor } from "./abstraction";
 import { type IBindable, PARENT, USE, BIND_MODES, BIND_MODE } from "./abstraction/IBindable";
 import type { BindExpression, BindMode, BindValue } from "./abstraction/IBinder";
 
@@ -16,7 +16,7 @@ export function bind(mode: BindMode) {
 
     return (target: IComponent, propertyName: string) => {
 
-        const constr = target.constructor;
+        const constr = target.constructor as IComponentConstructor;
 
         if (!constr[BIND_MODES])
             constr[BIND_MODES] = {};
@@ -25,13 +25,13 @@ export function bind(mode: BindMode) {
     };
 }
 
-export function use<T>(model: unknown, item: T) {
+export function use<T>(model: IBindable, item: T) {
     const target = cleanProxy(model);
     if (target === model)
         return item;
     if (typeof target != "object")
         return item;
-    return model[USE](item);
+    return target[USE](item);
 }
 
 export namespace Bind {
@@ -48,22 +48,27 @@ export namespace Bind {
      
     export function action<T extends BindValue<unknown, unknown>>(value: T): T {
 
-        value[BIND_MODE] = "action";
+        if (isBindExpression(value))
+            value[BIND_MODE] = "action";
         return value;
     }
 
     export function oneWay<T extends BindValue<unknown, unknown>>(value: T): T {
-        value[BIND_MODE] = "one-way";
+        if (isBindExpression(value))
+            value[BIND_MODE] = "one-way";
         return value;
     }
 
     export function twoWays<T extends BindValue<unknown, unknown>>(value: T): T {
-        value[BIND_MODE] = "two-ways"; 
+
+        if (isBindExpression(value))
+            value[BIND_MODE] = "two-ways"; 
         return value;
     }
 
     export function noBind<T extends BindValue<unknown, unknown>>(value: T): T {
-        value[BIND_MODE] = "no-bind";
+        if (isBindExpression(value))
+            value[BIND_MODE] = "no-bind";
         return value;
     }
 

@@ -5,6 +5,7 @@
     "sourceMap": true,
     "target": "ESNext",
     "module": "ESNext",
+    "lib": [ "ESNext", "DOM.AsyncIterable", "DOM.Iterable", "DOM" ],
     "moduleResolution": "Node",
     "noEmit": true,
     "declaration": true,

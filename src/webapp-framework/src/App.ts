@@ -3,7 +3,7 @@ import { type ContentHost, LOCALIZATION, OPERATION_MANAGER, OperationManager } f
 import localTable from "./services/LocalTable";
 import { RouteContentHost } from "./components/RouteContentHost";
 import "./Transition.scss"
-
+import "@eusoft/webapp-ui/view-transitions";
 export interface IAppOptions {
 
 }
