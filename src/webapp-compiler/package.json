@@ -1,6 +1,6 @@
 {
   "name": "@eusoft/webapp-compiler",
-  "version": "0.0.59",
+  "version": "0.0.60",
   "packageManager": "pnpm",
   "type": "module",
   "main": "src/index.ts",
@@ -34,6 +34,5 @@
     "eslint": "^9.27.0",
     "typescript-eslint": "8.33.0",
     "eslint-plugin-unused-imports": "4.1.4"
-
   }
 }

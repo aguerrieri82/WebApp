@@ -31,7 +31,7 @@ export function use<T>(model: IBindable, item: T) {
         return item;
     if (typeof target != "object")
         return item;
-    return target[USE](item);
+    return model[USE](item);
 }
 
 export namespace Bind {

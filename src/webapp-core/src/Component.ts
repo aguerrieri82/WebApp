@@ -14,7 +14,7 @@ import { type IService, SERVICE_TYPE, type ServiceType } from "./abstraction/ISe
 import { type IServiceProvider, type ServiceContainer } from "./abstraction/IServiceProvider";
 import type { CommonKeys } from "./abstraction/Types";
 import { type BindExpression, type BindMode, type BindValueUnchecked } from "./abstraction/IBinder";
-import { BIND_MODES, type IHTMLContainer } from "./abstraction";
+import { BIND_MODES, type IBehavoir, type IHTMLContainer } from "./abstraction";
 import { buildStyle } from "./utils/Style";
 
 interface ISubscription {
@@ -358,7 +358,7 @@ export function registerElement<TComponent extends IComponent>(component: Class<
 }
 */
 
-export function configureBindings<T extends IComponent>(component: IComponentConstructor<unknown, T>, values: Partial< Record<keyof T & string, BindMode>>) {
+export function configureBindings<T extends IComponent | IBehavoir<HTMLElement, unknown>>(component: IComponentConstructor<unknown, T>, values: Partial< Record<keyof T & string, BindMode>>) {
 
     let modes = component[BIND_MODES];
 

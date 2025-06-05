@@ -38,6 +38,7 @@ type FunctionalComponenType<TProps> = ITemplate<TProps> | null | undefined | voi
 
 type BehavoirType<TElement extends Element, TModel> = string | { new(): IBehavoir } | IBehavoir | BehavoirType<TElement, TModel>[];
 
+
 type ComponentType<TProps, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>> =
     { new(props?: TProps): TComp } |
     { (props?: TProps): TResult }
