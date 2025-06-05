@@ -1,8 +1,7 @@
-import { template } from "@babel/core";
-import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler.js";
-import { ITemplateElement, ITemplateNode } from "../Abstraction/ITemplateNode.js";
+import { HandleResult, type ITemplateHandler } from "../Abstraction/ITemplateHandler.js";
+import { type ITemplateElement, type ITemplateNode } from "../Abstraction/ITemplateNode.js";
 import { HtmlCompiler } from "../HtmlCompiler.js";
-import { TemplateContext } from "../TemplateContext.js";
+import { type TemplateContext } from "../TemplateContext.js";
 
 export class TemplateElementHandler implements ITemplateHandler {
 
@@ -13,9 +12,9 @@ export class TemplateElementHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, node: ITemplateElement): HandleResult {
 
-        var templateName = node.attributes.name?.value as string;
-        var modelType = node.attributes.for?.value as string;
-        var builderName = node.attributes.as?.value as string;
+        const templateName = node.attributes.name?.value as string;
+        let modelType = node.attributes.for?.value as string;
+        const builderName = node.attributes.as?.value as string;
 
         ctx.templates.push(templateName);
 

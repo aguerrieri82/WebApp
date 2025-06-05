@@ -1,6 +1,6 @@
 import type { NodePath } from "@babel/traverse";
 import type { JsxParseContext } from "../JsxParseContext.js";
-import { BindMode } from "../../Abstraction/ITemplateNode.js";
+import { type BindMode } from "../../Abstraction/ITemplateNode.js";
 import { toKebabCase } from "../../TextUtils.js";
 
 export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {

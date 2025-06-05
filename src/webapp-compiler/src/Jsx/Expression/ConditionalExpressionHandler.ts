@@ -1,6 +1,6 @@
-import { NodePath } from "@babel/traverse";
+import { type NodePath } from "@babel/traverse";
 import type { JsxParseContext } from "../JsxParseContext.js";
-import { Expression } from "@babel/types";
+import { type Expression } from "@babel/types";
 
 
 function ConditionalExpressionHandler(ctx: JsxParseContext, stage: "exp", path: NodePath<Expression>): boolean {

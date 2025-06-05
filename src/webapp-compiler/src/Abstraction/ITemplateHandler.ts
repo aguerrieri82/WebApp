@@ -1,5 +1,5 @@
 import type { TemplateContext } from "../TemplateContext.js";
-import { ITemplateNode } from "./ITemplateNode.js";
+import { type ITemplateNode } from "./ITemplateNode.js";
 
 export enum HandleResult {
     CompileChildren,

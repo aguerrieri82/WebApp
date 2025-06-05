@@ -1,6 +1,6 @@
-import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler.js";
-import { ITemplateElement, ITemplateNode } from "../Abstraction/ITemplateNode.js";
-import { TemplateContext } from "../TemplateContext.js";
+import { HandleResult, type ITemplateHandler } from "../Abstraction/ITemplateHandler.js";
+import { type ITemplateElement, type ITemplateNode } from "../Abstraction/ITemplateNode.js";
+import { type TemplateContext } from "../TemplateContext.js";
 
 export class ElementHandler implements ITemplateHandler {
      
@@ -11,7 +11,7 @@ export class ElementHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, node: ITemplateElement): HandleResult {
 
-        var ns = node.attributes.xmlns?.value;
+        const ns = node.attributes.xmlns?.value;
 
         if (ns == null) {
             ctx.writer.ensureNewLine()

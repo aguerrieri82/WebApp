@@ -1,5 +1,5 @@
-import { ITemplateAttribute, ITemplateElement, ITemplateNode, TemplateNodeType } from "../Abstraction/ITemplateNode.js";
-import { IWriteable } from "../Abstraction/IWriteable.js";
+import { type ITemplateAttribute, type ITemplateElement, type ITemplateNode, TemplateNodeType } from "../Abstraction/ITemplateNode.js";
+import { type IWriteable } from "../Abstraction/IWriteable.js";
 import type { TemplateContext } from "../TemplateContext.js";
 import { JsWriter } from "./JsWriter.js";
 

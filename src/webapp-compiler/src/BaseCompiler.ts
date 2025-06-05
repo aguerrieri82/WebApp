@@ -1,11 +1,11 @@
 import * as path from "path";
 import * as fs from "fs";
 import { StringBuilder } from "./StringBuilder.js";
-import { IWriteable } from "./Abstraction/IWriteable.js";
+import { type IWriteable } from "./Abstraction/IWriteable.js";
 import { stderr, stdout } from "process";
 import { TemplateContext } from "./TemplateContext.js";
 import type { ITemplateAttribute, ITemplateElement, ITemplateNode } from "./Abstraction/ITemplateNode.js";
-import { HandleResult, ITemplateHandler } from "./Abstraction/ITemplateHandler.js";
+import { HandleResult, type ITemplateHandler } from "./Abstraction/ITemplateHandler.js";
 import * as handlers from "./Handlers/index.js";
 import { TemplateWriter } from "./Text/TemplateWriter.js";
 

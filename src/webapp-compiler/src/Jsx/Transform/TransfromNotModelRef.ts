@@ -1,7 +1,7 @@
 import type { NodePath } from "@babel/traverse";
 import type { JsxParseContext } from "../JsxParseContext.js";
-import { Expression, Identifier, MemberExpression, ThisExpression } from "@babel/types";
-import { BindMode, TemplateNodeType } from "../../Abstraction/ITemplateNode.js";
+import { type Expression, type Identifier, type MemberExpression, type ThisExpression } from "@babel/types";
+import { type BindMode } from "../../Abstraction/ITemplateNode.js";
 
 export function TransfromNotModelRef(ctx: JsxParseContext, stage: "trans-exp", path: NodePath<Expression>) {
 

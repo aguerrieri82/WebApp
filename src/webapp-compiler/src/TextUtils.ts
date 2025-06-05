@@ -1,4 +1,4 @@
-import { ReadStream } from "fs";
+import { type ReadStream } from "fs";
 import { StringBuilder } from "./StringBuilder.js";
 
 export function isLetterOrDigit(value: string) {
@@ -65,7 +65,7 @@ export async function readAllTextAsync(stream: ReadStream) {
 
     const chunks: Buffer[] = [];
 
-    for await (let chunk of stream) {
+    for await (const chunk of stream) {
         chunks.push(chunk);
     }
 

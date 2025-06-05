@@ -1,7 +1,7 @@
 {
   "name": "@eusoft/webapp-compiler-rollup",
   "version": "0.0.58",
-  "packageManager": "pnpm@8.4.0",
+  "packageManager": "pnpm",
   "type": "module",
   "main": "src/index.js",
   "scripts": {

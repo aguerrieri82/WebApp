@@ -1,6 +1,6 @@
-import { HandleResult, ITemplateHandler } from "../Abstraction/ITemplateHandler.js";
-import { ITemplateElement } from "../Abstraction/ITemplateNode.js";
-import { TemplateContext } from "../TemplateContext.js";
+import { HandleResult, type ITemplateHandler } from "../Abstraction/ITemplateHandler.js";
+import { type ITemplateElement } from "../Abstraction/ITemplateNode.js";
+import { type TemplateContext } from "../TemplateContext.js";
 
 export class BehavoirElementHandler implements ITemplateHandler {
      
@@ -11,8 +11,8 @@ export class BehavoirElementHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        var className = element.attributes.class?.value as string;
-        var name = element.attributes.name?.value as string;
+        const className = element.attributes.class?.value as string;
+        const name = element.attributes.name?.value as string;
 
         if ((name && className) ||
             (!name && !className)) {

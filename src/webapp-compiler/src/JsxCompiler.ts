@@ -1,11 +1,11 @@
-import { ReadStream } from "fs";
-import { IWriteable } from "./Abstraction/IWriteable.js";
+import { type ReadStream } from "fs";
+import { type IWriteable } from "./Abstraction/IWriteable.js";
 import * as parser from "@babel/parser";
-import traverse, { NodePath } from "@babel/traverse";
+import traverse, { type NodePath } from "@babel/traverse";
 import { readAllTextAsync } from "./TextUtils.js";
-import { BaseCompiler, ICompilerOptions } from "./BaseCompiler.js";
-import { JSXElement, Identifier, ImportDeclaration, JSXFragment } from "@babel/types";
-import { ITemplateElement } from "./Abstraction/ITemplateNode.js";
+import { BaseCompiler, type ICompilerOptions } from "./BaseCompiler.js";
+import { type JSXElement, type Identifier, type ImportDeclaration, type JSXFragment } from "@babel/types";
+import { type ITemplateElement } from "./Abstraction/ITemplateNode.js";
 import { CORE_MODULE } from "./Consts.js";
 import { JsxParseContext } from "./Jsx/JsxParseContext.js";
 

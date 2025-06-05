@@ -1,9 +1,9 @@
 import type { ITemplateHandler } from "./Abstraction/ITemplateHandler.js";
-import { TemplateWriter } from "./Text/TemplateWriter.js";
+import { type TemplateWriter } from "./Text/TemplateWriter.js";
 import { isLetterOrDigit } from "./TextUtils.js";
 import { StringBuilder } from "./StringBuilder.js";
-import { BaseCompiler } from "./BaseCompiler.js";
-import { ITemplateAttribute, ITemplateElement, ITemplateNode, TemplateNodeType } from "./Abstraction/ITemplateNode.js";
+import { type BaseCompiler } from "./BaseCompiler.js";
+import { type ITemplateAttribute, type ITemplateElement, type ITemplateNode, TemplateNodeType } from "./Abstraction/ITemplateNode.js";
 
 class StackFrame {
     builderNameJs: string;
@@ -71,8 +71,8 @@ export class TemplateContext {
     replaceExpression(value: string): string {
 
         let state = 0;
-        let result = new StringBuilder();
-        let name = new StringBuilder();
+        const result = new StringBuilder();
+        const name = new StringBuilder();
         let isReplaced = false;
 
         for (let i = 0; i <= value.length; i++) {

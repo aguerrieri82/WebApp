@@ -1,6 +1,6 @@
 
-import { JSXElement, Expression, JSXEmptyExpression, Identifier, ImportDeclaration, JSXFragment, ThisExpression, identifier } from "@babel/types";
-import { BindMode, ITemplateAttribute, ITemplateElement, TemplateNodeType } from "../Abstraction/ITemplateNode.js";
+import { type JSXElement, type Expression, type JSXEmptyExpression, type Identifier, type ImportDeclaration, type JSXFragment, type ThisExpression, identifier } from "@babel/types";
+import { type BindMode, type ITemplateAttribute, type ITemplateElement, TemplateNodeType } from "../Abstraction/ITemplateNode.js";
 import { CORE_MODULE, TemplateAttributes } from "../Consts.js";
 import type { JsxCompiler } from "../JsxCompiler.js";
 import { toKebabCase } from "../TextUtils.js";
@@ -19,7 +19,7 @@ import TransformNestedTemplateHandler from "./Transform/TransformNestedTemplateH
 import ForeachExpressionHandler from "./Expression/ForeachExpressionHandler.js";
 import JsxSpreadHandler from "./Elements/JsxSpreadHandler.js";
 
-import traverse, { NodePath, Visitor } from "@babel/traverse";
+import traverse, { type NodePath, type Visitor } from "@babel/traverse";
 import * as parser from "@babel/parser";
 interface ICompileError {
     path: NodePath;
@@ -76,7 +76,7 @@ export class JsxParseContext {
         if (path.isArrowFunctionExpression()) {
             const context = path.parentPath;
             if (context.isCallExpression()) {
-                var callee = context.get("callee");
+                const callee = context.get("callee");
                 if (callee.isIdentifier() && callee.node.name == "forModel") {
                     const params = path.get("params");
                     if (params.length > 0 && params[0].isIdentifier())
@@ -157,7 +157,7 @@ export class JsxParseContext {
         let curPath: NodePath = path;
 
         let arrowFound = false;
-        let jsxFound = false;
+        const jsxFound = false;
 
         while (true) {
 

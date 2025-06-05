@@ -1,7 +1,7 @@
 {
   "name": "@eusoft/webapp-jsx",
   "version": "0.0.60",
-  "packageManager": "pnpm@8.4.0",
+  "packageManager": "pnpm",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "type": "module",
