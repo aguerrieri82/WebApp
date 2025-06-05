@@ -22,7 +22,12 @@ export function parseDate(value: Date | string): Date {
 }
 
 export function formatDate(date: Date | string, format: string, lang?: string) {
+
     date = parseDate(date);
+
+    if (!date)
+        return;
+
     if (!lang) {
         const local = Services[LOCALIZATION] as ILocalization;
         lang = local.language;

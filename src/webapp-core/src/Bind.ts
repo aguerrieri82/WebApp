@@ -1,4 +1,4 @@
-import { cleanProxy } from "./Expression";
+import { cleanProxy, isProxy } from "./Expression";
 import { type IComponent } from "./abstraction";
 import { type IBindable, PARENT, USE, BIND_MODES, BIND_MODE } from "./abstraction/IBindable";
 import type { BindExpression, BindMode, BindValue } from "./abstraction/IBinder";
@@ -25,6 +25,14 @@ export function bind(mode: BindMode) {
     };
 }
 
+export function use<T>(model: unknown, item: T) {
+    const target = cleanProxy(model);
+    if (target === model)
+        return item;
+    if (typeof target != "object")
+        return item;
+    return model[USE](item);
+}
 
 export namespace Bind {
 

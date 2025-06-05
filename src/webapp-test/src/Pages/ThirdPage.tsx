@@ -8,9 +8,9 @@ export class ThirdPage extends Content {
         super();
 
         this.init(ThirdPage, {
-            name: "third",
+            name: ThirdPage.info.name,
             title: "Terza Pagina",
-            route: "/",
+            route: ThirdPage.info.route,
             body: forModel(this, m => <div>
                 <input value={m.firstName}/>
                 {m.isMaria && <span>sono maria</span>}
@@ -27,8 +27,6 @@ export class ThirdPage extends Content {
     static override info = {
         name: "third-page",
         route: "/third",
-        factory: () => thirdPage
+        factory: () => new ThirdPage()
     } as IContentInfo;
 }
-
-export const thirdPage = new ThirdPage();

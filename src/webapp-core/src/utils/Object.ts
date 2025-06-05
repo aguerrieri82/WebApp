@@ -1,7 +1,7 @@
+import type { Class } from "../abstraction";
 
 const TYPE_NAME = Symbol.for("@typeName");
 
-type Type<T> = new (...args: unknown[]) => T;
 
 type KeyOfType<TObj, TKey> = {
     [P in keyof TObj & string]: TObj[P] extends TKey ? P : never
@@ -31,7 +31,7 @@ export function getFunctionType(value: Function): "function" | "class" | "async"
         : undefined;
 }
 
-export function isClass(value: Function): value is { new(): unknown } {
+export function isClass(value: Function): value is { new(...args: any): any } {
     return getFunctionType(value) == "class";
 }
 
@@ -69,9 +69,9 @@ export function getTypeName(obj: unknown): string {
     return name;
 }
 
-export function getBaseType(ctr: Type<unknown>): Type<unknown>;
-export function getBaseType(obj: object): Type<unknown>;
-export function getBaseType(objOrFun: object | Type<unknown>): Type<unknown> {
+export function getBaseType(ctr: Class<unknown>): Class<unknown>;
+export function getBaseType(obj: object): Class<unknown>;
+export function getBaseType(objOrFun: object | Class<unknown>): Class<unknown> {
 
     let proto: unknown;
 

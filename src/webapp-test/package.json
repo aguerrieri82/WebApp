@@ -19,8 +19,8 @@
   },
   "devDependencies": {
     "@eusoft/webapp-compiler-rollup": "../../dist/webapp-compiler-rollup",
-    "vite": "5.0.12",
-    "sass": "1.69.4",
-    "typescript": "5.2.2"
+    "sass": "1.89.1",
+    "typescript": "5.8.3",
+    "vite": "6.3.5"
   }
 }

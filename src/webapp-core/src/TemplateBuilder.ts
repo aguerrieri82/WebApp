@@ -1,4 +1,4 @@
-import { BIND_MODE, BIND_MODES, COMPONENT, type ServiceType, type StringLike, isBindExpression, isComponent } from "./abstraction";
+import { BIND_MODE, BIND_MODES, COMPONENT, type Class, type FunctionLike, type ServiceType, type StringLike, isBindExpression, isComponent } from "./abstraction";
 import { type IBehavoir, isBehavoir } from "./abstraction/IBehavoir";
 import type { BindMode, BindValue, BindValueUnchecked, BoundObject, BoundObjectModes } from "./abstraction/IBinder";
 import { isHTMLContainer } from "./abstraction/IHTMLContainer";
@@ -13,6 +13,8 @@ import { getTypeName, isClass, setTypeName } from "./utils/Object";
 import { ArrayTemplate, BehavoirCatalog, TemplateCatalog, TextTemplate } from "./Templates";
 import { getComponent } from "./Component";
 import Services from "./Services";
+import { Bind } from "./Bind";
+
 
 type TemplateValueMap<TModel, TObj> = {
 
@@ -23,7 +25,14 @@ type TemplateInlineMode = "never" | "always" | "auto" | "explicit" | "replace-pa
 
 type RefNodePosition = "after" | "before" | "inside";
 
-type ClassComponenType<TProps> = IBehavoir | ITemplateProvider<TProps> & TProps;
+type ComponentProps<T> =
+    T extends Class<unknown>
+    ? ConstructorParameters<T>[0]
+    : T extends FunctionLike
+    ? Parameters<T>[0]
+    : never;
+
+type ClassComponenType<TProps> = IBehavoir | (ITemplateProvider<TProps> & TProps);
 
 type FunctionalComponenType<TProps> = ITemplate<TProps> | null | undefined | void;
 
@@ -36,6 +45,7 @@ type ComponentType<TProps, TComp extends ClassComponenType<TProps>, TResult exte
 type StyleBinding<TModel> = {
     [K in keyof CSSStyleDeclaration]: BindValue<TModel, CSSStyleDeclaration[K]>
 }
+
 interface IComponentInfo<TModel> {
     model?: TModel;
     component: ClassComponenType<TModel> | FunctionalComponenType<TModel>;
@@ -60,7 +70,7 @@ export const BUILDER: unique symbol = Symbol.for("@builder")
 /****************************************/
 
 export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
-    extends Binder<TModel>  {
+    extends Binder<TModel> {
 
     protected _endElement: Node;
     protected _startElement: Node;
@@ -226,10 +236,10 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 mustDelete = false;
 
             const prev = curNode.previousSibling;
- 
-            if (mustDelete) 
+
+            if (mustDelete)
                 curNode.parentNode.removeChild(curNode);
-            
+
             if (curNode == this._startElement)
                 break;
 
@@ -267,7 +277,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
             }, true);
         }
-        
+
 
         return this;
     }
@@ -293,11 +303,11 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
             require: <TService,>(service: ServiceType) => {
 
-                const parent = ctx.parent(m => typeof(m) == "object" && service in m);
+                const parent = ctx.parent(m => typeof (m) == "object" && service in m);
                 if (parent)
                     return (parent.model as Record<ServiceType, TService>)[service];
 
-                return (Services)[service] as TService; 
+                return (Services)[service] as TService;
             },
 
             visitChildComponents: (visitor) => ctx.visitChildren(visitor, m => getComponent(m) != undefined),
@@ -322,12 +332,12 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                                 if (result == "stop")
                                     return false;
 
-                                if (result == "skip-children") 
+                                if (result == "skip-children")
                                     continue;
 
                                 nextLevel = level + 1;
                             }
-                
+
                             nextModel = binder.model;
                         }
 
@@ -604,22 +614,21 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return result;
     }
 
-    protected createComponent<TProps extends Record<string, unknown>, TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: Partial<BoundObject<TProps>>, modes?: BoundObjectModes<TProps>): IComponentInfo<TProps> {
+    protected createComponent<TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>, TProps = ComponentProps<TComp>>(constructor: ComponentType<TProps, TComp, TResult>, props: Partial<BoundObject<TProps>>, modes?: BoundObjectModes<TProps>): IComponentInfo<TProps> {
 
-        let model: Record<string, unknown>;
+        let model: Partial<Record<Extract< keyof TProps, string>, unknown>>;
         let callOnChange = false;
 
         if (isClass(constructor))
             model = new constructor()
-        else 
+        else
             model = {}
-        
 
         if (props) {
 
             for (const prop in props) {
 
-                const propValue = props[prop] as BindValue<TProps, unknown>;
+                let propValue = props[prop] as BindValue<TProps, unknown>;
 
                 if (prop == "ref") {
 
@@ -628,14 +637,30 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                         if (refProp)
                             refProp.set(model);
                     }, "exec-always");
+
+                    continue;
+                }
+                else if (prop == "@options") {
+
+                    const newBind = Bind.exp(m => {
+                        const value = isBindExpression(propValue) ? propValue(m) : propValue;
+                        Object.assign(model, value);
+                        return value;
+                    });
+
+                    this.bind(newBind, () => {
+                        if (callOnChange && !isClass(constructor))
+                            constructor(model as TProps);
+                    });
+
                     continue;
                 }
 
-                let mode : BindMode = (modes && modes[prop]) || undefined;
+                let mode: BindMode = (modes && modes[prop]) || undefined;
 
-                if (!mode && isBindExpression(propValue)) 
+                if (!mode && isBindExpression(propValue))
                     mode = propValue[BIND_MODE]
-                 
+
                 if (BIND_MODES in model.constructor) {
                     const defModes = model.constructor[BIND_MODES] as Record<string, BindMode>;
                     if (prop in defModes && (!mode || mode == "expression"))
@@ -650,12 +675,23 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                     });
                 }
                 else {
+
+                    //On actions, replace this with current model
+                    if (mode == "action" && isBindExpression(propValue)) {
+                        const oldPropValue = propValue;
+                        propValue = Bind.exp(m => {
+                            const value = oldPropValue(m);
+                            if (typeof value == "function")
+                                return value.bind(m);
+                            return value;
+                        });
+                    }
+
                     this.bind(propValue, value => {
                         model[prop] = value;
                         if (callOnChange && !isClass(constructor))
                             constructor(model as TProps);
-                    }, prop == "builder" || mode == "no-bind" || mode == "action" || !mode ? "no-bind" : undefined);
-   
+                    }, prop == "builder" || mode == "no-bind" || !mode ? "no-bind" : undefined);
                 }
             }
 
@@ -681,7 +717,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         }
     }
 
-    componentContent<TProps extends Record<string, unknown>, TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): ITemplateProvider<TProps> {
+    componentContent<TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>, TProps = ComponentProps<TComp>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): ITemplateProvider<TProps> {
 
         const result = this.createComponent(constructor, props, modes);
 
@@ -700,7 +736,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         throw new Error(`Component '${getTypeName(constructor)}' not supported`);
     }
 
-    component<TProps extends Record<string, unknown>, TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>>(constructor: ComponentType<TProps, TComp, TResult>, props: Partial<BoundObject<TProps>>, modes?: Partial<BoundObjectModes<TProps>>): this {
+
+
+    component<TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>, TProps = ComponentProps<TComp>>(constructor: ComponentType<TProps, TComp, TResult>, props: Partial<BoundObject<TProps>>, modes?: Partial<BoundObjectModes<TProps>>): this {
 
         const result = this.createComponent(constructor, props, modes);
 
@@ -754,7 +792,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 else {
 
                     if (isUpdate)
-                        childBuilder.clear(false, true, updateMode != "replace" ); //TODO WARN: cleanValue was true
+                        childBuilder.clear(false, true, updateMode != "replace"); //TODO WARN: cleanValue was true
 
                     if (value) {
 
@@ -777,7 +815,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 if (isHTMLContainer(value) && value.isCacheEnabled === true) {
                     value.nodes = childBuilder.extractContent();
                 }
-             
+
             }
 
             this.endUpdate();
@@ -793,8 +831,8 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         if (typeof value == "string" || typeof value == "number" || typeof value == "boolean")
             return this.loadTemplate<TInnerModel>(TextTemplate);
 
-        if (Array.isArray(value))
-            return this.loadTemplate<TInnerModel>(ArrayTemplate as any); //TODO: TS shit
+        if (Array.isArray(value)) 
+            return this.loadTemplate<TInnerModel>(ArrayTemplate);
 
         if (isTemplateProvider(value))
             return this.loadTemplate<TInnerModel>(value.template);
@@ -802,7 +840,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         if (isTemplate(value))
             return value;
 
-        if (value instanceof HTMLElement) 
+        if (value instanceof HTMLElement)
             return bld => bld.appendChild(value);
 
         throw new Error("cannot determine template for model");
@@ -1023,7 +1061,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         if (valueProp) {
 
-            if (mode == "change" || mode == "keyup" || mode=="input") {
+            if (mode == "change" || mode == "keyup" || mode == "input") {
 
                 if (element.tagName == "INPUT" || element.tagName == "TEXTAREA") {
 
@@ -1166,7 +1204,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         return;
 
-        if (typeof obj == "function" )
+        if (typeof obj == "function")
             return this.createMarker((obj as Function)(this.model), baseName);
 
         if (typeof obj == "string")
@@ -1219,7 +1257,7 @@ class ChildTemplateBuilder<TModel, TElement extends HTMLElement, TParent extends
 }
 
 /****************************************/
-export class SwitchBuilder<TValue>{
+export class SwitchBuilder<TValue> {
 
     when(condition: BindValue<TValue, boolean>, template: CatalogTemplate<TValue>) {
 

@@ -1,4 +1,7 @@
+@use "@eusoft/webapp-ui/themes/Default" as *;
 
-$backColor: #00ff21;
+:root {
+    --back-color: #00ff21;
+    --primary-color: blue;
+}
 
-@import "@eusoft/webapp-ui/dist/themes/Default";   

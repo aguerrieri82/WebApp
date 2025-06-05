@@ -1,149 +1,133 @@
-﻿import { forModel } from "@eusoft/webapp-jsx";
-import type { IContentInfo, IContentOptions, IResultContainer, SingleSelector } from "@eusoft/webapp-ui";
-import { Content, ObjectEditor, arrayItemsSource, required, validateWhen } from "@eusoft/webapp-ui";
-import type { ISaleCircuitListView, ISalePointListView } from "../entities/Commands";
-import { UserAccountType } from "../entities/Commands";
-import { Authorize } from "../services/Authorize";
-import { type ContextEntityFeature, type ContextEntityType, context } from "../services/Context";
-import { Bind } from "@eusoft/webapp-core";
+﻿import { Class, forModel } from "@eusoft/webapp-jsx";
+import { Action, Content, formatCurrency, formatDate, formatText, formatTextSimple, InputField, MaterialIcon, NumberEditor, type IContentInfo } from "@eusoft/webapp-ui";
+import { paymentService } from "../../abstraction/IPaymentService";
+import { OrderType, PaymentMethod, SortDirection, TransactionType, UserAccountType, type Guid, type IPaymentCardInfo, type ITransactionView } from "../../entities/Commands";
+import { Authorize } from "../../services/Authorize";
+import { context } from "../../services/Context";
+import { apiClient } from "../../services/PmApiClient";
+import "./CheckBalancePage.scss";
+import { Field } from "../../components/Field";
+import { WithContext } from "../../services/WithContext";
+import { StatusTag } from "../../components/StatusTag";
+import { formatCardStatus } from "../../helpers/Format";
+import { template } from "@eusoft/webapp-core";
 
-export interface IContextSelectorArgs {
 
-    type: ContextEntityType;
-
-    feature?: ContextEntityFeature;
+export interface ICheckBalancePageArgs {
+    cardCode?: string;
+    walletId?: Guid;
 }
 
-
-export class ContextSelectorPage extends Content<IContextSelectorArgs> implements IResultContainer<boolean> {
+export class CheckBalancePage extends Content<ICheckBalancePageArgs> {
 
     constructor() {
+
         super();
 
-        this.init(ContextSelectorPage, {
-            title: "select-context",
+        this.init(CheckBalancePage, {
+            name: CheckBalancePage.info.name,
+            title: "check-balance",
             style: ["panel"],
-            features: [Authorize({ accountType: UserAccountType.Business })],
-            actions: [{
-                name: "select",
-                text: "select",
-                executeAsync: ()=> this.selectAsync()
-            }],
             body: forModel(this, m => <>
-                <ObjectEditor<this>
-                    commitMode="auto-inplace"
-                    inputField={{ style: "filled" }}
-                    style="vertical"
-                    ref={m.editor}
-                    value={m}
 
-                    builder={bld => <>
-                        {bld.singleSelector(a => a.saleCircuit, {
-                            label: "sale-circuit",
-                            editor: {
-                                emptyItem: "[select]",
-                                itemsSource: arrayItemsSource(() => this.saleCircuitList, i => i.name)
-                            }
-                        })}
-                        {bld.singleSelector(a => a.salePoint, {
-                            label: "sale-point",
-                            validators: [validateWhen(()=> this.contextType == "sale-point", required)],
-                            editor: {
-             
-                                itemsSource: arrayItemsSource(() => this.getSalePoints(), i => i.name)
-                            }
-                        })}
-                    </>}
-                />
+                <div className="balance">€ {formatCurrency(m.cardInfo.balance)}</div>
+                <div className="card">
+                    <Field label="card-number">{m.code}</Field>
+                    <Field label="owner">{m.cardInfo.customerFullName}</Field>
+                    <Field label="emitted-on">{formatDate(m.cardInfo.emissionTime, formatTextSimple("format-date-time") as string)}</Field>
+                    <Field label="card-state">
+                        <StatusTag {...formatCardStatus(m.cardInfo.cardStatus)} />
+                    </Field>
+                </div>
+                {m.transactions && <div className="trans-list">
+                    <h3>{formatText("last-transactions")}</h3>
+                    {m.transactions.forEach(a => <div>
+                        <Class name="green" condition={a.type == TransactionType.Charge} />
+                        <MaterialIcon name={a.type == TransactionType.Buy ? "shopping_cart" : "arrow_circle_up"} />
+                        <div className="main">
+                            <div className="name">
+                                {a.type == TransactionType.Buy ? a.salePoint.name : formatText("recharge")}
+                            </div>
+                            <div className="time">
+                                {formatDate(a.time, formatTextSimple("format-date-time") as string)}
+                            </div>
+
+                        </div>
+                        <div className="amount">
+                            {a.type == TransactionType.Buy ? "-" : ""}
+                            € {formatCurrency(a.amount)}
+                        </div>
+                    </div>)}
+                </div>}
+                <Action type="global" onExecuteAsync={m.checkAsync}>
+                    check-new
+                </Action>
             </>),
-        } as IContentOptions<object>);
-
-
-        this.onChanged("saleCircuit", () => {
-            this.refreshSelector("salePoint");
+            features: [
+                Authorize({ accountType: UserAccountType.Business }),
+                WithContext("sale-circuit")
+            ]
         });
-
     }
 
-    protected refreshSelector(name: keyof this & string) {
 
-        this.editor?.getPropEditor<SingleSelector<unknown, unknown>>(name)?.refreshAsync();
-    }
 
-    override async onLoadAsync(args: IContextSelectorArgs) {
+    override async onLoadAsync(args: ICheckBalancePageArgs) {
 
-        await context.refreshAsync();
+        this.code = args.cardCode;
 
-        this.contextType = args.type;
+        this.cardInfo = await apiClient.executeAsync("GetCardInfo", { cardCode: args.cardCode });
 
-        this.contextFeature = args.feature;
+        if (this.cardInfo?.walletId) {
 
-        this.saleCircuitList = context.saleCircutList;
+            this.transactions = (await apiClient.executeAsync("ListTransactions", {
+                fromWalletId: this.cardInfo.walletId,
+                toWalletId: this.cardInfo.walletId,
+                saleCircuitId: context.saleCircuit.id,
+                sort: {
+                    direction: SortDirection.Descending,
+                    property: "Time"
+                },
+                pagination: {
+                    limit: 10,
+                    offset: 0
+                }
+            }))?.items;
 
-        this.saleCircuit = context.saleCircutList?.find(a => a.id == context.saleCircuit?.id) ?? context.saleCircutList[0];
+        }
+        else
+            this.transactions = null;
 
         return true;
     }
 
-    getSalePoints() {
 
-        return this.saleCircuit?.merchants.map(a=> a.salePoints).flat().filter(a => {
-            if (this.contextType == "sale-point" && this.contextFeature !== undefined)
-                return (a.type & this.contextFeature) != 0;
-            return true;
-        })
-    }
+    override async onLoadArgsAsync(args: ICheckBalancePageArgs) {
 
-    async selectAsync() {
-
-        if (!await this.editor.validateAsync())
-            return;
-
-        if (!this.salePoint && this.contextType == "sale-point")
-            return;
-
-        context.saleCircuit = this.saleCircuit ? {
-            name: this.saleCircuit?.name,
-            id: this.saleCircuit?.id
-        } : undefined;
-
-        context.salePoint = this.salePoint ? {
-            name: this.salePoint?.name,
-            id: this.salePoint?.id
-        } : undefined;
-
-        if (this.salePoint) {
-
-            const merchant = this.saleCircuit.merchants.find(a => a.merchant?.id == this.salePoint.merchantId);
-            context.merchant = { ...merchant.merchant };
+        if (!args.cardCode) {
+            const card = await paymentService.readCardAsync({});
+            if (!card?.code)
+                return false;
+            args.cardCode = card.code;
         }
-
-
-        context.save();
-
-        this.result = true;
-
-        await this.host.closeAsync();
+        return true;
     }
 
-    editor: ObjectEditor<this>;
+    async checkAsync() {
+        const args = {}
+        await this.onLoadArgsAsync(args);
+        await this.onLoadAsync(args);
+    }
 
-    contextType: ContextEntityType;
-
-    contextFeature: ContextEntityFeature;
-
-    saleCircuit: ISaleCircuitListView;
-
-    salePoint: ISalePointListView;
-
-    saleCircuitList: ISaleCircuitListView[];
-
-    result = false;
+    cardInfo: IPaymentCardInfo;
+    code: string;
+    transactions: ITransactionView[];
 
     static override info = {
-        name: "context-selector",
-        route: "/context",
-        icon: "",
-        factory: () => new ContextSelectorPage()
+        name: "check-balance-card",
+        route: "/cards/balance",
+        factory: () => new CheckBalancePage()
     } as IContentInfo;
 }
+
+export default CheckBalancePage;

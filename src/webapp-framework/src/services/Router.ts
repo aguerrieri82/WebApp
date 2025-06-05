@@ -175,6 +175,9 @@ export class Router {
 
     protected async popStateAsync(state: IRouteState, transition = "pop") {
 
+        if (!state)
+            return;
+
         this._activeIndex = state.historyIndex;
 
         const entry = this._entries[state.entryIndex];

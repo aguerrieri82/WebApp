@@ -1,17 +1,18 @@
 import { Action, Content, IContentInfo } from "@eusoft/webapp-ui";
 import { Foreach, Template, Text, JsxNode, forModel } from "@eusoft/webapp-jsx";
-import { Behavoir, Bind, ITemplateContext, OptionsFor, TemplateBuilder, TwoWays, propOf } from "@eusoft/webapp-core";
+import { Behavoir, Bind, ITemplateContext, OptionsFor, TemplateBuilder, TwoWays, USE, propOf } from "@eusoft/webapp-core";
 import { router } from "@eusoft/webapp-framework";
+import { BindValue } from "@eusoft/webapp-core";
 
 function Log(props: { message: string }) {
 
-    console.log(props.message);
+    console.log("log", props.message);
 }
 function Bold(props: { content: JsxNode<string> }) {
-    return <>{props.content == "" ? <Text>No input text</Text> : <strong>
+    return <div>{props.content == "" ? <Text>No input text</Text> : <strong>
         <Blink time={100} color="red" />
         {props.content}
-    </strong>}</>;
+    </strong>}</div>;
 }
 
 class Blink extends Behavoir<OptionsFor<Blink>> {
@@ -19,11 +20,15 @@ class Blink extends Behavoir<OptionsFor<Blink>> {
     attach(ctx: ITemplateContext<unknown>) {
 
         const doBlink = () => {
-             
-            if (ctx.element.style.background == "")
-                ctx.element.style.background = this.color;
+            console.log(this.color);
+
+            const el = ctx.element.parentElement as HTMLElement;
+            if (!el.style)
+                return;
+            if (el.style.background == "")
+                el.style.background = this.color;
             else
-                ctx.element.style.background = "";
+                el.style.background = "";
 
             if (!this._isDetach)
                 setTimeout(doBlink, this.time)
@@ -37,7 +42,7 @@ class Blink extends Behavoir<OptionsFor<Blink>> {
     color: string;
 }
  
-function DoBlink(props: { time: number, color: string }) {
+function DoBlink(props: { time: number, color: string}) {
 
     return (t: TemplateBuilder<any>) => {
 
@@ -68,6 +73,8 @@ export class SecondPage extends Content {
 
         this.text = "yellow2";
 
+        var self = this;
+
         const content = forModel({
 
             text: "main text",
@@ -80,32 +87,31 @@ export class SecondPage extends Content {
                 alert("I'm back");
             }
 
-        }, m => <Template name="SecondPage">
+        }, m => <>
             <div>
                 <Input text={Bind.twoWays(m.text)} />
                 <Input text={Bind.twoWays(this.text)} /> 
                 <Log message={m.text} />
 
-                <Action onExecuteAsync={() => m.goBack()}>
+                <Action onExecuteAsync={m.goBack}>
                     {m.text ? "Back: " + (m.text) : "Back"}
                 </Action>
                 <Action onExecuteAsync={() => this.showText()}>
                     <Bold>{"Show Text" + m.text[0]}</Bold>
                 </Action>
+
                 <ul>
-                    <Foreach src={m.items}>
-                        {i => <li style-margin="16px" text={i.name}>
-                            <Blink time={500} color={m.text} />
-                        </li>}
-                    </Foreach>
+                    {m.items.forEach(i => <li style-margin="16px" text={i.name}>
+                        <Blink time={500} color={m.text} />
+                    </li>)}
                 </ul>
             </div>
             <Bold>{m.text}</Bold>
-        </Template>);
+        </>);
 
         propOf(content.model, "text").subscribe(a => {
-            console.log(a);
-        });
+            console.log("sub2", a);
+        }); 
 
         this.init(SecondPage, {
             name: "second",
@@ -119,18 +125,13 @@ export class SecondPage extends Content {
         alert(this.text);
     }
 
-    protected updateOptions() {
 
-        this.bindOptions();
-    }
 
     text: string;
 
     static override info = {
         name: "second-page",
         route: "/second",
-        factory: () => secondPage
+        factory: () => new SecondPage()
     } as IContentInfo;
 }
-
-const secondPage = new SecondPage();

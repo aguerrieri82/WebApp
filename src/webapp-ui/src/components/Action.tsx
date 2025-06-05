@@ -97,11 +97,11 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
     isExecuting: boolean;
 }
 
-/*
+
 configureBindings(Action, {
     "onExecuteAsync": "action",
 });
-*/
+
 
 export function createAction(action: IAction, style?: ComponentStyle) {
 

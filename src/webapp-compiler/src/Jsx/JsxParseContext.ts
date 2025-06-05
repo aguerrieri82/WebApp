@@ -1,10 +1,9 @@
-import traverse, { NodePath, Visitor } from "@babel/traverse";
-import { JSXElement, Expression, JSXEmptyExpression, Identifier, ImportDeclaration, JSXFragment } from "@babel/types";
+
+import { JSXElement, Expression, JSXEmptyExpression, Identifier, ImportDeclaration, JSXFragment, ThisExpression, identifier } from "@babel/types";
 import { BindMode, ITemplateAttribute, ITemplateElement, TemplateNodeType } from "../Abstraction/ITemplateNode.js";
 import { CORE_MODULE, TemplateAttributes } from "../Consts.js";
 import type { JsxCompiler } from "../JsxCompiler.js";
 import { toKebabCase } from "../TextUtils.js";
-import * as parser from "@babel/parser";
 import TransfromNotModelRef from "./Transform/TransfromNotModelRef.js";
 import JsxErrorHandler from "./Elements/JsxErrorHandler.js";
 import JsxOpenHandler from "./Elements/JsxOpenHandler.js";
@@ -18,7 +17,14 @@ import TransformEqualsHandler from "./Transform/TransformEqualsHandler.js";
 import JsxExpressionHandler from "./Elements/JsxExpressionHandler.js";
 import TransformNestedTemplateHandler from "./Transform/TransformNestedTemplateHandler.js";
 import ForeachExpressionHandler from "./Expression/ForeachExpressionHandler.js";
-import { debug } from "console";
+import JsxSpreadHandler from "./Elements/JsxSpreadHandler.js";
+
+import traverse, { NodePath, Visitor } from "@babel/traverse";
+import * as parser from "@babel/parser";
+interface ICompileError {
+    path: NodePath;
+    message: string;
+}
 
 
 type JsxNodeHandler = {
@@ -43,6 +49,7 @@ export class JsxParseContext {
         this.handlers.push(JsxTextHandler);
         this.handlers.push(JsxAttributeHandler);
         this.handlers.push(JsxExpressionHandler);
+        this.handlers.push(JsxSpreadHandler);
         this.handlers.push(ArrowTemplateExpressionHandler);
         this.handlers.push(ConditionalExpressionHandler);
         this.handlers.push(AndExpressionHandler);
@@ -144,6 +151,43 @@ export class JsxParseContext {
 
         return this.rootElement;
 
+    }
+
+    findThisBindind(path: NodePath<ThisExpression>) {
+        let curPath: NodePath = path;
+
+        let arrowFound = false;
+        let jsxFound = false;
+
+        while (true) {
+
+            curPath = curPath.parentPath;
+
+            if (!curPath)
+                return;
+
+            if (curPath.isArrowFunctionExpression() && !jsxFound)
+                arrowFound = true;
+
+            if (curPath.isFunctionExpression() || curPath.isFunctionDeclaration())
+                return;
+            /*
+            if (curPath.isJSXExpressionContainer())
+                jsxFound = true;
+            */
+
+            if (curPath.isClassMethod())
+                break;
+        }
+
+        if (arrowFound) {
+            return {
+                identifier: identifier("this"),
+                kind: "unknown",
+                path: curPath,
+                scope: curPath.scope
+            };
+        }
     }
 
     findBuilder(model: Identifier, includeCurrent = false) {
@@ -421,6 +465,17 @@ export class JsxParseContext {
             this.usedImports.push(name);
         return name;
     }
+
+    error(path: NodePath, message: string) {
+
+        this.errors.push({
+            path,
+            message
+        });
+        return undefined;
+    }
+
+    errors: ICompileError[] = [];
 
     rootElement: ITemplateElement;
 

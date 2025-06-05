@@ -9,7 +9,7 @@
       "program": "index.js",
       "args": [ "-test" ],
       "env": {
-        "DEBUG": "babel"
+        "DEBUG": "_babel"
       },
       "cwd": "${workspaceFolder}/../../dist/webapp-compiler/",
       "console": "externalTerminal"

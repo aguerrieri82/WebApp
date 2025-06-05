@@ -51,11 +51,11 @@ export const ContentTemplates: TemplateMap<Content> = {
         </footer>
     </div>)
 
-}			
+}
 export class Content<
     TArgs extends {} = unknown,
     TOptions extends IContentOptions<TArgs> = IContentOptions<TArgs>,
-    >
+>
 
     extends Component<TOptions> implements IContent<TArgs> {
 
@@ -70,9 +70,10 @@ export class Content<
             name: (this.constructor as IContentConstructor).info?.name,
             ...options
         });
+
     }
 
-    async loadAsync(host: IContentHost, args?: TArgs)  {
+    async loadAsync(host: IContentHost, args?: TArgs) {
 
         let isValid = true;
 
@@ -87,6 +88,17 @@ export class Content<
             if (!args)
                 args = {} as TArgs;
 
+
+            if (this.features) {
+
+                for (const feature of this.features) {
+                    if (!await feature(this)) {
+                        isValid = false;
+                        return;
+                    }
+                }
+            }
+
             if (!await this.onLoadArgsAsync(args)) {
                 isValid = false;
                 return;
@@ -94,14 +106,6 @@ export class Content<
 
             await this.onLoadAsync(args);
 
-            if (this.features) {
-
-                for (const feature of this.features)
-                    if (!await feature(this)) {
-                        isValid = false;
-                        break;
-                    }
-            }
         }, { name: "load page " + stringOrUndef(this.name) });
 
         if (isValid)
@@ -109,7 +113,7 @@ export class Content<
         else
             this._loadState = "error";
 
-        return isValid; 
+        return isValid;
     }
 
     protected async onLoadAsync(args?: TArgs) {
@@ -124,7 +128,7 @@ export class Content<
     async onOpenAsync(): Promise<unknown> {
 
         return Promise.resolve();
-        
+
     }
 
     async onCloseAsync(): Promise<unknown> {
@@ -160,7 +164,7 @@ export class Content<
     static info: IContentInfo;
 }
 
-export function content<TArgs extends {}, TContent extends IContent<TArgs>>(info: IContentInfo<TArgs, TContent>, args: TArgs) : IContentInstance<TArgs, TContent>;
+export function content<TArgs extends {}, TContent extends IContent<TArgs>>(info: IContentInfo<TArgs, TContent>, args: TArgs): IContentInstance<TArgs, TContent>;
 
 export function content(ref, args) {
     return {

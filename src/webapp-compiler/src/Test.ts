@@ -18,7 +18,7 @@ export async function runTest2() {
 
     await compiler.compileAsync("../../src/webapp-compiler/test/Index.tsx", null, true);
 
-        debugger; 
+    debugger; 
 
     stdin.read();
 }

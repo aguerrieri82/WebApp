@@ -6,8 +6,8 @@ export function JsxErrorHandler(ctx: JsxParseContext, stage: "enter", path: Node
     if (stage != "enter")
         return;
 
-    if (path.isJSXSpreadAttribute() || path.isJSXSpreadChild())
-        throw path.buildCodeFrameError("Spread operator not supported in tsx/jsx (es. <div {...props}/>");
+    if (path.isJSXSpreadChild())
+        return ctx.error(path, "Spread child operator not supported in tsx/jsx (es. <div>{...prop}</div>)");
 }
 
 export default JsxErrorHandler;

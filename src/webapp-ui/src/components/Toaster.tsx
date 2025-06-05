@@ -1,7 +1,7 @@
-﻿import { mount } from "@eusoft/webapp-core/src/TemplateBuilder";
-import { forModel } from "@eusoft/webapp-jsx/src/Helpers";
+﻿import { mount } from "@eusoft/webapp-core";
+import { forModel } from "@eusoft/webapp-jsx";
 import type { ViewNode } from "../Types";
-import type { ComponentStyle } from "@eusoft/webapp-core/src/abstraction/IComponentOptions";
+import type { ComponentStyle } from "@eusoft/webapp-core";
 import { buildStyle, delayAsync } from "@eusoft/webapp-core";
 import "./Toaster.scss";
 import { Class } from "@eusoft/webapp-jsx";

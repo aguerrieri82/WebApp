@@ -29,11 +29,20 @@ export class JsxCompiler extends BaseCompiler {
         this.type = "Jsx";
     }
 
-    protected parse(template: NodePath<JSXElement | JSXFragment>): ITemplateElement {
+    protected parse(template: NodePath<JSXElement | JSXFragment>, toImport: string[]): ITemplateElement {
 
         const ctx = new JsxParseContext(this);
 
-        return ctx.parse(template);
+        const result = ctx.parse(template);
+
+        for (const error of ctx.errors)
+            this.error(error.message, error.path.node.loc.start);
+
+        for (const imp of ctx.usedImports)
+            if (!toImport.includes(imp))
+                toImport.push(imp);
+
+        return result;
     }
 
     onReplaces(replaces: ITextReplacement[]) {
@@ -45,6 +54,7 @@ export class JsxCompiler extends BaseCompiler {
 
         const js = typeof input == "string" ? input : await readAllTextAsync(input);
         const coreImports: string[] = [];
+        const toImport: string[] = [];
 
         const getIndentLevel = (start: number) => {
 
@@ -81,7 +91,7 @@ export class JsxCompiler extends BaseCompiler {
 
                 const dec = path.findParent(a => a.isImportDeclaration()) as NodePath<ImportDeclaration>;
 
-                if (dec.node.source?.value == CORE_MODULE) {
+                if (dec.node.source?.value.startsWith(CORE_MODULE)) {
 
                     const local = path.get("local").node.name;
                     const imported = (path.get("imported").node as Identifier)?.name;
@@ -102,10 +112,11 @@ export class JsxCompiler extends BaseCompiler {
 
         const replaces: ITextReplacement[] = [];
 
-        const toImport = ["USE", "cleanProxy", "template", "Bind"].filter(a => coreImports.indexOf(a) == -1);
+        //TODO: import are written before the parse, so i don't have toImport arrat
+        const toImport2 = ["use", "cleanProxy", "template", "Bind"].filter(a => coreImports.indexOf(a) == -1);
 
-        if (toImport.length > 0)
-            ctx.writer.writeImport("@eusoft/webapp-core", ...toImport);
+        if (toImport2.length > 0)
+            ctx.writer.writeImport("@eusoft/webapp-core", ...toImport2);
 
         replaces.push({
             src: {
@@ -123,7 +134,7 @@ export class JsxCompiler extends BaseCompiler {
             if (temp.node.start != curPos)
                 ctx.writer.writeRaw(js.substring(curPos, temp.node.start));
 
-            const tempNode = this.parse(temp);
+            const tempNode = this.parse(temp, toImport);
 
             const curLen = ctx.writer.length;
 

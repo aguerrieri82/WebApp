@@ -37,7 +37,7 @@ export class ItemPickerContent<TItem, TFilter> extends Content<unknown, IItemPic
                 }
 
                 <ListView createItemView={item => m.createItemView(item)}>
-                    {this.items}
+                    {m.items}
                 </ListView>
             </div>),
 

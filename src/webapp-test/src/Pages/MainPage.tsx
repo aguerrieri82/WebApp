@@ -1,10 +1,9 @@
-
 import { Action, Content, IContentInfo } from "@eusoft/webapp-ui";
-import { secondPage } from "./SecondPage";
 import { router } from "@eusoft/webapp-framework";
+import { SecondPage } from "./SecondPage";
 
 
-class MainPage extends Content {
+export class MainPage extends Content {
 
     constructor() {
 
@@ -18,7 +17,7 @@ class MainPage extends Content {
                 content: this.prop("actionLabel"),
                 onExecuteAsync: async () => {
                     this.actionLabel = "cambiato";
-                    router.navigatePageAsync(secondPage);
+                    router.navigatePageAsync("second-page");
                 }
             })
         });
@@ -30,9 +29,6 @@ class MainPage extends Content {
     static override info = {
         name: "main-page",
         route: "/",
-        factory: () => mainPage
+        factory: () => new MainPage()
     } as IContentInfo;
 }
-
-
-export const mainPage = new MainPage();

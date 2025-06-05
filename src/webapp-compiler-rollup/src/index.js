@@ -19,9 +19,9 @@ export default function (options) {
 
                 let replace = [];
 
-                compiler.error = msg => this.error(msg);
+                compiler.error = (message, loc) => this.error({ message, loc });
 
-                compiler.warning = msg => this.warn(msg);
+                compiler.warning = (message, loc) => this.warn({ message, loc });
 
                 compiler.onReplaces = v => replace = v;
 

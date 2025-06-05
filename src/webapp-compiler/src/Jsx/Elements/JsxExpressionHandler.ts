@@ -5,7 +5,7 @@ import { toKebabCase } from "../../TextUtils.js";
 
 export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
 
-    if (stage != "enter" || path.isJSXFragment() || path.isJSXElement() || !path.isExpression())
+    if (stage != "enter" || path.isJSXFragment() || path.isJSXElement() || path.isJSXSpreadAttribute() || !path.isExpression())
         return;
 
     if (!ctx.curElement && !ctx.curAttribute)
@@ -19,7 +19,7 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
     const bindMode = ctx.getHelper(path)?.name as BindMode;
 
     let createBind = !ctx.isBinding(path) &&
-        ctx.hasModelRefs(path) &&
+        (bindMode || ctx.hasModelRefs(path)) &&
         !path.isArrayExpression() &&
         ctx.isBindable() &&
         bindMode != "no-bind" &&
@@ -41,6 +41,8 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
             value = "Bind.exp(" + ctx.curModel.name + " => " + value + ")";
         else
             value = ctx.curModel.name + " => " + value;
+
+        ctx.replaceNode(path, value);
     }
 
     if (ctx.curAttribute) {

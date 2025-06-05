@@ -13,12 +13,15 @@ export default defineConfig({
     css: {
         preprocessorOptions: {
             scss: {
-                additionalData: `@import "/src/_vars.scss";\n`
+
             }
         }
     },
     esbuild: {
         jsx: "preserve"
+    },
+    build: {
+        outDir: 'build',
     },
     publicDir: 'public',
     plugins: [webapp()],

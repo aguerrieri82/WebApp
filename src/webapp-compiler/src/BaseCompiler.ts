@@ -9,10 +9,16 @@ import { HandleResult, ITemplateHandler } from "./Abstraction/ITemplateHandler.j
 import * as handlers from "./Handlers/index.js";
 import { TemplateWriter } from "./Text/TemplateWriter.js";
 
+interface IErrorLocation {
+    line: number;
+    column: number;
+}
+
 export enum CompilerOutMode {
     Always,
     IfNew
 }
+
 export enum CompilerLanguage {
     Typescript,
     Javascript
@@ -61,11 +67,11 @@ export abstract class BaseCompiler<TOptions extends ICompilerOptions = ICompiler
         return ctx.writer.out.toString();
     }
 
-    error(msg: string) {
+    error(msg: string, loc?: IErrorLocation) {
         stderr.write("ERR: " + msg + "\n");
     }
 
-    warning(msg: string) {
+    warning(msg: string, loc?: IErrorLocation) {
         if (!this.options.emitWarning)
             return;
         stderr.write("WARN: " + msg + "\n");
