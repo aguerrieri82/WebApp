@@ -1,4 +1,4 @@
-import { type Class, type ComponentStyle } from "@eusoft/webapp-core";
+import { type ComponentStyle } from "@eusoft/webapp-core";
 import { type IContentOptions, type Content, type IContentInfo, type IContent, type IFeature, type LocalString, type IAction, formatText } from "@eusoft/webapp-ui";
 import { type Extra } from "./Helper";
 

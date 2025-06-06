@@ -1,4 +1,4 @@
-import { type BindExpression, type Class } from "@eusoft/webapp-core";
+import { type BindExpression } from "@eusoft/webapp-core";
 import { type DataType, type IEditor, type IItemsSource, type ViewNode } from "@eusoft/webapp-ui";
 
 type ItemType<TValue, Multiple> = Multiple extends true ? (TValue extends Array<infer TItem> ? TItem : never) : TValue

@@ -1,4 +1,4 @@
-import type { BindValue, ITemplateProvider, ITemplate, InputValueMode, IBehavoir, WritableKeys, EmptyConstructor, IComponent, TemplateBuilder } from "@eusoft/webapp-core";
+import type { BindValue, ITemplateProvider, ITemplate, InputValueMode, IBehavoir, IComponent, TemplateBuilder } from "@eusoft/webapp-core";
 
 export interface ITemplateContext<TModel> {
     builder: TemplateBuilder<TModel>;

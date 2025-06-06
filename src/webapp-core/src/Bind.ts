@@ -138,13 +138,9 @@ export namespace Bind {
 
 export type TwoWays<T> = T;
 
-type ComponentOrBehavoir<T> = T extends IComponent ?
-    IComponentConstructor<unknown, T> :
-    IBehavoirConstructor<T>;
-
 export function configureBindings<
     T extends IComponent | IBehavoir<HTMLElement, unknown>>(
-        component: ComponentOrBehavoir<T>,
+        component: Class<T>,
         values: Partial<Record<keyof T & string, BindMode>>
 ) {
 

@@ -344,7 +344,8 @@ export class JsxParseContext {
         const memberName = obj.node.name;
 
         const bind = path.scope.getBinding(memberName);
-        if (!bind.path.isVariableDeclarator())
+
+        if (!bind?.path.isVariableDeclarator())
             return;
 
         let isTrack;

@@ -1,5 +1,4 @@
 import { Action, Content, type IAction, type IContentOptions, type IItemsSource, ItemView, ListView, type LocalString, type ViewNode } from "@eusoft/webapp-ui";
-import { type Class } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
 import router from "../services/Router";
 import "./ItemPickerContent.scss"

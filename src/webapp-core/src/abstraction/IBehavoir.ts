@@ -14,7 +14,7 @@ export interface IBehavoirConstructor<
     TModel,
     TComp extends IBehavoir<HTMLElement, TModel> = IBehavoir<HTMLElement, TModel>> {
 
-    new(options: TModel): TComp;
+    new(options?: TModel): TComp;
 
     [BIND_MODES]?: Record<string, BindMode>;
 }
