@@ -49,3 +49,13 @@ export function compareArray<T>(oldValue: T[], newValue: T[], handler: ICompareA
             handler.onAdded(nv, i);
     });
 }
+
+declare global {
+    interface Array<T> {
+        set(index: number, value: T): void;
+    }
+}
+
+Array.prototype.set = function <T>(this: T[], index: number, value: T) {
+    this[index] = value;
+}

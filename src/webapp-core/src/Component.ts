@@ -1,8 +1,8 @@
 import { type IPropertyChangedHandler, isObservableProperty } from "./abstraction/IObservableProperty";
 import type { CatalogTemplate } from "./abstraction/ITemplateProvider";
-import { COMPONENT, type IComponent, type IComponentConstructor, isComponent } from "./abstraction/IComponent";
+import { COMPONENT, type IComponent,  isComponent } from "./abstraction/IComponent";
 import { enumOverrides, getTypeName, isClass, objectHierarchy, setTypeName } from "./utils/Object";
-import { attribute, bindTwoWays, getOrCreateProp } from "./Properties";
+import { bindTwoWays, getOrCreateProp } from "./Properties";
 import { generateRandomId, toKebabCase } from "./utils/String";
 import type { IBound } from "./abstraction/IBound";
 import type {ComponentStyle, IComponentOptions } from "./abstraction/IComponentOptions";

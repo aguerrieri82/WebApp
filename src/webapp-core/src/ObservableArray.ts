@@ -49,6 +49,13 @@ export function createObservableArray<T>(value: T[]): IObservableArray<T> {
         return retValue;
     }
 
+    newValue.set = function (this: IObservableArray<T>, index: number, value: T) {
+
+        const old = newValue[index];    
+        newValue.raise(a => a.onItemReplaced && a.onItemReplaced(value, old, index));
+        newValue.raise(a => a.onChanged && a.onChanged());
+    }
+
     newValue.push = function (this: IObservableArray<T>, ...items) {
 
         const curIndex = newValue.length;
