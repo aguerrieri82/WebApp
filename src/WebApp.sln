@@ -14,6 +14,9 @@ EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "WebApp.Compiler.Rollup", "webapp-compiler-rollup\WebApp.Compiler.Rollup.esproj", "{6CB05A90-7387-47C4-AA56-99CF786A2204}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{B688CA83-7B86-4E71-B87F-2CDBAD31A638}"
+	ProjectSection(SolutionItems) = preProject
+		..\scripts\Fix-Git-Case.ps1 = ..\scripts\Fix-Git-Case.ps1
+	EndProjectSection
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "WebApp.UI", "webapp-ui\WebApp.UI.esproj", "{85306FB0-18F7-46DE-A0A5-17AAC56ED893}"
 EndProject
