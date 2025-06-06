@@ -51,27 +51,27 @@ foreach ($file in $files) {
 
     Write-Host "Checking: $relativePathGit"
 
-    # Find the tracked file ignoring case
-    $trackedFile = $trackedFiles | Where-Object { $_ -ieq $relativePathGit }
+    # Find the tracked file ignoring case, but ensure only the first match is used
+$trackedFile = ($trackedFiles | Where-Object { $_ -ieq $relativePathGit } | Select-Object -First 1)
 
-    if ($trackedFile) {
-        if ($trackedFile -cne $relativePathGit) {
-            Write-Host " -> Mismatch detected (Git: '$trackedFile', FS: '$relativePathGit'). Renaming in Git..."
-            git  mv -f "$trackedFile" "$relativePathGit"
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host " -> Renamed successfully."
-                $RenamedCount++
-            } else {
-                Write-Host " -> Rename failed!"
-            }
+if ($trackedFile) {
+    if ($trackedFile -cne $relativePathGit) {
+        Write-Host " -> Mismatch detected (Git: '$trackedFile', FS: '$relativePathGit'). Renaming in Git..."
+        git mv -f "$trackedFile" "$relativePathGit"
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host " -> Renamed successfully."
+            $RenamedCount++
         } else {
-            Write-Host " -> Casing already matches."
-            $SkippedCount++
+            Write-Host " -> Rename failed!"
         }
     } else {
-        Write-Host " -> File not tracked by Git. Skipping."
+        Write-Host " -> Casing already matches."
         $SkippedCount++
     }
+} else {
+    Write-Host " -> File not tracked by Git. Skipping."
+    $SkippedCount++
+}
 
     Write-Host ""
 }
