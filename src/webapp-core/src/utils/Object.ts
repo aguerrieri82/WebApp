@@ -1,10 +1,6 @@
-import type { Class } from "../abstraction";
-
 const TYPE_NAME = Symbol.for("@typeName");
 
-type KeyOfType<TObj, TKey> = {
-    [P in keyof TObj & string]: TObj[P] extends TKey ? P : never
-}[keyof TObj & string];
+
 
 export type WithTypeName = { [TYPE_NAME]?: string } & (object | Function);
 

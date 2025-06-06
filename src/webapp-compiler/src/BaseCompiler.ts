@@ -30,6 +30,7 @@ export interface ICompilerOptions {
     generateOutput?: CompilerOutMode;
     emitWarning?: boolean;
     language?: CompilerLanguage;
+    autoTrack?: (string | RegExp)[];
 }
 
 export abstract class BaseCompiler<TOptions extends ICompilerOptions = ICompilerOptions>  {
@@ -38,11 +39,13 @@ export abstract class BaseCompiler<TOptions extends ICompilerOptions = ICompiler
 
     constructor(options?: TOptions) {
 
-        this.options = options ?? {
+        this.options = {
             language: CompilerLanguage.Javascript,
             emitWarning: true,
             generateOutput: CompilerOutMode.Always,
-            includeWhitespace: false
+            includeWhitespace: false,
+            autoTrack: ["state"],
+            ...options
         } as TOptions;
 
         const activeHandlers = handlers as Record<string, { new(): ITemplateHandler }>;

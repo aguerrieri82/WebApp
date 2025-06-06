@@ -8,6 +8,7 @@
   "scripts": {
     "publish": "build-utils --publish",
     "clean": "build-utils --clean",
+    "compile": "tsc",
     "build:watch": "build-utils --env:dev --watch",
     "build:dev": "build-utils --env:dev",
     "build:prod": "build-utils --env:prod",

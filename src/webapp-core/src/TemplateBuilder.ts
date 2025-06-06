@@ -1,4 +1,4 @@
-import { BIND_MODE, BIND_MODES, COMPONENT, type Class, type FunctionLike, type ServiceType, type StringLike, isBindExpression, isComponent } from "./abstraction";
+import { BIND_MODE, BIND_MODES, COMPONENT, isBindExpression, isComponent, type ServiceType } from "./abstraction";
 import { type IBehavoir, isBehavoir } from "./abstraction/IBehavoir";
 import type { BindMode, BindValue, BindValueUnchecked, BoundObject, BoundObjectModes } from "./abstraction/IBinder";
 import { isHTMLContainer } from "./abstraction/IHTMLContainer";
@@ -13,7 +13,7 @@ import { getTypeName, isClass, setTypeName, type WithTypeName } from "./utils/Ob
 import { ArrayTemplate, BehavoirCatalog, TemplateCatalog, TextTemplate } from "./Templates";
 import { getComponent } from "./Component";
 import Services from "./Services";
-import { Bind } from "./Bind";
+import { Bind } from "./Bind"; 
 
 
 type TemplateValueMap<TModel, TObj> = {

@@ -1,27 +1,31 @@
 import { Action, Content, IContentInfo } from "@eusoft/webapp-ui";
-import { Foreach, Template, Text, JsxNode, forModel } from "@eusoft/webapp-jsx";
-import { Behavoir, Bind, ITemplateContext, OptionsFor, TemplateBuilder, TwoWays, USE, propOf } from "@eusoft/webapp-core";
+import { Text, JsxNode, forModel } from "@eusoft/webapp-jsx";
+import { Behavoir, Bind, Component, ITemplateContext, OptionsFor, TwoWays, template } from "@eusoft/webapp-core";
 import { router } from "@eusoft/webapp-framework";
-import { BindValue } from "@eusoft/webapp-core";
+import { onChanged } from "@eusoft/webapp-core";
+import {  Style } from "../../../webapp-jsx/src";
+import { Bindable } from "@eusoft/webapp-core";
+import { IComponentOptions } from "@eusoft/webapp-core";
+
+
 
 function Log(props: { message: string }) {
 
     console.log("log", props.message);
 }
 function Bold(props: { content: JsxNode<string> }) {
-    return <div>{props.content == "" ? <Text>No input text</Text> : <strong>
+    return <div>{props.content  == "Show Text " ? <Text>No input text</Text> : <strong>
         <Blink time={100} color="red" />
         {props.content}
-    </strong>}</div>;
+    </strong>}</div>; 
 }
 
 class Blink extends Behavoir<OptionsFor<Blink>> {
 
-    attach(ctx: ITemplateContext<unknown>) {
+    override attach(ctx: ITemplateContext<unknown>) {
 
         const doBlink = () => {
-            console.log(this.color);
-
+   
             const el = ctx.element.parentElement as HTMLElement;
             if (!el.style)
                 return;
@@ -30,8 +34,12 @@ class Blink extends Behavoir<OptionsFor<Blink>> {
             else
                 el.style.background = "";
 
-            if (!this._isDetach)
+            if (!this._isDetach) {
                 setTimeout(doBlink, this.time)
+            }
+            else
+                console.log("Blink detached")
+
         };
 
         doBlink();
@@ -44,7 +52,7 @@ class Blink extends Behavoir<OptionsFor<Blink>> {
  
 function DoBlink(props: { time: number, color: string}) {
 
-    return (t: TemplateBuilder<any>) => {
+    return template(t => {
 
         const timer = setInterval(() => {
 
@@ -59,11 +67,54 @@ function DoBlink(props: { time: number, color: string}) {
                 t.parent.element.style.background = "";
 
         }, props.time);
-    }
+    })
 }
 function Input(props: { text: TwoWays<string> }) {
 
     return <input value={props.text} value-mode="keyup" type="text" checked />
+}
+
+function Counter(props: { label: string }) {
+
+    const state ={
+        count: 1
+    };
+
+    setInterval(() => {
+        state.count++
+    }, 500);
+
+    onChanged(state, "count", v => {
+        if (v == 10)
+            state.count = 0;
+    });
+
+    const showAlert = () => {
+        alert("Hello");
+    }
+
+    return <div on-click={showAlert}>
+        <Style opacity={(state.count / 10).toString()}/>
+        {props.label}: {state.count}
+    </div>;
+}
+
+interface IBlockOptions extends IComponentOptions {
+    text?: Bindable<string>;
+}
+class Block extends Component<IBlockOptions> {
+    constructor(options: IBlockOptions) {
+        super();
+        this.init(Block, {
+            template: forModel<this>(m =>
+                <div>
+                    Block {m.text}
+                </div>),
+            ...options
+        });
+    }
+
+    text: string;
 }
 
 export class SecondPage extends Content {
@@ -73,7 +124,10 @@ export class SecondPage extends Content {
 
         this.text = "yellow2";
 
-        var self = this;
+
+        var block = new Block({
+            text: Bind.external(this, "text")
+        });
 
         const content = forModel({
 
@@ -97,7 +151,7 @@ export class SecondPage extends Content {
                     {m.text ? "Back: " + (m.text) : "Back"}
                 </Action>
                 <Action onExecuteAsync={() => this.showText()}>
-                    <Bold>{"Show Text" + m.text[0]}</Bold>
+                    <Bold>{"Show Text " + (m.text[0] ?? "")}</Bold>
                 </Action>
 
                 <ul>
@@ -107,9 +161,11 @@ export class SecondPage extends Content {
                 </ul>
             </div>
             <Bold>{m.text}</Bold>
+            <Counter label="sto contando" />
+            {block }
         </>);
 
-        propOf(content.model, "text").subscribe(a => {
+        onChanged(content.model, "text", a => {
             console.log("sub2", a);
         }); 
 
@@ -124,8 +180,6 @@ export class SecondPage extends Content {
     showText() {
         alert(this.text);
     }
-
-
 
     text: string;
 

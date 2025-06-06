@@ -51,8 +51,7 @@ export class EditorBuilder<TModel extends TemplateModel, TModelContainer extends
             model: this._options.container,
             template: (t: TemplateBuilder<TModelContainer>) =>
                 t.enter(Bind.exp<TModelContainer, TModel>(m => this._options.model(m)), t => (template as ITemplate<TModel>)(t))
-        }
-        
+        }   
     }
 
     editor<TValue,

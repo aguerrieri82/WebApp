@@ -71,3 +71,14 @@ export async function readAllTextAsync(stream: ReadStream) {
 
     return Buffer.concat(chunks).toString();
 }
+
+export function matchAny(values: (string | RegExp)[], value: string) {
+    if (!values)
+        return;
+
+    return values.some(a => {
+        if (typeof a == "string")
+            return a == value;
+        return a.test(value);
+    });
+}

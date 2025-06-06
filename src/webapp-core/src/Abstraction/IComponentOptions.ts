@@ -1,10 +1,7 @@
-﻿import { type BindMode } from "./IBinder";
-import type { IObservableProperty } from "./IObservableProperty";
+﻿import type { Bindable } from "./IBindable";
 import type { CatalogTemplate } from "./ITemplateProvider";
 
 
-export type Bindable<TValue, TBind extends BindMode = BindMode> =
-    TValue | IObservableProperty<TValue>;
 
 export type ComponentStyle = string | ComponentStyle[];
 

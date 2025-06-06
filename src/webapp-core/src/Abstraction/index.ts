@@ -12,4 +12,3 @@ export * from "./IObservableProperty";
 export * from "./IObservableArray";
 export * from "./IBound";
 export * from "./IService";
-export * from "./Types";

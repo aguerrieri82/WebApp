@@ -1,11 +1,6 @@
-﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.76-alpha">
-  <PropertyGroup Label="Globals">
-    <ProjectGuid>348c8c95-a06f-4e9d-8276-a26ac11ede9a</ProjectGuid>
-  </PropertyGroup>
-  <ItemGroup>
-    <TypeScriptConfiguration Remove="dist\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="dist\**" />
-  </ItemGroup>
+﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.3134461">
+	<PropertyGroup>
+		<ShouldRunBuildScript>false</ShouldRunBuildScript>
+		<ShouldRunNpmInstall>false</ShouldRunNpmInstall>
+	</PropertyGroup>
 </Project>

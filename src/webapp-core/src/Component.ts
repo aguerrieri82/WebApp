@@ -5,17 +5,17 @@ import { enumOverrides, getTypeName, isClass, objectHierarchy, setTypeName } fro
 import { attribute, bindTwoWays, getOrCreateProp } from "./Properties";
 import { generateRandomId, toKebabCase } from "./utils/String";
 import type { IBound } from "./abstraction/IBound";
-import type { Bindable, ComponentStyle, IComponentOptions } from "./abstraction/IComponentOptions";
+import type {ComponentStyle, IComponentOptions } from "./abstraction/IComponentOptions";
 import { Binder } from "./Binder";
 import { type IBindingContainer } from "./abstraction/IBindingContainer";
 import { type IMountListener } from "./abstraction/IMountListener";
 import { type ITemplateContext } from "./abstraction/ITemplateContext";
 import { type IService, SERVICE_TYPE, type ServiceType } from "./abstraction/IService";
 import { type IServiceProvider, type ServiceContainer } from "./abstraction/IServiceProvider";
-import type { CommonKeys } from "./abstraction/Types";
-import { type BindExpression, type BindMode, type BindValueUnchecked } from "./abstraction/IBinder";
-import { BIND_MODES, type IBehavoir, type IHTMLContainer } from "./abstraction";
+import { isExternalBind, type BindExpression, type BindValueUnchecked } from "./abstraction/IBinder";
+import { type Bindable, type IHTMLContainer } from "./abstraction";
 import { buildStyle } from "./utils/Style";
+import { Bind } from "./Bind";
 
 interface ISubscription {
     unsubscribe(): void;
@@ -102,16 +102,24 @@ export abstract class Component<
 
             const dst = this.prop(key);
 
-            if (!this._bounds?.find(a => a.src == value && a.dst == dst)) {
+            this._bounds ??= [];
 
-                if (!this._bounds)
-                    this._bounds = [];
-
+            if (!this._bounds?.find(a => a.src == value && a.dst == dst))
                 this._bounds.push(bindTwoWays(dst, value));
+        }
+        else if (isExternalBind<object, this[TKey]>(value)) {
+
+            const dst = Bind.exp((a: this) => a[key]);
+
+            if (value.mode == "two-ways") {
+                this.bindTwoWays(dst, value.model, value.value);
+            }
+            else {
+                this.bindOneWay(dst, value.model, value.value);
             }
         }
         else
-            this[key] = value;
+            this[key] = value as TValue;
     }
 
     protected updateClass() {
@@ -139,15 +147,21 @@ export abstract class Component<
     }
 
 
-    bindTwoWays<TValue, TDestModel extends object>(src: BindValueUnchecked<this, TValue>, dstModel: TDestModel, dst: BindExpression<TDestModel, TValue>) {
+    bindTwoWays<TValue, TDestModel extends object>(
+        src: BindValueUnchecked<this, TValue>,
+        dstModel: TDestModel,
+        dst: BindExpression<TDestModel, TValue>) {
 
         this.binder.bindTwoWays(src, dstModel, dst, "dstToSrc");
     }
 
 
-    bindOneWay<TValue, TDestModel extends object>(dst: BindValueUnchecked<this, TValue>, srcModel: TDestModel, src: BindExpression<TDestModel, TValue>) {
+    bindOneWay<TValue, TDestModel extends object>(
+        src: BindValueUnchecked<this, TValue>,
+        dstModel: TDestModel,
+        dst: BindExpression<TDestModel, TValue>) {
 
-        this.binder.bindOneWay(dst, srcModel, src);
+        this.binder.bindOneWay(src, dstModel, dst);
     }
 
     prop<TKey extends keyof this & string>(prop: TKey) {
@@ -192,8 +206,6 @@ export abstract class Component<
             delete this._bounds;
         }
 
-        
-
         //TODO problem: if i unmoint a component and remount later i need to keep subs
 
         if (this._subscriptions) {
@@ -230,16 +242,12 @@ export abstract class Component<
     }
 
 
-    @attribute()
     className: string;
 
-    @attribute()
     style: ComponentStyle;
 
-    @attribute()
     visible: boolean;
 
-    @attribute()
     name?: string;
 
     model: never;
@@ -357,16 +365,3 @@ export function registerElement<TComponent extends IComponent>(component: Class<
     return name;
 }
 */
-
-export function configureBindings<T extends IComponent | IBehavoir<HTMLElement, unknown>>(component: IComponentConstructor<unknown, T>, values: Partial< Record<keyof T & string, BindMode>>) {
-
-    let modes = component[BIND_MODES];
-
-    if (!modes) {
-        modes = {};
-        component[BIND_MODES] = modes;
-    }
-
-    Object.assign(modes, values);
-
-}

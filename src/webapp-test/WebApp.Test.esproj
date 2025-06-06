@@ -1,11 +1,7 @@
-﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.76-alpha">
+﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.3134461">
   <PropertyGroup>
     <StartupCommand>pnpm dev</StartupCommand>
+    <ShouldRunBuildScript>false</ShouldRunBuildScript>
+    <ShouldRunNpmInstall>false</ShouldRunNpmInstall>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include=".vscode\launch.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="pnpm-lock.yaml" />
-  </ItemGroup>
 </Project>

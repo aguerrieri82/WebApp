@@ -1,3 +1,6 @@
-﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.76-alpha">
-
+﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.3134461">
+	<PropertyGroup>
+		<ShouldRunBuildScript>false</ShouldRunBuildScript>
+		<ShouldRunNpmInstall>false</ShouldRunNpmInstall>
+	</PropertyGroup>
 </Project>

@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "dev": "vite dev --debug",
+    "dev": "vite dev",
     "install:pnpm": "pnpm install --fix-lockfile",
     "upgrade": "pnpm up -latest"
   },

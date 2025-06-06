@@ -1,5 +1,4 @@
-import { type IBehavoir, type ITemplate, TEMPLATE, type StringLike } from "./abstraction";
-
+import { type IBehavoir, type ITemplate, TEMPLATE } from "./abstraction";
 
 export const TemplateCatalog: { [key: string]: ITemplate<unknown> } = {};
 

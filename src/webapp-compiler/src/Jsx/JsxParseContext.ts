@@ -3,7 +3,7 @@ import { type JSXElement, type Expression, type JSXEmptyExpression, type Identif
 import { type BindMode, type ITemplateAttribute, type ITemplateElement, TemplateNodeType } from "../Abstraction/ITemplateNode.js";
 import { CORE_MODULE, TemplateAttributes } from "../Consts.js";
 import type { JsxCompiler } from "../JsxCompiler.js";
-import { toKebabCase } from "../TextUtils.js";
+import { matchAny, toKebabCase } from "../TextUtils.js";
 import TransfromNotModelRef from "./Transform/TransfromNotModelRef.js";
 import JsxErrorHandler from "./Elements/JsxErrorHandler.js";
 import JsxOpenHandler from "./Elements/JsxOpenHandler.js";
@@ -21,9 +21,10 @@ import JsxSpreadHandler from "./Elements/JsxSpreadHandler.js";
 
 import traverse, { type NodePath, type Visitor } from "@babel/traverse";
 import * as parser from "@babel/parser";
-interface ICompileError {
+interface ICompileMessage {
     path: NodePath;
     message: string;
+    type: "error" | "warning";
 }
 
 
@@ -214,7 +215,11 @@ export class JsxParseContext {
 
         const helper = this.getHelper(exp);
 
-        if (helper?.name == "twoWays" || helper?.name == "noBind" || helper?.name == "oneWay" || helper?.name == "action") {
+        if (helper?.name == "twoWays" ||
+            helper?.name == "noBind" ||
+            helper?.name == "oneWay" ||
+            helper?.name == "track" ||
+            helper?.name == "action") {
             exp.replaceWith(helper.body);
             result = toKebabCase(helper.name) as BindMode;
         }
@@ -325,6 +330,49 @@ export class JsxParseContext {
         return false;
     }
 
+
+    isTracking(path: NodePath) {
+
+        if (!path.isMemberExpression())
+            return;
+
+        const obj = path.get("object");
+
+        if (!obj.isIdentifier())
+            return;
+
+        const memberName = obj.node.name;
+
+        const bind = path.scope.getBinding(memberName);
+        if (!bind.path.isVariableDeclarator())
+            return;
+
+        let isTrack;
+
+        try {
+            if (!bind.constant)
+                return;
+            const init = bind.path.get("init");
+
+            if (!init)
+                return;
+
+            const helper = this.getHelper(init);
+            if (helper?.name == "track")
+                isTrack = true;
+            else {
+                let autoTrack = this.compiler.options.autoTrack;
+                isTrack = matchAny(autoTrack, memberName);
+            }
+
+            return isTrack;
+        }
+        finally {
+            if (!isTrack)
+                this.warn(path, `Member '${memberName}' wont be tracked. Use a const assigned variable with Bind.track(${memberName}) or add '${memberName}'' to autoTrack options`);
+        }
+    }
+
     transformIntrinsicAttribute(name: string) {
 
         if (name.startsWith("on-") ||
@@ -382,6 +430,30 @@ export class JsxParseContext {
                 body: exp.node.arguments[0]
             }
         }
+    }
+
+    hasTrackingRefs(exp: NodePath) {
+
+        let result = false;
+
+        let stopPoint: NodePath;
+
+        this.traverseFromRoot(exp, {
+
+            enter: path => {
+
+                if (this.isTracking(path)) {
+                    result = true;
+                    stopPoint = path;
+                    path.stop();
+                }
+            }
+        });
+
+        if (stopPoint) 
+            stopPoint["_traverseFlags"] = 0;
+
+        return result;
     }
 
     hasModelRefs(exp: NodePath) {
@@ -468,14 +540,26 @@ export class JsxParseContext {
 
     error(path: NodePath, message: string) {
 
-        this.errors.push({
+        this.messages.push({
             path,
-            message
+            message,
+            type: "error"
         });
         return undefined;
     }
 
-    errors: ICompileError[] = [];
+    warn(path: NodePath, message: string) {
+
+        this.messages.push({
+            path,
+            message,
+            type: "warning"
+        });
+        return undefined;
+    }
+
+
+    messages: ICompileMessage[] = [];
 
     rootElement: ITemplateElement;
 

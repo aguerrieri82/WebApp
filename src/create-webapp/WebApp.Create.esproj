@@ -1,10 +1,6 @@
-﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/0.5.76-alpha">
-  <PropertyGroup>
-    <BuildCommand>pnpm run build:dev</BuildCommand>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include=".vscode\launch.json" />
-    <None Include="template\%24%28project-name%29.esproj" />
-    <None Include="template\.vscode\launch.json" />
-  </ItemGroup>
+﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.3134461">
+	<PropertyGroup>
+		<BuildCommand>pnpm run build:dev</BuildCommand>
+		<ShouldRunNpmInstall>false</ShouldRunNpmInstall>
+	</PropertyGroup>
 </Project>

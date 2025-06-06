@@ -19,7 +19,10 @@ export interface IComponent<TOptions extends IComponentOptions = IComponentOptio
     name?: string;
 }
 
-export interface IComponentConstructor<TOptions extends IComponentOptions = IComponentOptions, TComp extends IComponent<TOptions> = IComponent<TOptions>,> {
+export interface IComponentConstructor<
+    TOptions extends IComponentOptions = IComponentOptions,
+    TComp extends IComponent<TOptions> = IComponent<TOptions>
+    > {
 
     new(options: TOptions): TComp;
 

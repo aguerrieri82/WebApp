@@ -9,7 +9,7 @@ import { cleanProxy, Expression, type IExpressionProp } from "./Expression";
 import { getPropertyDescriptor } from "./utils/Object";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
-import type { ArrayElement } from "./abstraction/Types";
+
 
 interface IBindingSubscription<TSrc extends object | [], TValue> {
 
@@ -156,24 +156,34 @@ export class Binder<TModel extends BindModel> {
         return exp.value;
     }
 
-    bindOneWay<TValue, TDestModel extends TModel | object>(dst: BindValueUnchecked<TModel, TValue>, srcModel: TDestModel, src: BindExpression<TDestModel, TValue>): void { 
+    bindOneWay<TValue, TDestModel extends TModel | object>(
+        src: BindValueUnchecked<TModel, TValue>,
+        dstModel: TDestModel,
+        dst: BindExpression<TDestModel, TValue>) {
 
         let curValue: TValue;
 
-        const realSrc = (srcModel == this.model ? dst : (m: TModel & IBindable) => src(m[USE](srcModel))) as BindExpression<TModel, TValue>;
+        const realDst = (dstModel == this.model ?
+            dst :
+            (m: TModel & IBindable) => dst(m[USE](dstModel))) as BindExpression<TModel, TValue>;
 
-        this.bind(realSrc, value => {
+        this.bind(realDst, value => {
 
             if (value !== undefined)
                 curValue = value;
 
-            const dstProp = this.getBindingProperty(dst);
-            if (dstProp)
-                dstProp.set(curValue);
+            const srcProp = this.getBindingProperty(src);
+            if (srcProp)
+                srcProp.set(curValue);
         });
     }
 
-    bindTwoWays<TValue, TDestModel extends TModel | object>(src: BindValueUnchecked<TModel, TValue>, dstModel: TDestModel, dst: BindExpression<TDestModel, TValue>, direction: BindDirection, onChanged?: (value: TValue) => void): void { 
+    bindTwoWays<TValue, TDestModel extends TModel | object>(
+        src: BindValueUnchecked<TModel, TValue>,
+        dstModel: TDestModel,
+        dst: BindExpression<TDestModel, TValue>,
+        direction: BindDirection,
+        onChanged?: (value: TValue) => void): void { 
 
         let isBinding = false;
 
@@ -181,7 +191,9 @@ export class Binder<TModel extends BindModel> {
 
         let isFirstBinding = true;
 
-        const realDst = (dstModel == this.model ? dst : (m: TModel & IBindable) => dst(m[USE](dstModel))) as BindExpression<TModel, TValue>;
+        const realDst = (dstModel == this.model ?
+            dst :
+            (m: TModel & IBindable) => dst(m[USE](dstModel))) as BindExpression<TModel, TValue>;
 
         const binds = direction == "dstToSrc" ? [realDst, src] : [src, realDst];
 
@@ -203,11 +215,14 @@ export class Binder<TModel extends BindModel> {
                     return;
 
                 isBinding = true;
+
                 try {
                     const dstProp = this.getBindingProperty(realDst);
                     const srcProp = this.getBindingProperty(src);
+
                     if (dstProp)
                         dstProp.set(curValue);
+
                     if (srcProp)
                         srcProp.set(curValue);
 
@@ -216,7 +231,6 @@ export class Binder<TModel extends BindModel> {
                 }
                 finally {
                     isBinding = false;
-
                 }
             });
         }

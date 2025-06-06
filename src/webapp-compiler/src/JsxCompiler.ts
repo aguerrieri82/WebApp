@@ -35,9 +35,14 @@ export class JsxCompiler extends BaseCompiler {
 
         const result = ctx.parse(template);
 
-        for (const error of ctx.errors)
-            this.error(error.message, error.path.node.loc.start);
+        for (const msg of ctx.messages) {
 
+            if (msg.type == "error")
+                this.error(msg.message, msg.path.node.loc.start);
+            else
+                this.warning(msg.message, msg.path.node.loc.start);
+        }
+   
         for (const imp of ctx.usedImports)
             if (!toImport.includes(imp))
                 toImport.push(imp);

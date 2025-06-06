@@ -15,7 +15,7 @@ export default function (options) {
 
                 const srcMap = new MagicString(code);
 
-                const compiler = new JsxCompiler();
+                const compiler = new JsxCompiler(options);
 
                 let replace = [];
 

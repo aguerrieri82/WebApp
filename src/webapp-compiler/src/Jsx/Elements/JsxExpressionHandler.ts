@@ -1,7 +1,7 @@
 import type { NodePath } from "@babel/traverse";
 import type { JsxParseContext } from "../JsxParseContext.js";
 import { type BindMode } from "../../Abstraction/ITemplateNode.js";
-import { toKebabCase } from "../../TextUtils.js";
+import { matchAny, toKebabCase } from "../../TextUtils.js";
 
 export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
 
@@ -16,10 +16,11 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
             return;
     }
 
+
     const bindMode = ctx.getHelper(path)?.name as BindMode;
 
     let createBind = !ctx.isBinding(path) &&
-        (bindMode || ctx.hasModelRefs(path)) &&
+        (bindMode || ctx.hasModelRefs(path) || ctx.hasTrackingRefs(path)) &&
         !path.isArrayExpression() &&
         ctx.isBindable() &&
         bindMode != "no-bind" &&

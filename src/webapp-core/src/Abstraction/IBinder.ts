@@ -6,6 +6,13 @@ export type BindMode = "one-way" | "two-ways" | "no-bind" | "action" | "expressi
 
 export type BindDirection = "srcToDst" | "dstToSrc";
 
+
+export interface ExternalBind<TValue, TModel extends {}> {
+    model: TModel;
+    value: BindExpression<TModel, TValue>;
+    mode?: BindMode
+}
+
 export interface IGetter<TObj, TValue> {
     (model: TObj): TValue;
 }
@@ -38,4 +45,12 @@ export function isBindExpression(value: unknown): value is BindExpression<unknow
         (value as Function).length == 1 &&
         getFunctionType(value) !== "class" &&
         !isTemplate(value);
+}
+
+
+export function isExternalBind<TModel = unknown, TValue = unknown>(value: unknown): value is ExternalBind<TValue, TModel> {
+    return value &&
+        typeof value == "object" &&
+        "model" in value &&
+        "value" in value;
 }

@@ -1,6 +1,5 @@
 ﻿import type { IComponent } from "./IComponent";
 import type { ServiceType } from "./IService";
-import type { Class } from "./Types";
 
 type Visitor = (child: ITemplateContext, level: number) => void | "skip-children" | "stop";
 
