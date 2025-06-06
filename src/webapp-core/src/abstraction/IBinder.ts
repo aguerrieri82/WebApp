@@ -1,4 +1,4 @@
-﻿import { getFunctionType } from "../utils";
+﻿import { getFunctionType, isClass, isSimpleObject } from "../utils";
 import { type BIND_MODE, type IBindable } from "./IBindable";
 import { isTemplate } from "./ITemplate";
 
@@ -49,8 +49,9 @@ export function isBindExpression(value: unknown): value is BindExpression<unknow
 
 
 export function isExternalBind<TModel = unknown, TValue = unknown>(value: unknown): value is ExternalBind<TValue, TModel> {
-    return value &&
-        typeof value == "object" &&
+    return isSimpleObject(value) && 
         "model" in value &&
         "value" in value;
 }
+
+

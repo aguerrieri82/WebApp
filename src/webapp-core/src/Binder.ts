@@ -156,25 +156,25 @@ export class Binder<TModel extends BindModel> {
         return exp.value;
     }
 
-    bindOneWay<TValue, TDestModel extends TModel | object>(
-        src: BindValueUnchecked<TModel, TValue>,
-        dstModel: TDestModel,
-        dst: BindExpression<TDestModel, TValue>) {
+    bindOneWay<TValue, TSrcModel extends TModel | object>(
+        dst: BindValueUnchecked<TModel, TValue>,
+        srcModel: TSrcModel,
+        src: BindExpression<TSrcModel, TValue>): void {
 
         let curValue: TValue;
 
-        const realDst = (dstModel == this.model ?
+        const realSrc = (srcModel == this.model ?
             dst :
-            (m: TModel & IBindable) => dst(m[USE](dstModel))) as BindExpression<TModel, TValue>;
+            (m: TModel & IBindable) => src(m[USE](srcModel))) as BindExpression<TModel, TValue>;
 
-        this.bind(realDst, value => {
+        this.bind(realSrc, value => {
 
             if (value !== undefined)
                 curValue = value;
 
-            const srcProp = this.getBindingProperty(src);
-            if (srcProp)
-                srcProp.set(curValue);
+            const dstProp = this.getBindingProperty(dst);
+            if (dstProp)
+                dstProp.set(curValue);
         });
     }
 

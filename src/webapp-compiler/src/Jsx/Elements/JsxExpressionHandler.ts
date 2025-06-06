@@ -21,7 +21,7 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
 
     let createBind = !ctx.isBinding(path) &&
         (bindMode || ctx.hasModelRefs(path) || ctx.hasTrackingRefs(path)) &&
-        !path.isArrayExpression() &&
+        //!path.isArrayExpression() &&
         ctx.isBindable() &&
         bindMode != "no-bind" &&
         bindMode != "action";
