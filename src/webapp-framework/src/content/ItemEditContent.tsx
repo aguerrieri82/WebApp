@@ -9,8 +9,8 @@ export interface IItemEditArgs<TItem> {
 }
 
 export interface IItemEditOptions<TItem,
-    TArgs extends IItemEditArgs<TItem> = IItemEditArgs<TItem>,
-    TName extends string = string> extends IContentOptions<TArgs, TName> {
+    TArgs extends IItemEditArgs<TItem> = IItemEditArgs<TItem>>
+    extends IContentOptions<TArgs> {
 
     onSaveAsync?: (value: TItem) => Promise<boolean>;
 

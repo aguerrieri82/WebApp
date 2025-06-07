@@ -7,18 +7,19 @@
   "scripts": {
     "dev": "vite dev",
     "install:pnpm": "pnpm install --fix-lockfile",
+    "compile": "tsc",
     "upgrade": "pnpm up -latest"
   },
   "keywords": [],
   "author": "Andrea Guerrieri",
   "dependencies": {
-    "@eusoft/webapp-core": "../../dist/webapp-core",
-    "@eusoft/webapp-framework": "../../dist/webapp-framework",
-    "@eusoft/webapp-jsx": "../../dist/webapp-jsx",
-    "@eusoft/webapp-ui": "../../dist/webapp-ui"
+    "@eusoft/webapp-core": "link:../webapp-core/src",
+    "@eusoft/webapp-framework": "link:../webapp-framework/src",
+    "@eusoft/webapp-jsx": "link:../webapp-jsx/src",
+    "@eusoft/webapp-ui": "link:../webapp-ui/src"
   },
   "devDependencies": {
-    "@eusoft/webapp-compiler-rollup": "../../dist/webapp-compiler-rollup",
+    "@eusoft/webapp-compiler-rollup": "link:../../dist/webapp-compiler-rollup",
     "sass": "1.89.1",
     "typescript": "5.8.3",
     "vite": "6.3.5"

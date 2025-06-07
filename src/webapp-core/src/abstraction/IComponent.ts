@@ -24,7 +24,7 @@ export interface IComponentConstructor<
     TComp extends IComponent<TOptions> = IComponent<TOptions>
     > {
 
-    new(options: TOptions): TComp;
+    new(options?: TOptions): TComp;
 
     [BIND_MODES]?: Record<string, BindMode>;
 }

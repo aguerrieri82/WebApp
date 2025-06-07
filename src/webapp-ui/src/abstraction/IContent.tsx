@@ -35,10 +35,9 @@ export interface IContent<TArgs extends {} = undefined> extends IComponent {
 
 export interface IContentInfo<
     TArgs extends {} = {},
-    TContent extends IContent<TArgs> = IContent<TArgs>,
-    TName extends string = string> {
+    TContent extends IContent<TArgs> = IContent<TArgs>> {
 
-    name: TName;
+    name: string;
 
     route: string;
 
@@ -79,8 +78,7 @@ IContentConstructor<TArgs>;
 export function contentInfo<
     TArgs extends {},
     TContent extends IContent<TArgs>,
-    TName extends string,
-    TContentInfo extends IContentInfo<TArgs, TContent, TName>>(info: TContentInfo): TContentInfo {
+    TContentInfo extends IContentInfo<TArgs, TContent>>(info: TContentInfo): TContentInfo {
 
         return info;
 }

@@ -1,18 +1,9 @@
 import { type IContentOptions, type Content, type IContentInfo, contentInfo } from "@eusoft/webapp-ui";
 
 
-export type Extra<TContent, T> = {
-    [K in keyof T]:
-    T[K] extends (...args: any[]) => unknown
-    ? (this: TContent & T, ...args: Parameters<T[K]>) => ReturnType<T[K]>
-    : T[K];
-};
-
-
 export function declareContent<
     TArgs,
-    TName extends string,
-    TOptions extends IContentOptions<TArgs, TName> & { extends?: Extra<Content<TArgs, TOptions>, TExtends> },
+    TOptions extends IContentOptions<TArgs> & { extends?: Extension<Content<TArgs, TOptions>, TExtends> },
     TType extends { new(...args: any[]): Content<TArgs, TOptions> },
     TExtends extends object = {}
     >
@@ -34,7 +25,7 @@ export function declareContent<
                 Object.assign(this, options.extends);
         }        
 
-    } as (TType & { info: IContentInfo<TArgs, InstanceType<TType>, TName>});
+    } as (TType & { info: IContentInfo<TArgs, InstanceType<TType>>});
 
     newContent.info = contentInfo({
         name: options.name,

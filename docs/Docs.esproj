@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.3134461">
   <PropertyGroup>
-    <BuildCommand>pnpm build:dev</BuildCommand>
-    <ShouldRunNpmInstall>false</ShouldRunNpmInstall>
+	<StartupCommand>mkdocs serve</StartupCommand>
+    <BuildCommand>mkdocs build</BuildCommand>
+	<ShouldRunNpmInstall>false</ShouldRunNpmInstall>
   </PropertyGroup>
   <ItemGroup>
     <None Include=".vscode\launch.json" />
   </ItemGroup>
 </Project>
+

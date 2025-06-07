@@ -1,0 +1,11 @@
+{
+  "name": "docs",
+  "version": "0.0.1",
+  "packageManager": "pnpm",
+  "scripts": {
+    "start": "mkdocs serve",
+    "build": "mkdocs build",
+    "install:pnpm": "pnpm install --fix-lockfile",
+    "upgrade": "pnpm up -latest"
+  }
+}

@@ -9,7 +9,8 @@ import { type IAction } from "../abstraction/IAction";
 import { type IContentHost } from "../abstraction";
 import "./Content.scss";
 import { Action } from "./Action";
-export interface IContentOptions<TArgs extends {}, TName extends string = string> extends IComponentOptions<TName> {
+
+export interface IContentOptions<TArgs extends {}> extends IComponentOptions {
 
     title?: Bindable<LocalString>;
 
@@ -164,7 +165,9 @@ export class Content<
     static info: IContentInfo;
 }
 
-export function content<TArgs extends {}, TContent extends IContent<TArgs>>(info: IContentInfo<TArgs, TContent>, args: TArgs): IContentInstance<TArgs, TContent>;
+export function content<
+    TArgs extends {},
+    TContent extends IContent<TArgs>>(info: IContentInfo<TArgs, TContent>, args: TArgs): IContentInstance<TArgs, TContent>;
 
 export function content(ref, args) {
     return {

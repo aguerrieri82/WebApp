@@ -15,6 +15,11 @@ export type Bindable<TValue, TModel = {}> =
     TValue | IObservableProperty<TValue> | ExternalBind<TValue, TModel>;
 
 
+export type BindableObject<TObj, TModel extends {} = {}> = {
+
+    [K in keyof TObj & string]?: Bindable<TObj[K], TModel>;
+}
+
 export interface IBindable {
 
     [PROPS]?: Record<string, IObservableProperty<unknown>>;

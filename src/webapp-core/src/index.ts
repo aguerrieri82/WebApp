@@ -1,3 +1,5 @@
+/// <reference path="types.d.ts" />
+
 export * from "./abstraction"
 export * from "./utils"
 export * from "./Binder"

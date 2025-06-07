@@ -5,13 +5,13 @@ import type { CatalogTemplate } from "./ITemplateProvider";
 
 export type ComponentStyle = string | ComponentStyle[];
 
-export interface IComponentOptions<TName extends string = string> {
+export interface IComponentOptions {
 
     style?: Bindable<ComponentStyle>;
 
     template?: CatalogTemplate<unknown>;
 
-    name?: TName;
+    name?: string;
 
     visible?: Bindable<boolean>;
 

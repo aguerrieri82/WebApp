@@ -11,11 +11,11 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "src/",
-    "../webapp-core/src/",
-    "../webapp-jsx/src/",
-    "../webapp-ui/src/",
-    "../webapp-framework/src/"
+    "src",
+    "../webapp-ui/src",
+    "../webapp-framework/src",
+    "../webapp-core/src",
+    "../webapp-jsx/src"
   ]
 }
  

@@ -1,4 +1,5 @@
 import { cleanProxy } from "./Expression";
+
 import { isBindExpression, type IBehavoir, type IBehavoirConstructor, type IComponent, type IComponentConstructor } from "./abstraction";
 import { type IBindable, PARENT, USE, BIND_MODES, BIND_MODE, INDEX } from "./abstraction/IBindable";
 import type { BindExpression, BindMode, BindValue, ExternalBind } from "./abstraction/IBinder";
@@ -138,9 +139,11 @@ export namespace Bind {
 
 export type TwoWays<T> = T;
 
+type StaticBindings = { [BIND_MODES]?: Record<string, BindMode>; }
+
 export function configureBindings<
     T extends IComponent | IBehavoir<HTMLElement, unknown>>(
-        component: Class<T>,
+        component: Class<T> & StaticBindings,
         values: Partial<Record<keyof T & string, BindMode>>
 ) {
 

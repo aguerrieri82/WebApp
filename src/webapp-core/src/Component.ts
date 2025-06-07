@@ -1,6 +1,6 @@
 import { type IPropertyChangedHandler, isObservableProperty } from "./abstraction/IObservableProperty";
 import type { CatalogTemplate } from "./abstraction/ITemplateProvider";
-import { COMPONENT, type IComponent,  isComponent } from "./abstraction/IComponent";
+import { COMPONENT, type IComponent, isComponent } from "./abstraction/IComponent";
 import { enumOverrides, getTypeName, isClass, objectHierarchy, setTypeName } from "./utils/Object";
 import { bindTwoWays, getOrCreateProp } from "./Properties";
 import { generateRandomId, toKebabCase } from "./utils/String";
@@ -13,9 +13,11 @@ import { type ITemplateContext } from "./abstraction/ITemplateContext";
 import { type IService, SERVICE_TYPE, type ServiceType } from "./abstraction/IService";
 import { type IServiceProvider, type ServiceContainer } from "./abstraction/IServiceProvider";
 import { isExternalBind, type BindExpression, type BindValueUnchecked } from "./abstraction/IBinder";
-import { type Bindable, type IHTMLContainer } from "./abstraction";
+import { type Bindable,  type BindableObject,  type IHTMLContainer, type ITemplate } from "./abstraction";
 import { buildStyle } from "./utils/Style";
 import { Bind } from "./Bind";
+
+
 
 interface ISubscription {
     unsubscribe(): void;
@@ -183,9 +185,7 @@ export abstract class Component<
             }
         }
 
-        if (!this._subscriptions)
-            this._subscriptions = [];
-
+        this._subscriptions ??= [];
         this._subscriptions.push(result);
 
         return result;
@@ -265,7 +265,6 @@ export abstract class Component<
     context: ITemplateContext<this, HTMLElement>;
 }
 
-
 export function getComponent(obj: unknown): Function {
 
     if (!obj || typeof obj != "object")
@@ -280,88 +279,63 @@ export function getComponent(obj: unknown): Function {
     return undefined;
 }
 
-export function declareComponent<TOptions extends IComponentOptions, TType extends { new(...args: any[]): Component<TOptions> }>(type: TType, options: TOptions) {
-    return class InlineComponent extends type {
+type InlineComponentBody<TOptions> = {
+    construct?(options?: TOptions) : void; 
+}
+
+type BindableOptions<TOptions, TBaseOptions = IComponentOptions> =
+    BindableObject<Omit<TOptions, keyof TBaseOptions | "construct">> & TBaseOptions;
+
+
+type InlineComponentType<
+    TBase extends Component,    
+    TBody extends InlineComponentBody<TOptions>,
+    TOptions = TBase["options"] & BindableOptions<TBody, TBase["options"]>> = { new(opt: TOptions): TBody & TBase };
+
+export function extendComponent<
+    TBase extends Component,
+    TOptions extends TBase["options"] & BindableOptions<TBody, TBase["options"]>,
+    TBody extends InlineComponentBody<TOptions>>(
+        base: Class<TBase> | AbstractClass<TBase>,
+        body?: BindThis<TBody, TBody & TBase>,
+        options?: TOptions | ITemplate<TBody & TBase>): InlineComponentType<TBase, TBody>;
+
+export function extendComponent(base: Class<Component> , body: InlineComponentBody<any>, options: any) {
+
+    const construct = body.construct;
+
+    if (construct)
+        delete body.construct;
+
+    const result = class InlineComponent extends base {
         constructor(...args: any[]) {
 
-            super(args[0]);
+            super(...args);
 
-            this.init(InlineComponent, options);
+            this.init(result, {
+                ...options,
+                ...args[0]
+            });
+
+            construct?.call(this, args[0]);
         }
-    } as TType;
+    }
+
+    Object.assign(result.prototype, body);
+
+    return result;
 }
+
+export function declareComponent<
+    TOptions extends Component["options"] & BindableOptions<TBody, Component["options"]>,
+    TBody extends InlineComponentBody<TOptions>>(
+        body?: BindThis<TBody, TBody & Component>,
+        options?: TOptions | ITemplate<TBody & Component>): InlineComponentType<Component, TBody> {
+
+    return extendComponent(Component, body, options);
+}
+
 
 export function registerComponent<T extends Component<unknown>>(ctr: { new(...args: any[]): T }, name: string) {
     setTypeName(ctr, name);
 }
-
-/*
-export function registerElement<TComponent extends IComponent>(component: Class<TComponent>, name?: string) {
-
-    const element = class InlineComponent extends HTMLElement {
-
-        private _model: TComponent;
-
-        constructor() {
-            super();
-
-            this._model = new component();
-
-            const attrs = this._model[ATTRIBUTES];
-
-            console.log(attrs);
-
-            for (const key of attrs) {
-
-                Reflect.defineProperty(this, key, {
-                    set: v => {
-                        console.log("Set ", key, v);
-                        this._model[key] = v;
-                    },
-                    get: () => this._model[key], 
-                });
-            }
-
-        }
-
-        connectedCallback() {
-
-            let parentBuilder = getBuilder(this.parentElement);
-
-            if (!parentBuilder) 
-                parentBuilder = new TemplateBuilder(this._model, this.parentElement);
-
-            parentBuilder.templateFor(this._model);
-
-            console.log("connected");
-        }
-
-        connectedMoveCallback() {
-            console.log("connectedMove");
-        }
-
-        disconnectedCallback() {
-
-            console.log("disconnected");
-        }
-
-        adoptedCallback() {
-            console.log("adopted");
-        }
-
-        attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-
-        }
-
-        static get observedAttributes() {
-            return ["color", "size"];
-        }
-    };
-
-    name ??= toKebabCase(getTypeName(component));
-
-    customElements.define("wa-" + name, element);
-
-    return name;
-}
-*/
