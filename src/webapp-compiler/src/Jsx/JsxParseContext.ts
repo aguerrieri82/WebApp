@@ -362,7 +362,7 @@ export class JsxParseContext {
             if (helper?.name == "track")
                 isTrack = true;
             else {
-                let autoTrack = this.compiler.options.autoTrack;
+                const autoTrack = this.compiler.options.autoTrack;
                 isTrack = matchAny(autoTrack, memberName);
             }
 

@@ -125,7 +125,12 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
         return innerExp;
     }
 
-    call(...args: []): ExpressionType {
+    call(thisArg, ...args: []): ExpressionType {
+
+        if (thisArg) {
+            //console.log(cleanProxy(thisArg), this.value, getFunctionName(this.value as Function));
+        }
+
 
         const result = this._options.evaluate ? (this.value as Function).call(this.parent.value, ...args?.map(a=> cleanProxy(a))) : null;
 
@@ -337,7 +342,7 @@ export abstract class Expression<TValue extends Record<string, any> | Function> 
 
             apply: (target, thisArg, argArray: []): any => {
 
-                const exp = this.call(...argArray);
+                const exp = this.call(thisArg, ...argArray);
 
                 return exp.createProxy();
             }

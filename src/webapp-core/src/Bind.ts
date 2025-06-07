@@ -1,6 +1,6 @@
 import { cleanProxy } from "./Expression";
 
-import { isBindExpression, type IBehavoir, type IBehavoirConstructor, type IComponent, type IComponentConstructor } from "./abstraction";
+import { isBindExpression, type IBehavoir, type IComponent, type IComponentConstructor } from "./abstraction";
 import { type IBindable, PARENT, USE, BIND_MODES, BIND_MODE, INDEX } from "./abstraction/IBindable";
 import type { BindExpression, BindMode, BindValue, ExternalBind } from "./abstraction/IBinder";
 

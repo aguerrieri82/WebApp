@@ -1,4 +1,4 @@
-﻿import { getFunctionType, isClass, isSimpleObject } from "../utils";
+﻿import { getFunctionType, isSimpleObject } from "../utils";
 import { type BIND_MODE, type IBindable } from "./IBindable";
 import { isTemplate } from "./ITemplate";
 

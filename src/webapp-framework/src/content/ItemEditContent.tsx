@@ -125,12 +125,13 @@ export class ItemEditContentBuilder<
 
     editor(builder: (builder: EditorBuilder<TItem, ObjectEditor<TItem>>) => ITemplate<TItem> | JSX.Element, options?: IObjectEditorOptions<TItem>) {
 
-        const editor = new ObjectEditor({
-            ...options,
-            builder
-        });
+        let editor: ObjectEditor<TItem>;
 
         this._options.createEditor = value => {
+            editor ??= new ObjectEditor({
+                ...options,
+                builder
+            });
             editor.beginEdit(value);
             return editor;
         }
