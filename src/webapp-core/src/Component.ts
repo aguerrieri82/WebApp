@@ -279,9 +279,9 @@ export function getComponent(obj: unknown): Function {
     return undefined;
 }
 
-type InlineComponentBody<TOptions> = {
-    construct?(options?: TOptions) : void; 
-}
+interface InlineComponentBody<TOptions>  {
+    construct?(options?: TOptions): void;    
+};
 
 type BindableOptions<TOptions, TBaseOptions = IComponentOptions> =
     BindableObject<Omit<TOptions, keyof TBaseOptions | "construct">> & TBaseOptions;
@@ -289,16 +289,18 @@ type BindableOptions<TOptions, TBaseOptions = IComponentOptions> =
 
 type InlineComponentType<
     TBase extends Component,    
-    TBody extends InlineComponentBody<TOptions>,
-    TOptions = TBase["options"] & BindableOptions<TBody, TBase["options"]>> = { new(opt: TOptions): TBody & TBase };
+    TBody extends object,
+    TOptions = BindableOptions<TBody, TBase["options"]>> = { new(opt: TOptions): TBody & TBase & { options: TOptions } };
 
 export function extendComponent<
-    TBase extends Component,
-    TOptions extends TBase["options"] & BindableOptions<TBody, TBase["options"]>,
-    TBody extends InlineComponentBody<TOptions>>(
+    TBase extends Component,    
+    TBody extends object,
+    TOptions = BindableOptions<TBody, TBase["options"]>>
+    (
         base: Class<TBase> | AbstractClass<TBase>,
-        body?: BindThis<TBody, TBody & TBase>,
-        options?: TOptions | ITemplate<TBody & TBase>): InlineComponentType<TBase, TBody>;
+        body?: BindThis<TBody, TBase & TBody> & InlineComponentBody<TOptions>,
+        options?: TOptions 
+    ): InlineComponentType<TBase, TBody>;
 
 export function extendComponent(base: Class<Component> , body: InlineComponentBody<any>, options: any) {
 
@@ -307,32 +309,49 @@ export function extendComponent(base: Class<Component> , body: InlineComponentBo
     if (construct)
         delete body.construct;
 
+    let realOptions: IComponentOptions;
+
+    let template: { (model: any): any } = null;
+
+    if (typeof options == "function") {
+        realOptions = {}
+        template = options;
+    }
+    else
+        realOptions = options;
+
+
     const result = class InlineComponent extends base {
         constructor(...args: any[]) {
 
             super(...args);
 
             this.init(result, {
-                ...options,
+                ...realOptions,
                 ...args[0]
             });
+
+            if (template)
+                this.template = template(this);
 
             construct?.call(this, args[0]);
         }
     }
-
+     
     Object.assign(result.prototype, body);
 
     return result;
 }
 
 export function declareComponent<
-    TOptions extends Component["options"] & BindableOptions<TBody, Component["options"]>,
-    TBody extends InlineComponentBody<TOptions>>(
-        body?: BindThis<TBody, TBody & Component>,
-        options?: TOptions | ITemplate<TBody & Component>): InlineComponentType<Component, TBody> {
+    TBody extends object,
+    TOptions = BindableOptions<TBody, Component["options"]>>
+    (
+        body?: BindThis<TBody, Component & TBody> & InlineComponentBody<TOptions>,
+        options?: TOptions | { (model: Component & TBody): unknown }
+    ) {
 
-    return extendComponent(Component, body, options);
+    return extendComponent(Component, body, options) as InlineComponentType<Component, TBody>;
 }
 
 

@@ -634,6 +634,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 if (prop == "ref") {
 
                     this.bind(propValue, () => {
+
                         const refProp = this.getBindingProperty(propValue);
                         if (refProp)
                             refProp.set(model);

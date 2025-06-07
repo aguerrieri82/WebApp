@@ -1,5 +1,5 @@
 
-import { type JSXElement, type Expression, type JSXEmptyExpression, type Identifier, type ImportDeclaration, type JSXFragment, type ThisExpression, identifier } from "@babel/types";
+import t, { type JSXElement, type Expression, type JSXEmptyExpression, type Identifier, type ImportDeclaration, type JSXFragment, type ThisExpression, identifier } from "@babel/types";
 import { type BindMode, type ITemplateAttribute, type ITemplateElement, TemplateNodeType } from "../Abstraction/ITemplateNode.js";
 import { CORE_MODULE, TemplateAttributes } from "../Consts.js";
 import type { JsxCompiler } from "../JsxCompiler.js";
@@ -116,8 +116,13 @@ export class JsxParseContext {
                         isFuncComp = false; 
                 }
    
-                if (isFuncComp && params.length == 1 && params[0].isIdentifier())
-                    this.curModel = params[0].node as Identifier;
+                if (isFuncComp) {
+                    if (params.length == 1 && params[0].isIdentifier())
+                        this.curModel = params[0].node as Identifier;
+                    else
+                        this.curModel = t.identifier("emptyProps");
+                }
+
             }
         }
 
@@ -315,7 +320,7 @@ export class JsxParseContext {
     }
 
     isBindable() {
-        return this.curModel &&
+        return (this.curModel) &&
             (this.curElement.name != "t:content" || this.curAttribute?.name == "src") &&
             this.curAttribute?.name != "t:value-pool" &&
             !this.curAttribute?.name.startsWith("t:on-") &&

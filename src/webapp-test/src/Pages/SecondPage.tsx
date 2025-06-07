@@ -1,6 +1,6 @@
 import { Action, Content, IContentInfo } from "@eusoft/webapp-ui";
-import { Text, JsxNode, forModel } from "@eusoft/webapp-jsx";
-import { Behavoir, Bind, Component, ITemplateContext, OptionsFor, TwoWays, template } from "@eusoft/webapp-core";
+import { Text, JsxNode, forModel, debug } from "@eusoft/webapp-jsx";
+import { Behavoir, Bind, Component, ITemplateContext, OptionsFor, TwoWays, declareComponent, template } from "@eusoft/webapp-core";
 import { router } from "@eusoft/webapp-framework";
 import { onChanged } from "@eusoft/webapp-core";
 import {  Style } from "../../../webapp-jsx/src";
@@ -9,6 +9,44 @@ import { IComponentOptions } from "@eusoft/webapp-core";
 
 
 
+const TextInput = declareComponent({
+
+    selectAll: function () {
+        (this.context.element as HTMLInputElement).select();
+    }
+}, m => <input type="text"/>);
+
+function Page2() {
+
+    const state: {
+        input?: InstanceType<typeof TextInput>
+    } = {}
+
+    return <div>
+        <TextInput ref={state.input} />
+        <button on-click={() => state.input.selectAll()}>Select</button>
+    </div>
+}
+
+const Test = declareComponent({
+
+    construct: function (opt) {
+        if (opt)
+            opt.text = "Hello World!";
+    },
+
+
+    test: function () {
+        this.text = "Hello";
+
+    },
+
+    text: "mona" as string
+},
+    m => <>
+        {m.text}
+    </>
+);
 function Log(props: { message: string }) {
 
     console.log("log", props.message);
@@ -162,6 +200,8 @@ export class SecondPage extends Content {
             </div>
             <Bold>{m.text}</Bold>
             <Counter label="sto contando" />
+            <Test text="inline component" />
+            <Page2/>
             {block }
         </>);
 

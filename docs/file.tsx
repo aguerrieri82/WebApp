@@ -1,13 +1,25 @@
 
-const MyComponent = declareComponent<IOptions>({
-    
-    template: m => (
-        <div>
-            {m.text}
-            <button on-click={ev => m.show()}>Show</button>
-        </div>),
 
-    show: function() {
-        alert(this.text);
+
+
+const Input = declareComponent({
+    selectAll: function () {
+        this.element.selectAll();
     }
 });
+
+function Page() {
+
+    const state = {
+        input: Input
+    }
+
+    const select = () => {
+        state.input.selectAll();
+    }
+
+    return <div>
+        <Input ref={state.input}/>
+        <button on-click={()=> select() }
+    </div>
+}

@@ -39,7 +39,7 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
             value = "(" + value + ")";
 
         if (!bindMode)
-            value = "Bind.exp(" + ctx.curModel.name + " => " + value + ")";
+            value = "Bind.exp(" + (ctx.curModel?.name ?? "m") + " => " + value + ")";
         else
             value = ctx.curModel.name + " => " + value;
 

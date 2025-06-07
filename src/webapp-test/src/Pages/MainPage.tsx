@@ -1,6 +1,8 @@
 import { Action, Content, IContentInfo } from "@eusoft/webapp-ui";
 import { router } from "@eusoft/webapp-framework";
 import { SecondPage } from "./SecondPage";
+import { declareComponent } from "@eusoft/webapp-core";
+
 
 
 export class MainPage extends Content {
