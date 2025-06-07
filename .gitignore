@@ -367,3 +367,4 @@ FodyWeavers.xsd
 dist/
 userdatadir/
 tsconfig.tsbuildinfo
+/docs/site
