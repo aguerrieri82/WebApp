@@ -1,6 +1,6 @@
-import type { LocalString } from "@eusoft/webapp-ui/src/Types";
+import type { LocalString } from "@eusoft/webapp-ui/Types";
 import { userInteraction } from "../services";
-import { formatText } from "@eusoft/webapp-ui/src/utils/Format";
+import { formatText } from "@eusoft/webapp-ui/utils/Format";
 
 
 interface IHandleErrorOptions {
