@@ -30,9 +30,6 @@ importers:
       build-utils:
         specifier: link:..\..\scripts\build-utils
         version: link:../../scripts/build-utils
-      eslint:
-        specifier: 9.27.0
-        version: 9.27.0
       eslint-plugin-unused-imports:
         specifier: 4.1.4
         version: 4.1.4(@typescript-eslint/eslint-plugin@8.33.0(@typescript-eslint/parser@8.33.0(eslint@9.27.0)(typescript@5.8.3))(eslint@9.27.0)(typescript@5.8.3))(eslint@9.27.0)
