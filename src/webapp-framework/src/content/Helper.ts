@@ -3,7 +3,7 @@ import { type IContentOptions, type Content, type IContentInfo, contentInfo } fr
 
 export function declareContent<
     TArgs,
-    TOptions extends IContentOptions<TArgs> & { extends?: Extension<Content<TArgs, TOptions>, TExtends> },
+    TOptions extends IContentOptions<TArgs> & { extends?: BindThis<Content<TArgs, TOptions>, TExtends> },
     TType extends { new(...args: any[]): Content<TArgs, TOptions> },
     TExtends extends object = {}
     >

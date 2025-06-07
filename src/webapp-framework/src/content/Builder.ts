@@ -1,6 +1,7 @@
 import { type ComponentStyle } from "@eusoft/webapp-core";
 import { type IContentOptions, type Content, type IContentInfo, type IContent, type IFeature, type LocalString, type IAction, formatText } from "@eusoft/webapp-ui";
 
+
 export interface IContentBuilder {
 
 }
@@ -59,7 +60,7 @@ export class ContentBuilder<
         return this;
     }
 
-    build<TExtra extends object>(extra?: Extension<TContent, TExtra>) {
+    build<TExtra extends object>(extra?: BindThis<TContent, TExtra>) {
 
         if (!this._options.title)
             this._options.title = formatText(this._options.name) as string;
@@ -69,7 +70,7 @@ export class ContentBuilder<
     }
 
 
-    buildContent<TExtra extends object>(extra?: Extension<TContent, TExtra>) {
+    buildContent<TExtra extends object>(extra?: BindThis<TContent, TExtra>) {
         return {
             name: this._options.name,            
             route: this._options.route,

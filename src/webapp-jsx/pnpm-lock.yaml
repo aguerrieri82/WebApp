@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@eusoft/webapp-core':
-        specifier: link:..\webapp-core
-        version: link:../webapp-core
+        specifier: link:../webapp-core/src
+        version: link:../webapp-core/src
     devDependencies:
       '@typescript-eslint/parser':
         specifier: 8.33.0

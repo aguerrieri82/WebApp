@@ -14,15 +14,18 @@ export interface IBuildOptions {
     isBundle?: boolean;
 }
 
+function fixModule(path: string) {
+    if (path.startsWith("link:")) {
+        path = path.substring(5);
+        if (path.endsWith("/src"))
+            path = path.substring(0, path.length - 4);
+    }
+    return path;
+}
+
 function loadLibPackage(pkgPath: string) {
 
-    if (pkgPath.startsWith("link:")) {
-        pkgPath = pkgPath.substring(5);
-        if (pkgPath.endsWith("/src"))
-            pkgPath = pkgPath.substring(0, pkgPath.length - 4);
-    }
-
-    const curPkg = loadJson<IPackage>(path.join(pkgPath, "package.json"));
+    const curPkg = loadJson<IPackage>(path.join(fixModule(pkgPath), "package.json"));
     return curPkg;
 }
 
@@ -32,11 +35,12 @@ function processDeps(deps: Record<string, string>, isProd: boolean, isBoundle: b
 
     if (deps) {
         for (let name in deps) {
-            const value = deps[name];
+            const value = fixModule(deps[name]);
 
             if (value.startsWith("link:") && isBoundle) {
                 const depPck = loadLibPackage(value);
-                Object.assign(newDeps, depPck.dependencies);
+                for (const depName in depPck.dependencies) 
+                    newDeps[depName] = fixModule(depPck.dependencies[depName]);
                 continue;
             }
     

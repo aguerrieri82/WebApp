@@ -1,6 +1,6 @@
 {
   "name": "@eusoft/webapp-framework",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "packageManager": "pnpm",
   "type": "module",
   "main": "src/index.ts",
@@ -29,8 +29,8 @@
     "eslint-plugin-unused-imports": "4.1.4"
   },
   "dependencies": {
-    "@eusoft/webapp-core": "link:..\\webapp-core",
-    "@eusoft/webapp-jsx": "link:..\\webapp-jsx",
-    "@eusoft/webapp-ui": "link:..\\webapp-ui"
+    "@eusoft/webapp-core": "link:../webapp-core/src",
+    "@eusoft/webapp-jsx": "link:../webapp-jsx/src",
+    "@eusoft/webapp-ui": "link:../webapp-ui/src"
   }
 }
