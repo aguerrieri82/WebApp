@@ -20,7 +20,10 @@ type ArrayElement<ArrayType extends readonly unknown[]> =
 type StringLike = string | number | object | boolean | { toString(): string }
 
 
-type Class<T> = { new (...args: any): T };
+type Class<T> = new (...args: any) => T;
+
+type AbstractClass<T> = abstract new (...args: any[]) => T;
+
 
 type CommonKeys<TSrc, TDst> = {
     [K in (keyof TSrc & keyof TDst & string) /*as TSrc[K] extends Bindable<TDst[K]> ? K : never*/]: TSrc[K]
@@ -32,3 +35,9 @@ type KeyOfType<TObj, TKey> = {
     [P in keyof TObj & string]: TObj[P] extends TKey ? P : never
 }[keyof TObj & string];
 
+
+type BindThis<T, ThisArg> = {
+    [K in keyof T]: T[K] extends (...args: infer A) => infer R
+    ? (this: ThisArg, ...args: A) => R
+    : T[K];
+};
