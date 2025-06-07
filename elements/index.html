@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Elements - My Docs</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Elements";
+        var mkdocs_page_input_path = "elements.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> My Docs
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Elements</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#content">Content</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#if">If</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#class">Class</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#style">Style</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#foreach">Foreach</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../components/">Components</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">My Docs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Elements</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="elements">Elements</h1>
+<h2 id="content">Content</h2>
+<p><strong>Builder</strong>
+<div class="highlight"><pre><span></span><code>t.content(m=&gt; m.myContent)
+</code></pre></div></p>
+<p><strong>JSX</strong>
+<div class="highlight"><pre><span></span><code>&lt;Content src = {m.myContent} /&gt;
+</code></pre></div></p>
+<p><strong>Expression</strong>
+<div class="highlight"><pre><span></span><code>&lt;tagName&gt;{m.myContent}&lt;/tagName&gt;
+</code></pre></div></p>
+<hr />
+<h2 id="if">If</h2>
+<p><strong>Builder</strong>
+<div class="highlight"><pre><span></span><code>t.if(m=&gt; m.test == 2, 
+    t1 =&gt; t1.text(&quot;True&quot;),
+    t1 =&gt; t1.text(&quot;False&quot;))
+</code></pre></div></p>
+<p><strong>JSX</strong>
+<div class="highlight"><pre><span></span><code>&lt;If condition = {m.test == 2} &gt;
+    True
+    &lt;Else&gt;False&lt;/Else&gt;
+&lt;/If&gt;
+</code></pre></div></p>
+<p><strong>Expression</strong>
+<div class="highlight"><pre><span></span><code>&lt;tagName&gt;
+    {m.test == 2 ? 
+        &lt;&gt;True&lt;/&gt; 
+        : 
+        &lt;&gt;False&lt;/&gt;
+    }
+&lt;/tagName&gt;
+
+&lt;tagName&gt;{m.test == 2 &amp;&amp; &lt;&gt;True not else&lt;/&gt;}&lt;/tagName&gt;
+</code></pre></div></p>
+<hr />
+<h2 id="class">Class</h2>
+<p><strong>Builder</strong></p>
+<div class="highlight"><pre><span></span><code>t.class(m=&gt; m.myClassList);
+
+t.class(m=&gt; &quot;my-class&quot;, m =&gt; m.myProp == true);
+</code></pre></div>
+<p><strong>JSX</strong>
+<div class="highlight"><pre><span></span><code>&lt;div&gt;
+    &lt;Class condition = {m.myProp == true} name=&quot;my-class&quot; /&gt;
+    &lt;Class name={m.myClassList} /&gt;
+&lt;/div&gt;
+&lt;div className=&quot;class1 class2&quot;/&gt;
+</code></pre></div></p>
+<hr />
+<h2 id="style">Style</h2>
+<p><strong>Builder</strong></p>
+<div class="highlight"><pre><span></span><code>t =&gt; t.styles({
+    &quot;color&quot;: m=&gt; m.myColor,
+    &quot;font-size&quot;: &quot;13px&quot;
+})
+
+t =&gt; t.style(&quot;color&quot;, m=&gt; m.myColor)
+</code></pre></div>
+<p><strong>JSX</strong>
+<div class="highlight"><pre><span></span><code>&lt;div style={{color: m.myColor}}&gt;
+    &lt;Style color={m.MyColor} fontSize=&quot;16px&quot; /&gt;
+&lt;/div&gt;
+</code></pre></div></p>
+<hr />
+<h2 id="foreach">Foreach</h2>
+<p><strong>Builder</strong>
+<div class="highlight"><pre><span></span><code>t =&gt; t.foreach(m =&gt; m.items,
+    t2 =&gt; t2.text(item =&gt; item.myItemProp));
+</code></pre></div></p>
+<p><strong>JSX</strong>
+<div class="highlight"><pre><span></span><code>&lt;Foreach src={m.items} as=&quot;item&quot;&gt;
+    {item.myItemProp}
+&lt;/Foreach&gt;
+</code></pre></div></p>
+<p><strong>Expression</strong>
+<div class="highlight"><pre><span></span><code>{m.items.forEach(i=&gt; &lt;&gt;{i.myItemProp}&lt;/&gt;)}
+</code></pre></div></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not use <code>map</code> function of an array, since will behave as expected 
+(transform an array to another array), not bind an array</p>
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../components/" class="btn btn-neutral float-right" title="Components">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../components/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

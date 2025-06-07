@@ -43,6 +43,10 @@
                 <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../elements/">Elements</a>
+                </li>
+              </ul>
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">Components</a>
     <ul class="current">
@@ -87,7 +91,7 @@
                 <h1 id="components">Components</h1>
 <h2 id="functional-component">Functional Component</h2>
 <p>This example shows a simple functional component:</p>
-<pre><code>function MyComponent(props: { text: string }) {
+<div class="highlight"><pre><span></span><code>function MyComponent(props: { text: string }) {
     const show = () =&gt; {
         alert(props.text);
     };
@@ -99,7 +103,7 @@
         &lt;/div&gt;
     );
 }
-</code></pre>
+</code></pre></div>
 <p><strong>Explanation</strong>:<br />
 A functional component is a function that receives <code>props</code> as input and returns JSX. In this example, the <code>show</code> function simply displays the <code>text</code> property in an alert box.</p>
 <hr />
@@ -107,7 +111,7 @@ A functional component is a function that receives <code>props</code> as input a
 <h3 id="why-use-a-class-component">Why Use a Class Component?</h3>
 <p>In functional components, the internal state is encapsulated and cannot be accessed or extended directly from outside the component. If you need to modify or trigger actions on the component’s state from outside, class components are more suitable.</p>
 <p>Here’s an example of a class component:</p>
-<pre><code>import { Component, type IComponentOptions } from &quot;@eusoft/webapp-core&quot;;
+<div class="highlight"><pre><span></span><code>import { Component, type IComponentOptions } from &quot;@eusoft/webapp-core&quot;;
 import { forModel } from &quot;@eusoft/webapp-jsx&quot;;
 
 interface IOptions extends IComponentOptions {
@@ -135,7 +139,7 @@ export class MyComponent extends Component&lt;IOptions&gt; {
 
   text: string;
 }
-</code></pre>
+</code></pre></div>
 <p><strong>Key points</strong>:</p>
 <ul>
 <li>The class must extend <code>Component</code> or a subclass of it.</li>
@@ -147,7 +151,7 @@ export class MyComponent extends Component&lt;IOptions&gt; {
 <p>To reduce boilerplate code, you can use the <code>declareComponent</code> helper function to declare a class component more concisely.</p>
 <p>The first argument is an object containing the class body (methods and properties), and the second argument is the component’s template or default options.</p>
 <p>Example:</p>
-<pre><code>import { declareComponent } from &quot;@eusoft/webapp-core&quot;;
+<div class="highlight"><pre><span></span><code>import { declareComponent } from &quot;@eusoft/webapp-core&quot;;
 
 const MyComponent = declareComponent({
   show: function () {
@@ -161,7 +165,7 @@ const MyComponent = declareComponent({
     &lt;button on-click={ev =&gt; m.show()}&gt;Show&lt;/button&gt;
   &lt;/div&gt;
 ));
-</code></pre>
+</code></pre></div>
 <p><code>MyComponent</code> is now a standard class component that you can:</p>
 <ul>
 <li>Instantiate directly: <code>const x = new MyComponent({ text: "Hello" });</code></li>
@@ -171,25 +175,25 @@ const MyComponent = declareComponent({
 <hr />
 <h3 id="referencing-a-class-component">Referencing a Class Component</h3>
 <p>Here’s how you can reference a class component instance in a functional component:</p>
-<pre><code class="language-typescript">const TextInput = declareComponent({
-  selectAll: function () {
-    (this.context.element as HTMLInputElement).select();
-  },
-}, m =&gt; &lt;input type=&quot;text&quot; /&gt;);
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">TextInput</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">declareComponent</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">selectAll</span><span class="o">:</span><span class="w"> </span><span class="kt">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">element</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">HTMLInputElement</span><span class="p">).</span><span class="nx">select</span><span class="p">();</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">},</span><span class="w"> </span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">input</span><span class="w"> </span><span class="kr">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="w"> </span><span class="o">/&gt;</span><span class="p">);</span>
 
-function Page() {
-  const state: {
-    input?: InstanceType&lt;typeof TextInput&gt;;
-  } = {};
+<span class="kd">function</span><span class="w"> </span><span class="nx">Page</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">state</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">input?</span><span class="o">:</span><span class="w"> </span><span class="kt">InstanceType</span><span class="o">&lt;</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">TextInput</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
 
-  return (
-    &lt;div&gt;
-      &lt;TextInput ref={state.input} /&gt;
-      &lt;button on-click={() =&gt; state.input.selectAll()}&gt;Select&lt;/button&gt;
-    &lt;/div&gt;
-  );
-}
-</code></pre>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+<span class="w">      </span><span class="o">&lt;</span><span class="nx">TextInput</span><span class="w"> </span><span class="nx">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">state</span><span class="p">.</span><span class="nx">input</span><span class="p">}</span><span class="w"> </span><span class="o">/&gt;</span>
+<span class="w">      </span><span class="o">&lt;</span><span class="nx">button</span><span class="w"> </span><span class="nx">on</span><span class="o">-</span><span class="nx">click</span><span class="o">=</span><span class="p">{()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">state</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">selectAll</span><span class="p">()}</span><span class="o">&gt;</span><span class="nx">Select</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
 <p><strong>Explanation</strong>:<br />
 - <code>TextInput</code> is a class component that includes a <code>selectAll</code> method.<br />
 - The <code>Page</code> component is a functional component. It declares a reference to the <code>TextInput</code> instance using the <code>ref</code> attribute.<br />
@@ -200,7 +204,7 @@ function Page() {
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../elements/" class="btn btn-neutral float-left" title="Elements"><span class="icon icon-circle-arrow-left"></span> Previous</a>
     </div>
 
   <hr/>
@@ -223,7 +227,7 @@ function Page() {
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../elements/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
   </span>
