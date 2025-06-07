@@ -1,4 +1,4 @@
-import { type Bindable, type IComponentOptions, type IComponent, Component, type TemplateMap, type ComponentStyle, attribute, configureBindings, registerComponent } from "@eusoft/webapp-core";
+import { type Bindable, type IComponentOptions, type IComponent, Component, type TemplateMap, type ComponentStyle, configureBindings, registerComponent } from "@eusoft/webapp-core";
 import { Class, type JsxNode, forModel } from "@eusoft/webapp-jsx";
 import { type ActionType, type IAction, type IActionContext } from "../abstraction/IAction";
 import { type OperationManager } from "../services";

@@ -60,29 +60,33 @@ export class ContentBuilder<
         return this;
     }
 
-    build<TExtra extends object>(extra?: BindThis<TContent, TExtra>) {
+    createInstance<TBody extends object>(body?: BindThis<TContent, TBody & TContent>) {
 
         if (!this._options.title)
             this._options.title = formatText(this._options.name) as string;
         const res = this._factory(this._options);
-        Object.assign(res, extra);
-        return res as (TExtra & TContent);
+        Object.assign(res, body);
+        return res as (TBody & TContent);
     }
 
 
-    buildContent<TExtra extends object>(extra?: BindThis<TContent, TExtra>) {
+    asContent<TBody extends object>(body?: BindThis<TContent, TBody & TContent>) {
         return {
             name: this._options.name,            
             route: this._options.route,
             icon: this._options.icon,            
-            factory: () => this.build(extra)
-        } as IContentInfo<TArgs, TContent & TExtra>
+            factory: () => this.createInstance(body)
+        } as IContentInfo<TArgs, TContent & TBody>
     }
+
+
 }
 
-export function buildContent<T extends Content>(base: Class<T>): ContentBuilder<T, unknown, unknown>;
+export function buildContent<
+    TContent extends Content
+    >(base: Class<TContent>): ContentBuilder<TContent, unknown, TContent["options"]>;
 
-export function buildContent(base) {
+export function buildContent(base: Class<any>) {
      
     if ("builder" in base && typeof base.builder == "function")
         return base.builder(); 
