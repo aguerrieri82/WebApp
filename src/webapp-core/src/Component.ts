@@ -113,7 +113,7 @@ export abstract class Component<
 
             const dst = Bind.exp((a: this) => a[key]);
 
-            if (value.mode == "two-ways") {
+            if (value.mode == "two-ways") { 
                 this.bindTwoWays(dst, value.model, value.value);
             }
             else {
@@ -157,13 +157,13 @@ export abstract class Component<
         this.binder.bindTwoWays(src, dstModel, dst, "dstToSrc");
     }
 
+    
+    bindOneWay<TValue, TSrcModel extends object>(
+        dst: BindValueUnchecked<this, TValue>,
+        srcModel: TSrcModel,
+        src: BindExpression<TSrcModel, TValue>): void {
 
-    bindOneWay<TValue, TDestModel extends object>(
-        src: BindValueUnchecked<this, TValue>,
-        dstModel: TDestModel,
-        dst: BindExpression<TDestModel, TValue>) {
-
-        this.binder.bindOneWay(src, dstModel, dst);
+        this.binder.bindOneWay(dst, srcModel, src);
     }
 
     prop<TKey extends keyof this & string>(prop: TKey) {

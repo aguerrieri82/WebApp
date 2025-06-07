@@ -32,6 +32,10 @@ export function isClass(value: Function): value is { new(...args: any): any } {
     return getFunctionType(value) == "class";
 }
 
+export function isSimpleObject(value: any): value is {} {
+    return value && typeof value == "object" && value.constructor == Object;
+}
+
 export function setTypeName(obj: WithTypeName, name: string) {
 
     obj[TYPE_NAME] = name;
