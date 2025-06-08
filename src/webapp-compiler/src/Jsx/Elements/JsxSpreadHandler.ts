@@ -3,7 +3,6 @@ import type { JsxParseContext } from "../JsxParseContext.js";
 
 export function JsxSpreadHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
 
-
     if (stage != "enter" || !path.isJSXSpreadAttribute())
         return;
 
@@ -16,6 +15,5 @@ export function JsxSpreadHandler(ctx: JsxParseContext, stage: "enter", path: Nod
 
     return true;
 }
-
 
 export default JsxSpreadHandler;

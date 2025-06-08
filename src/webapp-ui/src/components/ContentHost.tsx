@@ -34,7 +34,6 @@ export class ContentHost extends Component<IContentHostOptions > implements ICon
         });
     }
 
-
     async loadContentAsync<T>(content: IContent<T>, args?: T) {
 
         if (content?.loadAsync) {
@@ -71,7 +70,6 @@ export class ContentHost extends Component<IContentHostOptions > implements ICon
         return true;
     }
 
-
     push(page: IContent) {
 
         this._stack.push(this.content);
@@ -85,7 +83,6 @@ export class ContentHost extends Component<IContentHostOptions > implements ICon
 
         this.loadContentAsync(this._stack.pop());
     }
-
 
     closeAsync(result?: unknown): Promise<void> {
 

@@ -1,4 +1,3 @@
-
 import t, { type JSXElement, type Expression, type JSXEmptyExpression, type Identifier, type ImportDeclaration, type JSXFragment, type ThisExpression, identifier } from "@babel/types";
 import { type BindMode, type ITemplateAttribute, type ITemplateElement, TemplateNodeType } from "../Abstraction/ITemplateNode.js";
 import { CORE_MODULE, TemplateAttributes } from "../Consts.js";
@@ -26,7 +25,6 @@ interface ICompileMessage {
     message: string;
     type: "error" | "warning";
 }
-
 
 type JsxNodeHandler = {
 
@@ -335,7 +333,6 @@ export class JsxParseContext {
         return false;
     }
 
-
     isTracking(path: NodePath) {
 
         if (!path.isMemberExpression())
@@ -493,7 +490,6 @@ export class JsxParseContext {
             stopPoint["_traverseFlags"] = 0;
         }
 
-
         return result;
     }
 
@@ -563,7 +559,6 @@ export class JsxParseContext {
         });
         return undefined;
     }
-
 
     messages: ICompileMessage[] = [];
 

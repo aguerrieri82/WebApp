@@ -5,7 +5,6 @@ import { Action } from "./Action";
 import "./Popup.scss";
 import { formatText } from "../utils/Format";
 
-
 interface IMessageBoxAction {
     name: string;
     text: string;
@@ -97,7 +96,6 @@ export class Popup extends Component<IPopupOptions> {
 
         return result;
     }
-    
 
     title: ViewNode;
 

@@ -27,6 +27,7 @@ export default [
             '@typescript-eslint/no-explicit-any': 'warn',
             '@typescript-eslint/consistent-type-imports': ['error', { fixStyle: 'inline-type-imports'}],
             'unused-imports/no-unused-imports': 'warn',
+            'no-multiple-empty-lines': ['warn', { max: 1, maxEOF: 1, maxBOF: 0 }]
         },
     },
 ];

@@ -7,7 +7,6 @@ export interface IIconOptions {
     content: ViewNode;
 }
 
-
 export type MaterialIconVariant = "filled" | "outlined" | "round" | "two-tone";
 
 export type MaterialIconCategory = "symbols" | "icons";
@@ -22,7 +21,6 @@ export interface IMaterialIconOptions<TCat extends MaterialIconCategory> {
 
     name: TCat extends 'icons' ? MaterialIconName : MaterialSymbolName;
 }
-
 
 //TODO implement
 export function Icon(options: IIconOptions) {

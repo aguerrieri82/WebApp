@@ -1,6 +1,5 @@
 import { type LocalString, type ViewNode } from "../Types";
 
-
 export type ActionPriority = "primary" | "secondary";
 
 export type ActionType = "local" | "global" | undefined;

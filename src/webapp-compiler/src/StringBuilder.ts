@@ -1,6 +1,5 @@
 import { type IWriteable } from "./Abstraction/IWriteable.js";
 
-
 export class StringBuilder implements IWriteable {
 
     protected _parts: string[] = [];

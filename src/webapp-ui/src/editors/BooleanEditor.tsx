@@ -39,7 +39,6 @@ export class BooleanEditor extends Editor<boolean, IBooleanEditorOptions> implem
     label: ViewNode;
 }
 
-
 declare module "./EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {
         boolean(value: BindExpression<TModel, boolean>, options?: IBuilderEditorOptions<TModel, boolean, IBooleanEditorOptions>);

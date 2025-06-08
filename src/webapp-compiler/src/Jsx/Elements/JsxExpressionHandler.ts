@@ -16,7 +16,6 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
             return;
     }
 
-
     const bindMode = ctx.getHelper(path)?.name as BindMode;
 
     let createBind = !ctx.isBinding(path) &&
@@ -61,6 +60,5 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
 
     return true;
 }
-
 
 export default JsxExpressionHandler;

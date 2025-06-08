@@ -16,7 +16,7 @@ export interface IEditorOptions<TValue> extends IComponentOptions {
 
     disabled?: Bindable<boolean>;
 
-    value?: Bindable<TValue, "two-ways">;
+    value?: Bindable<TValue>;
 
     onValueChanged?: (value: TValue, oldValue: TValue, reason: ValueChangedReason) => void;  
 }

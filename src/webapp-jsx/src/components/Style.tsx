@@ -1,7 +1,6 @@
 import { type BindValue } from "@eusoft/webapp-core";
 import type { JsxComponentProps, TemplateModel } from "../abstraction";
 
-
 type StyleProps<TModel extends TemplateModel>  = JsxComponentProps<TModel, undefined> & {
 
     [K in keyof CSSStyleDeclaration as K extends string ? K : never]?: BindValue<TModel, CSSStyleDeclaration[K]>;

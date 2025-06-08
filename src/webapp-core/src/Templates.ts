@@ -11,7 +11,6 @@ export function template<TModel, TTemplate extends ITemplate<TModel> = ITemplate
     return template;
 }
 
-
 export const TextTemplate = template<StringLike>(t => t.text(t.model), "Text");
 
 export const ArrayTemplate = template<any[]>(t => {

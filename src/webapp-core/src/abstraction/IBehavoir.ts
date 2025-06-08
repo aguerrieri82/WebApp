@@ -9,7 +9,6 @@ export interface IBehavoir<TElement extends HTMLElement = HTMLElement, TModel = 
     detach(ctx: ITemplateContext<TModel, TElement>): void;
 }
 
-
 export interface IBehavoirConstructor<
     TModel,
     TComp extends IBehavoir<HTMLElement, TModel> = IBehavoir<HTMLElement, TModel>> {
@@ -18,7 +17,6 @@ export interface IBehavoirConstructor<
 
     [BIND_MODES]?: Record<string, BindMode>;
 }
-
 
 export function isBehavoir(value: unknown): value is IBehavoir {
 

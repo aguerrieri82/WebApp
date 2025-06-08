@@ -119,7 +119,6 @@ class UserInteraction implements IUserInteraction {
             }
         ]
 
-
         const result = await popup.showAsync();  
 
         return result == "ok" ? body.value : null;  

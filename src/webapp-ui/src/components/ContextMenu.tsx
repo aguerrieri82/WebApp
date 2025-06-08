@@ -6,7 +6,6 @@ import "./ContextMenu.scss";
 import { forModel } from "@eusoft/webapp-jsx";
 import { NodeView } from "./NodeView";
 
-
 export interface IContextMenuOptions extends IComponentOptions {
     content?: ViewNode;
 }
@@ -27,7 +26,6 @@ export class ContextMenu extends Component<IContextMenuOptions> {
 
             ...options
         });
-
 
         this._menuContainer = document.createElement("DIV");
         this._menuContainer.className = "popup-container";

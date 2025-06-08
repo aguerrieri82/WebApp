@@ -2,7 +2,6 @@ import { type ViewNode } from "../Types";
 import { type IValidationContext, type IValidationResult, type Validator } from "../abstraction/Validator";
 import { formatText } from "../utils/Format";
 
-
 export const ValidationResult = {
     valid: {
         isValid: true
@@ -13,7 +12,6 @@ export const ValidationResult = {
         error: msg
     } as IValidationResult)
 }
-
 
 export async function validEmail(ctx: IValidationContext<unknown>, value: string) {
 
@@ -40,7 +38,6 @@ export async function required(ctx: IValidationContext<unknown>, value: unknown)
 
     return ValidationResult.valid;
 }
-
 
 export async function integer(ctx: IValidationContext<unknown>, value: number) {
 

@@ -8,7 +8,6 @@ import { Action, type Content, MaterialIcon } from "../components";
 import "./SinglePicker.scss";
 import { type ViewNode } from "../Types";
 
-
 interface ISinglePickerOptions<TItem, TValue> extends ICommitableEditorOptions<TValue, TValue> {
 
     itemsSource: IItemsSource<TItem, TValue, unknown>;
@@ -60,16 +59,13 @@ export class SinglePicker<TItem, TValue> extends CommitableEditor<TValue, TValue
         }
     }
 
-
     async loadAsync() {
-
 
     }
 
     clearValue() {
 
     }
-
 
     pickItemAsync() {
 
@@ -81,7 +77,6 @@ export class SinglePicker<TItem, TValue> extends CommitableEditor<TValue, TValue
 
     itemsSource: IItemsSource<TItem, TValue, unknown>;
 }
-
 
 declare module "./EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {

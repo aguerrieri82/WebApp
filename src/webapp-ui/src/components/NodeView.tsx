@@ -28,7 +28,6 @@ export function NodeView(options: INodeViewOptions) {
         else if (isTemplate(t.model))
             t.template(t.model);
     }
-   
 
     return template<INodeViewOptions>(t =>
         t.enter(m => m.content, t2 => {

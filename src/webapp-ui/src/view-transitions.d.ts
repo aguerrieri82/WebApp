@@ -1,4 +1,3 @@
-
 interface WindowEventMap {
     pagereveal: PageRevealEvent;
 }
@@ -6,8 +5,6 @@ interface WindowEventMap {
 interface Window {
     readonly navigation: Navigation;
 }
-
-
 
 interface Navigation extends EventTarget {
     readonly currentEntry: NavigationHistoryEntry | null;

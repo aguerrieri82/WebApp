@@ -16,15 +16,11 @@ interface IToasterView extends IToasterOptions {
     visible?: boolean;
 }
 
-
-
 interface IToasterManager {
     showAsync(options: IToasterOptions): void;
 }
 
-
 class ToasterManager implements IToasterManager {
-
 
     constructor() {
         mount(document.body, forModel(this, m => <div className="toaster-manager">

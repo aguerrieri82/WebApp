@@ -20,5 +20,4 @@ export function JsxAttributeHandler(ctx: JsxParseContext, stage: "enter", path: 
     return true;
 }
 
-
 export default JsxAttributeHandler;

@@ -10,7 +10,6 @@ import { getPropertyDescriptor } from "./utils/Object";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
 
-
 interface IBindingSubscription<TSrc extends object | [], TValue> {
 
     source: TSrc;
@@ -62,7 +61,6 @@ export class Binder<TModel extends BindModel> {
         this._cleanActions.push(action);
     }
 
-
     protected register(binder: Binder<TModel>, tag?: string) {
 
         binder._tag = tag;
@@ -77,7 +75,7 @@ export class Binder<TModel extends BindModel> {
 
     protected getBindingExpression<TValue>(binding: BindExpression<TModel, TValue>) {
         
-        return Expression.build<TModel, TValue>(this.model, binding, {
+        return Expression.build<TModel & object, TValue>(this.model as TModel & object, binding, {
             evaluate: true,
             customProps: {
                 [PARENT]: () => this.findParentModel(),
@@ -382,7 +380,7 @@ export class Binder<TModel extends BindModel> {
         const prop = exp.expression.property();
 
         if (prop && prop.object)
-            return getOrCreateProp(prop.object, prop.propName);
+            return getOrCreateProp(prop.object, prop.propName as (keyof typeof prop.object));
 
     }
 
@@ -449,7 +447,6 @@ export class Binder<TModel extends BindModel> {
         if (model === curModel) 
             return;
 
-
         this.model = model;
 
         forEachRev(this._bindings, binding => 
@@ -465,7 +462,6 @@ export class Binder<TModel extends BindModel> {
             forEachRev(this._modelBinders, binder =>
                 binder.updateModel(model));
         }
-
         
     }
 

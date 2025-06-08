@@ -20,7 +20,6 @@ export class App  {
 
     }
 
-
     liveReload() {
 
         const ws = new WebSocket(`wss://${document.location.hostname}:${document.location.port}/live`);
@@ -61,7 +60,6 @@ export class App  {
 
         else if (!root)
             root = document.body;
-
 
         mount(root, this.contentHost);
     }

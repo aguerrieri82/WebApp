@@ -6,8 +6,7 @@ export type BindMode = "one-way" | "two-ways" | "no-bind" | "action" | "expressi
 
 export type BindDirection = "srcToDst" | "dstToSrc";
 
-
-export interface ExternalBind<TValue, TModel extends {}> {
+export interface ExternalBind<TValue, TModel extends ObjectLike> {
     model: TModel;
     value: BindExpression<TModel, TValue>;
     mode?: BindMode
@@ -23,13 +22,11 @@ export type BindExpression<TModel, TValue> = IGetter<TModel & IBindable, TValue>
 
 export type BindValueUnchecked<TModel, TValue> = TValue | BindExpression<TModel, TValue>;
 
-
 export type BindValue<TModel, TValue> = TValue | (BindExpression<TModel, TValue> & {
     [BIND_MODE]: BindMode
 });
 
-
-export type BoundObject<T extends {}> = {
+export type BoundObject<T extends ObjectLike> = {
     [K in keyof T]: BindValue<T, T[K]>
 }
 
@@ -47,11 +44,9 @@ export function isBindExpression(value: unknown): value is BindExpression<unknow
         !isTemplate(value);
 }
 
-
-export function isExternalBind<TModel = unknown, TValue = unknown>(value: unknown): value is ExternalBind<TValue, TModel> {
+export function isExternalBind<TModel extends ObjectLike = object, TValue = unknown>(value: unknown): value is ExternalBind<TValue, TModel> {
     return isSimpleObject(value) && 
         "model" in value &&
         "value" in value;
 }
-
 

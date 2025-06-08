@@ -87,7 +87,6 @@ export class WizardStep implements IWizardStepOptions {
     template: CatalogTemplate<WizardStep>;
 }
 
-
 export interface IWizardOptions extends IComponentOptions {
 
     content?: (IWizardStepOptions | WizardStep | JsxTypedComponent<IWizardStepOptions>)[];
@@ -147,7 +146,6 @@ export class Wizard extends Component<IWizardOptions> {
         });
     }
 
-
     override mount(ctx) {
 
         this.activeStepIndex = 0;
@@ -166,7 +164,6 @@ export class Wizard extends Component<IWizardOptions> {
                 step.loadAsync();
         });
     }
-
 
     nextAsync() {
 

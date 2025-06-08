@@ -20,8 +20,6 @@ interface ITextReplacement {
     dst: ITextBlock;
 }
 
-
-
 export class JsxCompiler extends BaseCompiler {
 
     constructor(options?: ICompilerOptions) {
@@ -54,7 +52,6 @@ export class JsxCompiler extends BaseCompiler {
         
     }
 
-
     async compileStreamAsync(input: ReadStream | string, output: IWriteable) {
 
         const js = typeof input == "string" ? input : await readAllTextAsync(input);
@@ -83,14 +80,12 @@ export class JsxCompiler extends BaseCompiler {
 
         const templates: NodePath<JSXElement | JSXFragment>[] = [];
 
-
         trav(ast, {
 
             JSXFragment(path) {
                 templates.push(path);
                 path.shouldSkip = true;
             },
-
 
             ImportSpecifier(path) {
 

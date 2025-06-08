@@ -66,7 +66,6 @@ export class RangeEditor extends Editor<number, IRangeEditorOptions> {
     editValue: string;
 }
 
-
 declare module "./EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {
         range(value: BindExpression<TModel, number>, options?: IBuilderEditorOptions<TModel, number, IRangeEditorOptions>);

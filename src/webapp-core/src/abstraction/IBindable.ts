@@ -10,12 +10,10 @@ export const BIND_MODES: unique symbol = Symbol.for("@bindModes")
 export const ATTRIBUTES: unique symbol = Symbol.for("@attrs");
 export const BIND_MODE: unique symbol = Symbol.for("@bindMode");
 
-
-export type Bindable<TValue, TModel = {}> =
+export type Bindable<TValue, TModel extends ObjectLike = object> =
     TValue | IObservableProperty<TValue> | ExternalBind<TValue, TModel>;
 
-
-export type BindableObject<TObj, TModel extends {} = {}> = {
+export type BindableObject<TObj, TModel extends ObjectLike = object> = {
 
     [K in keyof TObj & string]?: Bindable<TObj[K], TModel>;
 }

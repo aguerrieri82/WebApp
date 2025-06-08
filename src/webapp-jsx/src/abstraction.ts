@@ -28,7 +28,6 @@ export type JsxTypedElement<TModel, TProps> =
     ITemplateProvider<TModel> |
     ITemplate<TModel>
 
-
 export type JsxTypedComponent<TOptions> = JsxTypedElement<IComponent<TOptions>, TOptions>;
 
 export type JsxComponentProps<
@@ -78,7 +77,6 @@ type InputProps<TModel, TElement> =
         "value-mode"?: InputValueMode;
         "value-pool"?: number;
     }
-
 
 declare global {
     namespace JSX {

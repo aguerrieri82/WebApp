@@ -2,7 +2,6 @@ import { type NodePath } from "@babel/traverse";
 import type { JsxParseContext } from "../JsxParseContext.js";
 import { type Expression } from "@babel/types";
 
-
 function ConditionalExpressionHandler(ctx: JsxParseContext, stage: "exp", path: NodePath<Expression>): boolean {
 
     if (stage != "exp" || ctx.curAttribute || !path.isConditionalExpression())

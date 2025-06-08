@@ -1,4 +1,4 @@
-import { BIND_MODES, Behavoir, type BindMode, type ITemplateContext } from "@eusoft/webapp-core";
+import { Behavoir, type ITemplateContext } from "@eusoft/webapp-core";
 
 export interface IAttachOptions {
 

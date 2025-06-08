@@ -49,9 +49,7 @@ export class NumberEditor extends Editor<number, INumberEditorOptions> {
 
     editValue: string;
 
-
 }
-
 
 declare module "./EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {

@@ -70,7 +70,6 @@ export class SwipeView extends Component<ISwipeViewOptions> {
         this.onChanged("activeContent", v => this.activeIndex = this.content?.indexOf(v));
     }
 
-
     override mount(ctx: ITemplateContext) {
 
         super.mount(ctx);
@@ -130,7 +129,6 @@ export class SwipeView extends Component<ISwipeViewOptions> {
         });
 
     }
-
 
     next() {
         if (this.activeIndex < this.content.length - 1)

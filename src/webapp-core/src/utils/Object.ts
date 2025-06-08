@@ -1,7 +1,5 @@
 const TYPE_NAME = Symbol.for("@typeName");
 
-
-
 export type WithTypeName = { [TYPE_NAME]?: string } & (object | Function);
 
 const funcNameRegex = /function\s([^(]{1,})\(/;
@@ -32,7 +30,7 @@ export function isClass(value: Function): value is { new(...args: any): any } {
     return getFunctionType(value) == "class";
 }
 
-export function isSimpleObject(value: any): value is {} {
+export function isSimpleObject(value: any): value is object {
     return value && typeof value == "object" && value.constructor == Object;
 }
 
@@ -113,7 +111,10 @@ export function getPropertyDescriptor(obj: object, prop: PropertyKey) {
     }
 }
 
-export function enumOverrides<TObj extends {}, TFunc extends Function, TKey extends KeyOfType<TObj, TFunc>>(obj: TObj, func: TKey): TFunc[] {
+export function enumOverrides<
+    TObj extends object,
+    TFunc extends Function,
+    TKey extends KeyOfType<TObj, TFunc>>(obj: TObj, func: TKey): TFunc[] {
 
     let curType = Object.getPrototypeOf(obj);
 

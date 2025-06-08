@@ -94,15 +94,12 @@ export class ItemEditContent<
         return this.editor.value;
     }
 
-
     editor: IEditor<TItem>;
-
 
     static bulder<TItem extends object, TArgs extends IItemEditArgs<TItem> = IItemEditArgs<TItem>>() {
         return new ItemEditContentBuilder<TItem, TArgs>();
     }
 }
-
 
 export class ItemEditContentBuilder<
     TItem extends object,

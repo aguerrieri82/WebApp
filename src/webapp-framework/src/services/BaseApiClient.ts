@@ -1,4 +1,3 @@
-
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 export class HttpError extends Error {

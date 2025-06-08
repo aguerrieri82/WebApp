@@ -2,7 +2,6 @@ import { HandleResult, type ITemplateHandler } from "../Abstraction/ITemplateHan
 import { type ITemplateAttribute } from "../Abstraction/ITemplateNode.js";
 import { type TemplateContext } from "../TemplateContext.js";
 
-
 export class BindingAttributeHandler implements ITemplateHandler {
      
     canHandle(ctx: TemplateContext, node: ITemplateAttribute): boolean {

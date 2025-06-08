@@ -64,14 +64,12 @@ export class ItemPickerContent<TItem, TFilter> extends Content<unknown, IItemPic
         });
     }
 
-
     async refreshAsync() {
 
         const items = await this.itemsSource.getItemsAsync(this.prepareFilter(this.searchText));
 
         this.items = items;
     }
-
 
     async addItemAsync() {
 

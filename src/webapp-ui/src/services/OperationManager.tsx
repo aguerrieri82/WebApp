@@ -57,7 +57,6 @@ export class OperationManager implements IOperationManager {
 
         console.log("End ", operation.name);
 
-
         console.groupEnd();
 
         if (operation?.isLocal)

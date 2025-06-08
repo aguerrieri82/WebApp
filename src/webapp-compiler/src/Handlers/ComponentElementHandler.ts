@@ -42,7 +42,6 @@ export class ComponentElementHandler implements ITemplateHandler {
                         .ensureNewLine().write("model: ").write(ctx.currentFrame.builderNameJs + ".model").write(",")
                         .ensureNewLine().write("template: ").writeElement(attr.value)
                         .endBlock();
-                    
 
                     //contentWriter.writeElement(attr.value);
 

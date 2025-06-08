@@ -29,7 +29,6 @@ export class SwitchElementHandler implements ITemplateHandler {
         for (const child of element.childNodes) {
 
             ctx.writer.ensureNewLine();
-     
 
             if (ctx.isElement(child, "when")) {
                 ctx.writer.write(".when(")

@@ -8,7 +8,6 @@ import { createAction, ItemView, MaterialIcon, Popup } from "../components";
 import { type IAction, isCommitable, isValidable } from "../abstraction";
 import { formatText } from "../utils/Format";
 
-
 interface IArrayEditorOptions<TItem> extends IEditorOptions<TItem[]> {
 
     itemEditor: (item: TItem) => IEditor<TItem>;
@@ -164,7 +163,6 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
 
                 this._editPopup.showAsync();
             });
-
            
         }
         else {
@@ -214,7 +212,6 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
 
     newItemLabel: LocalString;
 }
-
 
 declare module "./EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {

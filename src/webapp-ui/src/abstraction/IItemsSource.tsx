@@ -1,6 +1,5 @@
 import { type ViewNode } from "../Types";
 
-
 export interface IItemsSource<TItem, TValue, TFilter> {
 
     getValue(item: TItem): TValue;

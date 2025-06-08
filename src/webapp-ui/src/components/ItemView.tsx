@@ -22,7 +22,6 @@ export interface IItemViewOptions<TItem> extends IComponentOptions {
     maxActions?: number;
 }
 
-
 export const ItemViewTemplates: TemplateMap<ItemView<unknown>> = {
 
     Default: forModel(m => <li className={m.className} visible={m.visible}>
@@ -104,5 +103,4 @@ export class ItemView<TItem> extends Component<IItemViewOptions<TItem>> {
     content: TItem;
 
     actions: IAction<TItem>[];
-
 }

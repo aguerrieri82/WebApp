@@ -25,8 +25,13 @@ export default [
             '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
             '@typescript-eslint/no-empty-object-type': ['warn', { allowInterfaces: 'always' }],
             '@typescript-eslint/no-explicit-any': 'warn',
-            '@typescript-eslint/consistent-type-imports': ['error', { fixStyle: 'inline-type-imports'}],
+            '@typescript-eslint/consistent-type-imports': ['error', { fixStyle: 'inline-type-imports' }],
+            '@typescript-eslint/no-unsafe-function-type': 'off',
+            '@typescript-eslint/no-namespace': 'off', 
+            '@typescript-eslint/no-explicit-any': 'off',
+            'no-debugger': 'off',
             'unused-imports/no-unused-imports': 'warn',
+            'no-multiple-empty-lines': ['warn', { max: 1, maxEOF: 1, maxBOF: 0 }]
         },
     },
 ];

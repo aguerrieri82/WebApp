@@ -1,4 +1,3 @@
-
 declare module "environment" {
     const ENV: string;
 

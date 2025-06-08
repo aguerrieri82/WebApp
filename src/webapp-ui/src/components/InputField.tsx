@@ -18,9 +18,8 @@ export interface IInputFieldOptions<TValue, TTarget> extends IComponentOptions {
 
     validators?: Bindable<Validator<TValue, TTarget>[]>;
 
-    value: Bindable<TValue, "two-ways">; 
+    value: Bindable<TValue>; 
 } 
- 
 
 export const InputFieldTemplates: TemplateMap<InputField<unknown, IEditor<unknown>>> = {
 

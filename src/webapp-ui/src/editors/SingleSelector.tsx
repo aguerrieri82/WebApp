@@ -6,7 +6,6 @@ import { type IItemsSource } from "../abstraction/IItemsSource";
 import { type IAsyncLoad } from "../abstraction/IAsyncLoad";
 import { CommitableEditor, type ICommitableEditorOptions } from "./CommitableEditor";
 
-
 interface ISingleSelectorOptions<TItem, TValue> extends ICommitableEditorOptions<TValue, string> {
 
     emptyItem?: string;
@@ -71,7 +70,6 @@ export class SingleSelector<TItem, TValue> extends CommitableEditor<TValue, stri
 
         this.onChanged("editValue", () => this.commitAsync());
     }
-
 
     protected override editToValue(value: string, clone?: boolean): TValue {
 
@@ -139,7 +137,6 @@ export class SingleSelector<TItem, TValue> extends CommitableEditor<TValue, stri
 
     content: TItem[];
 }
-
 
 declare module "./EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {

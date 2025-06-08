@@ -9,4 +9,3 @@ if (process.argv[2] == "-test") {
     runTest2();
 }
 
-

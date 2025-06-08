@@ -5,7 +5,6 @@ import { type ViewNode } from "../Types";
 import { MaterialIcon } from "./Icon";
 import { NodeView } from "./NodeView";
 
-
 export const ProgressViewTemplates: TemplateMap<ProgressView> = {
 
     "Default": forModel(m => <>
@@ -42,7 +41,6 @@ export class ProgressView extends Component<IProgressViewOptions> {
             ...options
         });
     }
-
 
     content: ViewNode;
 

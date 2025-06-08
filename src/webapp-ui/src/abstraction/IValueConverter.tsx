@@ -1,4 +1,3 @@
-
 export interface IValueConverter<TFrom, TTo> {
 
     convertFrom(form: TFrom): TTo;

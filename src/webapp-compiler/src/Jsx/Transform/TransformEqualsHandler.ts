@@ -27,5 +27,4 @@ function TransformEqualsHandler(ctx: JsxParseContext, stage: "trans-exp", path: 
     return true;
 }
 
-
 export default TransformEqualsHandler;

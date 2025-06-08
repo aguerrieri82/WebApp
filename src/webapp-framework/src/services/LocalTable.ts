@@ -33,7 +33,6 @@ class LocalTable implements ILocalization {
     readonly [SERVICE_TYPE] = LOCALIZATION;
 }
 
-
 export const localTable = new LocalTable();
 
 export default localTable;

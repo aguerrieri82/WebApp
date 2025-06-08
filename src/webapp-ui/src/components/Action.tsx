@@ -19,7 +19,6 @@ interface IActionOptions<TTarget> extends IComponentOptions {
     enabled?: Bindable<boolean>;
 }
 
-
 export const ActionTemplates: TemplateMap<Action> = {
 
     "Button": forModel(m => <button
@@ -92,13 +91,11 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
     isExecuting: boolean;
 }
 
-
 registerComponent(Action, "Action");
 
 configureBindings(Action, {
     "onExecuteAsync": "action",
 });
-
 
 export function createAction(action: IAction, style?: ComponentStyle) {
 

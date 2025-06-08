@@ -32,7 +32,6 @@ export abstract class Editor<
         this.onValueChanged(value, oldValue, reason);
     }
 
-
     onValueChanged(value: TValue, oldValue: TValue, reason: ValueChangedReason) {
 
     }

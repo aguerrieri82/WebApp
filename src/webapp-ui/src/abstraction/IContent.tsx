@@ -74,7 +74,6 @@ IContentInfo<TArgs, TContent> |
 IContentInstance<TArgs, TContent> |
 IContentConstructor<TArgs>;
 
-
 export function contentInfo<
     TArgs extends {},
     TContent extends IContent<TArgs>,

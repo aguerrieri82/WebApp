@@ -11,6 +11,9 @@
     "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true
   },
+  "buildOptions": {
+    "incremental": true
+  },
   "include": ["src"]
 }
  

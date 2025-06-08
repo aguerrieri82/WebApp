@@ -1,7 +1,11 @@
 import { type IBehavoir } from "./abstraction";
 import { type ITemplateContext } from "./abstraction/ITemplateContext";
 
-export abstract class Behavoir<TOptions extends {} = {}, TElement extends HTMLElement = HTMLElement, TModel = unknown> implements IBehavoir<TElement, TModel> {
+export abstract class Behavoir<
+    TOptions extends ObjectLike = object,
+    TElement extends HTMLElement = HTMLElement,
+    TModel = unknown>
+    implements IBehavoir<TElement, TModel> {
 
     protected _isDetach: boolean;
 

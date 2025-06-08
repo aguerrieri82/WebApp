@@ -9,7 +9,6 @@ export class TemplateWriter extends JsWriter {
         this.context = context;
     }
 
-
     writeIdentifier(name: string ) {
         return this.write(this.context.jsNamespace).write(".").write(name);
     }
@@ -26,7 +25,6 @@ export class TemplateWriter extends JsWriter {
 
         if (this.context.isJsx) 
             return this.write(value);
-        
 
         return this.beginInlineFunction(this.context.getParameter("$model"))
             .write(this.context.replaceExpression(value))

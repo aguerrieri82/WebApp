@@ -47,14 +47,12 @@ export function TransfromNotModelRef(ctx: JsxParseContext, stage: "trans-exp", p
     i cannot use [USE] (es. for strings)
     */
 
-
     const bindMode = ctx.getHelper(path)?.name as BindMode;
     
     if (ctx.curModel && !ctx.ignoreCurModel)
         ctx.replaceNode(id, `${ctx.useImport("use")}(${ctx.curModel.name},${exp})`);
     else
         ctx.replaceNode(id, exp);
-
 
     path.shouldSkip = true;
 

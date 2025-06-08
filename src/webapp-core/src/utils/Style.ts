@@ -1,7 +1,5 @@
 import { type ComponentStyle } from "../abstraction";
 
-
-
 export function buildStyle(...style: ComponentStyle[]) {
 
     const result: string[] = [];

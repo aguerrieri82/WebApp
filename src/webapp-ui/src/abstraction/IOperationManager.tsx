@@ -9,7 +9,6 @@ export interface IOperationOptions {
     unblock?: boolean;
 }
 
-
 export interface IOperation {
 
     name?: string;

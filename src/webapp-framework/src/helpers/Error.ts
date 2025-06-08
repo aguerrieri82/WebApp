@@ -2,7 +2,6 @@ import type { LocalString } from "@eusoft/webapp-ui/Types";
 import { userInteraction } from "../services";
 import { formatText } from "@eusoft/webapp-ui/utils/Format";
 
-
 interface IHandleErrorOptions {
     defaultMessage?: LocalString;
     displayTime?: number;

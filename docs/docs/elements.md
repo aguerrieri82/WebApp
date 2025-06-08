@@ -1,5 +1,30 @@
 # Elements
 
+## Template
+
+**Builder**
+
+```
+import { template } from "@eusoft/webapp-core";
+
+template(t => t);
+```
+
+
+**JSX**
+```
+import { forModel } from "@eusoft/webapp-jsx";
+
+forModel<TModel>(m => <>
+</>);
+
+forModel(myModel, m => <>
+</>);
+
+<Template name="">
+</Template>
+```
+
 
 ## Content
 
@@ -56,7 +81,6 @@ t.if(m=> m.test == 2,
 t.class(m=> m.myClassList);
 
 t.class(m=> "my-class", m => m.myProp == true);
-
 ```
 
 **JSX**
@@ -80,15 +104,17 @@ t => t.styles({
 })
 
 t => t.style("color", m=> m.myColor)
-
 ```
 
 **JSX**
 ```
-<div style={{color: m.myColor}}>
+<div>
 	<Style color={m.MyColor} fontSize="16px" />
 </div>
 
+<div style={{color: m.myColor}}/>
+
+<div style-color={m.myColor}/>
 ```
 ---
 ## Foreach
@@ -96,25 +122,70 @@ t => t.style("color", m=> m.myColor)
 **Builder**
 ```
 t => t.foreach(m => m.items,
-    t2 => t2.text(item => item.myItemProp));
+    t2 => t2.beginChild("span")
+			.text(item => item.myItemProp))
+			.endChild();
 
 ```
 
 
 **JSX**
 ```
-<Foreach src={m.items} as="item">
-	{item.myItemProp}
+<Foreach src={m.items}>
+	<span>{item.myItemProp}</span>
 </Foreach>
-
 ```
 
 **Expression**
 ```
-{m.items.forEach(i=> <>{i.myItemProp}</>)}
-
+{m.items.forEach(i=> <span>{i.myItemProp}<span/>)}
 ```
 
 !!! warning
     Do not use `map` function of an array, since will behave as expected 
 	(transform an array to another array), not bind an array
+
+
+---
+## Text
+
+**Builder**
+```
+t => t.text(m => m.myText)
+```
+
+
+**JSX**
+```
+<Text src={m.myText}/>
+```
+
+---
+## Node
+
+**Builder**
+```
+t => t.appendChild(m => m.myDOMnode)
+```
+
+
+**JSX**
+```
+<Node src={m.myDOMnode}/>
+```
+
+---
+## Html
+
+**Builder**
+```
+t => t.html(m => m.myHtmlString)
+```
+
+
+**JSX**
+```
+<Html src={m.myHtmlString}/>
+```
+
+---

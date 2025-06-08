@@ -1,8 +1,6 @@
 ﻿import type { Bindable } from "./IBindable";
 import type { CatalogTemplate } from "./ITemplateProvider";
 
-
-
 export type ComponentStyle = string | ComponentStyle[];
 
 export interface IComponentOptions {

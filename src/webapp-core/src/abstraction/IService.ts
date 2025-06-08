@@ -1,5 +1,4 @@
-﻿
-export const SERVICE_TYPE: unique symbol = Symbol.for("@serviceType")
+﻿export const SERVICE_TYPE: unique symbol = Symbol.for("@serviceType")
 
 export type ServiceType = symbol;
 

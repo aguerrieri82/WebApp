@@ -11,9 +11,8 @@ export class HtmlElementHandler implements ITemplateHandler {
 
     handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
-        //TODO innerHTML?
-
-        //ctx.writer.write(".html(").writeJson(element.innerHTML).write(")");
+        const src = element.attributes.src?.value as string;
+        ctx.writer.write(".html(").writeJson(src).write(")");
         return HandleResult.SkipChildren;
     }
 

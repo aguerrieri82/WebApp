@@ -15,7 +15,6 @@ import { getComponent } from "./Component";
 import Services from "./Services";
 import { Bind } from "./Bind"; 
 
-
 type TemplateValueMap<TModel, TObj> = {
 
     [TKey in keyof TObj]?: BindValue<TModel, TObj[TKey]>
@@ -38,7 +37,6 @@ type FunctionalComponenType<TProps> = ITemplate<TProps> | null | undefined | voi
 
 type BehavoirType<TElement extends Element, TModel> = string | { new(): IBehavoir } | IBehavoir | BehavoirType<TElement, TModel>[];
 
-
 type ComponentType<TProps, TComp extends ClassComponenType<TProps>, TResult extends FunctionalComponenType<TProps>> =
     { new(props?: TProps): TComp } |
     { (props?: TProps): TResult }
@@ -60,13 +58,11 @@ interface ISwitchCondition<TValue> {
 
 /****************************************/
 
-
 export type InputValueMode = "focus" | "change" | "keyup" | "pool" | "input";
 
 export type ContentUpdateMode = "replace";
 
 export const BUILDER: unique symbol = Symbol.for("@builder")
-
 
 /****************************************/
 
@@ -95,7 +91,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             this.namespace = element.namespaceURI;
     }
 
-
     protected beginTemplate<TInnerModel>(model?: TInnerModel, refNode?: Node, refNodePos: RefNodePosition = "after", marker?: string): TemplateBuilder<TInnerModel> {
 
         const innerBuilder = new TemplateBuilder<TInnerModel>(model, this.element, this);
@@ -113,7 +108,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         return innerBuilder;
     }
-
 
     protected endTemplate<TInnerMode>(childBuilder: TemplateBuilder<TInnerMode>) {
 
@@ -279,7 +273,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             }, true);
         }
 
-
         return this;
     }
 
@@ -392,7 +385,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this;
     }
 
-
     foreach<TItem>(selector: BindValue<TModel, TItem[]>, templateOrName?: CatalogTemplate<TItem>): this {
 
         let itemsBuilders: TemplateBuilder<TItem>[] = [];
@@ -410,7 +402,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 itemsBuilders = [];
             },
 
-            onItemRemoved: (item, index, reason) => {
+            onItemRemoved: ( _ , index, reason) => {
 
                 if (reason == "replace" || reason == "clear")
                     return;
@@ -543,8 +535,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return this;
     }
 
-
-
     enter<TInnerModel>(expression: BindValue<TModel, TInnerModel>, action: (t: TemplateBuilder<TInnerModel>) => unknown) {
 
         const childBuilder = this.beginTemplate<TInnerModel>(undefined, undefined, undefined, this.createMarker(expression));
@@ -615,7 +605,15 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return result;
     }
 
-    protected createComponent<TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>, TProps = ComponentProps<TComp>>(constructor: ComponentType<TProps, TComp, TResult>, props: Partial<BoundObject<TProps>>, modes?: BoundObjectModes<TProps>): IComponentInfo<TProps> {
+    protected createComponent<
+        TComp extends ClassComponenType<TProps> & TProps,
+        TResult extends FunctionalComponenType<TProps>,
+        TProps extends ObjectLike = ComponentProps<TComp>>
+        (
+            constructor: ComponentType<TProps, TComp, TResult>,
+            props: Partial<BoundObject<TProps>>,
+            modes?: BoundObjectModes<TProps>
+        ): IComponentInfo<TProps> {
 
         let model: Partial<Record<Extract< keyof TProps, string>, unknown>>;
         let callOnChange = false;
@@ -719,7 +717,16 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         }
     }
 
-    componentContent<TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>, TProps = ComponentProps<TComp>>(constructor: ComponentType<TProps, TComp, TResult>, props: BoundObject<TProps>, modes?: BoundObjectModes<TProps>): ITemplateProvider<TProps> {
+    componentContent<
+        TComp extends ClassComponenType<TProps> &
+        TProps,
+        TResult extends FunctionalComponenType<TProps>,
+        TProps extends ObjectLike = ComponentProps<TComp>>
+        (
+            constructor: ComponentType<TProps, TComp, TResult>,
+            props: BoundObject<TProps>,
+            modes?: BoundObjectModes<TProps>
+        ): ITemplateProvider<TProps> {
 
         const result = this.createComponent(constructor, props, modes);
 
@@ -738,9 +745,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         throw new Error(`Component '${getTypeName(constructor)}' not supported`);
     }
 
-
-
-    component<TComp extends ClassComponenType<TProps> & TProps, TResult extends FunctionalComponenType<TProps>, TProps = ComponentProps<TComp>>(constructor: ComponentType<TProps, TComp, TResult>, props: Partial<BoundObject<TProps>>, modes?: Partial<BoundObjectModes<TProps>>): this {
+    component<TComp extends ClassComponenType<TProps> & TProps,
+        TResult extends FunctionalComponenType<TProps>,
+        TProps extends ObjectLike = ComponentProps<TComp>>(constructor: ComponentType<TProps, TComp, TResult>, props: Partial<BoundObject<TProps>>, modes?: Partial<BoundObjectModes<TProps>>): this {
 
         const result = this.createComponent(constructor, props, modes);
 
@@ -1031,9 +1038,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         const valueProp = this.getBindingProperty(value);
 
         if (valueProp) {
-            this.element.addEventListener("focus", ev =>
+            this.element.addEventListener("focus", () =>
                 valueProp.set(true));
-            this.element.addEventListener("focusout", ev =>
+            this.element.addEventListener("focusout", () =>
                 valueProp.set(false));
         }
         this.bind(value, a => {
@@ -1068,35 +1075,35 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 if (element.tagName == "INPUT" || element.tagName == "TEXTAREA") {
 
                     if (element.type == "checkbox" || element.type == "radio")
-                        element.addEventListener("change", ev => {
+                        element.addEventListener("change", () => {
                             valueProp.set(element.checked);
                         });
                     else {
                         if (mode == "change") {
-                            element.addEventListener("change", ev => {
+                            element.addEventListener("change", () => {
                                 valueProp.set(element.value);
                             });
                         }
                         else if (mode == "input") {
-                            element.addEventListener("input", ev => {
+                            element.addEventListener("input", () => {
                                 valueProp.set(element.value);
                             });
                         }
                         else {
-                            element.addEventListener("keyup", ev => {
+                            element.addEventListener("keyup", () => {
                                 valueProp.set(element.value);
                             });
                         }
                     }
                 }
                 else if (element.tagName == "SELECT") {
-                    element.addEventListener("change", ev => {
+                    element.addEventListener("change", () => {
                         valueProp.set(element.value);
                     });
                 }
             }
             else if (mode == "focus") {
-                element.addEventListener("blur", ev => {
+                element.addEventListener("blur", () => {
                     valueProp.set(element.value);
                 });
             }
@@ -1119,7 +1126,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                 setTimeout(check, poolTime);
             }
 
-
         }
         if (element.tagName == "INPUT" || element.tagName == "TEXTAREA" || element.tagName == "SELECT") {
 
@@ -1140,7 +1146,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     style<TKey extends keyof CSSStyleDeclaration>(nameOrValue: TKey | StyleBinding<TModel>, value?: BindValueUnchecked<TModel, CSSStyleDeclaration[TKey]>): this {
 
-
         if (typeof nameOrValue != "object")
             this.bind(value, a => {
                 this.element.style[nameOrValue] = a
@@ -1153,7 +1158,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         }
         return this;
     }
-
 
     behavoir(nameOrValue: BehavoirType<TElement, TModel>): this {
 
@@ -1228,7 +1232,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     inlineMode: TemplateInlineMode = "never";
 
-
 }
 
 /****************************************/
@@ -1239,7 +1242,6 @@ class ChildTemplateBuilder<TModel, TElement extends HTMLElement, TParent extends
     constructor(model: TModel, element: TElement, parent?: TParent) {
         super(model, element, parent);
     }
-
 
     endChild(): TParent {
 
@@ -1301,7 +1303,6 @@ export function withNotify<T>(template: ITemplate<T>, action: () => void): ITemp
     };
 }
 
-
 export function mount<TModel>(root: HTMLElement, template: CatalogTemplate<TModel>, model?: TModel): void;
 export function mount(root: HTMLElement, component: ITemplateProvider): void;
 export function mount<TModel>(root: HTMLElement, templateOrProvider: CatalogTemplate<TModel> | ITemplateProvider, model?: TModel): void {
@@ -1316,7 +1317,6 @@ export function mount<TModel>(root: HTMLElement, templateOrProvider: CatalogTemp
         else
             model = {} as TModel;
     }
-
 
     const builder = new TemplateBuilder(model, root);
 

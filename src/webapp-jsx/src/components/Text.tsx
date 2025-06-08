@@ -1,7 +1,6 @@
 import { type BindValue } from "@eusoft/webapp-core";
 import type { JsxComponentProps, TemplateModel } from "../abstraction";
 
-
 export interface ITextProps<TModel extends TemplateModel> extends JsxComponentProps<TModel, string|string[]> {
     src?: BindValue<TModel, string>;
 }

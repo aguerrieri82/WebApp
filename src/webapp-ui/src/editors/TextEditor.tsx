@@ -47,7 +47,6 @@ export class TextEditor extends Editor<string, ITextEditorOptions> {
         });
     }
 
-
     rows?: number;
 
     placeholder?: string;
@@ -56,7 +55,6 @@ export class TextEditor extends Editor<string, ITextEditorOptions> {
 
     autocomplete: AutoFill;
 }
-
 
 declare module "./EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {

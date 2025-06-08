@@ -6,7 +6,6 @@ import { getPropertyDescriptor } from "./utils/Object";
 import { ObservableProperty } from "./ObservableProperty";
 import type { IComponent } from "./abstraction";
 
-
 export function propOf<TObj extends object, TKey extends keyof TObj & string>(obj: TObj, propName: TKey) {
 
     return getOrCreateProp(obj, propName);
@@ -39,8 +38,8 @@ export function getProp<TObj extends object, TKey extends keyof TObj & string, T
 export function bindTwoWays<TValue>(dst: IObservableProperty<TValue>, src: IObservableProperty<TValue>): IBound;
 
 export function bindTwoWays<
-    TSrc extends {},
-    TDst extends {},
+    TSrc extends ObjectLike,
+    TDst extends ObjectLike,
     TProp extends keyof TSrc & keyof TDst & string>(dst: TSrc, src: TDst, propName: TProp): IBound;
 
 export function bindTwoWays(dst: any, src: any, propName?: string) {

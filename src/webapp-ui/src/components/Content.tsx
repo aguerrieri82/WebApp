@@ -89,7 +89,6 @@ export class Content<
             if (!args)
                 args = {} as TArgs;
 
-
             if (this.features) {
 
                 for (const feature of this.features) {
@@ -125,7 +124,6 @@ export class Content<
         return true;
     }
 
-
     async onOpenAsync(): Promise<unknown> {
 
         return Promise.resolve();
@@ -140,7 +138,6 @@ export class Content<
     get loadState() {
         return this._loadState;
     }
-
 
     features: IFeature<this>[];
 
@@ -175,6 +172,5 @@ export function content(ref, args) {
         factory: (ref as IContentInfo).factory,
     } as IContentInstance;
 }
-
 
 export default Content;

@@ -9,9 +9,7 @@ export interface IEmptyViewOptions {
     addAction?: () => unknown;
 }
 
-
 export function EmptyView(options: IEmptyViewOptions) {
-
 
     return <div className="empty-view">
 

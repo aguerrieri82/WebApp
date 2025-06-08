@@ -67,6 +67,5 @@ export class ObservableProperty<TValue = unknown> implements IObservableProperty
    
     }
 
-
     readonly name: string;
 }

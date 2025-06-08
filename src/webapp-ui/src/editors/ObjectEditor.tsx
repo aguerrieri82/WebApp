@@ -79,7 +79,6 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
                 }
             })) as ITemplate<TObj>;
 
-
             this._contentTemplate = withNotify(
                 withCleanup(innerTemplate,
                     () => this._inputs = []),
@@ -215,7 +214,6 @@ EditorBuilder.prototype.object = function (this: EditorBuilder<any, any>, value,
         ...options
     });
 }
-
 
 export function objectEditor<TObj extends {}>(builder: (builder: EditorBuilder<TObj, ObjectEditor<TObj>>) => ITemplate<TObj> | JSX.Element, options?: IObjectEditorOptions<TObj>) {
     return new ObjectEditor<TObj>({ ...options, builder });

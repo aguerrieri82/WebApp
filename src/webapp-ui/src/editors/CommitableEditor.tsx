@@ -6,7 +6,6 @@ import { type IValidationContext } from "../abstraction/Validator";
 import { type ViewNode } from "../Types";
 import { cleanProxy, getTypeName } from "@eusoft/webapp-core";
 
-
 type EditState = "" | "committed" | "committing" | "validating" | "editing" | "loading";
 
 export interface ICommitableEditorOptions<TValue, TEditValue> extends IEditorOptions<TValue> {
@@ -95,7 +94,6 @@ export abstract class CommitableEditor<
 
         return value as unknown as TEditValue;
     }
-
 
     async commitAsync(): Promise<boolean> {
  

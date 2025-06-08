@@ -13,17 +13,13 @@ import { type ITemplateContext } from "./abstraction/ITemplateContext";
 import { type IService, SERVICE_TYPE, type ServiceType } from "./abstraction/IService";
 import { type IServiceProvider, type ServiceContainer } from "./abstraction/IServiceProvider";
 import { isExternalBind, type BindExpression, type BindValueUnchecked } from "./abstraction/IBinder";
-import { type Bindable,  type BindableObject,  type IHTMLContainer, type ITemplate } from "./abstraction";
+import { type Bindable,  type BindableObject,  type IHTMLContainer } from "./abstraction";
 import { buildStyle } from "./utils/Style";
 import { Bind } from "./Bind";
-
-
 
 interface ISubscription {
     unsubscribe(): void;
 }
-
-
 
 export abstract class Component<
     TOptions extends IComponentOptions = IComponentOptions>
@@ -63,7 +59,6 @@ export abstract class Component<
             if (func != this.init)
                 func.call(this);
         }
-
         
     }
 
@@ -73,7 +68,6 @@ export abstract class Component<
 
         this.onChanged("name", () => this.updateClass());
     }
-
 
     protected updateOptions() {
 
@@ -148,7 +142,6 @@ export abstract class Component<
         (this as unknown as ServiceContainer<TServiceType, TService>)[serviceType] = service;
     }
 
-
     bindTwoWays<TValue, TDestModel extends object>(
         src: BindValueUnchecked<this, TValue>,
         dstModel: TDestModel,
@@ -156,7 +149,6 @@ export abstract class Component<
 
         this.binder.bindTwoWays(src, dstModel, dst, "dstToSrc");
     }
-
     
     bindOneWay<TValue, TSrcModel extends object>(
         dst: BindValueUnchecked<this, TValue>,
@@ -213,7 +205,6 @@ export abstract class Component<
                 item.unsubscribe();
             delete this._subscriptions;
         }
-    
 
         if (this._binder) {
             this._binder.cleanBindings(cleanValue, true);
@@ -240,7 +231,6 @@ export abstract class Component<
             this._binder = new Binder(this);
         return this._binder;
     }
-
 
     className: string;
 
@@ -286,7 +276,6 @@ interface InlineComponentBody<TOptions>  {
 type BindableOptions<TOptions, TBaseOptions = IComponentOptions> =
     BindableObject<Omit<TOptions, keyof TBaseOptions | "construct">> & TBaseOptions;
 
-
 type InlineComponentType<
     TBase extends Component,    
     TBody extends object,
@@ -320,7 +309,6 @@ export function extendComponent(base: Class<Component> , body: InlineComponentBo
     else
         realOptions = options;
 
-
     const result = class InlineComponent extends base {
         constructor(...args: any[]) {
 
@@ -353,7 +341,6 @@ export function declareComponent<
 
     return extendComponent(Component, body, options) as InlineComponentType<Component, TBody>;
 }
-
 
 export function registerComponent<T extends Component<unknown>>(ctr: { new(...args: any[]): T }, name: string) {
     setTypeName(ctr, name);

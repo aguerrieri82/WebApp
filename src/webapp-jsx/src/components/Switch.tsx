@@ -2,7 +2,6 @@ import { type BindValue, type ITemplate } from "@eusoft/webapp-core";
 import type {  JsxComponentProps, TemplateModel } from "../abstraction";
 import { type JsxElementInstance } from "../abstraction";
 
-
 type BuildSwitch<TValue> = (value: TValue) => void;
 
 type TChild<TValue extends TemplateModel> =
@@ -30,7 +29,6 @@ export function When<TValue extends TemplateModel>(props: IWhenProps<TValue>): n
 }
 
 export function Switch<TModel extends TemplateModel, TValue extends TemplateModel>(props: ISwitchProps<TModel, TValue>) : null {
-
 
     if (typeof props.content == "function") {
         //props.context.builder.switch(props.src, props.content as BuildSwitch<TValue>);

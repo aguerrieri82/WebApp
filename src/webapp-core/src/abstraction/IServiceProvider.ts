@@ -1,6 +1,5 @@
 ﻿import { type IService, type ServiceType } from "./IService";
 
-
 export type ServiceContainer<TServiceType extends ServiceType, TService extends IService<ServiceType> = IService<ServiceType>> =
     Record<TServiceType, TService>;
 

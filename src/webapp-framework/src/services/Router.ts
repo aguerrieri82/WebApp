@@ -36,7 +36,6 @@ function restoreState<T>(key: string, defValue: T) {
     return defValue;
 }
 
-
 export class Router {
 
     protected _history: IRouteState[];
@@ -91,7 +90,6 @@ export class Router {
         this._entries.push(entry);
         return entry;
     }
-
 
     addPage(infoOrPage: IContentInfo | IContentConstructor) {
 

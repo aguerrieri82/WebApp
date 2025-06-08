@@ -1,7 +1,6 @@
 import { type ComponentStyle } from "@eusoft/webapp-core";
 import { type IContentOptions, type Content, type IContentInfo, type IContent, type IFeature, type LocalString, type IAction, formatText } from "@eusoft/webapp-ui";
 
-
 export interface IContentBuilder {
 
 }
@@ -69,7 +68,6 @@ export class ContentBuilder<
         return res as (TBody & TContent);
     }
 
-
     asContent<TBody extends object>(body?: BindThis<TContent, TBody & TContent>) {
         return {
             name: this._options.name,            
@@ -78,7 +76,6 @@ export class ContentBuilder<
             factory: () => this.createInstance(body)
         } as IContentInfo<TArgs, TContent & TBody>
     }
-
 
 }
 

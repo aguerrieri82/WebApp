@@ -18,7 +18,6 @@ export function staticItemsSource<TValue>(...items: [LocalString, TValue][]) {
         value: a[1]
     }) as ISimpleItem<TValue>);
 
-
     return {
         getItemByValueAsync: async value => simpleItems.find(a => a.value == value),
         getItemsAsync: async () => simpleItems,

@@ -49,7 +49,6 @@ export class DateEditor extends Editor<Date, IDateEditorOptions> {
     editValue: string;
 }
 
-
 declare module "./EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {
         date(value: BindExpression<TModel, Date>, options?: IBuilderEditorOptions<TModel, Date, IDateEditorOptions>);

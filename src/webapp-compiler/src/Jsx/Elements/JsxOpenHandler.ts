@@ -40,5 +40,4 @@ export function JsxOpenHandler(ctx: JsxParseContext, stage: "enter", path: NodeP
     return true;
 }
 
-
 export default JsxOpenHandler;

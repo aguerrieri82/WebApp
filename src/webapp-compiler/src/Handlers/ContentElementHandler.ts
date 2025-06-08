@@ -42,7 +42,6 @@ export class ContentElementHandler implements ITemplateHandler {
             ctx.writer.write(")");
         }
 
-
         return HandleResult.SkipChildren;
     }
 
