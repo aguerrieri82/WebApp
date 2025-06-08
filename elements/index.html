@@ -46,6 +46,8 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">Elements</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#template">Template</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#content">Content</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#if">If</a>
@@ -55,6 +57,12 @@
     <li class="toctree-l2"><a class="reference internal" href="#style">Style</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#foreach">Foreach</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#text">Text</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#node">Node</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#html">Html</a>
     </li>
     </ul>
                 </li>
@@ -87,6 +95,24 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="elements">Elements</h1>
+<h2 id="template">Template</h2>
+<p><strong>Builder</strong></p>
+<div class="highlight"><pre><span></span><code>import { template } from &quot;@eusoft/webapp-core&quot;;
+
+template(t =&gt; t);
+</code></pre></div>
+<p><strong>JSX</strong>
+<div class="highlight"><pre><span></span><code>import { forModel } from &quot;@eusoft/webapp-jsx&quot;;
+
+forModel&lt;TModel&gt;(m =&gt; &lt;&gt;
+&lt;/&gt;);
+
+forModel(myModel, m =&gt; &lt;&gt;
+&lt;/&gt;);
+
+&lt;Template name=&quot;&quot;&gt;
+&lt;/Template&gt;
+</code></pre></div></p>
 <h2 id="content">Content</h2>
 <p><strong>Builder</strong>
 <div class="highlight"><pre><span></span><code>t.content(m=&gt; m.myContent)
@@ -146,29 +172,60 @@ t.class(m=&gt; &quot;my-class&quot;, m =&gt; m.myProp == true);
 t =&gt; t.style(&quot;color&quot;, m=&gt; m.myColor)
 </code></pre></div>
 <p><strong>JSX</strong>
-<div class="highlight"><pre><span></span><code>&lt;div style={{color: m.myColor}}&gt;
+<div class="highlight"><pre><span></span><code>&lt;div&gt;
     &lt;Style color={m.MyColor} fontSize=&quot;16px&quot; /&gt;
 &lt;/div&gt;
+
+&lt;div style={{color: m.myColor}}/&gt;
+
+&lt;div style-color={m.myColor}/&gt;
 </code></pre></div></p>
 <hr />
 <h2 id="foreach">Foreach</h2>
 <p><strong>Builder</strong>
 <div class="highlight"><pre><span></span><code>t =&gt; t.foreach(m =&gt; m.items,
-    t2 =&gt; t2.text(item =&gt; item.myItemProp));
+    t2 =&gt; t2.beginChild(&quot;span&quot;)
+            .text(item =&gt; item.myItemProp))
+            .endChild();
 </code></pre></div></p>
 <p><strong>JSX</strong>
-<div class="highlight"><pre><span></span><code>&lt;Foreach src={m.items} as=&quot;item&quot;&gt;
-    {item.myItemProp}
+<div class="highlight"><pre><span></span><code>&lt;Foreach src={m.items}&gt;
+    &lt;span&gt;{item.myItemProp}&lt;/span&gt;
 &lt;/Foreach&gt;
 </code></pre></div></p>
 <p><strong>Expression</strong>
-<div class="highlight"><pre><span></span><code>{m.items.forEach(i=&gt; &lt;&gt;{i.myItemProp}&lt;/&gt;)}
+<div class="highlight"><pre><span></span><code>{m.items.forEach(i=&gt; &lt;span&gt;{i.myItemProp}&lt;span/&gt;)}
 </code></pre></div></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Do not use <code>map</code> function of an array, since will behave as expected 
 (transform an array to another array), not bind an array</p>
 </div>
+<hr />
+<h2 id="text">Text</h2>
+<p><strong>Builder</strong>
+<div class="highlight"><pre><span></span><code>t =&gt; t.text(m =&gt; m.myText)
+</code></pre></div></p>
+<p><strong>JSX</strong>
+<div class="highlight"><pre><span></span><code>&lt;Text src={m.myText}/&gt;
+</code></pre></div></p>
+<hr />
+<h2 id="node">Node</h2>
+<p><strong>Builder</strong>
+<div class="highlight"><pre><span></span><code>t =&gt; t.appendChild(m =&gt; m.myDOMnode)
+</code></pre></div></p>
+<p><strong>JSX</strong>
+<div class="highlight"><pre><span></span><code>&lt;Node src={m.myDOMnode}/&gt;
+</code></pre></div></p>
+<hr />
+<h2 id="html">Html</h2>
+<p><strong>Builder</strong>
+<div class="highlight"><pre><span></span><code>t =&gt; t.html(m =&gt; m.myHtmlString)
+</code></pre></div></p>
+<p><strong>JSX</strong>
+<div class="highlight"><pre><span></span><code>&lt;Html src={m.myHtmlString}/&gt;
+</code></pre></div></p>
+<hr />
               
             </div>
           </div><footer>
