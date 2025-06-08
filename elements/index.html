@@ -48,6 +48,8 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#template">Template</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#html-elements">HTML Elements</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#content">Content</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#if">If</a>
@@ -95,136 +97,219 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="elements">Elements</h1>
+<p>This chapter describes the different building blocks of the framework’s rendering system, 
+including how to define templates, bind data, and handle dynamic DOM updates. 
+It covers the syntax and conventions for building reactive interfaces with both 
+the fluent API (Builder) and JSX syntax. 
+The elements and attributes described here allow you to construct flexible, 
+data-driven UIs with live updates and minimal manual DOM management.</p>
+<p>Some elements are automatically detected using an expression inside the JSX as a shortcut.</p>
 <h2 id="template">Template</h2>
+<p>Define a new template. A template is a function that builds or updates a DOM tree for a given model. 
+The template is "live": it monitors the model for changes and updates the DOM accordingly. 
+At least one template must be mounted in your document using the <code>mount(elementOrSelector, template)</code> function.</p>
 <p><strong>Builder</strong></p>
-<div class="highlight"><pre><span></span><code>import { template } from &quot;@eusoft/webapp-core&quot;;
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">template</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@eusoft/webapp-core&quot;</span><span class="p">;</span>
 
-template(t =&gt; t);
+<span class="nx">template</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t</span><span class="p">);</span>
 </code></pre></div>
-<p><strong>JSX</strong>
-<div class="highlight"><pre><span></span><code>import { forModel } from &quot;@eusoft/webapp-jsx&quot;;
+<p><strong>JSX</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">forModel</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@eusoft/webapp-jsx&quot;</span><span class="p">;</span>
 
-forModel&lt;TModel&gt;(m =&gt; &lt;&gt;
-&lt;/&gt;);
+<span class="nx">forModel</span><span class="o">&lt;</span><span class="nx">TModel</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="o">&lt;</span><span class="err">/&gt;);</span>
 
-forModel(myModel, m =&gt; &lt;&gt;
-&lt;/&gt;);
+<span class="nx">forModel</span><span class="p">(</span><span class="nx">myModel</span><span class="p">,</span><span class="w"> </span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="o">&lt;</span><span class="err">/&gt;);</span>
 
-&lt;Template name=&quot;&quot;&gt;
-&lt;/Template&gt;
-</code></pre></div></p>
+<span class="o">&lt;</span><span class="nx">Template</span><span class="w"> </span><span class="nx">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="err">/Template&gt;</span>
+</code></pre></div>
+<h2 id="html-elements">HTML Elements</h2>
+<p>Standard HTML elements can be created using the fluent API in the template builder.</p>
+<p>In JSX, events are mapped using special <code>on-*</code> attributes, where <code>*</code> is the event name (e.g., <code>on-click</code>).</p>
+<p>In addition to standard HTML attributes:</p>
+<ul>
+<li><code>focus</code>: two-way boolean expression to get/set the focus status.</li>
+<li><code>visible</code>: adds or removes the "visible" or "hidden" class to an element based on the boolean expression.</li>
+<li><code>html</code>: sets the inner HTML of an element.</li>
+<li><code>text</code>: sets the inner text of an element.</li>
+</ul>
+<p>For <code>input</code>, <code>textarea</code>, and <code>select</code> elements:</p>
+<ul>
+<li><code>value-mode</code>: determines how the value update must be notified:<ul>
+<li><code>change</code>: when the value changes (default).</li>
+<li><code>focus</code>: when the element loses focus.</li>
+<li><code>input</code>: when the value changes due to user input.</li>
+<li><code>keyup</code>: after every keyup event.</li>
+<li><code>pool</code>: periodically checks for value changes every <code>value-pool</code> milliseconds.</li>
+</ul>
+</li>
+<li><code>value-pool</code>: interval in milliseconds (default: 500).</li>
+</ul>
+<p><strong>Builder</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nx">template</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">beginChild</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">).</span><span class="kd">class</span><span class="p">(</span><span class="s2">&quot;myClass&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="nx">beginChild</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">).</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;a span&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&quot;Text&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="nx">endChild</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="nx">beginChild</span><span class="p">(</span><span class="s2">&quot;button&quot;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">ev</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Clicked!&quot;</span><span class="p">))</span>
+<span class="w">            </span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&quot;Click me&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="nx">endChild</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">endChild</span><span class="p">());</span>
+</code></pre></div>
+<p><strong>JSX</strong></p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">&quot;myClass&quot;</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">span</span><span class="w"> </span><span class="nx">title</span><span class="o">=</span><span class="s2">&quot;a span&quot;</span><span class="o">&gt;</span><span class="nx">Text</span><span class="o">&lt;</span><span class="err">/span&gt;</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">button</span><span class="w"> </span><span class="nx">on</span><span class="o">-</span><span class="nx">click</span><span class="o">=</span><span class="p">{</span><span class="nx">ev</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Clicked!&quot;</span><span class="p">)}</span><span class="o">&gt;</span><span class="nx">Click</span><span class="w"> </span><span class="nx">me</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+<span class="o">&lt;</span><span class="err">/div&gt;</span>
+</code></pre></div>
 <h2 id="content">Content</h2>
-<p><strong>Builder</strong>
-<div class="highlight"><pre><span></span><code>t.content(m=&gt; m.myContent)
-</code></pre></div></p>
-<p><strong>JSX</strong>
-<div class="highlight"><pre><span></span><code>&lt;Content src = {m.myContent} /&gt;
-</code></pre></div></p>
-<p><strong>Expression</strong>
-<div class="highlight"><pre><span></span><code>&lt;tagName&gt;{m.myContent}&lt;/tagName&gt;
-</code></pre></div></p>
-<hr />
-<h2 id="if">If</h2>
-<p><strong>Builder</strong>
-<div class="highlight"><pre><span></span><code>t.if(m=&gt; m.test == 2, 
-    t1 =&gt; t1.text(&quot;True&quot;),
-    t1 =&gt; t1.text(&quot;False&quot;))
-</code></pre></div></p>
-<p><strong>JSX</strong>
-<div class="highlight"><pre><span></span><code>&lt;If condition = {m.test == 2} &gt;
-    True
-    &lt;Else&gt;False&lt;/Else&gt;
-&lt;/If&gt;
-</code></pre></div></p>
-<p><strong>Expression</strong>
-<div class="highlight"><pre><span></span><code>&lt;tagName&gt;
-    {m.test == 2 ? 
-        &lt;&gt;True&lt;/&gt; 
-        : 
-        &lt;&gt;False&lt;/&gt;
-    }
-&lt;/tagName&gt;
-
-&lt;tagName&gt;{m.test == 2 &amp;&amp; &lt;&gt;True not else&lt;/&gt;}&lt;/tagName&gt;
-</code></pre></div></p>
-<hr />
-<h2 id="class">Class</h2>
-<p><strong>Builder</strong></p>
-<div class="highlight"><pre><span></span><code>t.class(m=&gt; m.myClassList);
-
-t.class(m=&gt; &quot;my-class&quot;, m =&gt; m.myProp == true);
-</code></pre></div>
-<p><strong>JSX</strong>
-<div class="highlight"><pre><span></span><code>&lt;div&gt;
-    &lt;Class condition = {m.myProp == true} name=&quot;my-class&quot; /&gt;
-    &lt;Class name={m.myClassList} /&gt;
-&lt;/div&gt;
-&lt;div className=&quot;class1 class2&quot;/&gt;
-</code></pre></div></p>
-<hr />
-<h2 id="style">Style</h2>
-<p><strong>Builder</strong></p>
-<div class="highlight"><pre><span></span><code>t =&gt; t.styles({
-    &quot;color&quot;: m=&gt; m.myColor,
-    &quot;font-size&quot;: &quot;13px&quot;
-})
-
-t =&gt; t.style(&quot;color&quot;, m=&gt; m.myColor)
-</code></pre></div>
-<p><strong>JSX</strong>
-<div class="highlight"><pre><span></span><code>&lt;div&gt;
-    &lt;Style color={m.MyColor} fontSize=&quot;16px&quot; /&gt;
-&lt;/div&gt;
-
-&lt;div style={{color: m.myColor}}/&gt;
-
-&lt;div style-color={m.myColor}/&gt;
-</code></pre></div></p>
-<hr />
-<h2 id="foreach">Foreach</h2>
-<p><strong>Builder</strong>
-<div class="highlight"><pre><span></span><code>t =&gt; t.foreach(m =&gt; m.items,
-    t2 =&gt; t2.beginChild(&quot;span&quot;)
-            .text(item =&gt; item.myItemProp))
-            .endChild();
-</code></pre></div></p>
-<p><strong>JSX</strong>
-<div class="highlight"><pre><span></span><code>&lt;Foreach src={m.items}&gt;
-    &lt;span&gt;{item.myItemProp}&lt;/span&gt;
-&lt;/Foreach&gt;
-</code></pre></div></p>
-<p><strong>Expression</strong>
-<div class="highlight"><pre><span></span><code>{m.items.forEach(i=&gt; &lt;span&gt;{i.myItemProp}&lt;span/&gt;)}
-</code></pre></div></p>
+<p>Renders the specified content.</p>
+<p>Valid content types are:</p>
+<ul>
+<li>Primitive types: String, Number, Boolean</li>
+<li>Components</li>
+<li>Templates</li>
+<li>Template providers <code>{model: ..., template: ...}</code></li>
+<li>An object with an associated template using <code>setTemplate</code></li>
+<li>Arrays of valid content</li>
+</ul>
+<p>You can override the default template associated with the model by specifying the <code>template</code> attribute.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Do not use <code>map</code> function of an array, since will behave as expected 
-(transform an array to another array), not bind an array</p>
+<p>A content array is not observed for internal changes, but only when the whole array object changes.
+To observe an array, use the <code>Foreach</code> element or expression.</p>
+</div>
+<p><strong>Builder</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nx">t</span><span class="p">.</span><span class="nx">content</span><span class="p">(</span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">myContent</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>JSX</strong></p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="nx">Content</span><span class="w"> </span><span class="nx">src</span><span class="o">=</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">myContent</span><span class="p">}</span><span class="w"> </span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="nx">Content</span><span class="w"> </span><span class="nx">src</span><span class="o">=</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">myContent</span><span class="p">}</span><span class="w"> </span><span class="nx">template</span><span class="o">=</span><span class="p">{</span><span class="nx">myTemplate</span><span class="p">}</span><span class="w"> </span><span class="o">/&gt;</span>
+</code></pre></div>
+<p><strong>Expression</strong></p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="nx">tagName</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">myContent</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/tagName&gt;</span>
+</code></pre></div>
+<hr />
+<h2 id="if">If</h2>
+<p>Conditionally render a subtree if the condition is true. You can optionally specify a false subtree.
+This allows toggling parts of the UI based on the model’s state.</p>
+<p><strong>Builder</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nx">t</span><span class="p">.</span><span class="k">if</span><span class="p">(</span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">test</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span>
+<span class="w">    </span><span class="nx">t1</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t1</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="nx">t1</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t1</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&quot;False&quot;</span><span class="p">));</span>
+</code></pre></div>
+<p><strong>JSX</strong></p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="nx">If</span><span class="w"> </span><span class="nx">condition</span><span class="o">=</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">test</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mf">2</span><span class="p">}</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="nx">True</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">Else</span><span class="o">&gt;</span><span class="nx">False</span><span class="o">&lt;</span><span class="err">/Else&gt;</span>
+<span class="o">&lt;</span><span class="err">/If&gt;</span>
+</code></pre></div>
+<p><strong>Expression</strong></p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="nx">tagName</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">test</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">?</span><span class="w"> </span>
+<span class="w">        </span><span class="o">&lt;&gt;</span><span class="nx">True</span><span class="o">&lt;</span><span class="err">/&gt; </span>
+<span class="w">        </span><span class="o">:</span><span class="w"> </span>
+<span class="w">        </span><span class="o">&lt;&gt;</span><span class="nx">False</span><span class="o">&lt;</span><span class="err">/&gt;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="o">&lt;</span><span class="err">/tagName&gt;</span>
+
+<span class="o">&lt;</span><span class="nx">tagName</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">test</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="nx">True</span><span class="w"> </span><span class="p">(</span><span class="nx">no</span><span class="w"> </span><span class="k">else</span><span class="p">)</span><span class="o">&lt;</span><span class="err">/&gt;}&lt;/tagName&gt;</span>
+</code></pre></div>
+<hr />
+<h2 id="class">Class</h2>
+<p>Adds a class list to an HTML element or conditionally adds/removes it when a given expression is true.</p>
+<p><strong>Builder</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nx">t</span><span class="p">.</span><span class="kd">class</span><span class="p">(</span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">myClassList</span><span class="p">);</span>
+
+<span class="nx">t</span><span class="p">.</span><span class="kd">class</span><span class="p">(</span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="s2">&quot;my-class&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">myProp</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+</code></pre></div>
+<p><strong>JSX</strong></p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">Class</span><span class="w"> </span><span class="nx">condition</span><span class="o">=</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">myProp</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="kc">true</span><span class="p">}</span><span class="w"> </span><span class="nx">name</span><span class="o">=</span><span class="s2">&quot;my-class&quot;</span><span class="w"> </span><span class="o">/&gt;</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">Class</span><span class="w"> </span><span class="nx">name</span><span class="o">=</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">myClassList</span><span class="p">}</span><span class="w"> </span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="err">/div&gt;</span>
+<span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">&quot;class1 class2&quot;</span><span class="o">/&gt;</span>
+</code></pre></div>
+<hr />
+<h2 id="style">Style</h2>
+<p>Associates a static style object to an HTML element or dynamically binds a particular state property.</p>
+<p><strong>Builder</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">styles</span><span class="p">({</span>
+<span class="w">    </span><span class="s2">&quot;color&quot;</span><span class="o">:</span><span class="w"> </span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">myColor</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;font-size&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;13px&quot;</span>
+<span class="p">})</span>
+
+<span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">myColor</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>JSX</strong></p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">Style</span><span class="w"> </span><span class="nx">color</span><span class="o">=</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">myColor</span><span class="p">}</span><span class="w"> </span><span class="nx">fontSize</span><span class="o">=</span><span class="s2">&quot;16px&quot;</span><span class="w"> </span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="err">/div&gt;</span>
+
+<span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">myColor</span><span class="w"> </span><span class="p">}}</span><span class="o">/&gt;</span>
+
+<span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">style</span><span class="o">-</span><span class="nx">color</span><span class="o">=</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">myColor</span><span class="p">}</span><span class="o">/&gt;</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Static style properties provided as <code>{styleProp: value, ...}</code> won’t be bound and will maintain their initial value.</p>
+</div>
+<hr />
+<h2 id="foreach">Foreach</h2>
+<p>Specifies a template to be applied to each element of an array. The array is observed for subsequent changes and updates atomically propagate.</p>
+<p>Observed methods include: <code>push</code>, <code>pop</code>, <code>sort</code>, <code>splice</code>, <code>shift</code>, <code>unshift</code>, <code>fill</code>.</p>
+<p>To change an element’s value, use the new non-standard <code>set</code> function or proxy the array using <code>createObservableArray</code>.</p>
+<p><strong>Builder</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">foreach</span><span class="p">(</span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">items</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">t2</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t2</span><span class="p">.</span><span class="nx">beginChild</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="nx">item</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">item</span><span class="p">.</span><span class="nx">myItemProp</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="nx">endChild</span><span class="p">());</span>
+</code></pre></div>
+<p><strong>JSX</strong></p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="nx">Foreach</span><span class="w"> </span><span class="nx">src</span><span class="o">=</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">items</span><span class="p">}</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">item</span><span class="p">.</span><span class="nx">myItemProp</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/span&gt;</span>
+<span class="o">&lt;</span><span class="err">/Foreach&gt;</span>
+</code></pre></div>
+<p><strong>Expression</strong></p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">items</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">i</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">i</span><span class="p">.</span><span class="nx">myItemProp</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/span&gt;)}</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not use the <code>map</code> function on an array here, as it behaves as expected for transformations (producing a new array) but does not bind the array.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Original array methods such as <code>push</code> will be overridden. Consider this for subsequent bulk operations on such arrays.</p>
 </div>
 <hr />
 <h2 id="text">Text</h2>
-<p><strong>Builder</strong>
-<div class="highlight"><pre><span></span><code>t =&gt; t.text(m =&gt; m.myText)
-</code></pre></div></p>
-<p><strong>JSX</strong>
-<div class="highlight"><pre><span></span><code>&lt;Text src={m.myText}/&gt;
-</code></pre></div></p>
+<p>Creates a text node.</p>
+<p><strong>Builder</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">myText</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>JSX</strong></p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="nx">Text</span><span class="w"> </span><span class="nx">src</span><span class="o">=</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">myText</span><span class="p">}</span><span class="o">/&gt;</span>
+</code></pre></div>
 <hr />
 <h2 id="node">Node</h2>
-<p><strong>Builder</strong>
-<div class="highlight"><pre><span></span><code>t =&gt; t.appendChild(m =&gt; m.myDOMnode)
-</code></pre></div></p>
-<p><strong>JSX</strong>
-<div class="highlight"><pre><span></span><code>&lt;Node src={m.myDOMnode}/&gt;
-</code></pre></div></p>
+<p>Appends a DOM node as a child of the current element.</p>
+<p><strong>Builder</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">myDOMnode</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>JSX</strong></p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="nx">Node</span><span class="w"> </span><span class="nx">src</span><span class="o">=</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">myDOMnode</span><span class="p">}</span><span class="o">/&gt;</span>
+</code></pre></div>
 <hr />
 <h2 id="html">Html</h2>
-<p><strong>Builder</strong>
-<div class="highlight"><pre><span></span><code>t =&gt; t.html(m =&gt; m.myHtmlString)
-</code></pre></div></p>
-<p><strong>JSX</strong>
-<div class="highlight"><pre><span></span><code>&lt;Html src={m.myHtmlString}/&gt;
-</code></pre></div></p>
+<p>Creates elements from an HTML string.</p>
+<p><strong>Builder</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">myHtmlString</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>JSX</strong></p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="nx">Html</span><span class="w"> </span><span class="nx">src</span><span class="o">=</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">myHtmlString</span><span class="p">}</span><span class="o">/&gt;</span>
+</code></pre></div>
 <hr />
               
             </div>
