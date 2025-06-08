@@ -13,8 +13,4 @@ export class Attach extends Behavoir<IAttachOptions>{
 
     load: (element: HTMLElement) => void;
 
-
-    static [BIND_MODES] = {
-        "load": "action",
-    } as Record<keyof IAttachOptions, BindMode>
 }

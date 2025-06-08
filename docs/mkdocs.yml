@@ -1,5 +1,10 @@
 site_name: My Docs
 nav:
   - Home: index.md
+  - Elements: elements.md
   - Components: components.md
 theme: readthedocs
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
