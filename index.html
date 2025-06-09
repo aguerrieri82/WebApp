@@ -44,7 +44,21 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting started</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#vite">Vite</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#rollup">Rollup</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#typescript">Typescript</a>
+    </li>
+        </ul>
+    </li>
     </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="how-it-works/">How it works</a>
                 </li>
               </ul>
               <ul>
@@ -53,6 +67,10 @@
               </ul>
               <ul>
                 <li class="toctree-l1"><a class="reference internal" href="components/">Components</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="behaviors/">Behaviors</a>
                 </li>
               </ul>
       </div>
@@ -78,19 +96,70 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="welcome-to-mkdocs">Welcome to MkDocs</h1>
-<p>For full documentation visit <a href="https://www.mkdocs.org">mkdocs.org</a>.</p>
+                <h1 id="webapp">WebApp</h1>
 <h2 id="getting-started">Getting started</h2>
 <div class="highlight"><pre><span></span><code>import { mount } from &quot;@eusoft/webapp-core&quot;;
 
 const root = document.querySelector(&quot;body&quot;);
 mount(root, &lt;div&gt;Hello word&lt;/div&gt;);
 </code></pre></div>
+<h2 id="setup">Setup</h2>
+<p>Install <code>@eusoft/webapp-core</code> and <code>@eusoft/webapp-jsx</code> packages
+using you favorite package manager.</p>
+<p>You will need a boundle tool to compile the code, you can use Vite or Rollup.
+Webpack, is not supported anymore.</p>
+<h3 id="vite">Vite</h3>
+<p>if you are using vite, install the compiler package <code>@eusoft/webapp-compiler-rollup</code>
+as dev dependence. </p>
+<p>In <code>vite.config.js</code></p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="nx">webapp</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@eusoft/webapp-compiler-rollup&quot;</span>
+
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">defineConfig</span><span class="p">({</span>
+<span class="w">    </span><span class="c1">//...</span>
+<span class="w">    </span><span class="nx">plugins</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="nx">webapp</span><span class="p">({</span>
+<span class="w">            </span><span class="c1">//... compiler options</span>
+<span class="w">        </span><span class="p">})</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nx">esbuild</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">jsx</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;preserve&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div>
+<h3 id="rollup">Rollup</h3>
+<p>if you are using roolup, install the compiler package <code>@eusoft/webapp-compiler-rollup</code>
+as dev dependence, add the plugin to your rollup config file.</p>
+<p>in <code>rollup.config.js</code></p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="nx">webapp</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@eusoft/webapp-compiler-rollup&quot;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">//...</span>
+<span class="w">        </span><span class="nx">plugins</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="c1">// ... other plugins</span>
+<span class="w">            </span><span class="nx">webapp</span><span class="p">({</span>
+<span class="w">                </span><span class="c1">//compiler options</span>
+<span class="w">            </span><span class="p">}),</span><span class="w">      </span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">];</span>
+</code></pre></div>
+<h3 id="typescript">Typescript</h3>
+<p>If you are using typescript, ensure tsconfig has <code>"jsx": "preserve"</code></p>
+<p>in <code>tsconfig.json</code></p>
+<div class="highlight"><pre><span></span><code>{
+  &quot;compilerOptions&quot;: {
+    &quot;jsx&quot;: &quot;preserve&quot;,
+    &quot;experimentalDecorators&quot;: true,
+  },
+}
+</code></pre></div>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="elements/" class="btn btn-neutral float-right" title="Elements">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="how-it-works/" class="btn btn-neutral float-right" title="How it works">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -114,7 +183,7 @@ mount(root, &lt;div&gt;Hello word&lt;/div&gt;);
     
     
     
-      <span><a href="elements/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="how-it-works/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
@@ -134,5 +203,5 @@ mount(root, &lt;div&gt;Hello word&lt;/div&gt;);
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-06-09 00:40:04.843542+00:00
+Build Date UTC : 2025-06-09 13:27:53.776131+00:00
 -->
