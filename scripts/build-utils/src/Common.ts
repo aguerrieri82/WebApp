@@ -64,6 +64,18 @@ export function logColor(msg: string, color: string) {
         process.stdout.write(colours.reset);
 }
 
+export function logTitle(title: string, color: string) {
+
+    const sep = "*".repeat(title.length);
+    console.log('\n\n');
+    logColor(sep, color);
+    console.log('\n');
+    logColor(title, color);
+    console.log('\n');
+    logColor(sep, color);
+    console.log('\n\n');
+}
+
 
 export function pnpmExec(libPath: string, script: string) {
 

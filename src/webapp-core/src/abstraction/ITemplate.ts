@@ -1,7 +1,7 @@
 ﻿import { getFunctionType } from "../utils/Object";
 import type { TemplateBuilder } from "../TemplateBuilder";
 
-const TEMPLATE_BUILDER: unique symbol = Symbol.for("@templateBuilder")
+export const TEMPLATE_BUILDER: unique symbol = Symbol.for("@templateBuilder")
 
 export interface ITemplate<TModel> {
 

@@ -4,7 +4,7 @@ import type { BindMode, BindValue, BindValueUnchecked, BoundObject, BoundObjectM
 import { isHTMLContainer } from "./abstraction/IHTMLContainer";
 import { isMountListener } from "./abstraction/IMountListener";
 import { type IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
-import { type ITemplate, TEMPLATE, TEMPLATE_BUILDER, isModelTemplate, isTemplate } from "./abstraction/ITemplate";
+import { type ITemplate, isTemplate } from "./abstraction/ITemplate";
 import { type ITemplateContext } from "./abstraction/ITemplateContext";
 import { type CatalogTemplate, type ITemplateProvider, isTemplateProvider } from "./abstraction/ITemplateProvider";
 import { Binder } from "./Binder";
@@ -14,6 +14,7 @@ import { ArrayTemplate, BehavoirCatalog, TemplateCatalog, TextTemplate } from ".
 import { getComponent } from "./Component";
 import Services from "./Services";
 import { Bind } from "./Bind"; 
+import { isModelTemplate, TEMPLATE } from "./abstraction/IModelTemplate";
 
 type TemplateValueMap<TModel, TObj> = {
 

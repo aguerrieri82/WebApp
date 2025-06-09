@@ -1,6 +1,6 @@
 import path from "path";
 import { spawnSync } from 'child_process';
-import { IPackage, colours, loadJson, logColor, pnpm, pnpmExec, saveJson } from './Common.js';
+import { IPackage, colours, loadJson, logColor, logTitle, pnpm, pnpmExec, saveJson } from './Common.js';
 
 
 const libs = [
@@ -47,7 +47,8 @@ async function processLib(libName: string, options: IOptions) {
 
 
     try {
-        logColor(`\nPROCESS '${libName}'\n\n`, colours.fg.green);
+
+        logTitle(`PROCESS '${libName}'`, colours.fg.magenta);
 
         const libSrcPath = path.join(srcPath, libName);
         const libDistPath = path.join(distPath, libName);

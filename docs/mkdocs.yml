@@ -3,6 +3,7 @@ nav:
   - Home: index.md
   - Elements: elements.md
   - Components: components.md
+  - Behaviors: behaviors.md
 theme: readthedocs
 markdown_extensions:
   - admonition
