@@ -50,6 +50,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#html-elements">HTML Elements</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#component">Component</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#content">Content</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#if">If</a>
@@ -164,6 +166,16 @@ At least one template must be mounted in your document using the <code>mount(ele
 <span class="w">    </span><span class="o">&lt;</span><span class="nx">button</span><span class="w"> </span><span class="nx">on</span><span class="o">-</span><span class="nx">click</span><span class="o">=</span><span class="p">{</span><span class="nx">ev</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Clicked!&quot;</span><span class="p">)}</span><span class="o">&gt;</span><span class="nx">Click</span><span class="w"> </span><span class="nx">me</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
 <span class="o">&lt;</span><span class="err">/div&gt;</span>
 </code></pre></div>
+<h2 id="component">Component</h2>
+<p><strong>Builder</strong>
+<div class="highlight"><pre><span></span><code><span class="nx">t</span><span class="p">.</span><span class="nx">component</span><span class="p">(</span><span class="nx">MyComponent</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">attr1</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;value&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">attr2</span><span class="o">:</span><span class="w"> </span><span class="kt">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">modelProp</span>
+<span class="p">})</span>
+</code></pre></div></p>
+<p><strong>JSX</strong></p>
+<div class="highlight"><pre><span></span><code><span class="o">&lt;</span><span class="nx">MyComponent</span><span class="w"> </span><span class="nx">attr1</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="w"> </span><span class="nx">attr2</span><span class="o">=</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">modelProp</span><span class="p">}</span><span class="w"> </span><span class="o">/&gt;</span>
+</code></pre></div>
 <h2 id="content">Content</h2>
 <p>Renders the specified content.</p>
 <p>Valid content types are:</p>
@@ -248,7 +260,7 @@ This allows toggling parts of the UI based on the model’s state.</p>
 <span class="w">    </span><span class="o">&lt;</span><span class="nx">Style</span><span class="w"> </span><span class="nx">color</span><span class="o">=</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">myColor</span><span class="p">}</span><span class="w"> </span><span class="nx">fontSize</span><span class="o">=</span><span class="s2">&quot;16px&quot;</span><span class="w"> </span><span class="o">/&gt;</span>
 <span class="o">&lt;</span><span class="err">/div&gt;</span>
 
-<span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">myColor</span><span class="w"> </span><span class="p">}}</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="kt">m.myColor</span><span class="w"> </span><span class="p">}}</span><span class="o">/&gt;</span>
 
 <span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">style</span><span class="o">-</span><span class="nx">color</span><span class="o">=</span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">myColor</span><span class="p">}</span><span class="o">/&gt;</span>
 </code></pre></div>

@@ -51,6 +51,10 @@
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">Components</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#functional-component">Functional Component</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#state">State</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#class-component">Class Component</a>
         <ul>
@@ -61,6 +65,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#referencing-a-class-component">Referencing a Class Component</a>
     </li>
         </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#options-attributes-props">Options / Attributes / Props</a>
     </li>
     </ul>
                 </li>
@@ -91,54 +97,94 @@
                 <h1 id="components">Components</h1>
 <h2 id="functional-component">Functional Component</h2>
 <p>This example shows a simple functional component:</p>
-<div class="highlight"><pre><span></span><code>function MyComponent(props: { text: string }) {
-    const show = () =&gt; {
-        alert(props.text);
-    };
+<div class="highlight"><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">MyComponent</span><span class="p">(</span><span class="nx">props</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">show</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">alert</span><span class="p">(</span><span class="nx">props</span><span class="p">.</span><span class="nx">text</span><span class="p">);</span>
+<span class="w">    </span><span class="p">};</span>
 
-    return (
-        &lt;div&gt;
-            {props.text}
-            &lt;button on-click={ev =&gt; show()}&gt;Show&lt;/button&gt;
-        &lt;/div&gt;
-    );
-}
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+<span class="w">            </span><span class="p">{</span><span class="nx">props</span><span class="p">.</span><span class="nx">text</span><span class="p">}</span>
+<span class="w">            </span><span class="o">&lt;</span><span class="nx">button</span><span class="w"> </span><span class="nx">on</span><span class="o">-</span><span class="nx">click</span><span class="o">=</span><span class="p">{</span><span class="nx">ev</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">show</span><span class="p">()}</span><span class="o">&gt;</span><span class="nx">Show</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+<span class="w">        </span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="o">&lt;</span><span class="nx">MyComponent</span><span class="w"> </span><span class="nx">text</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="o">/&gt;</span>
 </code></pre></div>
 <p><strong>Explanation</strong>:<br />
-A functional component is a function that receives <code>props</code> as input and returns JSX. In this example, the <code>show</code> function simply displays the <code>text</code> property in an alert box.</p>
+A functional component is a function that receives <code>props</code> as input and returns JSX. 
+In this example, the <code>show</code> function simply displays the <code>text</code> property in an alert box.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The function is <strong>called only once</strong> during its lifecycle and is not re-executed when properties change.</p>
+</div>
+<h3 id="state">State</h3>
+<p>Internal state can be tracked using a special <code>const state = {}</code> object<br />
+You can configure the compiler to automatically track changes to specific variables:</p>
+<p><div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="err">au</span><span class="kc">t</span><span class="err">oTrack</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;myVarName&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">/myRegExp/</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+Alternatively, decorate the variable with <code>Bind.track</code>, for example: <code>const myState = Bind.track({...})</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The variable must be declared with <code>const</code> and initialized as an object.</p>
+</div>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">(</span><span class="nx">p</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">theme</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">show</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">alert</span><span class="p">(</span><span class="nx">state</span><span class="p">.</span><span class="nx">text</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">state</span><span class="p">.</span><span class="nx">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;new&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">main</span><span class="w"> </span><span class="nx">clasName</span><span class="o">=</span><span class="p">{</span><span class="nx">p</span><span class="p">.</span><span class="nx">theme</span><span class="p">}</span><span class="o">&gt;</span>
+<span class="w">      </span><span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nb">Function</span><span class="w"> </span><span class="nx">component</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+<span class="w">      </span><span class="o">&lt;</span><span class="nx">input</span><span class="w"> </span><span class="kr">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="w"> </span><span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">state</span><span class="p">.</span><span class="nx">text</span><span class="p">}</span><span class="w"> </span><span class="o">/&gt;</span>
+<span class="w">      </span><span class="o">&lt;</span><span class="nx">button</span><span class="w"> </span><span class="nx">on</span><span class="o">-</span><span class="nx">click</span><span class="o">=</span><span class="p">{</span><span class="nx">show</span><span class="p">}</span><span class="o">&gt;</span><span class="nx">Show</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="err">/main&gt;</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
 <hr />
 <h2 id="class-component">Class Component</h2>
 <h3 id="why-use-a-class-component">Why Use a Class Component?</h3>
 <p>In functional components, the internal state is encapsulated and cannot be accessed or extended directly from outside the component. If you need to modify or trigger actions on the component’s state from outside, class components are more suitable.</p>
 <p>Here’s an example of a class component:</p>
-<div class="highlight"><pre><span></span><code>import { Component, type IComponentOptions } from &quot;@eusoft/webapp-core&quot;;
-import { forModel } from &quot;@eusoft/webapp-jsx&quot;;
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Component</span><span class="p">,</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">IComponentOptions</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@eusoft/webapp-core&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">forModel</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@eusoft/webapp-jsx&quot;</span><span class="p">;</span>
 
-interface IOptions extends IComponentOptions {
-  text: string;
-}
+<span class="kd">interface</span><span class="w"> </span><span class="nx">IOptions</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">IComponentOptions</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
 
-export class MyComponent extends Component&lt;IOptions&gt; {
-  constructor(options: IOptions) {
-    super();
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">MyComponent</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Component</span><span class="o">&lt;</span><span class="nx">IOptions</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">IOptions</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">super</span><span class="p">();</span>
 
-    this.init(MyComponent, {
-      template: forModel&lt;this&gt;(m =&gt; (
-        &lt;div&gt;
-          {m.text}
-          &lt;button on-click={ev =&gt; m.show()}&gt;Show&lt;/button&gt;
-        &lt;/div&gt;
-      )),
-      ...options,
-    });
-  }
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">MyComponent</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">template</span><span class="o">:</span><span class="w"> </span><span class="kt">forModel</span><span class="o">&lt;</span><span class="k">this</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+<span class="w">          </span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">text</span><span class="p">}</span>
+<span class="w">          </span><span class="o">&lt;</span><span class="nx">button</span><span class="w"> </span><span class="nx">on</span><span class="o">-</span><span class="nx">click</span><span class="o">=</span><span class="p">{</span><span class="nx">ev</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">show</span><span class="p">()}</span><span class="o">&gt;</span><span class="nx">Show</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+<span class="w">        </span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+<span class="w">      </span><span class="p">)),</span>
+<span class="w">      </span><span class="p">...</span><span class="nx">options</span><span class="p">,</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
 
-  show() {
-    alert(this.text);
-  }
+<span class="w">  </span><span class="nx">show</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">alert</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">text</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
 
-  text: string;
-}
+<span class="w">  </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
 </code></pre></div>
 <p><strong>Key points</strong>:</p>
 <ul>
@@ -146,25 +192,33 @@ export class MyComponent extends Component&lt;IOptions&gt; {
 <li>The constructor must call <code>this.init(MyComponent, {...options})</code>, where <code>MyComponent</code> is the class name.</li>
 <li>The <code>options</code> argument should extend <code>IComponentOptions</code>.</li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All properties in options that have a corrispictive in the components class, 
+will be automaticated assigned. Only properties in options intreface will be
+exposed as JSX attributes</p>
+</div>
 <hr />
 <h3 id="compact-form">Compact Form</h3>
 <p>To reduce boilerplate code, you can use the <code>declareComponent</code> helper function to declare a class component more concisely.</p>
 <p>The first argument is an object containing the class body (methods and properties), and the second argument is the component’s template or default options.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code>import { declareComponent } from &quot;@eusoft/webapp-core&quot;;
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">declareComponent</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@eusoft/webapp-core&quot;</span><span class="p">;</span>
 
-const MyComponent = declareComponent({
-  show: function () {
-    alert(this.text);
-  },
+<span class="kd">const</span><span class="w"> </span><span class="nx">MyComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">declareComponent</span><span class="p">({</span>
 
-  text: undefined as string,
-}, m =&gt; (
-  &lt;div&gt;
-    {m.text}
-    &lt;button on-click={ev =&gt; m.show()}&gt;Show&lt;/button&gt;
-  &lt;/div&gt;
-));
+<span class="w">  </span><span class="nx">show</span><span class="o">:</span><span class="w"> </span><span class="kt">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">alert</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">text</span><span class="p">);</span>
+<span class="w">  </span><span class="p">},</span>
+
+<span class="w">  </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="kt">undefined</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kt">string</span>
+
+<span class="p">},</span><span class="w"> </span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="p">{</span><span class="nx">m</span><span class="p">.</span><span class="nx">text</span><span class="p">}</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">button</span><span class="w"> </span><span class="nx">on</span><span class="o">-</span><span class="nx">click</span><span class="o">=</span><span class="p">{</span><span class="nx">ev</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">show</span><span class="p">()}</span><span class="o">&gt;</span><span class="nx">Show</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+<span class="w">  </span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+<span class="p">));</span>
 </code></pre></div>
 <p><code>MyComponent</code> is now a standard class component that you can:</p>
 <ul>
@@ -172,16 +226,23 @@ const MyComponent = declareComponent({
 <li>Use as a JSX element: <code>&lt;MyComponent text="Hello" /&gt;</code></li>
 <li>Extend in other class components: <code>class MyNewComponent extends MyComponent { /* ... */ }</code></li>
 </ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>All properties must be initialized with a default value, that can be <code>null</code> / <code>undefined</code></p>
+</div>
 <hr />
 <h3 id="referencing-a-class-component">Referencing a Class Component</h3>
 <p>Here’s how you can reference a class component instance in a functional component:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">TextInput</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">declareComponent</span><span class="p">({</span>
+
 <span class="w">  </span><span class="nx">selectAll</span><span class="o">:</span><span class="w"> </span><span class="kt">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">element</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">HTMLInputElement</span><span class="p">).</span><span class="nx">select</span><span class="p">();</span>
-<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">}</span>
+
 <span class="p">},</span><span class="w"> </span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">input</span><span class="w"> </span><span class="kr">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="w"> </span><span class="o">/&gt;</span><span class="p">);</span>
 
 <span class="kd">function</span><span class="w"> </span><span class="nx">Page</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+
 <span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">state</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nx">input?</span><span class="o">:</span><span class="w"> </span><span class="kt">InstanceType</span><span class="o">&lt;</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">TextInput</span><span class="o">&gt;</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
@@ -197,9 +258,68 @@ const MyComponent = declareComponent({
 <p><strong>Explanation</strong>:<br />
 - <code>TextInput</code> is a class component that includes a <code>selectAll</code> method.<br />
 - The <code>Page</code> component is a functional component. It declares a reference to the <code>TextInput</code> instance using the <code>ref</code> attribute.<br />
-- When the Select button is clicked, it calls <code>selectAll()</code> on the <code>TextInput</code> instance, which selects all the text in the input field.<br />
 - The underlying DOM element of <code>TextInput</code> is accessible via <code>this.context.element</code>.</p>
-<p>This demonstrates how class components can expose methods that can be called from outside the component, something that functional components do not provide by default.</p>
+<p>This demonstrates how class components can expose methods that can be called from outside the component,
+something that functional components do not provide by default.</p>
+<h2 id="options-attributes-props">Options / Attributes / Props</h2>
+<p>A class component’s available JSX attributes are defined by the type of its options parameter. 
+Specifically, this type is declared as the first generic argument of <code>Component&lt;TOptions&gt;</code>, 
+and it determines which attributes can be set when using the component in JSX. </p>
+<p>In functional components, instead, the available JSX attributes correspond to 
+the properties of the first argument passed to the function. </p>
+<p>The special <code>content</code> option maps to the child nodes declared inside your component in JSX.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">MyComponent</span><span class="p">(</span><span class="nx">opt</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="kt">ViewNode</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">opt</span><span class="p">.</span><span class="nx">content</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/div&gt;;</span>
+<span class="p">}</span>
+
+<span class="o">&lt;</span><span class="nx">MyComponent</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="nx">Hello</span><span class="o">&lt;</span><span class="err">/span&gt;</span>
+<span class="o">&lt;</span><span class="err">/MyComponent&gt;</span>
+</code></pre></div>
+<p>If no <code>content</code> type is specified, the component cannot have children. 
+If multiple children are supported, the <code>content</code> type must be an array. 
+To support both JSX and code-based initialization and to constrain 
+the content to a particular component type, declare it as:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">MyChildComponent</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">JsxTypedComponent</span><span class="o">&lt;</span><span class="nx">IMyChildComponentOptions</span><span class="o">&gt;</span>
+</code></pre></div>
+<p>If any content is permissible, use the type <code>ViewNode</code> (which covers both single and multiple children).</p>
+<p>To make an option bindable, meaning it dynamically reacts to changes, it must be declared as <code>Bindable</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">interface</span><span class="w"> </span><span class="nx">IMyOptions</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="kt">Bindable</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>A bindable option can accept different types of values:</p>
+<ol>
+<li>A direct value  </li>
+<li>An observable property (something implementing <code>IObservableProperty</code> or extracted from an object using <code>propOf</code>)  </li>
+<li>A property/bind expression from an external model using <code>Bind.external</code></li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">myModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">counter</span><span class="o">:</span><span class="w"> </span><span class="kt">0</span>
+<span class="p">};</span>
+
+<span class="kd">interface</span><span class="w"> </span><span class="nx">IMyComponentOptions</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">value1</span><span class="o">:</span><span class="w"> </span><span class="kt">Bindable</span><span class="o">&lt;</span><span class="kt">number</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">value2</span><span class="o">:</span><span class="w"> </span><span class="kt">Bindable</span><span class="o">&lt;</span><span class="kt">number</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">value3</span><span class="o">:</span><span class="w"> </span><span class="kt">Bindable</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">value4</span><span class="o">:</span><span class="w"> </span><span class="kt">Bindable</span><span class="o">&lt;</span><span class="kt">number</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">MyComponent</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">value1</span><span class="o">:</span><span class="w"> </span><span class="kt">5</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">value2</span><span class="o">:</span><span class="w"> </span><span class="kt">Bind.external</span><span class="p">(</span><span class="nx">myModel</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;counter&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="nx">value3</span><span class="o">:</span><span class="w"> </span><span class="kt">Bind.external</span><span class="p">(</span><span class="nx">myModel</span><span class="p">,</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">a</span><span class="p">.</span><span class="nx">counter</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot; ticks&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="nx">value4</span><span class="o">:</span><span class="w"> </span><span class="kt">propOf</span><span class="p">(</span><span class="nx">myModel</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;counter&quot;</span><span class="p">)</span>
+<span class="p">});</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unfortunately, there is no way to enforce strict type checks on these attributes in JSX, 
+so any attribute is treated as "bindable" by default.</p>
+</div>
+<p>In functional components, the actual values passed to <code>props</code> 
+can be bind expressions (e.g., <code>m =&gt; m.xxx</code>). These values are not meant to be read or manipulated outside the JSX.<br />
+To enforce type check and avoid confusion, declare such options always as Bindable</p>
               
             </div>
           </div><footer>
