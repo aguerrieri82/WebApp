@@ -1,11 +1,11 @@
-import { type IBehavoir, type ITemplate, TEMPLATE } from "./abstraction";
+import { type IBehavoir, type ITemplate, TEMPLATE_BUILDER } from "./abstraction";
 
 export const TemplateCatalog: { [key: string]: ITemplate<unknown> } = {};
 
 export const BehavoirCatalog: { [key: string]: () => IBehavoir } = {}
 
 export function template<TModel, TTemplate extends ITemplate<TModel> = ITemplate<TModel>>(template: TTemplate, name?: string): TTemplate {
-    template[TEMPLATE] = true;
+    template[TEMPLATE_BUILDER] = true;
     if (name)
         TemplateCatalog[name] = template;
     return template;

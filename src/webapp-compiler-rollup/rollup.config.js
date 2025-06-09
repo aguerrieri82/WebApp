@@ -12,9 +12,9 @@ export default [
         input: './src/index.js',
         output: [
             {
-                file: "../../dist/webapp-compiler-rollup/dist/index.js",
+                file: "../../dist/webapp-compiler-rollup/index.js",
                 format: 'es',
-                sourcemap: true,
+                sourcemap: false,
             },
         ],
     }

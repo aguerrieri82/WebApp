@@ -1,12 +1,12 @@
 ﻿import { getFunctionType } from "../utils/Object";
 import type { TemplateBuilder } from "../TemplateBuilder";
 
-export const TEMPLATE: unique symbol = Symbol.for("@template")
+const TEMPLATE_BUILDER: unique symbol = Symbol.for("@templateBuilder")
 
 export interface ITemplate<TModel> {
 
     (builder: TemplateBuilder<TModel>): void;
-    [TEMPLATE]?: boolean;
+    [TEMPLATE_BUILDER]?: boolean;
 }
 
 export type TemplateMap<TModel> = Record<string, ITemplate<TModel>>;
@@ -17,5 +17,5 @@ export function isTemplate(obj: unknown): obj is ITemplate<unknown> {
         typeof obj == "function" &&
         getFunctionType(obj) != "class" &&
         (obj as Function).length == 1 &&
-        TEMPLATE in obj;
+        TEMPLATE_BUILDER in obj;
 }

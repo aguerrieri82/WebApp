@@ -4,7 +4,7 @@ import type { BindMode, BindValue, BindValueUnchecked, BoundObject, BoundObjectM
 import { isHTMLContainer } from "./abstraction/IHTMLContainer";
 import { isMountListener } from "./abstraction/IMountListener";
 import { type IObservableArrayHandler, isObservableArray } from "./abstraction/IObservableArray";
-import { type ITemplate, isTemplate } from "./abstraction/ITemplate";
+import { type ITemplate, TEMPLATE, TEMPLATE_BUILDER, isModelTemplate, isTemplate } from "./abstraction/ITemplate";
 import { type ITemplateContext } from "./abstraction/ITemplateContext";
 import { type CatalogTemplate, type ITemplateProvider, isTemplateProvider } from "./abstraction/ITemplateProvider";
 import { Binder } from "./Binder";
@@ -851,6 +851,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
         if (value instanceof HTMLElement)
             return bld => bld.appendChild(value);
+
+        if (isModelTemplate(value))
+            return this.loadTemplate(value[TEMPLATE]);
 
         throw new Error("cannot determine template for model");
     }

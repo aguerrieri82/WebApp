@@ -6,7 +6,7 @@ type ArrayRemoveReason = "remove" | "clear" | "replace";
 
 export interface IObservableArrayHandler<T> {
 
-    onItemAdded?(item: T, index: number, reason: ArrayAddReason) : void;
+    onItemAdded?(item: T, index: number, reason: ArrayAddReason): void;
 
     onItemRemoved?(item: T, index: number, reason: ArrayRemoveReason): void;
 

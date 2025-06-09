@@ -36,12 +36,14 @@ export function createObservableArray<T>(value: T[]): IObservableArray<T> {
         if (index != -1)
             handlers.splice(index, 1);
     }
+
     newValue.reverse = function (this: IObservableArray<T>) {
 
         const retValue = Array.prototype.reverse.call(newValue);
         newValue.raise(a => a.onReorder && a.onReorder());
         return retValue;
     }
+
     newValue.sort = function (this: IObservableArray<T>, ...args) {
 
         const retValue = Array.prototype.sort.call(newValue, ...args);
@@ -52,8 +54,10 @@ export function createObservableArray<T>(value: T[]): IObservableArray<T> {
     newValue.set = function (this: IObservableArray<T>, index: number, value: T) {
 
         const old = newValue[index];    
-        newValue.raise(a => a.onItemReplaced && a.onItemReplaced(value, old, index));
-        newValue.raise(a => a.onChanged && a.onChanged());
+        if (value !== old) {
+            newValue.raise(a => a.onItemReplaced && a.onItemReplaced(value, old, index));
+            newValue.raise(a => a.onChanged && a.onChanged());
+        }
     }
 
     newValue.push = function (this: IObservableArray<T>, ...items) {
@@ -65,6 +69,44 @@ export function createObservableArray<T>(value: T[]): IObservableArray<T> {
         for (let i = curIndex; i < newValue.length; i++)
             newValue.raise(a => a.onItemAdded && a.onItemAdded(newValue[i], i, "add"));
 
+        newValue.raise(a => a.onChanged && a.onChanged());
+
+        return retValue;
+    }
+
+    newValue.unshift = function (this: IObservableArray<T>, ...items) {
+
+        const retValue = Array.prototype.unshift.call(newValue, ...items);
+
+        for (let i = 0; i < newValue.length; i++)
+            newValue.raise(a => a.onItemAdded && a.onItemAdded(newValue[i], i, "insert"));
+
+        newValue.raise(a => a.onChanged && a.onChanged());
+
+        return retValue;
+    }
+
+    newValue.fill = function (this: IObservableArray<T>, value: T, start?: number, end?: number) {
+
+        if (!start)
+            start = 0;
+
+        if (!end)
+            end = newValue.length - 1;
+        
+        const retValue = Array.prototype.fill.call(newValue, value, start, end);
+
+        let isChanged = false;
+
+        for (let i = start; i <= end; i++) {
+            const old = newValue[i];    
+            if (old !== value) {
+                newValue.raise(a => a.onItemReplaced && a.onItemReplaced(value, old, i));
+                isChanged = true;
+            }
+        }
+
+        if (isChanged)
             newValue.raise(a => a.onChanged && a.onChanged());
 
         return retValue;

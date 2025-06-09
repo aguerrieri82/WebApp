@@ -86,6 +86,8 @@ export async function distributeAsync(options: IOptions) {
 
     logColor(`DISTRIBUTE: ${options.env}\n\n`, colours.fg.green);
 
+    //["webapp-core"]
+
     for (const libName of libs)
         await processLib(libName, options);
 }

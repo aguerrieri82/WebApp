@@ -1,6 +1,6 @@
 {
   "name": "@eusoft/webapp-framework",
-  "version": "0.0.28",
+  "version": "0.0.32",
   "packageManager": "pnpm",
   "type": "module",
   "main": "src/index.ts",

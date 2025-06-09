@@ -8,7 +8,7 @@
       "skipFiles": [ "<node_internals>/**" ],
       "sourceMaps": true,
       "program": "dist/index.js",
-      "args": [ "--build", "--lib:../../src/webapp-ui" ],
+      "args": [ "--build", "--lib:../../src/webapp-compiler-rollup", "--dist", "--env:prod", "--publish", "--new" ],
       "cwd": "${workspaceFolder}",
       "console": "externalTerminal"
     }

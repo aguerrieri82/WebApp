@@ -35,17 +35,11 @@ function processDeps(deps: Record<string, string>, isProd: boolean, isBoundle: b
 
     if (deps) {
         for (let name in deps) {
+
+            const isLink = deps[name].startsWith("link:");
             const value = fixModule(deps[name]);
 
-            if (value.startsWith("link:") && isBoundle) {
-                const depPck = loadLibPackage(value);
-                for (const depName in depPck.dependencies) 
-                    newDeps[depName] = fixModule(depPck.dependencies[depName]);
-                continue;
-            }
-    
-
-            if (value.startsWith("link:") && isProd)
+            if (isLink && isProd)
                 newDeps[name] = "^" + loadLibPackage(value).version;
             else
                 newDeps[name] = value;
@@ -100,8 +94,32 @@ function copyFiles(src: string, dst: string, filter: (a: string) => boolean) {
     processDir(src);
 }
 
-function tsc(outDir: string) {
-    spawnSync("tsc", ["--outDir " + outDir, "--declarationDir " + outDir, "--noEmit false", "--declaration"], {
+export function deleteAllContents(dirPath: string) {
+
+    if (!fs.existsSync(dirPath)) {
+        throw new Error(`Directory "${dirPath}" does not exist.`);
+    }
+
+    const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+
+    for (const entry of entries) {
+        const fullPath = path.join(dirPath, entry.name);
+        if (entry.isDirectory()) {
+            deleteAllContents(fullPath);
+            fs.rmdirSync(fullPath);
+        } else {
+            fs.unlinkSync(fullPath);
+        }
+    }
+}
+
+
+function tsc(outDir: string, isProd: boolean) {
+    const args = ["--outDir " + outDir, "--declarationDir " + outDir, "--noEmit false", "--declaration"];
+    if (isProd)
+        args.push("--removeComments", "--sourceMap false");  
+
+    spawnSync("tsc", args, {
         shell: true,
         stdio: "inherit",
     });
@@ -129,6 +147,9 @@ export async function buildAsync(options: IBuildOptions) {
 
         const distPath = outPath;
 
+        logColor(`Clean\n`, colours.fg.green);
+        deleteAllContents(path.resolve(distPath));    
+
         if (options.isBundle) {
             logColor(`Boundle\n`, colours.fg.green);
             rollup(options.isWatch);
@@ -138,7 +159,7 @@ export async function buildAsync(options: IBuildOptions) {
 
                 logColor(`TS Build\n`, colours.fg.green);
 
-                tsc(distPath);
+                tsc(distPath, isProd);
 
                 logColor(`Copy SCSS\n`, colours.fg.green);
 

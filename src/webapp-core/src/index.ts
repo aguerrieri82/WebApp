@@ -1,3 +1,5 @@
+/// <reference path="types.d.ts" />
+
 export * from "./abstraction"
 export * from "./utils"
 export * from "./Binder"
@@ -13,4 +15,3 @@ export * from "./Templates"
 export * from "./Services"
 
 import "./Polyfill.js"
-import "./types"

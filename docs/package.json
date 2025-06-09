@@ -5,6 +5,7 @@
   "scripts": {
     "start": "mkdocs serve",
     "build": "mkdocs build",
+    "publish": "mkdocs gh-deploy",
     "install:pnpm": "pnpm install --fix-lockfile",
     "upgrade": "pnpm up -latest"
   }
