@@ -46,11 +46,13 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">How it works</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#template-engine">Template engine</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#model-binding">Model binding</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#tracking-binding">Tracking binding</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#array-tracking">Array Tracking</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#jsx-compiler">JSX Compiler</a>
     </li>
     </ul>
                 </li>
@@ -91,11 +93,10 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="how-it-works">How it works</h1>
-<h2 id="template-engine">Template engine</h2>
-<p>The framework is an MVVM framework that doesn't need any cerimony.
-Has no virtual DOM, no special convention, doesn't use hooks.
-The core engine is a template builder, that semplify the DOM
-construction associated with a particular model, trhug fluent api</p>
+<p>The framework is an MVVM framework that doesn’t require any ceremony. 
+It has no virtual DOM, no special conventions, and doesn’t use hooks. 
+The core engine is a template builder that simplifies DOM construction 
+associated with a particular model through a fluent API.</p>
 <div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">template</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@eusoft/webapp-core&quot;</span><span class="p">;</span>
 
 <span class="kd">const</span><span class="w"> </span><span class="nx">myTemplate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">template</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t</span>
@@ -114,8 +115,8 @@ construction associated with a particular model, trhug fluent api</p>
     <span class="p">&lt;</span><span class="nt">button</span> <span class="na">click</span><span class="o">=</span><span class="s">&quot;console.log(&quot;</span><span class="na">Clicked</span><span class="err">!&quot;)&quot;</span><span class="p">&gt;</span>Click me<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
 </code></pre></div>
-<p>The template can be mounted using mount function, sepcfieng the dom element or selector,
-and the template itself</p>
+<p>The template can be mounted using the <code>mount</code> function, 
+specifying the DOM element or selector and the template itself.</p>
 <div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">mount</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@eusoft/webapp-core&quot;</span><span class="p">;</span>
 
 <span class="nx">mount</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">myTemplate</span><span class="p">);</span>
@@ -141,18 +142,41 @@ a particular value for a template to a model</p>
 
 <span class="nx">model</span><span class="p">.</span><span class="nx">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Hello word&quot;</span><span class="p">;</span>
 </code></pre></div>
-Any changes to a model property will be propagate to each binding 
-expression that uses it.In this example, the inner text of the span
-will reflect the text value of the model.</p>
+Any changes to a model property will be propagated to each binding expression that uses it. In this example, 
+the inner text of the span will reflect the value of the <code>text</code> property in the model</p>
 <h2 id="tracking-binding">Tracking binding</h2>
-<p>Binding expression can be of an arrbitrary complecity, behinde
-the scene a Proxy is created to track the expression and 
-collect all references, even complex one.</p>
-<p>Once all references are collected, each referenced property 
-descriptor is changed to make it obscervable, and get a notification
-when the property changes. The original descriptor is honeored, and 
-called back. Such observed properties, are mapped inside the special 
-symbol "@props" inside the object.</p>
+<p>Binding expressions can have arbitrary complexity. 
+Behind the scenes, a <code>Proxy</code> is created to track the expression and collect all references, even complex ones.</p>
+<p>Once all references are collected, each referenced property descriptor is modified 
+to make it observable and to provide a notification when the property changes. 
+The original descriptor is preserved and called back as needed. 
+These observed properties are stored inside the special symbol <code>@props</code> within the object.</p>
+<p>In this scenario</p>
+<div class="highlight"><pre><span></span><code><span class="nx">model</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">model</span><span class="p">.</span><span class="nx">obj</span><span class="p">.</span><span class="nx">test</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">model.c</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">model.d</span><span class="p">;</span>
+
+<span class="c1">// the old obj and obj.test would be untracked, new obj, obj.test, model.c tracked, and model.d untracked.</span>
+<span class="nx">model</span><span class="p">.</span><span class="nx">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">test</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="p">};</span>
+
+<span class="c1">//no effect, d is not tracked</span>
+<span class="nx">model</span><span class="p">.</span><span class="nx">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;new value&#39;</span><span class="p">;</span>
+
+<span class="c1">//model.c untracked and model.d tracked</span>
+<span class="nx">model</span><span class="p">.</span><span class="nx">obj</span><span class="p">.</span><span class="nx">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+</code></pre></div>
+<p>Only when the value of the binding expression really changes (has a new value different from the last one), 
+the template will be updated.</p>
+<h2 id="array-tracking">Array Tracking</h2>
+<p>When a model is represented by an array, the framework automatically tracks changes to both the array and its items. 
+It overrides the native array methods so that any modification will trigger updates in the template.</p>
+<p>Observed methods include: <code>push</code>, <code>pop</code>, <code>sort</code>, <code>splice</code>, <code>shift</code>, <code>unshift</code>, <code>fill</code>.</p>
+<p>A new method, <code>myArray.set(index, value)</code> is also available to change an element’s value directly, since the native array
+methods do not support 'observe' this operation. 
+To use direct item assignment <code>myArray[index] = value</code>, you can use wrap the array with <code>createObservableArray</code> function to 
+create a proxy for the array.</p>
+<h2 id="jsx-compiler">JSX Compiler</h2>
+<p>WebApp supports JSX syntax through the <code>@eusoft/webapp-jsx</code> package.
+A compiler is available to convert JSX code into the framework template builder syntax.
+A plugin for Rollup or Vite is available to handle the compilation.</p>
               
             </div>
           </div><footer>
