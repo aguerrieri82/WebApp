@@ -236,7 +236,8 @@ t => t.style("color", m => m.myColor)
 
 ## Foreach
 
-Specifies a template to be applied to each element of an array. The array is observed for subsequent changes and updates atomically propagate.
+Specifies a template to be applied to each element of an array. The array is observed for subsequent 
+changes and updates atomically propagate.
 
 Observed methods include: `push`, `pop`, `sort`, `splice`, `shift`, `unshift`, `fill`.
 

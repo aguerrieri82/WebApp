@@ -12,7 +12,7 @@ export const ContentHostTemplates: TemplateMap<ContentHost> = {
 
     "Single": forModel(m => <main className={m.className}>
         <section className="content">
-            <Content src={m.content} update="replace" />
+            <Content src={m.content} />
         </section>
     </main>)
 

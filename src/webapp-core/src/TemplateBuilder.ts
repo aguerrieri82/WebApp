@@ -787,6 +787,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
             if (!childBuilder.isInline && isHTMLContainer(value) && value.nodes && value.isCacheEnabled === true) {
                 childBuilder.replaceContent(value.nodes);
+                console.debug("RESTORED FROM Cache", getTypeName(value));
             }
             else {
 

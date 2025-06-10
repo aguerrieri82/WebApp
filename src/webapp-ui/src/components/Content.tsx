@@ -162,6 +162,17 @@ export class Content<
     static info: IContentInfo;
 }
 
+export function singleton<T>(type: Class<T>) {
+
+    let instance: T;
+    return () => {
+        if (!instance)
+            instance = new type();
+        return instance;
+    }
+}
+
+
 export function content<
     TArgs extends {},
     TContent extends IContent<TArgs>>(info: IContentInfo<TArgs, TContent>, args: TArgs): IContentInstance<TArgs, TContent>;
