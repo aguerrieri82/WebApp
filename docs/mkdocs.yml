@@ -1,4 +1,4 @@
-site_name: My Docs
+site_name: WebApp Framework 
 nav:
   - Home: index.md
   - How it works: how-it-works.md
