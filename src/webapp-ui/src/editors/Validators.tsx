@@ -18,7 +18,7 @@ export async function validEmail(ctx: IValidationContext<unknown>, value: string
     const regExp = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
     const isValid = !value || value.trim().length == 0 ? true : regExp.test(value);
     if (!isValid)
-        return ValidationResult.error(formatText("msg-invalid-email", ctx?.fieldName));
+        return ValidationResult.error(formatText("err-invalid-email", ctx?.fieldName));
 
     return ValidationResult.valid;
 }
