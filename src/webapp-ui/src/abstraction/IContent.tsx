@@ -6,7 +6,7 @@ import { type IContentHost } from "./IContentHost";
 
 export type LoadState = "loaded" | "loading" | "error" | undefined;
 
-export interface IContent<TArgs extends {} = undefined> extends IComponent {
+export interface IContent<TArgs extends ObjectLike = undefined> extends IComponent {
 
     loadAsync(host: IContentHost, args?: TArgs): Promise<boolean>;
 

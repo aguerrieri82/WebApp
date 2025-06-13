@@ -18,9 +18,9 @@ export const ContentHostTemplates: TemplateMap<ContentHost> = {
 
 }
 
-export class ContentHost extends Component<IContentHostOptions > implements IContentHost {
+export class ContentHost<TContent extends IContent<ObjectLike> = IContent<ObjectLike>> extends Component<IContentHostOptions> implements IContentHost {
 
-    protected _stack: IContent[] = []; 
+    protected _stack: TContent[] = []; 
     protected _index: number;
 
     constructor(options?: IContentHostOptions) {
@@ -34,7 +34,7 @@ export class ContentHost extends Component<IContentHostOptions > implements ICon
         });
     }
 
-    async loadContentAsync<T>(content: IContent<T>, args?: T) {
+    async loadContentAsync<TArgs extends ObjectLike = ObjectLike>(content: TContent & IContent<TArgs>, args?: TArgs) {
 
         if (content?.loadAsync) {
 
@@ -70,7 +70,7 @@ export class ContentHost extends Component<IContentHostOptions > implements ICon
         return true;
     }
 
-    push(page: IContent) {
+    push(page: TContent) {
 
         this._stack.push(this.content);
 
@@ -96,7 +96,7 @@ export class ContentHost extends Component<IContentHostOptions > implements ICon
 
     useTransition: boolean;
 
-    content: IContent;
+    content: TContent;
 
     result: unknown;
 }

@@ -22,8 +22,8 @@ button.action {
     &:disabled {
         color: #666;
         pointer-events: none;
-        opacity: 0.6; 
-        filter: grayscale(80%); 
+        opacity: 0.6;
+        filter: grayscale(80%);
     }
 
 
@@ -73,10 +73,12 @@ button.action {
         border-radius: 50%;
         overflow: hidden;
         font-size: size(3);
-        //line-height: size(3);
         box-sizing: border-box;
-        min-width: 40px;
         padding: 0;
+        aspect-ratio: 1 / 1;
+        height: 36px;
+        width: 36px;
+
 
         &:after {
             border-radius: 50%;

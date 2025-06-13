@@ -163,7 +163,7 @@ export class Router {
         return await this.navigateEntryAsync(entry, args, false, typeof pageOrName == "string" ? undefined : pageOrName);
     }
 
-    protected getEntryForPage<TArgs>(pageOrName: string | IContent<TArgs>) {
+    protected getEntryForPage<TArgs extends ObjectLike>(pageOrName: string | IContent<TArgs>) {
 
         if (typeof pageOrName == "string")
             return this._entries.find(a => (a.tag as IContentInfo)?.name == pageOrName);
