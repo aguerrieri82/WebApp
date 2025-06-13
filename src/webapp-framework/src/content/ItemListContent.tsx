@@ -103,9 +103,10 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
 
                     const res = await action.executeAsync(ctx);
 
-                    if (index !== undefined && res === true) {
+                    if (res === true)
                         this.refreshItem(index);
-                    }
+                    else if (res === false)
+                        this.refreshAsync();
 
                     return res;
                 }

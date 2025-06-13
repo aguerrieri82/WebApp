@@ -15,11 +15,12 @@
     }
 
     .item-list.can-open {
-        .item-view { 
+        .item-view {
             cursor: pointer;
             transition-property: filter;
             transition-duration: 0.2s;
-            &:hover{
+
+            &:has(.body:hover) {
                 filter: brightness(0.9)
             }
         }

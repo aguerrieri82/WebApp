@@ -26,10 +26,10 @@ export interface IItemViewOptions<TItem> extends IComponentOptions {
 
 export const ItemViewTemplates: TemplateMap<ItemView<unknown>> = {
 
-    Default: forModel(m => <li className={m.className} on-click={()=> m.onClick(m.content)} visible={m.visible}>
+    Default: forModel(m => <li className={m.className} visible={m.visible}>
         <div className="main">
             {m.icon}
-            <div className="body">
+            <div className="body" on-click={() => m.onClick(m.content)}>
                 <div className="primary"><NodeView>{m.primary}</NodeView></div>
                 {m.secondary && <div className="secondary"><NodeView>{m.secondary}</NodeView></div>}
             </div>
