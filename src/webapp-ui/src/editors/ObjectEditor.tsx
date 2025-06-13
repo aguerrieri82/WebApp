@@ -134,7 +134,9 @@ export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, 
         return isSuccess;
     }
 
-    override async validateAsync<TTarget>(ctx?: IValidationContext<TTarget>, force?: boolean, noShowError = false): Promise<boolean> {
+    override async validateAsync<TTarget>(ctx?: IValidationContext<TTarget>,
+        force?: boolean,
+        noShowError = false): Promise<boolean> {
 
         let isValid = true;
 

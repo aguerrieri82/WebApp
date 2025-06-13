@@ -5,6 +5,7 @@ import "./SingleSelector.scss";
 import { type IItemsSource } from "../abstraction/IItemsSource";
 import { type IAsyncLoad } from "../abstraction/IAsyncLoad";
 import { CommitableEditor, type ICommitableEditorOptions } from "./CommitableEditor";
+import { notEmpty } from "../utils";
 
 interface ISingleSelectorOptions<TItem, TValue> extends ICommitableEditorOptions<TValue, string> {
 
@@ -26,6 +27,7 @@ export const SingleSelectorTemplates: TemplateMap<SingleSelector<unknown, unknow
         visible={m.visible}
         disabled={m.disabled}
         value={m.editValue}>
+        <Class name="never-empty" condition={notEmpty(m.emptyItem)}/>
         {m.emptyItem && <option value="@empty">
             {m.emptyItem}
         </option>}

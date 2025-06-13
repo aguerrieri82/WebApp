@@ -15,8 +15,15 @@ interface IDateEditorOptions extends IEditorOptions<Date> {
 export const DateEditorTemplates: TemplateMap<DateEditor> = {
 
     "Default": forModel(m => <>
-        <input lang="it-IT" value-mode="focus" placeholder={m.placeholder} visible={m.visible} disabled={m.disabled} type="date" value={m.editValue} >
+        <input lang="it-IT"
+            value-mode="focus"
+            placeholder={m.placeholder}
+            visible={m.visible}
+            disabled={m.disabled}
+            type="date"
+            value={m.editValue} >
             <Class name="default"/>
+            <Class name="never-empty" />
         </input>
     </>)
 } 

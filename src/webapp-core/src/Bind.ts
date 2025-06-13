@@ -109,7 +109,7 @@ export namespace Bind {
         return (m as IBindable)[PARENT] as T;
     }
 
-    export function index(m: object) {
+    export function index(m: unknown) {
 
         return (m as IBindable)[INDEX];
     }

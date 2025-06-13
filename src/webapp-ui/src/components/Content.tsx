@@ -12,7 +12,7 @@ import { Action } from "./Action";
 
 export interface IContentOptions<TArgs extends {}> extends IComponentOptions {
 
-    title?: Bindable<LocalString>;
+    title?: Bindable<ViewNode>;
 
     shortTitle?: Bindable<LocalString>;
 

@@ -1,0 +1,27 @@
+@use "../_common" as *;
+
+.item-list-content {
+
+    &.round-item {
+
+        .list-view {
+            gap: size(1)
+        }
+
+        .item-view {
+            background: #fff;
+            border-radius: 4px;
+        }
+    }
+
+    .item-list.can-open {
+        .item-view { 
+            cursor: pointer;
+            transition-property: filter;
+            transition-duration: 0.2s;
+            &:hover{
+                filter: brightness(0.9)
+            }
+        }
+    }
+}

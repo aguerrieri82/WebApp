@@ -3,14 +3,17 @@ import { Class, type JsxNode, forModel } from "@eusoft/webapp-jsx";
 import { type ActionType, type IAction, type IActionContext } from "../abstraction/IAction";
 import { type OperationManager } from "../services";
 import { OPERATION_MANAGER } from "../abstraction";
-import { type ViewNode } from "../Types";
+import { type LocalString, type ViewNode } from "../Types";
 import "./Action.scss";
 import { NodeView } from "./NodeView";
 import { ContextMenu } from "./ContextMenu";
+import { formatText } from "../utils";
 
 interface IActionOptions<TTarget> extends IComponentOptions {
 
-    content?: Bindable<JsxNode<string> | IComponent>;
+    content?: Bindable<JsxNode<string> | ViewNode>;
+
+    info?: Bindable<LocalString>;
 
     type?: ActionType;
 
@@ -25,6 +28,7 @@ export const ActionTemplates: TemplateMap<Action> = {
         type="button"
         visible={m.visible}
         className={m.className}
+        title={formatText(m.info) as string}
         disabled={m.enabled === false}
         on-click={(_, ev) => m.executeAsync({ target: m.target }, ev)}>
         <Class name="executing" condition={m.isExecuting} />
@@ -80,6 +84,8 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
     onExecuteAsync(ctx?: IActionContext<TTarget>): Promise<unknown> | void {
     }
 
+    info: LocalString;
+
     target: TTarget;
 
     type: ActionType;
@@ -99,13 +105,14 @@ configureBindings(Action, {
 
 export function createAction(action: IAction, style?: ComponentStyle) {
 
-    const mainAction = {
-        content: [action.icon, action.text],
+    const mainAction: IActionOptions<unknown> = {
+        content: style == "icon" ? action.icon : [action.icon, action.text],
+        info: action.text,
         name: action.name,
         onExecuteAsync: action.executeAsync,
         type: action.type,
         style
-    };
+    }; 
 
     if (action.subActions?.length > 0) {
 

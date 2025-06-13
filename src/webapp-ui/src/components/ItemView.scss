@@ -6,6 +6,18 @@
     display: flex;
     flex-direction: column;
 
+    &.round-icon {
+        > .main > i {
+            background-color: --var(border-color);
+            border-radius: size(1);
+            width: 32px;
+            height: 32px;
+            line-height: 32px !important;
+            text-align: center;
+        }
+    }
+
+
     > .main {
         padding-top: size(1);
         padding-bottom: size(1);
@@ -21,7 +33,6 @@
         }
 
         > .secondary-actions {
-
             display: flex;
             flex-direction: row;
             gap: size(0);
@@ -46,6 +57,12 @@
 
         > .body {
             flex-grow: 1;
+            gap: 8px;
+
+            > .secondary {
+                color: #777;
+                margin-top: 4px;
+            }
         }
     }
 }

@@ -20,14 +20,17 @@
     margin: 0;
     padding: 0;
     list-style: none;
+    display: flex;
+    flex-direction: column;
 
-    .action {
+    > .action {
         display: flex;
         flex-direction: row;
         align-items: center;
         padding: size(1) size(2);
         transition: background-color var(--duration-fast);
         box-sizing: border-box;
+        justify-content: start;
         width: 100%;
 
         &:hover {

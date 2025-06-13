@@ -20,7 +20,7 @@
         transition-duration: var(--duration-fast);
         padding-left: size(2);
         font-size: var(--font-size-small);
-        /*height: 16px;*/
+        height: 16px;
 
         &:before {
             line-height: 16px;
@@ -147,13 +147,13 @@
                 z-index: 1;
             }
 
-            &.empty:not(:focus-within):not(:has(input[type=date])):not(:has(input:-webkit-autofill)) {
+            &.empty:not(:focus-within):not(:has(.never-empty)):not(:has(input:-webkit-autofill)) {
                 > label {
-                    top: calc(50% - 2px - 0.5em);
+                    top: calc(50% - 8px - 0.5em);
                 }
             }
 
-            &:focus-within, &:not(.empty), &:has(input[type=date]), &:has(input:-webkit-autofill) {
+            &:focus-within, &:not(.empty), &:has(.never-empty), &:has(input:-webkit-autofill) {
 
                 > label {
                     font-size: var(--font-size-small);
@@ -186,7 +186,7 @@
                 padding: 0 size(0.5);
             }
 
-            &:focus-within, &:not(.empty), &:has(input[type=date]), &:has(input:-webkit-autofill) {
+            &:focus-within, &:not(.empty), &:has(.never-empty), &:has(input:-webkit-autofill) {
 
                 > label {
                     top: -6px;
@@ -233,7 +233,7 @@
             }
 
 
-            &:focus-within, &:not(.empty), &:has(input[type=date]), &:has(input:-webkit-autofill) {
+            &:focus-within, &:not(.empty), &:has(.never-empty), &:has(input:-webkit-autofill) {
 
                 > label {
                     top: 6px;

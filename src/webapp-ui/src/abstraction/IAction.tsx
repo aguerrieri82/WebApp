@@ -8,7 +8,9 @@ export interface IActionContext<TTarget = unknown> {
     target?: TTarget;
 }
 
-export interface IAction<TTarget = unknown> {
+export interface IAction<
+    TTarget = unknown,
+    TCtx extends IActionContext<TTarget> = IActionContext<TTarget>> {
 
     name: string;
 
@@ -24,5 +26,5 @@ export interface IAction<TTarget = unknown> {
 
     //canExecuteAsync?: (ctx: IActionContext<TTarget>) => Promise<boolean>;
 
-    executeAsync: (ctx: IActionContext<TTarget>) => Promise<unknown>;
+    executeAsync: (ctx: TCtx) => Promise<unknown>;
 }

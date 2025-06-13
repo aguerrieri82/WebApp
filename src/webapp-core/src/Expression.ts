@@ -135,7 +135,7 @@ export abstract class Expression<TValue extends ExpressionValue> {
         }
 
         const result = this._options.evaluate ?
-            (this.value as Function).call(this.parent.value, ...args?.map(a => cleanProxy(a))) : null;
+            (this.value as Function).call(this.parent.value, ...args?.map(a => a)) : null;
 
         let innerExp = this.actions.find(a => a instanceof CallExpression && a.value == result);
 

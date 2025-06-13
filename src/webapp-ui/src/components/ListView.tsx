@@ -1,4 +1,4 @@
-import { Component, type IComponentOptions, type TemplateMap } from "@eusoft/webapp-core";
+import { Bind, Component, INDEX, type IComponentOptions, type TemplateMap } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
 import { type ViewNode } from "../Types";
 import "./ListView.scss"
@@ -7,13 +7,13 @@ export interface IListViewOptions<TItem> extends IComponentOptions {
 
     content: TItem[];
 
-    createItemView: (item: TItem) => ViewNode;
+    createItemView: (item: TItem, index?: number) => ViewNode;
 }
 
 export const ListViewTemplates: TemplateMap<ListView<unknown>> = {
 
     Default: forModel(m => <ol className={m.className} visible={m.visible}>
-        {m.content?.forEach(i => m.createItemView(i))}
+        {m.content?.forEach(i => m.createItemView(i, Bind.index(i)))}
     </ol>)
 }
 
@@ -36,7 +36,7 @@ export class ListView<TItem> extends Component<IListViewOptions<TItem>> {
             list.scrollTop = list.scrollHeight - list.clientHeight;
     }
 
-    createItemView: (item: TItem) => ViewNode;
+    createItemView: (item: TItem, index?: number) => ViewNode;
 
     content: TItem[];
 }

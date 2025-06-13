@@ -28,12 +28,16 @@ export function formatText(text: LocalString, ...args: any[]): string | ITemplat
     const simple = formatTextSimple(text, ...args);
     if (typeof simple != "string")
         return simple;
-    return replaceArgs(simple, i => formatText(args[i])); 
+    return replaceArgs(simple, i => {
+        if (!isNaN(parseInt(i)))
+            return formatText(args[i], args);
+        return formatText(i, args);  
+    }); 
 }
 
-export function formatCurrency(value: number) {
+export function formatCurrency(value: number, symbol = "€") {
 
-    return (Math.round(value * 100) / 100).toFixed(2);
+    return symbol + " " + (Math.round(value * 100) / 100).toFixed(2);
 }
 
 export function replaceArgs(value: string, args: Record<string, unknown> | { (key: string) : unknown }): string {

@@ -20,23 +20,25 @@ export interface IItemViewOptions<TItem> extends IComponentOptions {
     actions?: IAction<TItem>[];
 
     maxActions?: number;
+
+    onClick?: (item: TItem) => unknown;
 }
 
 export const ItemViewTemplates: TemplateMap<ItemView<unknown>> = {
 
-    Default: forModel(m => <li className={m.className} visible={m.visible}>
+    Default: forModel(m => <li className={m.className} on-click={()=> m.onClick(m.content)} visible={m.visible}>
         <div className="main">
-            {m.icon && <i>{m.icon}</i>}
+            {m.icon}
             <div className="body">
                 <div className="primary"><NodeView>{m.primary}</NodeView></div>
                 {m.secondary && <div className="secondary"><NodeView>{m.secondary}</NodeView></div>}
             </div>
             <div className="secondary-actions">
-                {m.secondaryActions.forEach(a => m.createAction(a, "text"))}
+                {m.secondaryActions?.forEach(a => m.createAction(a, "icon"))}
             </div>
         </div>
         {m.primaryActions.length > 0 && <div className="primary-actions">
-            {m.primaryActions.forEach(a => m.createAction(a, "text"))}
+            {m.primaryActions?.forEach(a => m.createAction(a, "text"))}
         </div>}
     </li>)
 }
@@ -90,6 +92,10 @@ export class ItemView<TItem> extends Component<IItemViewOptions<TItem>> {
     createAction(action: IAction, style = "text") {
 
         return createAction(this.patchAction(action), style);
+    }
+
+    onClick(item: TItem) {
+
     }
 
     maxActions?: number;

@@ -1,8 +1,16 @@
-import { Content, type IAction, type IContent, type IContentInstance, type IContentOptions, type IEditor, type IItemsSource, ItemView, ListView, type LocalString, MaterialIcon, useOperation, type ViewNode } from "@eusoft/webapp-ui";
+import { Content, type IAction, type IContent, type IContentInstance, type IContentOptions, type IEditor, type IItemsSource, type IItemViewOptions, ItemView, ListView, type LocalString, MaterialIcon, useOperation, type ViewNode } from "@eusoft/webapp-ui";
 import { type IFilterField } from "../abstraction/IFilterEditor";
-import { forModel } from "@eusoft/webapp-jsx";
+import { Class, forModel } from "@eusoft/webapp-jsx";
 import router from "../services/Router";
 import { userInteraction } from "../services/UserInteraction";
+import "./ItemListContent.scss"
+import { cleanProxy } from "@eusoft/webapp-core/Expression";
+
+export interface IItemActionContext<TItem> {
+    target: TItem;
+    index: number;
+}
+
 
 export interface IListColumn<TItem, TValue> {
     name?: string;
@@ -32,17 +40,19 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<unknow
     confirmDeleteMessage?: ViewNode;
     addLabel?: ViewNode;
     itemsSource: IItemsSource<TItem, unknown, unknown>;
-    itemActions?: (item?: TItem) => IAction<TItem>[] | IAction<TItem>[];
+    itemActions?: (item: TItem, result: IAction<TItem, IItemActionContext<TItem>>[]) => IAction<TItem, IItemActionContext<TItem>>[],
     columns: IListColumn<TItem, unknown>[];
     openItem?: (item: TItem) => unknown;
     itemEditContent?: (item: TItem) => IContentInstance<unknown, IContent>;
     itemAddContent?: (item?: TItem) => Content<unknown> | Class<Content<unknown>>;
     createItemView?: (item: TItem, actions?: IAction<TItem>[]) => ViewNode | Class<Content<unknown>>;
+    itemView?: Partial<IItemViewOptions<TItem>> | { (item: TItem) : Partial<IItemViewOptions<TItem>> },
     pageSize?: number;
     prepareFilter?: (curFilter?: TFilter, offset?: number, limit?: number) => TFilter;
     filterMode?: ListFilterMode;
     filterEditor?: () => IEditor<TFilter> | Class<IEditor<TFilter>>;
     emptyView?: ViewNode;
+    maxItemActions?: number;
 }
 
 export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListOptions<TItem, TFilter>> {
@@ -54,6 +64,7 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
         this.init(ItemListContent, {
 
             body: forModel(this, m => <div className="item-list">
+                <Class name="can-open" condition={m.canOpen}/>
                 {m.items?.length == 0 ?
                     <>{m.emptyView}</> :
                     <>
@@ -68,7 +79,7 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
         });
     }
 
-    getItemActions(item: TItem) {
+    protected getItemActions(item: TItem) {
 
         const result = [...this.builtInActions];
 
@@ -76,9 +87,36 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
             result.push(... this.itemActions);
 
         else if (this.itemActions)
-            result.push(... this.itemActions(item));
+            result.push(...this.itemActions(item, []));
+
+        result.forEach((action, i) => {
+            result[i] = {
+                ...action,
+                executeAsync: async () => {
+
+                    const index = this.items.indexOf(cleanProxy(item));
+
+                    const ctx = {
+                        target: item,
+                        index
+                    }
+
+                    const res = await action.executeAsync(ctx);
+
+                    if (index !== undefined && res === true) {
+                        this.refreshItem(index);
+                    }
+
+                    return res;
+                }
+            }
+        });
 
         return result;
+    }
+
+    refreshItem(index: number) {
+        this.items.set(index, { ...this.items[index] }); 
     }
 
     override async onLoadAsync() {
@@ -91,7 +129,7 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
                 text: "delete",
                 icon: <MaterialIcon name="delete" />,
                 priority: "secondary",
-                executeAsync: ctx => this.deleteItemInternalAsync(ctx.target)
+                executeAsync: ctx => this.deleteItemInternalAsync(ctx.target, ctx.index)
             });
 
         if (this.canEdit)
@@ -134,12 +172,19 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
 
         const secondary = this.columns?.filter(a => a.priority == "secondary");
 
+        const options = typeof this.itemView == "function" ? this.itemView(item) : this.itemView;
+
         return new ItemView({
             content: item,
             primary: primary ? this.getColumnContent(item, primary) : this.itemsSource.getText(item),
-            secondary: secondary?.map(a => this.getColumnContent(item, a)),
+            secondary: secondary?.map(a => this.getColumnContent(item, a)).join(" - "),
             icon: this.itemsSource.getIcon ? this.itemsSource.getIcon(item) : undefined,
-            actions: actions
+            actions: actions,
+            onClick: () => {
+                if (this.canOpen)
+                    this.openItem(item);
+            },
+            ...options
         });
     }
 
@@ -192,7 +237,7 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
         return false;
     }
 
-    protected deleteItemInternalAsync(item: TItem) {
+    protected deleteItemInternalAsync(item: TItem, index?: number) {
 
         return useOperation(async () => {
 
@@ -201,20 +246,28 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
                     return;
             }
 
-            if (await this.deleteItemAsync(item))
-                await this.refreshAsync();
+            if (await this.deleteItemAsync(item)) {
+
+                if (index !== undefined)
+                    this.items.splice(index, 1);
+                else
+                    await this.refreshAsync();
+            }
+                
         });
     }
 
     addLabel?: LocalString;
 
-    builtInActions: IAction<TItem>[];
+    builtInActions: IAction<TItem, IItemActionContext<TItem>>[];
 
     canAdd: boolean;
 
     canDelete: boolean;
 
     canEdit: boolean;
+
+    canOpen: boolean;
 
     confirmDeleteMessage: ViewNode;
 
@@ -224,12 +277,16 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
 
     itemEditContent?: (item: TItem) => IContentInstance<unknown, IContent>;
 
+    openItem?: (item: TItem) => unknown;
+
     emptyView: ViewNode;
 
     items: TItem[] = [];
 
     columns: IListColumn<TItem, unknown>[];
 
-    itemActions: (item?: TItem) => IAction<TItem>[] | IAction<TItem>[];
+    itemView?: Partial<IItemViewOptions<TItem>> | { (item: TItem): Partial<IItemViewOptions<TItem>> };
+
+    itemActions: (item: TItem, result: IAction<TItem, IItemActionContext<TItem>>[]) => IAction<TItem, IItemActionContext<TItem>>[];
 }
 
