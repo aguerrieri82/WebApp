@@ -15,7 +15,7 @@ export interface IItemActionContext<TItem> {
 export interface IListColumn<TItem, TValue> {
     name?: string;
     header: ViewNode;
-    priority?: "primary" | "secondary";
+    priority?: "primary" | "secondary" | "evidence";
     value: (item: TItem) => TValue;
     sortValue?: (item: TItem) => string | number;
     content?: (item: TItem) => ViewNode;
@@ -43,7 +43,7 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<unknow
     itemActions?: (item: TItem, result: IAction<TItem, IItemActionContext<TItem>>[]) => IAction<TItem, IItemActionContext<TItem>>[],
     columns: IListColumn<TItem, unknown>[];
     openItem?: (item: TItem) => unknown;
-    itemEditContent?: (item: TItem) => IContentInstance<unknown, IContent>;
+    itemEditContent?: (item: TItem) => IContentInstance<ObjectLike, IContent>;
     itemAddContent?: (item?: TItem) => Content<unknown> | Class<Content<unknown>>;
     createItemView?: (item: TItem, actions?: IAction<TItem>[]) => ViewNode | Class<Content<unknown>>;
     itemView?: Partial<IItemViewOptions<TItem>> | { (item: TItem) : Partial<IItemViewOptions<TItem>> },
@@ -173,12 +173,15 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
 
         const secondary = this.columns?.filter(a => a.priority == "secondary");
 
+        const evidence = this.columns?.find(a => a.priority == "evidence");
+
         const options = typeof this.itemView == "function" ? this.itemView(item) : this.itemView;
 
         return new ItemView({
             content: item,
             primary: primary ? this.getColumnContent(item, primary) : this.itemsSource.getText(item),
             secondary: secondary?.map(a => this.getColumnContent(item, a)).join(" - "),
+            evidence: evidence ? this.getColumnContent(item, evidence) : undefined,
             icon: this.itemsSource.getIcon ? this.itemsSource.getIcon(item) : undefined,
             actions: actions,
             onClick: () => {
@@ -276,7 +279,7 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
 
     itemAddContent?: (item?: TItem) => Content<unknown> | Class<Content<unknown>>;
 
-    itemEditContent?: (item: TItem) => IContentInstance<unknown, IContent>;
+    itemEditContent?: (item: TItem) => IContentInstance<ObjectLike, IContent>;
 
     openItem?: (item: TItem) => unknown;
 

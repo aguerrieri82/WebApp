@@ -15,6 +15,8 @@ export interface IItemViewOptions<TItem> extends IComponentOptions {
 
     secondary?: ViewNode;
 
+    evidence?: ViewNode
+
     content: TItem;
 
     actions?: IAction<TItem>[];
@@ -33,6 +35,7 @@ export const ItemViewTemplates: TemplateMap<ItemView<unknown>> = {
                 <div className="primary"><NodeView>{m.primary}</NodeView></div>
                 {m.secondary && <div className="secondary"><NodeView>{m.secondary}</NodeView></div>}
             </div>
+            {m.evidence && <div className="evidence"><NodeView>{m.evidence}</NodeView></div>}
             <div className="secondary-actions">
                 {m.secondaryActions?.forEach(a => m.createAction(a, "icon"))}
             </div>
@@ -105,6 +108,8 @@ export class ItemView<TItem> extends Component<IItemViewOptions<TItem>> {
     primary: ViewNode;
 
     secondary: ViewNode;
+
+    evidence: ViewNode;
 
     content: TItem;
 

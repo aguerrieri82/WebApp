@@ -40,7 +40,8 @@ export function ForeachExpressionHandler(ctx: JsxParseContext, stage: "exp", pat
 
     body.get("body").visit();
 
-    ctx.exitElement();
+    if (ctx.curElement?.name == "t:foreach")
+        ctx.exitElement();
 
     path.shouldSkip = true;
 

@@ -34,7 +34,7 @@ export interface IContent<TArgs extends ObjectLike = undefined> extends ICompone
 }
 
 export interface IContentInfo<
-    TArgs extends {} = {},
+    TArgs extends ObjectLike = ObjectLike,
     TContent extends IContent<TArgs> = IContent<TArgs>> {
 
     name: string;
@@ -49,7 +49,7 @@ export interface IContentInfo<
 }
 
 export interface IContentConstructor<
-    TArgs extends {} = {},
+    TArgs extends ObjectLike = ObjectLike,
     TContent extends IContent<TArgs> = IContent<TArgs>> {
 
     new(): TContent;
@@ -58,16 +58,16 @@ export interface IContentConstructor<
 }
 
 export interface IContentInstance<
-    TArgs extends {} = {},
+    TArgs extends ObjectLike = ObjectLike,
     TContent extends IContent<TArgs> = IContent<TArgs>> {
 
     args: TArgs;
-
+    route?: string;
     factory: () => TContent
 }
 
 export type ContentRef<
-    TArgs extends {} = {},
+    TArgs extends ObjectLike = ObjectLike,
     TContent extends IContent<TArgs> = IContent<TArgs>> =
 string |
 IContentInfo<TArgs, TContent> |
@@ -75,7 +75,7 @@ IContentInstance<TArgs, TContent> |
 IContentConstructor<TArgs>;
 
 export function contentInfo<
-    TArgs extends {},
+    TArgs extends ObjectLike,
     TContent extends IContent<TArgs>,
     TContentInfo extends IContentInfo<TArgs, TContent>>(info: TContentInfo): TContentInfo {
 

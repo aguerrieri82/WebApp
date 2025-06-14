@@ -40,7 +40,7 @@ export function formatCurrency(value: number, symbol = "€") {
     return symbol + " " + (Math.round(value * 100) / 100).toFixed(2);
 }
 
-export function replaceArgs(value: string, args: Record<string, unknown> | { (key: string) : unknown }): string {
+export function replaceArgs(value: string, args: ObjectLike | { (key: string) : unknown }): string {
 
     if (!value)
         return;
@@ -50,7 +50,7 @@ export function replaceArgs(value: string, args: Record<string, unknown> | { (ke
     if (typeof (args) != "function")
         map = key => args[key];
     else
-        map = args;
+        map = args as typeof map;
 
     let state = 0;
     let result = "";

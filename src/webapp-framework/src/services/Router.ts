@@ -1,9 +1,9 @@
-import { type IContent, type IContentConstructor, type IContentInfo, formatText, isResultContainer, replaceArgs } from "@eusoft/webapp-ui";
+import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, formatText, isResultContainer, replaceArgs } from "@eusoft/webapp-ui";
 import { app } from "../App";
 
 type StringLike = { toString(): string } | string;
 
-export type RouteArgs = {} ;
+export type RouteArgs = ObjectLike;
 
 export type RouteAction<TArgs extends RouteArgs> = (args: TArgs, content?: unknown) => void | Promise<unknown>;
 
@@ -39,7 +39,7 @@ function restoreState<T>(key: string, defValue: T) {
 export class Router {
 
     protected _history: IRouteState[];
-    protected _entries: IRounteEntry<unknown>[] = [];
+    protected _entries: IRounteEntry<ObjectLike>[] = [];
     protected _activeIndex: number;
     protected _popResolve: () => void;
 
@@ -91,15 +91,22 @@ export class Router {
         return entry;
     }
 
-    addPage(infoOrPage: IContentInfo | IContentConstructor) {
+    addPage(infoOrPage: IContentInfo | IContentConstructor | IContentInstance) {
 
         const info = typeof infoOrPage == "function" ? infoOrPage.info : infoOrPage;
+
+        const boundArgs = "args" in info ? info.args : {};
 
         const result = this.addAction(info.route, async (args, content: IContent) => {
 
             const page = content ?? info.factory();
 
-            if (!await app.contentHost.loadContentAsync(page, args))
+            const fullArgs = {
+                ...boundArgs,
+                ...args
+            };
+
+            if (!await app.contentHost.loadContentAsync(page, fullArgs))
                 return false;
 
             document.title = formatText(page.title) as string;
@@ -166,7 +173,7 @@ export class Router {
     protected getEntryForPage<TArgs extends ObjectLike>(pageOrName: string | IContent<TArgs>) {
 
         if (typeof pageOrName == "string")
-            return this._entries.find(a => (a.tag as IContentInfo)?.name == pageOrName);
+            return this._entries.find(a => (a.tag as IContentInfo)?.name == pageOrName || a.route == pageOrName);
 
         return this._entries.find(a => (a.tag as IContentInfo)?.name == pageOrName.name);
     }
@@ -212,7 +219,7 @@ export class Router {
         return replaceArgs(path, args);
     }
 
-    protected async navigateEntryAsync<TArgs extends Record<string, StringLike>>(entry: IRounteEntry<TArgs>, args?: TArgs, replace = false, content?: unknown, transition?: string) {
+    protected async navigateEntryAsync<TArgs extends ObjectLike>(entry: IRounteEntry<TArgs>, args?: TArgs, replace = false, content?: unknown, transition?: string) {
 
         const activeTrans = transition ?? ((entry.tag as IContentInfo)?.transition ?? "push");
 

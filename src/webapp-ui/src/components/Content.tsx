@@ -175,13 +175,15 @@ export function singleton<T>(type: Class<T>) {
 
 export function content<
     TArgs extends {},
-    TContent extends IContent<TArgs>>(info: IContentInfo<TArgs, TContent>, args: TArgs): IContentInstance<TArgs, TContent>;
+    TContent extends IContent<TArgs>>(
+        info: IContentInfo<TArgs, TContent>,
+        args: TArgs): IContentInstance<TArgs, TContent> {
 
-export function content(ref, args) {
     return {
         args,
-        factory: (ref as IContentInfo).factory,
-    } as IContentInstance;
+        factory: info.factory,
+    } as IContentInstance<TArgs, TContent>;
 }
+
 
 export default Content;
