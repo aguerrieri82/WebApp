@@ -66,9 +66,13 @@ export class Content<
 
         super();
 
+        const info = (this.constructor as IContentConstructor).info;
+
         this.init(Content, {
             template: ContentTemplates.Page,
-            name: (this.constructor as IContentConstructor).info?.name,
+            name: info?.name,
+            features: info?.features,
+            icon: info?.icon,
             ...options
         });
 

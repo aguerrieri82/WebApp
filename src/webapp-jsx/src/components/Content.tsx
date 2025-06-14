@@ -2,7 +2,7 @@ import type { BindValue, ITemplateProvider, CatalogTemplate, ContentUpdateMode }
 import type { JsxComponentProps, TemplateModel } from "../abstraction";
 
 export interface IContentProps<TModel extends TemplateModel, TInnerModel extends TemplateModel> extends JsxComponentProps<TModel, undefined> {
-    src: BindValue<TModel, TInnerModel>;
+    src: BindValue<TModel, TInnerModel>|unknown; 
     inline?: boolean;
     update?: ContentUpdateMode;
     template?: BindValue<TModel, ITemplateProvider> | CatalogTemplate<TInnerModel>;

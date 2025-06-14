@@ -45,6 +45,8 @@ export interface IContentInfo<
 
     transition?: string;
 
+    features?: IFeature<TContent>[];
+
     factory: () => TContent;
 }
 
