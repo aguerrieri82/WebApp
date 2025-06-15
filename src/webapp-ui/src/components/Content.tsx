@@ -10,7 +10,7 @@ import { type IContentHost } from "../abstraction";
 import "./Content.scss";
 import { Action } from "./Action";
 
-export interface IContentOptions<TArgs extends {}> extends IComponentOptions {
+export interface IContentOptions<TArgs extends ObjectLike> extends IComponentOptions {
 
     title?: Bindable<ViewNode>;
 
@@ -24,7 +24,7 @@ export interface IContentOptions<TArgs extends {}> extends IComponentOptions {
 
     route?: string;
 
-    features?: IFeature<IContent>[];
+    features?: IFeature<IContent, TArgs>[];
 
     onLoadArgsAsync?: (args: TArgs) => Promise<boolean>;
 }
@@ -54,7 +54,7 @@ export const ContentTemplates: TemplateMap<Content> = {
 
 }
 export class Content<
-    TArgs extends {} = unknown,
+    TArgs extends ObjectLike = ObjectLike,
     TOptions extends IContentOptions<TArgs> = IContentOptions<TArgs>,
 >
 
@@ -96,7 +96,7 @@ export class Content<
             if (this.features) {
 
                 for (const feature of this.features) {
-                    if (!await feature(this)) {
+                    if (!await feature(this, args)) {
                         isValid = false;
                         return;
                     }
@@ -143,7 +143,7 @@ export class Content<
         return this._loadState;
     }
 
-    features: IFeature<this>[];
+    features: IFeature<this, TArgs>[];
 
     title: LocalString;
 

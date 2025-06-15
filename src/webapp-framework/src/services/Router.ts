@@ -156,7 +156,7 @@ export class Router {
         });
     }
 
-    async navigatePageAsync<TArgs extends RouteArgs>(pageOrName: string | IContent<TArgs>, args?: TArgs) {
+    async navigatePageAsync<TArgs extends RouteArgs>(pageOrName: string | IContent<TArgs>, args?: TArgs, replace = false) {
 
         const entry = this.getEntryForPage(pageOrName);
 
@@ -167,7 +167,7 @@ export class Router {
             return pageOrName;
         } 
 
-        return await this.navigateEntryAsync(entry, args, false, typeof pageOrName == "string" ? undefined : pageOrName);
+        return await this.navigateEntryAsync(entry, args, replace, typeof pageOrName == "string" ? undefined : pageOrName);
     }
 
     protected getEntryForPage<TArgs extends ObjectLike>(pageOrName: string | IContent<TArgs>) {

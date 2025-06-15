@@ -1,4 +1,6 @@
-export interface IFeature<T> {
+import type { IContent } from "./IContent";
 
-    (component: T): Promise<boolean>;
+export interface IFeature<TContent extends IContent<TArgs>, TArgs extends ObjectLike = ObjectLike> {
+
+    (component: TContent, args?: TArgs): Promise<boolean>;
 }

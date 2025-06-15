@@ -32,7 +32,7 @@ export type ListEditMode = "modal" | "page" | "auto";
 export interface IItemListOptions<TItem, TFilter> extends IContentOptions<unknown> {
     canAdd?: boolean;
     canEdit?: boolean;
-    canDelete?: boolean;
+    canDelete?: boolean | { (item: TItem) : Promise<boolean>|boolean };
     canOpen?: boolean;
     selectionMode?: ListSelectionMode;
     editMode?: ListEditMode;
@@ -267,7 +267,7 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
 
     canAdd: boolean;
 
-    canDelete: boolean;
+    canDelete: boolean | { (item: TItem): Promise<boolean> | boolean };
 
     canEdit: boolean;
 
