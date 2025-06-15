@@ -325,6 +325,10 @@ export class JsxParseContext {
             this.curAttribute?.name != "t:behavoir";
     }
 
+    isBooleanExp() {
+        return this.curElement?.name == "t:if" && this.curAttribute?.name == "condition";
+    }
+
     isBinding(path: NodePath<Expression | JSXEmptyExpression>) {
 
         if (path.isArrowFunctionExpression())

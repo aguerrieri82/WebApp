@@ -17,11 +17,13 @@ export function AndExpressionHandler(ctx: JsxParseContext, stage: "exp", path: N
 
     const left = path.get("left");
     left.visit();
+
     ctx.curAttribute = null;
 
     right.visit();
 
-    ctx.exitElement();
+    if (ctx.curElement?.name == "t:if")
+        ctx.exitElement();
 
     path.shouldSkip = true;
 

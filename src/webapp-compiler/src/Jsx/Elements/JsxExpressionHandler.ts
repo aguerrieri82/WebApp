@@ -32,15 +32,18 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
 
     let value = path.toString();
 
+    if (ctx.isBooleanExp())
+        value = `((${value}) ? true : false)`;
+
     if (createBind) {
 
         if (path.isObjectExpression())
-            value = "(" + value + ")";
+            value = `(${value})`;
 
-        if (!bindMode)
-            value = "Bind.exp(" + (ctx.curModel?.name ?? "m") + " => " + value + ")";
+        if (!bindMode) 
+            value = `Bind.exp(${ctx.curModel?.name ?? "m"} => ${value})`;
         else
-            value = ctx.curModel.name + " => " + value;
+            value = `${ctx.curModel.name} => ${value}`;
 
         ctx.replaceNode(path, value);
     }

@@ -77,6 +77,7 @@ export namespace Bind {
         value[BIND_MODE] = "expression";
         return value as BindExpression<TModel, TValue> & { [BIND_MODE]: "expression" };
     }
+
      
     export function action<T extends BindValue<unknown, unknown>>(value: T): T {
 

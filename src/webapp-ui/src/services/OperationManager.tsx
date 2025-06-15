@@ -32,8 +32,11 @@ export class OperationManager implements IOperationManager {
 
         console.group(options?.name);
 
-        console.debug("blockCount: ", this._blockCount);
-        console.debug("unblockCount: ", this._unblockCount); 
+        if (webApp.debugBlock) {
+            console.debug("blockCount: ", this._blockCount);
+            console.debug("unblockCount: ", this._unblockCount); 
+        }
+
 
         const result: IOperation = {
 
@@ -66,8 +69,10 @@ export class OperationManager implements IOperationManager {
         if (operation.unblock)
             this._unblockCount--;
 
-        console.debug("blockCount: ", this._blockCount);
-        console.debug("unblockCount: ", this._unblockCount); 
+        if (webApp.debugBlock) {
+            console.debug("blockCount: ", this._blockCount);
+            console.debug("unblockCount: ", this._unblockCount);
+        }
 
         this.blocker.visible = this._blockCount > 0 && this._unblockCount == 0;
     }

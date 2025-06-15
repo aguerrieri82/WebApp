@@ -216,13 +216,15 @@ export abstract class Component<
 
     mount(ctx: ITemplateContext) {
 
-        console.debug("mount", getTypeName(this));
+        if (webApp.debugMount)
+            console.debug("mount", getTypeName(this));
 
         this.context = ctx as ITemplateContext<this, HTMLElement>;
     }
 
     unmount() {
-        console.debug("unmount", getTypeName(this));
+        if (webApp.debugMount)
+            console.debug("unmount", getTypeName(this));
     }
 
     get binder() {
