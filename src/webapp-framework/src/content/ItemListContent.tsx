@@ -29,7 +29,7 @@ export type ListSelectionMode = "none" | "single" | "multiple";
 
 export type ListEditMode = "modal" | "page" | "auto";
 
-export interface IItemListOptions<TItem, TFilter> extends IContentOptions<unknown> {
+export interface IItemListOptions<TItem, TFilter> extends IContentOptions<ObjectLike> {
     canAdd?: boolean;
     canEdit?: boolean;
     canDelete?: boolean | { (item: TItem) : Promise<boolean>|boolean };
@@ -44,8 +44,8 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<unknow
     columns: IListColumn<TItem, unknown>[];
     openItem?: (item: TItem) => unknown;
     itemEditContent?: (item: TItem) => IContentInstance<ObjectLike, IContent>;
-    itemAddContent?: (item?: TItem) => Content<unknown> | Class<Content<unknown>>;
-    createItemView?: (item: TItem, actions?: IAction<TItem>[]) => ViewNode | Class<Content<unknown>>;
+    itemAddContent?: (item?: TItem) => Content<ObjectLike> | Class<Content<ObjectLike>>;
+    createItemView?: (item: TItem, actions?: IAction<TItem>[]) => ViewNode | Class<Content<ObjectLike>>;
     itemView?: Partial<IItemViewOptions<TItem>> | { (item: TItem) : Partial<IItemViewOptions<TItem>> },
     pageSize?: number;
     prepareFilter?: (curFilter?: TFilter, offset?: number, limit?: number) => TFilter;
@@ -55,7 +55,7 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<unknow
     maxItemActions?: number;
 }
 
-export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListOptions<TItem, TFilter>> {
+export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemListOptions<TItem, TFilter>> {
 
     constructor(options?: IItemListOptions<TItem, TFilter>) {
 
@@ -277,7 +277,7 @@ export class ItemListContent<TItem, TFilter> extends Content<unknown, IItemListO
 
     itemsSource: IItemsSource<TItem, unknown, unknown>;
 
-    itemAddContent?: (item?: TItem) => Content<unknown> | Class<Content<unknown>>;
+    itemAddContent?: (item?: TItem) => Content<ObjectLike> | Class<Content<ObjectLike>>;
 
     itemEditContent?: (item: TItem) => IContentInstance<ObjectLike, IContent>;
 

@@ -3,18 +3,18 @@ import { forModel } from "@eusoft/webapp-jsx";
 import router from "../services/Router";
 import "./ItemPickerContent.scss"
 
-export interface IItemPickerOptions<TItem, TFilter> extends IContentOptions<unknown> {
+export interface IItemPickerOptions<TItem, TFilter> extends IContentOptions<ObjectLike> {
     canAdd?: boolean;
     addLabel?: ViewNode;
     itemsSource: IItemsSource<TItem, unknown, unknown>;
-    itemAddContent?: (item?: TItem) => Content<unknown> | Class<Content<unknown>>;
-    createItemView?: (item: TItem, actions?: IAction<TItem>[]) => ViewNode | Class<Content<unknown>>;
+    itemAddContent?: (item?: TItem) => Content<ObjectLike> | Class<Content<ObjectLike>>;
+    createItemView?: (item: TItem, actions?: IAction<TItem>[]) => ViewNode | Class<Content<ObjectLike>>;
     pageSize?: number;
     prepareFilter?: (text: string, offset?: number, limit?: number) => TFilter;
     emptyView?: ViewNode;
 }
 
-export class ItemPickerContent<TItem, TFilter> extends Content<unknown, IItemPickerOptions<TItem, TFilter>> {
+export class ItemPickerContent<TItem, TFilter> extends Content<ObjectLike, IItemPickerOptions<TItem, TFilter>> {
 
     constructor(options?: IItemPickerOptions<TItem, TFilter>) {
 
@@ -98,7 +98,7 @@ export class ItemPickerContent<TItem, TFilter> extends Content<unknown, IItemPic
 
     itemsSource: IItemsSource<TItem, unknown, unknown>;
 
-    itemAddContent?: (item?: TItem) => Content<unknown> | Class<Content<unknown>>;
+    itemAddContent?: (item?: TItem) => Content<ObjectLike> | Class<Content<ObjectLike>>;
 
     emptyView: ViewNode;
 

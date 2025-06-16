@@ -11,7 +11,7 @@ import { type IAsyncLoad } from "../abstraction/IAsyncLoad";
 
 type ObjectEditorValidationMode = "manual" | "onInputChange";
 
-export interface IObjectEditorOptions<TObj extends Record<string, any>> extends ICommitableEditorOptions<TObj, TObj> {
+export interface IObjectEditorOptions<TObj extends ObjectLike> extends ICommitableEditorOptions<TObj, TObj> {
 
     builder?: (builder: EditorBuilder<TObj, ObjectEditor<TObj>>) => ITemplate<TObj> | JSX.Element;
 
@@ -38,7 +38,9 @@ export const ObjectEditorTemplates: TemplateMap<ObjectEditor<any>> = {
 
 }
 
-export class ObjectEditor<TObj extends {}> extends CommitableEditor<TObj, TObj, IObjectEditorOptions<TObj>> implements IAsyncLoad {
+export class ObjectEditor<TObj extends ObjectLike>
+    extends CommitableEditor<TObj, TObj, IObjectEditorOptions<TObj>>
+    implements IAsyncLoad {
 
     protected _inputs: InputField<unknown, IEditor<unknown>>[];
     protected _contentTemplate: ITemplate<TObj>;
@@ -206,7 +208,7 @@ configureBindings(ObjectEditor, {
 
 declare module "./EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {
-        object<TValue>(value: BindExpression<TModel, TValue>, options?: IBuilderEditorOptions<TModel, TValue, IObjectEditorOptions<TValue>>);
+        object<TValue extends ObjectLike>(value: BindExpression<TModel, TValue>, options?: IBuilderEditorOptions<TModel, TValue, IObjectEditorOptions<TValue>>);
     }
 }
 
