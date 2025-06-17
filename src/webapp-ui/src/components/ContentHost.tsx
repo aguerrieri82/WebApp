@@ -64,7 +64,7 @@ export class ContentHost<TContent extends IContent<ObjectLike> = IContent<Object
         else
             this.content = content;
 
-        if (this.content.onOpenAsync)
+        if (this.content?.onOpenAsync)
             await content.onOpenAsync();
 
         return true;

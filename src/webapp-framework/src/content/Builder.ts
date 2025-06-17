@@ -12,13 +12,24 @@ export class ContentBuilder<
 
     protected _factory: (options: TOptions) => TContent;
     protected _options = {} as TOptions;
+    protected _optionsFactory: () => Partial<TOptions>;
 
     constructor(factory: (options: TOptions) => TContent) {
         this._factory = factory;
     }
 
-    options(value: Partial<TOptions>) {
+    info(value: Partial<IContentInfo>) {
         Object.assign(this._options, value);
+        return this;
+    }
+
+    options(value: Partial<TOptions> | { (): Partial<TOptions> }) {
+
+        if (typeof value == "function")
+            this._optionsFactory = value;
+        else
+            Object.assign(this._options, value);
+
         return this;
     }
 
@@ -63,8 +74,16 @@ export class ContentBuilder<
 
         if (!this._options.title)
             this._options.title = formatText(this._options.name) as string;
+
+        if (this._optionsFactory) {
+            const dynOptions = this._optionsFactory();  
+            Object.assign(this._options, dynOptions);   
+        }
+
         const res = this._factory(this._options);
+
         Object.assign(res, body);
+
         return res as (TBody & TContent);
     }
 

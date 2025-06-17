@@ -1,4 +1,4 @@
-import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, formatText, isResultContainer, replaceArgs } from "@eusoft/webapp-ui";
+import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, formatText, isResultContainer, replaceArgs, useOperation } from "@eusoft/webapp-ui";
 import { app } from "../App";
 
 type StringLike = { toString(): string } | string;
@@ -69,7 +69,8 @@ export class Router {
         if (this._activeIndex != -1 && curState)
             return this.popStateAsync(curState, "reload");
 
-        this._activeIndex++;
+        if (this._activeIndex == -1)
+            this._activeIndex++;
 
         return this.navigateActiveRouteAsync();
     }
@@ -131,9 +132,9 @@ export class Router {
         });
     }
 
-    async navigatePageForResultAsync<TResult, TArgs extends RouteArgs>(pageOrName: string|IContent<TArgs>, args?: TArgs) {
+    navigatePageForResultAsync<TResult, TArgs extends RouteArgs>(pageOrName: string|IContent<TArgs>, args?: TArgs, replace = false) {
 
-        return new Promise<TResult>(res => {
+        return useOperation(() => new Promise<TResult>(res => {
 
             const entry = this.getEntryForPage(pageOrName);
 
@@ -144,7 +145,7 @@ export class Router {
             page.onCloseAsync = async () => {
 
                 try {
-                    onClose.call(page); 
+                    onClose.call(page);
                     res(isResultContainer(page) ? page.result as TResult : undefined);
                 }
                 finally {
@@ -152,8 +153,9 @@ export class Router {
                 }
             }
 
-            this.navigatePageAsync(page, args);
-        });
+            this.navigatePageAsync(page, args, replace);
+
+        }), { unblock: true });
     }
 
     async navigatePageAsync<TArgs extends RouteArgs>(pageOrName: string | IContent<TArgs>, args?: TArgs, replace = false) {
@@ -227,13 +229,12 @@ export class Router {
 
         const url = this.replaceUrl(entry.route as string, args);
 
-        if (!replace)
-            this._activeIndex++;
+        const newIndex = this._activeIndex + (replace ? 0 : 1);
 
         const state = {
             url: url,
             args: args,
-            historyIndex: this._activeIndex,
+            historyIndex: newIndex,
             entryIndex: this._entries.indexOf(entry)
         } as IRouteState;
 
@@ -247,6 +248,8 @@ export class Router {
                 history.replaceState(jsonState, "", url);
             else
                 history.pushState(jsonState, "", url);
+
+            this._activeIndex = newIndex;
 
             this._history[this._activeIndex] = state;
 

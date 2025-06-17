@@ -5,6 +5,7 @@ import router from "../services/Router";
 import { userInteraction } from "../services/UserInteraction";
 import "./ItemListContent.scss"
 import { cleanProxy } from "@eusoft/webapp-core/Expression";
+import { ContentBuilder } from "./Builder";
 
 export interface IItemActionContext<TItem> {
     target: TItem;
@@ -30,28 +31,51 @@ export type ListSelectionMode = "none" | "single" | "multiple";
 export type ListEditMode = "modal" | "page" | "auto";
 
 export interface IItemListOptions<TItem, TFilter> extends IContentOptions<ObjectLike> {
-    canAdd?: boolean;
-    canEdit?: boolean;
-    canDelete?: boolean | { (item: TItem) : Promise<boolean>|boolean };
+
+    canAdd?: boolean | { (): Promise<boolean> | boolean };
+
+    canEdit?: boolean | { (item?: TItem): Promise<boolean> | boolean };
+
+    canDelete?: boolean | { (item: TItem): Promise<boolean> | boolean };
+
     canOpen?: boolean;
+
     selectionMode?: ListSelectionMode;
+
     editMode?: ListEditMode;
+
     deleteItemAsync?: (item: TItem) => Promise<boolean>;
+
     confirmDeleteMessage?: ViewNode;
+
     addLabel?: ViewNode;
+
     itemsSource: IItemsSource<TItem, unknown, unknown>;
+
     itemActions?: (item: TItem, result: IAction<TItem, IItemActionContext<TItem>>[]) => IAction<TItem, IItemActionContext<TItem>>[],
+
     columns: IListColumn<TItem, unknown>[];
+
     openItem?: (item: TItem) => unknown;
+
     itemEditContent?: (item: TItem) => IContentInstance<ObjectLike, IContent>;
+
     itemAddContent?: (item?: TItem) => Content<ObjectLike> | Class<Content<ObjectLike>>;
+
     createItemView?: (item: TItem, actions?: IAction<TItem>[]) => ViewNode | Class<Content<ObjectLike>>;
-    itemView?: Partial<IItemViewOptions<TItem>> | { (item: TItem) : Partial<IItemViewOptions<TItem>> },
+
+    itemView?: Partial<IItemViewOptions<TItem>> | { (item: TItem): Partial<IItemViewOptions<TItem>> },
+
     pageSize?: number;
+
     prepareFilter?: (curFilter?: TFilter, offset?: number, limit?: number) => TFilter;
+
     filterMode?: ListFilterMode;
+
     filterEditor?: () => IEditor<TFilter> | Class<IEditor<TFilter>>;
+
     emptyView?: ViewNode;
+
     maxItemActions?: number;
 }
 
@@ -265,11 +289,11 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
     builtInActions: IAction<TItem, IItemActionContext<TItem>>[];
 
-    canAdd: boolean;
+    canAdd: boolean | { (): Promise<boolean> | boolean };
 
     canDelete: boolean | { (item: TItem): Promise<boolean> | boolean };
 
-    canEdit: boolean;
+    canEdit: boolean | { (item: TItem): Promise<boolean> | boolean };
 
     canOpen: boolean;
 
@@ -292,5 +316,22 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
     itemView?: Partial<IItemViewOptions<TItem>> | { (item: TItem): Partial<IItemViewOptions<TItem>> };
 
     itemActions: (item: TItem, result: IAction<TItem, IItemActionContext<TItem>>[]) => IAction<TItem, IItemActionContext<TItem>>[];
+
+
+    static builder<TItem, TFilter>() {
+        return new ItemListContentBuilder<TItem, TFilter>();
+    }
+}
+
+
+export class ItemListContentBuilder<
+    TItem,
+    TFilter> extends
+    ContentBuilder<ItemListContent<TItem, TFilter>, ObjectLike, IItemListOptions<TItem, TFilter>> {
+
+    constructor() {
+        super(options => new ItemListContent(options));
+    }
+
 }
 
