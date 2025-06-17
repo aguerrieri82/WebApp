@@ -7,11 +7,6 @@ interface IHandleErrorOptions {
     displayTime?: number;
 }
 
-interface IApiError {
-    message?: string;
-    code: string;
-}
-
 export async function handleError<T>(action: () => Promise<T>, options?: IHandleErrorOptions): Promise<T> {
 
     try {
@@ -21,19 +16,6 @@ export async function handleError<T>(action: () => Promise<T>, options?: IHandle
     }
     catch (ex) {
 
-        if (ex instanceof HttpError) {
-            const json = await ex.response.text();
-            console.warn(json);
-
-            try {
-                const apiErrors = JSON.parse(json) as IApiError;
-                if (Array.isArray(apiErrors) && apiErrors.length > 0  && apiErrors[0]?.message)
-                    ex = apiErrors[0];
-            }
-            catch {
-
-            }
-        }
         console.warn("handleError", ex);
 
         userInteraction.messageAsync(

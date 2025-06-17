@@ -229,12 +229,14 @@ export class Router {
 
         const url = this.replaceUrl(entry.route as string, args);
 
-        const newIndex = this._activeIndex + (replace ? 0 : 1);
+        const oldIndex = this._activeIndex;
+        if (!replace)
+            this._activeIndex++;
 
         const state = {
             url: url,
             args: args,
-            historyIndex: newIndex,
+            historyIndex: this._activeIndex,
             entryIndex: this._entries.indexOf(entry)
         } as IRouteState;
 
@@ -242,20 +244,19 @@ export class Router {
 
         const result = await entry.action(args, content);
 
-        if (result !== false)
-        {
+        if (result !== false) {
             if (replace)
                 history.replaceState(jsonState, "", url);
             else
                 history.pushState(jsonState, "", url);
-
-            this._activeIndex = newIndex;
 
             this._history[this._activeIndex] = state;
 
             if (!replace)
                 this._history.splice(this._activeIndex + 1, this._history.length - this._activeIndex);
         }
+        else
+            this._activeIndex = oldIndex;
 
        // delete document.documentElement.dataset.transition;
 

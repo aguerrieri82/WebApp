@@ -84,8 +84,6 @@ export class Content<
 
         this.host = host;
 
-        this.showBack = host.canGoBack;
-
         this._loadState = "loading";
 
         await useOperation(async () => {
@@ -116,6 +114,9 @@ export class Content<
             this._loadState = "loaded";
         else
             this._loadState = "error";
+
+
+        this.showBack = host.canGoBack;
 
         return isValid;
     }
