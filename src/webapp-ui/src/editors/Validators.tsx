@@ -39,6 +39,8 @@ export async function required(ctx: IValidationContext<unknown>, value: unknown)
     return ValidationResult.valid;
 }
 
+
+
 export async function integer(ctx: IValidationContext<unknown>, value: number) {
 
     if (value !== null && value !== undefined && (isNaN(value) || Math.round(value) != value))

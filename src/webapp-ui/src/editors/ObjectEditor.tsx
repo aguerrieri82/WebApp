@@ -7,7 +7,7 @@ import { CommitableEditor, type ICommitableEditorOptions } from "./CommitableEdi
 import { type IEditor } from "../abstraction/IEditor";
 import { cloneObject, emptyObject } from "../utils/Object";
 import "./ObjectEditor.scss";
-import { type IAsyncLoad } from "../abstraction/IAsyncLoad";
+import { isAsyncLoad, type IAsyncLoad } from "../abstraction/IAsyncLoad";
 
 type ObjectEditorValidationMode = "manual" | "onInputChange";
 
@@ -44,6 +44,7 @@ export class ObjectEditor<TObj extends ObjectLike>
 
     protected _inputs: InputField<unknown, IEditor<unknown>>[];
     protected _contentTemplate: ITemplate<TObj>;
+    protected _isLoaded: boolean;
 
     constructor(options?: IObjectEditorOptions<TObj>) {
 
@@ -54,15 +55,34 @@ export class ObjectEditor<TObj extends ObjectLike>
             template: ObjectEditorTemplates.Default,
             ...options,
         });
+
+        this.inputValue = new Proxy(this, {
+            get: (t, p, r) => {
+                const editor = t.getPropEditor(p as keyof TObj & string);
+                return editor?.value;
+            }
+        }) as any;
+    }
+
+
+    override async beginEdit(value) {
+        /*
+        if (!this._isLoaded)
+            await this.loadAsync();
+        */
+        super.beginEdit(value);
     }
 
     async loadAsync() {
 
         console.group("loadAsync");
 
-        this.beginEdit(this.value);
+        if (this._inputs) 
+            await Promise.all(this._inputs.filter(a => isAsyncLoad(a)).map(a => a.loadAsync()));
 
         console.groupEnd();
+
+        this._isLoaded = true;
     }
 
     contentTemplate() {
@@ -117,7 +137,7 @@ export class ObjectEditor<TObj extends ObjectLike>
         input.isAttached = true;
     }
 
-    getPropEditor<TEditor extends IEditor<unknown>>(name: string) {
+    getPropEditor<TKey extends keyof TObj & string, TEditor = IEditor<TObj[TKey]>,>(name: TKey) {
         return this._inputs?.find(a => a.name == name)?.content as TEditor;
     }
 
@@ -146,9 +166,11 @@ export class ObjectEditor<TObj extends ObjectLike>
             target: this.editValue
         } as IValidationContext<TObj>;
 
-        for (const input of this._inputs) {
-            if (!await input.validateAsync(innerCtx, force, noShowError))
-                isValid = false;
+        if (this._inputs) {
+            for (const input of this._inputs) {
+                if (!await input.validateAsync(innerCtx, force, noShowError))
+                    isValid = false;
+            }
         }
 
         this.isValid = isValid;
@@ -198,6 +220,8 @@ export class ObjectEditor<TObj extends ObjectLike>
     builder: (builder: EditorBuilder<TObj, this>) => JSX.Element;
 
     inputField: Partial<IInputFieldOptions<unknown, TObj>>;
+
+    readonly inputValue: TObj;
 
 }
 

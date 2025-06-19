@@ -57,6 +57,7 @@
     }
 
     &.no-label {
+
         > label {
             display: none;
         }
@@ -79,7 +80,7 @@
         pointer-events: none;
     }
 
-    &:has(input[type=checkbox]):not(:has(label:empty)) {
+    &:has(> .editor-container > .boolean-editor):not(:has(label:empty)) {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;

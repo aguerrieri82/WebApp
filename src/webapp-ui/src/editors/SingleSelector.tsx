@@ -6,13 +6,15 @@ import { type IItemsSource } from "../abstraction/IItemsSource";
 import { type IAsyncLoad } from "../abstraction/IAsyncLoad";
 import { CommitableEditor, type ICommitableEditorOptions } from "./CommitableEditor";
 import { notEmpty } from "../utils";
+import type { IItemsContainer } from "../abstraction/IItemsContainer";
 
-interface ISingleSelectorOptions<TItem, TValue> extends ICommitableEditorOptions<TValue, string> {
+interface ISingleSelectorOptions<TItem, TValue, TFilter extends ObjectLike|unknown> extends ICommitableEditorOptions<TValue, string> {
 
     emptyItem?: string;
 
-    itemsSource: IItemsSource<TItem, TValue, unknown>;
+    itemsSource: IItemsSource<TItem, TValue, TFilter>;
 
+    applyFilter?: (currentFilter: Partial<TFilter>) => Partial<TFilter>;
 }
 
 function isEmpty(value: unknown) {
@@ -20,7 +22,7 @@ function isEmpty(value: unknown) {
     return value == "@empty" || value === undefined || value === null;
 }
 
-export const SingleSelectorTemplates: TemplateMap<SingleSelector<unknown, unknown>> = {
+export const SingleSelectorTemplates: TemplateMap<SingleSelector<unknown, unknown, unknown>> = {
 
     "Select": forModel(m => <select
         className={m.className}
@@ -54,11 +56,18 @@ export const SingleSelectorTemplates: TemplateMap<SingleSelector<unknown, unknow
     )
 }
 
-export class SingleSelector<TItem, TValue> extends CommitableEditor<TValue, string, ISingleSelectorOptions<TItem, TValue>> implements IAsyncLoad {
+export class SingleSelector<
+        TItem,
+        TValue,
+    TFilter extends ObjectLike | unknown>
+
+    extends CommitableEditor<TValue, string, ISingleSelectorOptions<TItem, TValue, TFilter>>
+    implements IAsyncLoad,
+               IItemsContainer<TItem, TValue, TFilter> {
 
     protected _lastValue: TValue;
 
-    constructor(options?: ISingleSelectorOptions<TItem, TValue>) {
+    constructor(options?: ISingleSelectorOptions<TItem, TValue, TFilter>) {
 
         super();
 
@@ -106,7 +115,7 @@ export class SingleSelector<TItem, TValue> extends CommitableEditor<TValue, stri
 
         const oldValue = this.value;
 
-        this.content = this.itemsSource ? await this.itemsSource.getItemsAsync() : [];
+        this.content = this.itemsSource ? await this.itemsSource.getItemsAsync(this.applyFilter({} as TFilter)) : [];
 
         await delayAsync(0);
 
@@ -133,16 +142,20 @@ export class SingleSelector<TItem, TValue> extends CommitableEditor<TValue, stri
         
     }
 
+    applyFilter(currentFilter: TFilter): TFilter {
+        return currentFilter;
+    }
+
     emptyItem?: string;
 
-    itemsSource: IItemsSource<TItem, TValue, unknown>;
+    itemsSource: IItemsSource<TItem, TValue, TFilter>;
 
     content: TItem[];
 }
 
 declare module "./EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {
-        singleSelector<TItem, TValue>(value: BindExpression<TModel, TValue>, options?: IBuilderEditorOptions<TModel, TValue, ISingleSelectorOptions<TItem, TValue>>);
+        singleSelector<TItem, TValue, TFilter>(value: BindExpression<TModel, TValue>, options?: IBuilderEditorOptions<TModel, TValue, ISingleSelectorOptions<TItem, TValue, TFilter>>);
     }
 }
 

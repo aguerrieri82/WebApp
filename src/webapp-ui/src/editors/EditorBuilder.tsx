@@ -54,6 +54,10 @@ export class EditorBuilder<TModel extends TemplateModel, TModelContainer extends
         }   
     }
 
+    get container() {
+        return this._options.container; 
+    }
+
     editor<TValue,
         TEditor extends IEditor<TValue, TOptions>,
         TOptions extends IEditorOptions<TValue>>(bind: BindExpression<TModel, TValue>, type: { new(options: TOptions): TEditor }, options: IBuilderEditorOptions<TModel, TValue, TOptions>) {

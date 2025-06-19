@@ -6,14 +6,23 @@ import { type IAsyncLoad } from "../abstraction/IAsyncLoad";
 import { CommitableEditor, type ICommitableEditorOptions } from "./CommitableEditor";
 import "./MultiSelector.scss";
 import type { ViewNode } from "../Types";
+import type { IItemsContainer } from "../abstraction/IItemsContainer";
+import { Attribute } from "../behavoirs/Attribute";
 
-interface IMultiSelectorOptions<TItem, TValue> extends ICommitableEditorOptions<TValue[], string> {
+interface IMultiSelectorOptions<TItem, TValue, TFilter> extends ICommitableEditorOptions<TValue[], string> {
 
     emptyItem?: string;
 
-    itemsSource: IItemsSource<TItem, TValue, unknown>;
+    itemsSource: IItemsSource<TItem, TValue, TFilter>;
 
-    createItemView?(item: TItem) : ViewNode;
+    applyFilter?: (currentFilter: Partial<TFilter>) => Partial<TFilter>;
+
+    createItemView?(item: TItem): ViewNode;
+
+    onSelectionChanged?(value: ISelectableItem<TItem>, editor: MultiSelector<TItem, TValue, TFilter>);
+
+    canSelect?(value: TItem): boolean;
+
 }
 
 interface ISelectableItem<TItem> {
@@ -22,26 +31,35 @@ interface ISelectableItem<TItem> {
 }
 
 
-export const MultiSelectorTemplates: TemplateMap<MultiSelector<unknown, unknown>> = {
+export const MultiSelectorTemplates: TemplateMap<MultiSelector<unknown, unknown, unknown>> = {
 
     "List": forModel(m => <ul
         className={m.className}
         visible={m.visible}>
+        <Class name="never-empty"/> 
         <Class name="disabled" condition={m.disabled}/>
         {m.content?.forEach(i => 
             <li>
-                <Class name="selected" condition={i.isSelected} />
-                <input type="checkbox" checked={i.isSelected} on-change={(_, ev) => i.isSelected = ev.target.checked} />
-                {m.itemsSource.getText(i)}
+                <Class name="selected" condition={i.isSelected} />                
+                <input type="checkbox"
+                    disabled={m.canSelect(i.item) === false}
+                    value={i.isSelected}
+                    on-change={(_, ev) => {
+                        m.onSelectionChanged(i, m);
+                    }}>
+                </input>
+                {m.createItemView(i.item)}
             </li>
         )}
         </ul>
     )
 }
 
-export class MultiSelector<TItem, TValue> extends CommitableEditor<TValue[], string, IMultiSelectorOptions<TItem, TValue>> implements IAsyncLoad {
+export class MultiSelector<TItem, TValue, TFilter extends ObjectLike|unknown>
+    extends CommitableEditor<TValue[], void, IMultiSelectorOptions<TItem, TValue, TFilter>>
+    implements IAsyncLoad, IItemsContainer<TItem, TValue, TFilter> {
 
-    constructor(options?: IMultiSelectorOptions<TItem, TValue>) {
+    constructor(options?: IMultiSelectorOptions<TItem, TValue, TFilter>) {
 
         super();
 
@@ -50,27 +68,46 @@ export class MultiSelector<TItem, TValue> extends CommitableEditor<TValue[], str
             commitMode: "auto",
             ...options
         });
+
+        this.onChanged("itemsSource", () => this.refreshAsync());
     }
 
-    protected override editToValue(value: string, clone?: boolean): TValue[] {
+    protected override editToValue(value: void, clone?: boolean): TValue[] {
 
-
+        const selected = this.content
+            ?.filter(a => a.isSelected)
+            ?.map(a => this.itemsSource.getValue(a.item));
+        return selected;
     }
 
-    protected override valueToEdit(value: TValue[], clone?: boolean): string {
+    protected override valueToEdit(value: TValue[], clone?: boolean): void {
 
+        if (!this.content)
+            return;
+
+        for (const selectable of this.content) {
+
+            const curValue = this.itemsSource.getValue(selectable.item);
+
+            selectable.isSelected = value != null && value.includes(curValue);
+        }
+    }
+
+    createItemView?(item: TItem): ViewNode {
+
+        return this.itemsSource.getText(item);
     }
 
     async loadAsync() {
 
-        await this.refreshAsync();
+        await this.refreshAsync(); 
     }
 
     async refreshAsync() {
 
-        const oldValue = this.value;
+        const oldValue = this.editToValue();
 
-        const items = this.itemsSource ? await this.itemsSource.getItemsAsync() : [];
+        const items = this.itemsSource ? await this.itemsSource.getItemsAsync(this.applyFilter({} as TFilter)) : [];
 
         this.content = items.map(item => {
             const isSelected = oldValue?.includes(this.itemsSource.getValue(item)) ?? false;
@@ -78,6 +115,17 @@ export class MultiSelector<TItem, TValue> extends CommitableEditor<TValue[], str
         });
     }
 
+    applyFilter(currentFilter: TFilter): TFilter {
+        return currentFilter;
+    }
+
+    onSelectionChanged(value: ISelectableItem<TItem>, editor?: MultiSelector<TItem, TValue, TFilter>) {
+
+    }
+
+    canSelect(value: TItem): boolean {
+        return true;
+    }
 
     itemsSource: IItemsSource<TItem, TValue, unknown>;
 
@@ -86,7 +134,7 @@ export class MultiSelector<TItem, TValue> extends CommitableEditor<TValue[], str
 
 declare module "./EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {
-        multiSelector<TItem, TValue>(value: BindExpression<TModel, TValue[]>, options?: IBuilderEditorOptions<TModel, TValue[], IMultiSelectorOptions<TItem, TValue>>);
+        multiSelector<TItem, TValue, TFilter>(value: BindExpression<TModel, TValue[]>, options?: IBuilderEditorOptions<TModel, TValue[], IMultiSelectorOptions<TItem, TValue, TFilter>>);
     }
 }
 

@@ -77,6 +77,7 @@ export abstract class CommitableEditor<
 
         if (reason != "edit") 
             this.beginEdit(value);
+
         super.onValueChangedInternal(value, oldValue, reason);  
     }
 
@@ -119,7 +120,7 @@ export abstract class CommitableEditor<
                     this.commitMode != "manual-inplace" &&
                     this.commitMode != "auto-inplace");
 
-                if (curValue == this.value) 
+                if (curValue != this.value) 
                     this.onValueChanged(cleanProxy(this.value), cleanProxy(curValue), "edit");
 
                 this.isDirty = false;

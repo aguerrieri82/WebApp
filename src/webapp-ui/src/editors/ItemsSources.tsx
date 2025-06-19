@@ -51,14 +51,14 @@ export function enumItemsSource<TEnum>(value: TEnum) {
     } as IItemsSource<ISimpleItem<TEnum>, TEnum, void>
 }
 
-export function arrayItemsSource<TItem>(items: TItem[] | { (): TItem[] }, getText: (a: TItem)=> string) {
+export function arrayItemsSource<TItem>(items: TItem[] | { (): TItem[] }, getText: (a: TItem) => string) {
     return itemsSource({
         getText,
         getItemsAsync: async ()=> Array.isArray(items) ? items : items(),
     } as IItemsSource<TItem, TItem, undefined>)
 }
 
-export function itemsSource<TItem, TValue, TFilter, TSource extends IItemsSource<TItem, TValue, TFilter>>(props: TSource): TSource {
+export function itemsSource<TItem, TValue, TFilter = unknown>(props: Partial<IItemsSource<TItem, TValue, TFilter>>) {
 
     const getText = props.getText ?? (a => (a === undefined || a === null) ? "" : a.toString())
 
@@ -67,5 +67,5 @@ export function itemsSource<TItem, TValue, TFilter, TSource extends IItemsSource
         getValue: a => a,
         matchText: (a, t) => getText(a).toLowerCase().indexOf(t.toLowerCase()) != -1,
         ...props
-    }
+    } as unknown as IItemsSource<TItem, TValue, TFilter>;
 }
