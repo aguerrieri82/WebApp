@@ -167,7 +167,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
                 executeAsync: ctx => this.editItemAsync(ctx.target)
             });
 
-        this.actions = [];
+        this.actions ??= [];
 
         if (this.canAdd)
             this.actions.push({

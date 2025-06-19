@@ -54,6 +54,7 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
         if (this.isExecuting)
             return;
 
+
         ev.stopPropagation();
         ev.stopImmediatePropagation();
 
@@ -95,6 +96,7 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
     enabled: boolean;
 
     isExecuting: boolean;
+
 }
 
 registerComponent(Action, "Action");
