@@ -61,7 +61,7 @@
             gap: 8px;
 
             > .secondary {
-                color: #777;
+                color: var(--secondary-text-color);
                 margin-top: 4px;
             }
         }

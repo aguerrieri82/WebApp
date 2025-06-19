@@ -1,7 +1,9 @@
-﻿import { ContentHost, isResultContainer } from "@eusoft/webapp-ui";
+﻿import { ContentHost, isResultContainer, type IContent } from "@eusoft/webapp-ui";
 import { router } from "../services";
 
-export class RouteContentHost extends ContentHost {
+export class RouteContentHost<
+    TContent extends IContent<ObjectLike> = IContent<ObjectLike>>
+    extends ContentHost<TContent> {
 
     constructor() {
 

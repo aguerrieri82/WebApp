@@ -1,4 +1,5 @@
-
+$not-mobile-device: "(min-width: 500px)";
+$mobile-device: "(max-width: 500px)";
 
 @function size($value) {
     @return $value * 8px;

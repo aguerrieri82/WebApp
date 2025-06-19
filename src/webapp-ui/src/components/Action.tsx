@@ -1,5 +1,5 @@
 import { type Bindable, type IComponentOptions, type IComponent, Component, type TemplateMap, type ComponentStyle, configureBindings, registerComponent } from "@eusoft/webapp-core";
-import { Class, type JsxNode, forModel } from "@eusoft/webapp-jsx";
+import { Class, type JsxNode, Style, forModel } from "@eusoft/webapp-jsx";
 import { type ActionType, type IAction, type IActionContext } from "../abstraction/IAction";
 import { type OperationManager } from "../services";
 import { OPERATION_MANAGER } from "../abstraction";
@@ -8,6 +8,7 @@ import "./Action.scss";
 import { NodeView } from "./NodeView";
 import { ContextMenu } from "./ContextMenu";
 import { formatText } from "../utils";
+import { Variable } from "../behavoirs/Variable";
 
 interface IActionOptions<TTarget> extends IComponentOptions {
 
@@ -16,6 +17,8 @@ interface IActionOptions<TTarget> extends IComponentOptions {
     info?: Bindable<LocalString>;
 
     type?: ActionType;
+
+    color?: Bindable<string>;   
 
     onExecuteAsync?: (ctx?: IActionContext<TTarget>) => Promise<unknown> | void;
 
@@ -32,6 +35,7 @@ export const ActionTemplates: TemplateMap<Action> = {
         disabled={m.enabled === false}
         on-click={(_, ev) => m.executeAsync({ target: m.target }, ev)}>
         <Class name="executing" condition={m.isExecuting} />
+        <Variable name="color" value={m.color} />
         <NodeView>{m.content}</NodeView>
     </button>)
 }
@@ -84,6 +88,8 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
 
     onExecuteAsync(ctx?: IActionContext<TTarget>): Promise<unknown> | void {
     }
+
+    color: string;  
 
     info: LocalString;
 

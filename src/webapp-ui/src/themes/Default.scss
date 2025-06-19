@@ -22,6 +22,7 @@
     --button-back-color: var(--primary-color);
     --button-text-color: #fff;
     --surface-color: #fff;
+    --secondary-text-color: #777;
 }
 
 
@@ -31,6 +32,10 @@
 
 button, input, select, textarea {
     font-size: var(--font-size);
+}
+
+input, select, textarea {
+    color: var(--text-color);
 }
 
 body {

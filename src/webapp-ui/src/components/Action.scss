@@ -63,8 +63,11 @@ button.action {
             filter: brightness(150%);
         }
 
-        &:hover {
-            background: color-mix(in srgb, var(--button-back-color) 45%, white);
+
+        @media #{$not-mobile-device} {
+            &:hover {
+                background-color: #ffffff10;
+            }
         }
     }
 

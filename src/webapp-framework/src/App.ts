@@ -68,7 +68,11 @@ export class App  {
 
     }
 
-    readonly contentHost = new RouteContentHost();
+    protected createContentHost() {
+        return new RouteContentHost();
+    }
+
+    readonly contentHost = this.createContentHost();
 }
 
 export function runApp<TApp extends IApp>(newApp: TApp) {
