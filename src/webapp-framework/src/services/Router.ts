@@ -1,4 +1,4 @@
-import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, formatText, isResultContainer, replaceArgs, useOperation } from "@eusoft/webapp-ui";
+import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, formatText, isResultContainer, isStateManager, replaceArgs, useOperation } from "@eusoft/webapp-ui";
 import { app } from "../App";
 
 type StringLike = { toString(): string } | string;
@@ -25,6 +25,8 @@ interface IRouteState {
     args?: RouteArgs;
 
     historyIndex: number;
+
+    state?: Record<string, unknown>;
 }
 
 function restoreState<T>(key: string, defValue: T) {
@@ -89,6 +91,7 @@ export class Router {
         } as IRounteEntry<TArgs>;
 
         this._entries.push(entry);
+
         return entry;
     }
 
@@ -101,12 +104,27 @@ export class Router {
         const result = this.addAction(info.route, async (args, content: IContent) => {
 
             const page = content ?? info.factory();
-
+            
             const fullArgs = {
                 ...boundArgs,
                 ...args
             };
 
+            const isBack = args && args["@isBack"] === true;
+
+
+            if (!isBack && isStateManager(app.contentHost.content)) {
+
+                const history = this._history[this._activeIndex - 1];
+                history.state = {};
+                app.contentHost.content.saveState(history.state);
+            }
+
+            if (isBack && isStateManager(page)) {
+                const history = this._history[this._activeIndex];
+                page.restoreState(history.state);
+            }
+                
             if (!await app.contentHost.loadContentAsync(page, fullArgs))
                 return false;
 
@@ -189,7 +207,7 @@ export class Router {
 
         const entry = this._entries[state.entryIndex];
 
-        await this.navigateEntryAsync(entry, state.args, true, null, transition);
+        await this.navigateEntryAsync(entry, { ...state.args, "@isBack": true }, true, null, transition);
 
         if (this._popResolve) {
             this._popResolve();

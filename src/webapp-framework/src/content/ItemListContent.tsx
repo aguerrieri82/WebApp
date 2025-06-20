@@ -113,7 +113,11 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
         else if (this.itemActions)
             result.push(...this.itemActions(item, []));
 
-        result.forEach((action, i) => {
+        let i = 0;
+        for (const action of result) { 
+
+            const oldExecute = action.executeAsync;
+
             result[i] = {
                 ...action,
                 executeAsync: async () => {
@@ -125,7 +129,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
                         index
                     }
 
-                    const res = await action.executeAsync(ctx);
+                    const res = await oldExecute(ctx);
 
                     if (res === true)
                         this.refreshItem(index);
@@ -135,7 +139,8 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
                     return res;
                 }
             }
-        });
+            i++;
+        }
 
         return result;
     }

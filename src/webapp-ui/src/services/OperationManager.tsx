@@ -6,8 +6,8 @@ import { type ViewNode } from "../Types";
 
 export class OperationManager implements IOperationManager {
 
-    protected _blockCount = 0;
-    protected _unblockCount = 0;
+    protected _stack: IOperation[] = [];
+    protected _blockStack: boolean[] = [];
 
     constructor() {
 
@@ -21,22 +21,9 @@ export class OperationManager implements IOperationManager {
 
     begin(options?: IOperationOptions): IOperation {
 
-        if (!options?.isLocal) {
-
-            this._blockCount++;
-            if (options?.unblock)
-                this._unblockCount++;
-
-            this.blocker.visible = this._blockCount > 0 && this._unblockCount == 0;
-        }
+        const isBlock = !options?.unblock && !options?.isLocal;
 
         console.group(options?.name);
-
-        if (webApp.debugBlock) {
-            console.debug("blockCount: ", this._blockCount);
-            console.debug("unblockCount: ", this._unblockCount); 
-        }
-
 
         const result: IOperation = {
 
@@ -53,6 +40,12 @@ export class OperationManager implements IOperationManager {
             end: () => this.end(result)
         };
 
+        this._stack.push(result);
+
+        this._blockStack.push(isBlock);
+
+        this.blocker.visible = isBlock;
+
         return result;
     }
 
@@ -62,19 +55,13 @@ export class OperationManager implements IOperationManager {
 
         console.groupEnd();
 
-        if (operation?.isLocal)
-            return;
+        this._stack.pop();
 
-        this._blockCount--;
-        if (operation.unblock)
-            this._unblockCount--;
+        this._blockStack.pop();
 
-        if (webApp.debugBlock) {
-            console.debug("blockCount: ", this._blockCount);
-            console.debug("unblockCount: ", this._unblockCount);
-        }
+        const isBlock = this._blockStack.length > 0 && this._blockStack[this._blockStack.length - 1];
 
-        this.blocker.visible = this._blockCount > 0 && this._unblockCount == 0;
+        this.blocker.visible = isBlock;
     }
 
     blocker: Blocker<ProgressView>;

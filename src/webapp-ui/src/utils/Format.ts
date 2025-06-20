@@ -17,7 +17,7 @@ export function formatTextSimple(text: LocalString, ...args: any[]) {
             return content(args) as ITemplate<unknown>;
 
         if (typeof content == "string")
-            text = content;
+            return content;
     }
 
     return text;
@@ -26,12 +26,14 @@ export function formatTextSimple(text: LocalString, ...args: any[]) {
 export function formatText(text: LocalString, ...args: any[]): string | ITemplate<unknown>  { 
 
     const simple = formatTextSimple(text, ...args);
+
     if (typeof simple != "string")
         return simple;
-    return replaceArgs(simple, i => {
-        if (!isNaN(parseInt(i)))
-            return formatText(args[i], args);
-        return formatText(i, args);  
+
+    return replaceArgs(simple, arg => {
+        if (!isNaN(parseInt(arg)))
+            return formatText(args[arg], args);
+        return formatText(arg, args);  
     }); 
 }
 

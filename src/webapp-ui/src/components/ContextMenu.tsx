@@ -76,7 +76,7 @@ export class ContextMenu extends Component<IContextMenuOptions> {
 
         await delayAsync(0);
 
-        window.addEventListener("pointerdown", this._clickHandler);
+        window.addEventListener("pointerdown", this._clickHandler, { passive: true });
 
         if (element) {
 
@@ -131,7 +131,7 @@ export class ContextMenu extends Component<IContextMenuOptions> {
     }
 
     protected onClick(e: MouseEvent) {
-        setTimeout(() => this.hide(), 200);
+        setTimeout(() => this.hide(), 300);
     }
 
     content: ViewNode;

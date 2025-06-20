@@ -201,12 +201,18 @@ export abstract class Component<
         //TODO problem: if i unmoint a component and remount later i need to keep subs
 
         if (this._subscriptions) {
+
+            console.debug("cleanSubscriptions", getTypeName(this));
+
             for (const item of this._subscriptions)
                 item.unsubscribe();
             delete this._subscriptions;
         }
 
         if (this._binder) {
+
+            console.debug("cleanBindings", getTypeName(this));
+
             this._binder.cleanBindings(cleanValue, true);
             delete this._binder;
         }
@@ -223,6 +229,7 @@ export abstract class Component<
     }
 
     unmount() {
+
         if (webApp.debugMount)
             console.debug("unmount", getTypeName(this));
     }

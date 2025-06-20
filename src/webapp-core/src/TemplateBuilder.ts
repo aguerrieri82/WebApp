@@ -61,7 +61,7 @@ interface ISwitchCondition<TValue> {
 
 export type InputValueMode = "focus" | "change" | "keyup" | "pool" | "input";
 
-export type ContentUpdateMode = "replace";
+export type ContentUpdateMode = "replace"|"";
 
 export const BUILDER: unique symbol = Symbol.for("@builder")
 
