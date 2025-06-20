@@ -14,7 +14,12 @@ export class Variable extends Behavoir<IAttachOptions>{
 
         const update = (value: string) => {
 
-            ctx.element.parentElement.style.setProperty("--" + this.name, this.value);
+            const propName = "--" + this.name;
+
+            if (value === undefined || value === null)
+                ctx.element.parentElement.style.removeProperty(propName);
+            else
+                ctx.element.parentElement.style.setProperty(propName, this.value);
         }
 
         this._sub = propOf(this, "value").subscribe(v => update(v));

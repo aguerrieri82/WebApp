@@ -60,6 +60,28 @@ export class Router {
         });
     } 
 
+    protected matchRoute(route: string, path: string) {
+
+        const paramNames = [];
+        const regex = new RegExp('^' + route.replace(/{([^}]+)}/g, (_, key) => {
+            paramNames.push(key);
+            return '([^/]+)';
+        }) + '$');
+
+        const match = path.match(regex);
+
+        if (match) {
+
+            const params = {};
+
+            paramNames.forEach((name, i) => {
+                params[name] = decodeURIComponent(match[i + 1]);
+            });
+
+            return params;
+        }
+    }
+
     getCurrentLocation() {
         return location.pathname;
     }
@@ -77,11 +99,6 @@ export class Router {
         return this.navigateActiveRouteAsync();
     }
 
-    parseArgs<TArgs extends RouteArgs>(path: string, url: string): TArgs {
-
-        //TODO implement
-        return {} as TArgs;
-    }
 
     addAction<TArgs extends RouteArgs>(route: string, action: RouteAction<TArgs>) {
 
@@ -224,14 +241,14 @@ export class Router {
 
         const url = this.getCurrentLocation();
 
-        const entry = this._entries.find(a => a.route == url);  //<-- TODO implement
+        for (const entry of this._entries) {
 
-        if (entry) {
+            const matchArgs = this.matchRoute(entry.route as string, url);
 
-            const args = this.parseArgs(entry.route as string, url);
-
-            return await this.navigateEntryAsync(entry, args, true, null, "reload");
+            if (matchArgs) 
+                return await this.navigateEntryAsync(entry, matchArgs, true, null, "reload");
         }
+
     }
 
     protected replaceUrl(path: string, args: RouteArgs) {
