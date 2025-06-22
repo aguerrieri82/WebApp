@@ -106,7 +106,10 @@ export class Content<
                 return;
             }
 
-            await this.onLoadAsync(args);
+            if (!await this.onLoadAsync(args)) {
+                isValid = false;
+                return;
+            }
 
         }, { name: "load page " + stringOrUndef(this.name) });
 

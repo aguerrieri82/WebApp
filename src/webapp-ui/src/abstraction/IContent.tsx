@@ -43,7 +43,7 @@ export interface IContentInfo<
 
     icon?: ViewNode;
 
-    transition?: string;
+    transition?: "push" |"reload"|"pop"|undefined;
 
     features?: IFeature<TContent>[];
 

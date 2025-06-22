@@ -117,7 +117,7 @@
                 width: 100%;
 
                 &:-webkit-autofill {
-                    -webkit-box-shadow: 0 0 0px 1000px white inset;
+                    -webkit-box-shadow: 0 0 0px 1000px var(--input-back-color) inset;
                 }
             }
         }
@@ -177,6 +177,7 @@
 
 
         &.outlined {
+            --input-back-color: var(--back-color);
 
             &:first-child {
                 margin-top: 6px;
@@ -201,6 +202,7 @@
         }
 
         &.filled {
+            --input-back-color: var(--editor-filled-color);
 
             &:not(.border) {
                 > .editor-container {
