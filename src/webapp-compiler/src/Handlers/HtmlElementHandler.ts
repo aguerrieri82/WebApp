@@ -12,7 +12,7 @@ export class HtmlElementHandler implements ITemplateHandler {
     handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
         const src = element.attributes.src?.value as string;
-        ctx.writer.write(".html(").writeJson(src).write(")");
+        ctx.writer.write(".html(").writeBinding(src).write(")");
         return HandleResult.SkipChildren;
     }
 
