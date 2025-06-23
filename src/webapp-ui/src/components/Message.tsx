@@ -18,6 +18,9 @@ export function Message(options: IMessageOptions) {
 
         if (type == "warning")
             return "warning";
+
+        if (type == "error")
+            return "error";
     }
 
     return <div className={buildStyle("inline-message", options.style, options.type)}>

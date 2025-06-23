@@ -18,6 +18,10 @@ div.inline-message {
         --color: #ff6a00
     }
 
+    &.error {
+        --color: #F44336
+    }
+
     i {
         color: var(--color);
         font-size: 32px;

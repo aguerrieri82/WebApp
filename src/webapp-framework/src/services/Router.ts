@@ -338,15 +338,20 @@ export class Router {
 
         const newArgs = { ...args } as TArgs;
 
-        const result = await entry.action(newArgs, content);
-
-        if (!result)
-            return;
-
-        const url = this.replaceUrl(entry.route as string, newArgs);
+        const oldIndex = this._activeIndex;
 
         if (!replace)
             this._activeIndex++;
+
+        const result = await entry.action(newArgs, content);
+
+        if (!result) {
+            this._activeIndex = oldIndex;
+            return;
+        }
+            
+        const url = this.replaceUrl(entry.route as string, newArgs);
+
 
         const state = {
             url: url,
