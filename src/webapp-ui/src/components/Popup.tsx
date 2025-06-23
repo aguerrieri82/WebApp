@@ -1,13 +1,14 @@
 ﻿import { Component, type IComponentOptions, cleanProxy, delayAsync, mount } from "@eusoft/webapp-core";
-import { type ViewNode } from "../Types";
+import { type LocalString, type ViewNode } from "../Types";
 import { forModel } from "@eusoft/webapp-jsx";
 import { Action } from "./Action";
-import "./Popup.scss";
 import { formatText } from "../utils/Format";
+import "./Popup.scss";
+import { withUnblock } from "../utils";
 
 interface IMessageBoxAction {
     name: string;
-    text: string;
+    text: LocalString;
     executeAsync?: () => Promise<boolean>;
 }
 
@@ -85,14 +86,24 @@ export class Popup extends Component<IPopupOptions> {
 
         this.visible = true;
 
-        const result = await new Promise<string>(res => this._closePromise = res);
-
-        await delayAsync(500); 
-
-        if (this.context?.element && isMounted) {
-            this.context.element.remove();
-            this.context.element = undefined;
+        const onPopState = () => {
+            this.close();
         }
+
+        window.addEventListener("popstate", onPopState);
+        
+        const result = await withUnblock(() => new Promise<string>(res => this._closePromise = res));
+
+        window.removeEventListener("popstate", onPopState);
+
+        setTimeout(() => {
+
+            if (this.context?.element && isMounted) {
+                this.context.element.remove();
+                this.context.element = undefined;
+            }
+
+        }, 500)
 
         return result;
     }

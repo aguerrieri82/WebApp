@@ -1,4 +1,4 @@
-import { type ITemplate, Services } from "@eusoft/webapp-core";
+import { type ITemplate, Services, toKebabCase } from "@eusoft/webapp-core";
 import { type LocalString } from "../Types";
 import { type ILocalization, LOCALIZATION } from "../abstraction";
 
@@ -36,6 +36,13 @@ export function formatText(text: LocalString, ...args: any[]): string | ITemplat
         return formatText(arg, args);  
     }); 
 }
+
+
+export function formatEnum<T extends object, TKey extends T[keyof T]>(enumType: T, value: TKey) {
+
+    return formatText(toKebabCase(enumType[value as string|number] as string));
+}
+
 
 export function formatCurrency(value: number, symbol = "€") {
 

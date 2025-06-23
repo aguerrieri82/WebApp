@@ -15,6 +15,8 @@ export interface IItemEditOptions<TItem,
     onSaveAsync?: (value: TItem) => Promise<boolean>;
 
     createEditor: (value: TItem) => IEditor<TItem>;
+
+    onLoadArgsAsync?: (args?: TArgs) => Promise<boolean>;
 }
 
 export class ItemEditContent<
@@ -64,7 +66,14 @@ export class ItemEditContent<
         }
     }
 
+    protected async onLoadArgsAsync(args?: TArgs) {
+        return true;
+    }
+
     protected override async onLoadAsync(args?: TArgs) {
+
+        if (!await this.onLoadArgsAsync(args))
+            return;
 
         this.editor = this.createEditor(args.value);
 

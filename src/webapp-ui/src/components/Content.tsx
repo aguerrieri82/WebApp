@@ -25,8 +25,6 @@ export interface IContentOptions<TArgs extends ObjectLike> extends IComponentOpt
     route?: string;
 
     features?: IFeature<IContent, TArgs>[];
-
-    onLoadArgsAsync?: (args: TArgs) => Promise<boolean>;
 }
 
 export const ContentTemplates: TemplateMap<Content> = {
@@ -101,11 +99,6 @@ export class Content<
                 }
             }
 
-            if (!await this.onLoadArgsAsync(args)) {
-                isValid = false;
-                return;
-            }
-
             if (!await this.onLoadAsync(args)) {
                 isValid = false;
                 return;
@@ -128,9 +121,6 @@ export class Content<
         return true;
     }
 
-    protected async onLoadArgsAsync(args?: TArgs) {
-        return true;
-    }
 
     async onOpenAsync(): Promise<unknown> {
 

@@ -14,9 +14,70 @@
                 vertical-align: middle;
             }
 
-            input{
+            input {
                 display: inline-block;
                 margin-right: size(1);
+            }
+        }
+    }
+
+    &.buttons {
+        display: flex;
+        gap: size(1);
+
+        button {
+            border: solid 1px var(--border-color);
+            padding: size(1);
+            border-radius: 4px;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            flex: 0 0 auto;
+            filter: grayscale(100%);
+            cursor: pointer;
+            transition-duration: 0.2s;
+            opacity: 0.3;
+            background: none;
+
+            i {
+                font-size: 34px;
+            }
+
+            &:hover {
+                //background-color: #00000010;
+            }
+
+            &.selected {
+                filter: none;
+                opacity: 1;
+                border: solid 1px var(--primary-color);
+            }
+        }
+
+
+        &.horizontal {
+            flex-direction: row;
+
+            button {
+                flex-direction: column;
+            }
+        }
+
+
+        &.big {
+            button {
+                padding: size(2);
+                i {
+                    font-size: 42px;
+                }
+            }
+        }
+
+        &.vertical {
+            flex-direction: column;
+
+            button {
+                flex-direction: row;
             }
         }
     }

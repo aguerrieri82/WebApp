@@ -63,14 +63,8 @@ class UserInteraction implements IUserInteraction {
                 }
             }  
         }
-
-        //this.dialogs.push(popup);
-
-        //await delayAsync(0);
       
         const result = await withUnblock(() => popup.showAsync());
-
-        //this.dialogs.splice(this.dialogs.indexOf(popup), 1); 
 
         if (typeof buttons == "object")
             return result;

@@ -14,6 +14,8 @@ interface IRounteEntry<TArgs extends RouteArgs>  {
     action: RouteAction<TArgs>;
 
     tag?: unknown;
+
+    backAction?: () => void;
 }
 
 interface IRouteState {
@@ -27,6 +29,8 @@ interface IRouteState {
     historyIndex: number;
 
     state?: Record<string, unknown>;
+
+    type?: "action" | undefined;
 }
 
 function restoreState<T>(key: string, defValue: T) {
@@ -40,6 +44,7 @@ function restoreState<T>(key: string, defValue: T) {
 
 export class Router {
 
+
     protected _history: IRouteState[];
     protected _entries: IRounteEntry<ObjectLike>[] = [];
     protected _activeIndex: number;
@@ -51,7 +56,10 @@ export class Router {
 
         this._activeIndex = restoreState("router.activeIndex", -1);
 
-        window.addEventListener("popstate", ev => this.popStateAsync(JSON.parse(ev.state) as IRouteState));
+        window.addEventListener("popstate", ev => {
+            console.debug("popstate");
+            this.popStateAsync(JSON.parse(ev.state) as IRouteState);
+        });
 
         window.addEventListener("beforeunload", () => this.saveState());
 
@@ -121,14 +129,11 @@ export class Router {
         const result = this.addAction(info.route, async (args, content: IContent) => {
 
             const page = content ?? info.factory();
-            
-            const fullArgs = {
-                ...boundArgs,
-                ...args
-            };
+
+            if (boundArgs)
+                Object.assign(args, boundArgs);
 
             const isBack = args && args["@isBack"] === true;
-
 
             if (!isBack && isStateManager(app.contentHost.content)) {
 
@@ -142,7 +147,7 @@ export class Router {
                 page.restoreState(history.state);
             }
                 
-            if (!await app.contentHost.loadContentAsync(page, fullArgs))
+            if (!await app.contentHost.loadContentAsync(page, args))
                 return false;
 
             document.title = formatText(page.title) as string;
@@ -207,6 +212,58 @@ export class Router {
         return await this.navigateEntryAsync(entry, args, replace, typeof pageOrName == "string" ? undefined : pageOrName);
     }
 
+    /*
+    
+    TODO: it works, not sure if keep or not
+
+    pushAction(onBack: () => void) {
+
+        const url = this._history[this._activeIndex].url;
+
+        const newEntry = {
+
+            backAction: () => {
+
+                const index = this._entries.indexOf(newEntry);
+
+                if (index != -1)
+                    this._entries.splice(index, 1);
+
+                onBack();
+            }
+        } as IRounteEntry<ObjectLike>;
+
+        this._entries.push(newEntry);
+
+        this._activeIndex++;
+       
+        const state = {
+            historyIndex: this._activeIndex,
+            entryIndex: this._entries.length - 1,
+            type: "action"
+        } as IRouteState;
+
+        const jsonState = JSON.stringify(state);
+
+        history.pushState(jsonState, undefined, url + "#action");
+
+        this._history[this._activeIndex] = state;
+
+        this._history.splice(this._activeIndex + 1, this._history.length - this._activeIndex);
+
+        return newEntry;
+    }
+
+    cancelAction(action: IRounteEntry<ObjectLike>) {
+
+        const index = this._entries.indexOf(action);
+
+        if (index != -1 && this._history[this._activeIndex].entryIndex == index) {
+            history.back();
+        }
+    }
+    */
+
     protected getEntryForPage<TArgs extends ObjectLike>(pageOrName: string | IContent<TArgs>) {
 
         if (typeof pageOrName == "string")
@@ -220,11 +277,28 @@ export class Router {
         if (!state)
             return;
 
+        const isBack = state.historyIndex < this._activeIndex;
+
+        const prevState = this._history[state.historyIndex + (isBack ? 1 : -1)];
+
         this._activeIndex = state.historyIndex;
 
-        const entry = this._entries[state.entryIndex];
+        if (isBack && prevState?.type == "action") {
 
-        await this.navigateEntryAsync(entry, { ...state.args, "@isBack": true }, true, null, transition);
+            const entryIndex = prevState.entryIndex;
+            const entry = this._entries[entryIndex];
+            entry?.backAction();
+        }
+        else if (!isBack && state.type == "action") {
+
+            //ignore forward
+        }
+        else {
+
+            const entry = this._entries[state.entryIndex];
+
+            await this.navigateEntryAsync(entry, { ...state.args, "@isBack": true }, true, null, transition);
+        }
 
         if (this._popResolve) {
             this._popResolve();
@@ -262,40 +336,38 @@ export class Router {
 
         document.documentElement.dataset.transition = activeTrans;
 
-        const url = this.replaceUrl(entry.route as string, args);
+        const newArgs = { ...args } as TArgs;
 
-        const oldIndex = this._activeIndex;
+        const result = await entry.action(newArgs, content);
+
+        if (!result)
+            return;
+
+        const url = this.replaceUrl(entry.route as string, newArgs);
+
         if (!replace)
             this._activeIndex++;
 
         const state = {
             url: url,
-            args: args,
+            args: newArgs,
             historyIndex: this._activeIndex,
             entryIndex: this._entries.indexOf(entry)
         } as IRouteState;
 
-        const jsonState = JSON.stringify(state);
+        const jsonState = JSON.stringify(state); 
 
-        const result = await entry.action(args, content);
-
-        if (result !== false) {
-            if (replace)
-                history.replaceState(jsonState, "", url);
-            else
-                history.pushState(jsonState, "", url);
-
-            this._history[this._activeIndex] = state;
-
-            if (!replace)
-                this._history.splice(this._activeIndex + 1, this._history.length - this._activeIndex);
-        }
+        if (replace)
+            history.replaceState(jsonState, "", url);
         else
-            this._activeIndex = oldIndex;
+            history.pushState(jsonState, "", url);
 
-       // delete document.documentElement.dataset.transition;
+        this._history[this._activeIndex] = state;
 
-        return result;
+        if (!replace)
+            this._history.splice(this._activeIndex + 1, this._history.length - this._activeIndex);
+
+        return true;
     }
 
     useTransition: boolean = true;

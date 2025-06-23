@@ -52,8 +52,22 @@ export const SingleSelectorTemplates: TemplateMap<SingleSelector<unknown, unknow
                 <span>{m.itemsSource.getText(i)}</span>
             </label>
         )}
-    </fieldset>
-    )
+    </fieldset>),
+    
+    "Buttons": forModel(m => <div
+        className={m.className}
+        visible={m.visible}>
+        <Class name="disabled" condition={m.disabled} />
+        <Class name="buttons" />
+        <Class name="no-box" />
+        {m.content?.forEach(i =>
+            <button on-click={() => m.selectItem(i)}>
+                <Class name="selected" condition={m.itemsSource.getValue(i) == m.value} />
+                {m.itemsSource.getIcon(i)}
+                <span>{m.itemsSource.getText(i)}</span>
+            </button>
+        )}
+    </div>)
 }
 
 export class SingleSelector<
@@ -138,8 +152,15 @@ export class SingleSelector<
     protected getSelectedValue() {
 
         if (this.context?.element?.tagName == "SELECT")
-            this.editValue = (this.context.element as HTMLSelectElement).value;
-        
+            this.editValue = (this.context.element as HTMLSelectElement).value;        
+    }
+
+    selectItem(item: TItem) {
+        this.value = this.itemsSource.getValue(item);
+    }
+
+    isItemSelected(item: TItem) {
+        return this.itemsSource.getValue(item) == this.value;
     }
 
     applyFilter(currentFilter: TFilter): TFilter {

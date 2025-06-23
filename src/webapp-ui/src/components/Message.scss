@@ -1,0 +1,25 @@
+@use "../themes/_vars" as *;
+
+div.inline-message {
+    border: solid 1px var(--color);
+    padding: size(2);
+    display: flex;
+    align-items: start;
+    flex-direction: row;
+    gap: size(1);
+    border-radius: 8px;
+    background-color: color-mix(in srgb, var(--color) 10%, white 90%);
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
+    margin: auto;
+
+    &.warning {
+        --color: #ff6a00
+    }
+
+    i {
+        color: var(--color);
+        font-size: 32px;
+    }
+}
