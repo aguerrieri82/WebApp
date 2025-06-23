@@ -13,6 +13,7 @@ div.inline-message {
     justify-content: center;
     justify-items: center;
     margin: auto;
+    box-sizing: border-box;
 
     &.warning {
         --color: #ff6a00
@@ -25,5 +26,11 @@ div.inline-message {
     i {
         color: var(--color);
         font-size: 32px;
+    }
+
+    &.in-popup{
+        width: 100%;
+        align-items: center;
+        justify-content: flex-start;
     }
 }
