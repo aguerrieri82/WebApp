@@ -1,11 +1,11 @@
-import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, formatText, isResultContainer, isStateManager, replaceArgs, useOperation } from "@eusoft/webapp-ui";
+import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, type LoadResult, formatText, isResultContainer, isStateManager, replaceArgs, useOperation, withUnblock } from "@eusoft/webapp-ui";
 import { app } from "../App";
 
 type StringLike = { toString(): string } | string;
 
 export type RouteArgs = ObjectLike;
 
-export type RouteAction<TArgs extends RouteArgs> = (args: TArgs, content?: unknown) => void | Promise<unknown>;
+export type RouteAction<TArgs extends RouteArgs> = (args: TArgs, content?: unknown) => void | Promise<LoadResult>;
 
 interface IRounteEntry<TArgs extends RouteArgs>  {
 
@@ -31,6 +31,8 @@ interface IRouteState {
     state?: Record<string, unknown>;
 
     type?: "action" | undefined;
+
+    isCancel?: boolean;
 }
 
 function restoreState<T>(key: string, defValue: T) {
@@ -48,7 +50,7 @@ export class Router {
     protected _history: IRouteState[];
     protected _entries: IRounteEntry<ObjectLike>[] = [];
     protected _activeIndex: number;
-    protected _popResolve: () => void;
+    protected _popResolves: (() => void)[] = [];
 
     constructor() {
 
@@ -146,19 +148,19 @@ export class Router {
                 const history = this._history[this._activeIndex];
                 page.restoreState(history.state);
             }
-                
-            if (!await app.contentHost.loadContentAsync(page, args))
-                return false;
 
+            const loadRes = await app.contentHost.loadContentAsync(page, args);
+            if (loadRes !== true)
+                return loadRes;
+            
             document.title = formatText(page.title) as string;
 
-            return page;
+            return true;
         });
 
         result.tag = info;
 
         return result;
-
     }
 
     get canGoBack() {
@@ -167,35 +169,42 @@ export class Router {
 
     backAsync() { 
         return new Promise<void>(res => {
-            this._popResolve = res;
+            this._popResolves.push(res)
+            console.log("back called");
             history.back();
         });
     }
 
     navigatePageForResultAsync<TResult, TArgs extends RouteArgs>(pageOrName: string|IContent<TArgs>, args?: TArgs, replace = false) {
 
-        return useOperation(() => new Promise<TResult>(res => {
+        return withUnblock(() => new Promise<TResult>(res => {
 
             const entry = this.getEntryForPage(pageOrName);
 
             const page = (entry?.tag as IContentInfo).factory();
 
-            const onClose = page.onCloseAsync;
+            const onCloseOldAsync = page.onCloseAsync;
 
             page.onCloseAsync = async () => {
 
+                console.log("onCloseAsync", page.name);
+
                 try {
-                    onClose.call(page);
+                    if (!await onCloseOldAsync.call(page))
+                        return false;
+
                     res(isResultContainer(page) ? page.result as TResult : undefined);
+
+                    return true;
                 }
                 finally {
-                    page.onCloseAsync = onClose;
+                    page.onCloseAsync = onCloseOldAsync;
                 }
             }
 
             this.navigatePageAsync(page, args, replace);
 
-        }), { unblock: true });
+        }), "navigatePageForResult");
     }
 
     async navigatePageAsync<TArgs extends RouteArgs>(pageOrName: string | IContent<TArgs>, args?: TArgs, replace = false) {
@@ -274,8 +283,20 @@ export class Router {
 
     protected async popStateAsync(state: IRouteState, transition = "pop") {
 
-        if (!state)
+        if (!state) {
+            console.warn("HISTORY: pop without state");
             return;
+        }
+            
+        if (this._popResolves.length > 0) {
+
+            console.log("HISTORY: popResolves");
+
+            for (const resolve of this._popResolves)
+                resolve();
+
+            this._popResolves = [];
+        }
 
         const isBack = state.historyIndex < this._activeIndex;
 
@@ -297,12 +318,12 @@ export class Router {
 
             const entry = this._entries[state.entryIndex];
 
-            await this.navigateEntryAsync(entry, { ...state.args, "@isBack": true }, true, null, transition);
-        }
+            console.log("pop navigateEntry", entry.route);
 
-        if (this._popResolve) {
-            this._popResolve();
-            this._popResolve = null;
+            if (isBack && prevState.isCancel)
+                transition = undefined;
+
+            await this.navigateEntryAsync(entry, { ...state.args, "@isBack": true }, true, null, transition);
         }
     }
 
@@ -322,7 +343,6 @@ export class Router {
             if (matchArgs) 
                 return await this.navigateEntryAsync(entry, matchArgs, true, null, "reload");
         }
-
     }
 
     protected replaceUrl(path: string, args: RouteArgs) {
@@ -332,26 +352,27 @@ export class Router {
 
     protected async navigateEntryAsync<TArgs extends ObjectLike>(entry: IRounteEntry<TArgs>, args?: TArgs, replace = false, content?: unknown, transition?: string) {
 
-        const activeTrans = transition ?? ((entry.tag as IContentInfo)?.transition ?? "push");
-
-        document.documentElement.dataset.transition = activeTrans;
-
         const newArgs = { ...args } as TArgs;
 
-        const oldIndex = this._activeIndex;
+        //Need to increment here becouse canGoBack is called here
 
         if (!replace)
             this._activeIndex++;
 
-        const result = await entry.action(newArgs, content);
+        if (!await entry.action(newArgs, content)) {
 
-        if (!result) {
-            this._activeIndex = oldIndex;
+            if (!replace)
+                this._activeIndex--;
             return;
         }
-            
-        const url = this.replaceUrl(entry.route as string, newArgs);
 
+        const activeTrans = transition ?? ((entry.tag as IContentInfo)?.transition ?? "push");
+
+        document.documentElement.dataset.transition = activeTrans;
+
+
+
+        const url = this.replaceUrl(entry.route as string, newArgs);
 
         const state = {
             url: url,
@@ -361,6 +382,8 @@ export class Router {
         } as IRouteState;
 
         const jsonState = JSON.stringify(state); 
+
+        console.log(replace ? "HISTORY: replace" : "push", url);
 
         if (replace)
             history.replaceState(jsonState, "", url);

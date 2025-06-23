@@ -14,11 +14,14 @@ export class RouteContentHost<
 
     override async closeAsync(result: unknown) {
 
+        console.log("host: closeAsync", result);
+
         if (isResultContainer(this.content))
             this.content.result = result;
 
-        if (router.canGoBack)
+        if (router.canGoBack) {
             await router.backAsync();
+        }            
         else
             this.loadContentAsync(null);
     }

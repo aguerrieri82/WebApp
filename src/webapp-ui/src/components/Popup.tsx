@@ -1,14 +1,20 @@
 ﻿import { Component, type IComponentOptions, cleanProxy, delayAsync, mount } from "@eusoft/webapp-core";
 import { type LocalString, type ViewNode } from "../Types";
 import { forModel } from "@eusoft/webapp-jsx";
-import { Action } from "./Action";
+import { Action, createAction } from "./Action";
 import { formatText } from "../utils/Format";
 import "./Popup.scss";
 import { withUnblock } from "../utils";
+import type { ActionPriority } from "../abstraction/IAction";
 
-interface IMessageBoxAction {
+export interface IPopUpAction {
+
     name: string;
+
     text: LocalString;
+
+    priority?: ActionPriority;
+
     executeAsync?: () => Promise<boolean>;
 }
 
@@ -18,7 +24,7 @@ export interface IPopupOptions extends IComponentOptions {
 
     body: ViewNode;
 
-    actions: IMessageBoxAction[];
+    actions: IPopUpAction[];
 
     hideOnClick?: boolean;
 }
@@ -41,8 +47,8 @@ export class Popup extends Component<IPopupOptions> {
                         {m.body}
                     </main>
                     <footer>
-                        {m.actions?.forEach(a => 
-                            <Action name={a.name} type="local" style="text" onExecuteAsync={() => m.onActionClick(a)}>
+                        {m.actions?.forEach(a =>
+                            <Action name={a.name} type="local" style={a.priority == "primary" ? "contained" : "text"} onExecuteAsync={() => m.onActionClick(a)}>
                                 {formatText(a.text)} 
                             </Action>
                         )}
@@ -54,7 +60,7 @@ export class Popup extends Component<IPopupOptions> {
         });
     }
 
-    async onActionClick(action: IMessageBoxAction) {
+    async onActionClick(action: IPopUpAction) {
 
         action = cleanProxy(cleanProxy(action));
 
@@ -112,7 +118,7 @@ export class Popup extends Component<IPopupOptions> {
 
     body: ViewNode;
 
-    actions: IMessageBoxAction[]
+    actions: IPopUpAction[]
 
     hideOnClick: boolean;
 }

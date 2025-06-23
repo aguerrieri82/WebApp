@@ -3,7 +3,6 @@ import { type LocalString, type ViewNode } from "../Types";
 import { type IItemsSource } from "../abstraction/IItemsSource";
 import { type ISimpleItem } from "../abstraction/ISimpleItem";
 import { formatText } from "../utils/Format";
-import type { MaterialIconName } from "../components";
 
 const LARGE_ITEMS_SIZE_VALUE = 50;
 
@@ -72,11 +71,12 @@ export function enumItemsSource<TEnum>(value: TEnum) {
     } as IItemsSource<ISimpleItem<TEnum>, TEnum, void>
 }
 
-export function arrayItemsSource<TItem>(items: TItem[] | { (): TItem[] }, getText: (a: TItem) => string) {
+export function arrayItemsSource<TItem, TValue = TItem>(items: TItem[] | { (): TItem[] }, getText: (a: TItem) => string, getValue?: (a: TItem) => TValue) {
     return itemsSource({
         getText,
-        getItemsAsync: async ()=> Array.isArray(items) ? items : items(),
-    } as IItemsSource<TItem, TItem, undefined>)
+        getValue: getValue ?? (a => a as unknown as TValue),
+        getItemsAsync: async () => Array.isArray(items) ? items : items(),
+    } as IItemsSource<TItem, TValue, undefined>)
 }
 
 export function itemsSource<TItem, TValue, TFilter = unknown>(props: Partial<IItemsSource<TItem, TValue, TFilter>>) {

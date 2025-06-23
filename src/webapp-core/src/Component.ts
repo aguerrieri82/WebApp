@@ -188,7 +188,8 @@ export abstract class Component<
         if (this._isCleaning || this.isCacheEnabled)
             return;
 
-        console.debug("cleanBindings", getTypeName(this));
+        if (webApp.debugClean)
+            console.debug("cleanBindings", getTypeName(this));
 
         this._isCleaning = true;
 
@@ -202,7 +203,8 @@ export abstract class Component<
 
         if (this._subscriptions) {
 
-            console.debug("cleanSubscriptions", getTypeName(this));
+            if (webApp.debugClean)
+                console.debug("cleanSubscriptions", getTypeName(this));
 
             for (const item of this._subscriptions)
                 item.unsubscribe();

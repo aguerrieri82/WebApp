@@ -1,10 +1,15 @@
 @use "index" as *;
 
 .boolean-editor {
-    
     display: flex;
     gap: size(2);
     align-items: center;
+
+    &:has(input:disabled) {
+        span {
+            opacity: 0.7;
+        }
+    }
 
     input {
         padding: 0;

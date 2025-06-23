@@ -14,6 +14,8 @@ export interface IItemsSource<TItem, TValue, TFilter> {
 
     getItemByValueAsync(value: TValue): Promise<TItem>;
 
+    itemEquals?(a: TItem, b: TItem) : boolean;
+
     itemsSize?: "small" | "large";
 
     id?: string;

@@ -3,7 +3,7 @@ import { Class, forModel } from "@eusoft/webapp-jsx";
 import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, type LoadState } from "../abstraction/IContent";
 import { type IFeature } from "../abstraction/IFeature";
 import { formatText } from "../utils/Format";
-import { type LocalString, type ViewNode } from "../Types";
+import { type LoadResult, type LocalString, type ViewNode } from "../Types";
 import { stringOrUndef, useOperation } from "../utils";
 import { type IAction } from "../abstraction/IAction";
 import { type IContentHost } from "../abstraction";
@@ -128,9 +128,9 @@ export class Content<
 
     }
 
-    async onCloseAsync(): Promise<unknown> {
+    async onCloseAsync(): Promise<LoadResult> {
 
-        return Promise.resolve();
+        return Promise.resolve(true);
     }
 
     get loadState() {

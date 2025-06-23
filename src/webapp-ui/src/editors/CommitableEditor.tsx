@@ -56,7 +56,8 @@ export abstract class CommitableEditor<
             return;
         */
 
-        console.group("beginEdit");
+        if (webApp.debugEdit)
+            console.group("beginEdit");
 
         this._editState = "loading";
 
@@ -66,9 +67,10 @@ export abstract class CommitableEditor<
 
         this._editState = "editing";
 
-        console.log(this.editValue, this.name ?? getTypeName(this));
-
-        console.groupEnd();
+        if (webApp.debugEdit) {
+            console.log(this.editValue, this.name ?? getTypeName(this));
+            console.groupEnd();
+        }
     }
 
     protected override onValueChangedInternal(value: TValue, oldValue: TValue, reason: ValueChangedReason) {
@@ -104,7 +106,8 @@ export abstract class CommitableEditor<
         if (!await this.validateAsync())
             return false;
 
-        console.group("commit", this.name ?? getTypeName(this));
+        if (webApp.debugEdit)
+            console.group("commit", this.name ?? getTypeName(this));
 
         this._editState = "committing";
 
@@ -129,7 +132,8 @@ export abstract class CommitableEditor<
         finally {
             this._editState = "committed";
 
-            console.groupEnd();
+            if (webApp.debugEdit)
+                console.groupEnd()
         }
 
         return true;

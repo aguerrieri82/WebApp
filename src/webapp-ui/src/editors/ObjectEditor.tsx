@@ -75,12 +75,14 @@ export class ObjectEditor<TObj extends ObjectLike>
 
     async loadAsync() {
 
-        console.group("loadAsync");
+        if (webApp.debugEdit)
+            console.group("loadAsync");
 
         if (this._inputs) 
             await Promise.all(this._inputs.filter(a => isAsyncLoad(a)).map(a => a.loadAsync()));
 
-        console.groupEnd();
+        if (webApp.debugEdit)
+            console.groupEnd();
 
         this._isLoaded = true;
     }
@@ -124,7 +126,8 @@ export class ObjectEditor<TObj extends ObjectLike>
                 this.isValid = false;
         }
 
-        console.log("onInputChanged", input.name, this._editState);
+        if (webApp.debugEdit)
+            console.log("onInputChanged", input.name, this._editState);
 
         if ((this.commitMode == "auto" || this.commitMode == "auto-inplace") &&
             input.isAttached &&
@@ -151,7 +154,8 @@ export class ObjectEditor<TObj extends ObjectLike>
                 isSuccess = false;
         }
 
-        console.log("commitAsyncWork", isSuccess);
+        if (webApp.debugEdit)
+            console.log("commitAsyncWork", isSuccess);
 
         return isSuccess;
     }

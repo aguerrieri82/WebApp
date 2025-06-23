@@ -3,6 +3,7 @@ import { Content, forModel } from "@eusoft/webapp-jsx";
 import { type IContent } from "../abstraction/IContent";
 import "./ContentHost.scss";
 import type { IContentHost } from "../abstraction/IContentHost";
+import type { LoadResult } from "../Types";
 
 interface IContentHostOptions extends IComponentOptions {
     useTransition: boolean;
@@ -34,13 +35,19 @@ export class ContentHost<TContent extends IContent<ObjectLike> = IContent<Object
         });
     }
 
-    async loadContentAsync<TArgs extends ObjectLike = ObjectLike>(content: TContent & IContent<TArgs>, args?: TArgs) {
+    async loadContentAsync<TArgs extends ObjectLike = ObjectLike>(content: TContent & IContent<TArgs>, args?: TArgs): Promise<LoadResult>{
+
+        if (this.content?.onCloseAsync) {
+
+            if (!await this.content.onCloseAsync())
+                return false;
+        }
 
         if (content?.loadAsync) {
 
             try {
 
-                if (!await content.loadAsync(this, args)) 
+                if (!await content.loadAsync(this, args))
                     return false;
             }
             catch (ex) {
@@ -49,9 +56,6 @@ export class ContentHost<TContent extends IContent<ObjectLike> = IContent<Object
                 return false;
             }
         }
-
-        if (this.content?.onCloseAsync)
-            await this.content.onCloseAsync();
 
         if ("startViewTransition" in document && this.useTransition) {
 

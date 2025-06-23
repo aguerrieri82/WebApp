@@ -7,6 +7,8 @@ export const WebApp = {
     isDebug: false,
     debugMount: false,
     debugBlock: false,
+    debugClean: false,
+    debugEdit: false,
     root: null as TemplateBuilder<unknown>,
     subs: [] as IPropertyChangedHandler<unknown>[]
 }

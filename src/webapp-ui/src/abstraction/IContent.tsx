@@ -1,6 +1,6 @@
 import { type IComponent } from "@eusoft/webapp-core";
 import { type IFeature } from "./IFeature";
-import { type LocalString, type ViewNode } from "../Types";
+import { type LoadResult, type LocalString, type ViewNode } from "../Types";
 import { type IAction } from "./IAction";
 import { type IContentHost } from "./IContentHost";
 
@@ -8,11 +8,11 @@ export type LoadState = "loaded" | "loading" | "error" | undefined;
 
 export interface IContent<TArgs extends ObjectLike = undefined> extends IComponent {
 
-    loadAsync(host: IContentHost, args?: TArgs): Promise<boolean>;
+    loadAsync(host: IContentHost, args?: TArgs): Promise<LoadResult>;
 
     onOpenAsync(): Promise<unknown>;
 
-    onCloseAsync(): Promise<unknown>;
+    onCloseAsync(): Promise<LoadResult>;
 
     route: string;
 
@@ -29,6 +29,8 @@ export interface IContent<TArgs extends ObjectLike = undefined> extends ICompone
     body: ViewNode;
 
     transition?: string;
+
+    host: IContentHost;
 
     readonly loadState: LoadState;
 }

@@ -58,7 +58,6 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
         if (this.isExecuting)
             return;
 
-
         ev.stopPropagation();
         ev.stopImmediatePropagation();
 
@@ -66,7 +65,7 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
 
         const newOp = operation?.begin({
             name: "Executing " + this.name,
-            isLocal: this.type == "local"
+            isLocal: this.type == "local" 
         });
 
         try {
