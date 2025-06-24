@@ -6,10 +6,7 @@ import { formatText } from "../utils/Format";
 
 const LARGE_ITEMS_SIZE_VALUE = 50;
 
-type StandardEnum<T> = {
-    [id: string]: T | string;
-    [nu: number]: string;
-}
+type EnumValue<T> = T[keyof T];
 
 export function staticItemsSourceWithIcon<TValue>(...items: [LocalString, TValue, ViewNode][]) {
 
@@ -58,7 +55,7 @@ export function stringItemsSource(...values: string[]) {
     } as IItemsSource<string, string, void>
 }
 
-export function enumItemsSource<TEnum>(value: TEnum) {
+export function enumItemsSource<TEnum extends object, TValue = EnumValue<TEnum>>(value: TEnum) {
     return {
         getText: a => a.text,
         getValue: a => a.value,
@@ -66,9 +63,9 @@ export function enumItemsSource<TEnum>(value: TEnum) {
         {
             text: formatText(toKebabCase(a)),
             value: value[a]
-        } as ISimpleItem<TEnum>)),
+        } as ISimpleItem<TValue>)),
 
-    } as IItemsSource<ISimpleItem<TEnum>, TEnum, void>
+    } as IItemsSource<ISimpleItem<TValue>, TValue, void>
 }
 
 export function arrayItemsSource<TItem, TValue = TItem>(items: TItem[] | { (): TItem[] }, getText: (a: TItem) => string, getValue?: (a: TItem) => TValue) {

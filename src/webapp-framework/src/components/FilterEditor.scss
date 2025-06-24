@@ -1,0 +1,56 @@
+@use "../_common" as *;
+
+
+div.filter-editor {
+    position: relative;
+
+    > .search-bar {
+    }
+
+    > .suggestions {
+        position: absolute;
+        z-index: 100;
+        background-color: var(--surface-color);
+        box-sizing: border-box;
+        width: 100%;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        padding: size(1) size(1);
+        max-height: 200px;
+        min-height: 50px;
+        overflow-y: scroll;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        > * {
+            display: flex;
+            align-items: center;
+            padding: size(1) size(1);
+            cursor: pointer;
+            transition-duration: 0.3s;
+
+            &:hover {
+                background-color: #eee;
+            }
+
+            .select{
+                color: var(--primary-color);
+            }
+
+            label {
+                &:after {
+                    content: ':';
+                }
+
+                margin-right: size(1);
+                font-weight: bold;
+                color: var(--color);
+            }
+
+            i {
+                margin-right: 4px;
+                color: var(--color);
+            }
+        }
+    }
+}

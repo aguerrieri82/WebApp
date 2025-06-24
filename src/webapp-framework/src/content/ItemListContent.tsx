@@ -6,6 +6,7 @@ import { userInteraction } from "../services/UserInteraction";
 import "./ItemListContent.scss"
 import { cleanProxy } from "@eusoft/webapp-core/Expression";
 import { ContentBuilder } from "./Builder";
+import { isClass } from "@eusoft/webapp-core";
 
 export interface IItemActionContext<TItem> {
     target: TItem;
@@ -88,7 +89,12 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
         this.init(ItemListContent, {
 
             body: forModel(this, m => <div className="item-list">
-                <Class name="can-open" condition={m.canOpen}/>
+                <Class name="can-open" condition={m.canOpen} />
+                
+                {m.filterEditor && <div className="filter">
+                    {m.createFilterEditor()}
+                </div>}
+
                 {m.items?.length == 0 ?
                     <>{m.emptyView}</> :
                     <>
@@ -290,6 +296,14 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
         });
     }
 
+    createFilterEditor(): IEditor<TFilter>  {
+
+        if (isClass(this.filterEditor))
+            return new this.filterEditor();
+
+        return this.filterEditor() as IEditor<TFilter>;
+    }
+
     addLabel?: LocalString;
 
     builtInActions: IAction<TItem, IItemActionContext<TItem>>[];
@@ -322,6 +336,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
     itemActions: (item: TItem, result: IAction<TItem, IItemActionContext<TItem>>[]) => IAction<TItem, IItemActionContext<TItem>>[];
 
+    filterEditor?: () => IEditor<TFilter> | Class<IEditor<TFilter>>;
 
     static builder<TItem, TFilter>() {
         return new ItemListContentBuilder<TItem, TFilter>();
