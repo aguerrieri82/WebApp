@@ -1,5 +1,5 @@
 import { MaterialIcon, type LocalString, formatText,  dateAdd, dayEnd, dayStart, now, TimeSpan } from "@eusoft/webapp-ui";
-import type { ISearchItem, ISearchItemProvider } from "../abstraction/ISearchItemProvider";
+import type { ISearchItem, ISearchItemProvider, ISearchQuery } from "../abstraction/ISearchItemProvider";
 import { localTable } from "../services";
 
 export interface IDateRange {
@@ -59,6 +59,8 @@ interface IDateRangeSearchOptions<TFilter> {
     color?: string;
 
     preferFuture?: boolean;
+
+    rank?: number;
 }
 
 export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilter>) {
@@ -114,7 +116,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
         return {
             value: range,
             fields: [options.fromField, options.toField],
-            rank: 0,
+            rank: options.rank ?? 0,
             allowMultiple: false,
             apply: (filter, value) => {
                 filter[options.fromField] = value.from as any;
@@ -223,14 +225,18 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
         const toLabels = ["to-date", "to-date-art"].map(a => formatText(a) as string);
 
         let mode = 0;
+        let partIx = -1;
         for (const part of parts) {
-            if (fromLabels.includes(part)) {
+
+            partIx++;
+
+            if (fromLabels.includes(part) && (partIx == 0 || mode != 0)) {
                 mode = 1;
                 result.from = [];
                 result.fromLabel = part;
                 continue;
             }
-            if (toLabels.includes(part)) {
+            if (toLabels.includes(part) && (partIx == 0 || mode != 0)) {
 
                 mode = 2;
                 result.to = [];
@@ -242,7 +248,8 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                 result.from.push(part);
 
             else if (mode == 2)
-                result.to.push(part);            
+                result.to.push(part);     
+
         }
 
         return result;
@@ -280,14 +287,14 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
 
             if (rangeParts.from && rangeParts.from.length == 0) {
                 res.push({
-                    rank: 0,
+                    rank: -1,
                     fields: [options.fromField],
                     allowMultiple: false,
                     apply: (filter, value) => {
                         filter[options.fromField] = value?.from as any;
                     },
                     view: {
-                        displayValue: <>{rangeParts.fromLabel} <span className="select">{formatText("field-select")}</span></>,
+                        displayValue: <>{rangeParts.fromLabel ?? "" + " "}<span className="select">{formatText("field-select")}</span></>,
                         label: curLabel,
                         icon,
                         color: options.color
@@ -297,14 +304,14 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
             
             if (rangeParts.to && rangeParts.to.length == 0) {
                 res.push({
-                    rank: 0,
                     fields: [options.toField],
                     allowMultiple: false,
+                    rank: -1,
                     apply: (filter, value) => {
                         filter[options.toField] = value?.to as any;
                     },
                     view: {
-                        displayValue: <>{rangeParts.toLabel} <span className="select">{formatText("field-select")}</span></>,
+                        displayValue: <>{rangeParts.toLabel + " "}<span className="select">{formatText("field-select")}</span></>,
                         label: curLabel,
                         icon,
                         color: options.color
@@ -356,3 +363,20 @@ export function numberSearch<TFilter>(field: KeyOfType<TFilter, number>) {
 
     } as ISearchItemProvider<TFilter, number>;
 }
+
+/**********************************/
+/*  Helepers */
+/**********************************/
+
+const QUERY_SPLIT = /([^\s"']+)|"([^"]*)"|'([^']*)'/g
+
+export function parseSearchQuery(query: string) {
+
+    return {
+        parts: [...(query?.trim().toLowerCase() ?? "").matchAll(QUERY_SPLIT)]
+            .map(m => m[1] || m[2] || m[3])
+            .filter(a => a.trim().length > 0),
+        full: query
+    } as ISearchQuery;
+}
+

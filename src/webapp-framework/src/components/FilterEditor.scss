@@ -124,6 +124,14 @@ div.filter-editor {
                 color: var(--primary-color);
             }
 
+            .search{
+                font-style: italic;
+                &:before, &:after{
+                    content: '*';
+                }
+            }
+
+
             label {
                 &:after {
                     content: ':';

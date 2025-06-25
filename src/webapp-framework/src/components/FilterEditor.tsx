@@ -6,14 +6,7 @@ import { Variable } from "@eusoft/webapp-ui/behavoirs/Variable";
 import { toKebabCase } from "@eusoft/webapp-core";
 import "./FilterEditor.scss"
 import type { ISearchItem, ISearchItemFormatter, ISearchItemProvider, ISearchQuery } from "../abstraction/ISearchItemProvider";
-
-
-/**********************************/
-/*  Const  */
-/**********************************/
-
-const QUERY_SPLIT = /([^\s"']+)|"([^"]*)"|'([^']*)'/g
-
+import { parseSearchQuery } from "../helpers/SmartSearch";
 
 /**********************************/
 /*  Types  */
@@ -122,62 +115,104 @@ export function itemsSearch<
 
     let items: TItem[];
 
+    let lastItemsFilterJson: string;
+
+
     const label = formatText(field.label ?? toKebabCase(field.name)) as string;
 
     const matchList = field.keywords ?? [label.toLowerCase()];
 
-    let lastItemsFilterJson: string;
 
-    const matchLabel = (query: ISearchQuery) => {
+    const modeMatchLabel = field.searchMode & FieldSearchMode.MatchLabel;
 
+    const modeClient = field.searchMode & FieldSearchMode.Client;
+
+    const modeSource = field.searchMode & FieldSearchMode.Source;
+
+    const modeLabelOnly = field.searchMode & FieldSearchMode.LabelOnly;
+
+
+    const matchLabel = (query: ISearchQuery) : [boolean, ISearchQuery] => {
+
+        const noLabelQuery = {
+            parts: [],
+            full: ""
+        } as ISearchQuery;
+
+        if (query.parts.length == 0)
+            return [false, noLabelQuery]
+ 
         for (const match of matchList) {
 
             if (typeof match == "string") {
-                if (query.parts.find(a => match.includes(a)))
-                    return true;
+
+                const matchParts = parseSearchQuery(match).parts;
+
+                let isMatch = false;
+
+                for (const queryPart of query.parts) {
+
+                    if (matchParts.some(a => a.startsWith(queryPart))) {
+
+                        if (noLabelQuery.parts.length == 0)
+                            isMatch = true;
+                    }                        
+                    else
+                        noLabelQuery.parts.push(queryPart);
+                }
+
+                noLabelQuery.full = noLabelQuery.parts.join(" ");
+
+                return [isMatch, noLabelQuery]
             }
             else {
 
                 if (query.full.match(match))
-                    return true;
+                    return [true, noLabelQuery]
             }
         }
-        return false;
+
+        return [false, noLabelQuery]
     }
 
-    const modeMatchLabel = field.searchMode & FieldSearchMode.MatchLabel;
-    const modeClient = field.searchMode & FieldSearchMode.Client;
-    const modeSource = field.searchMode & FieldSearchMode.Source;
 
     return {
 
         async searchAsync(query, curFilter, curItems) {
-
        
             const res: ISearchItem<TFilter, TItemValue>[] = [];
 
-            if (field.searchMode & FieldSearchMode.LabelOnly) {
+            const [labelMatch, noLabelQuery]  = matchLabel(query);
 
-                res.push({
-                    apply: undefined,
-                    rank: field.priority,
-                    editAsync: editAsync ? () => editAsync(null) : undefined,
-                    view: {
-                        label: label,
-                        icon: field.icon,
-                        displayValue: <span className="select">{formatText("field-select")}</span>
-                    }
-                });
-            }
+            if (modeLabelOnly) {
 
-            const labelMatch = query.parts.length > 0 && matchLabel(query);
+                const hasExtraQuery = noLabelQuery.full.length > 0;
+                const isSearchMode = hasExtraQuery && field.dataType == "text";
 
-            if (field.minQueryLen && query.full.length < field.minQueryLen)
-                return;
+                if (labelMatch && (isSearchMode || !hasExtraQuery) || query.full.length == 0) {
+ 
+                    res.push({
+                        apply: undefined,
+                        rank: -1,
+                        fields: [field.name],
+                        editAsync: editAsync ? () => editAsync(null) : undefined,
+                        view: {
+                            label: label,
+                            icon: field.icon,
+                            displayValue: isSearchMode ? 
+                                <span className="search">{noLabelQuery.full}</span> :
+                                <span className="select">{formatText("field-select")}</span>
+                        }
+                    });
+                }
+            }            
+
+            if (field.minQueryLen && noLabelQuery.full.length < field.minQueryLen)
+                return res;
 
             if ((labelMatch && modeMatchLabel) || !modeMatchLabel) { 
 
-                const itemsFilter = field.valuesFilter ? field.valuesFilter(curFilter, query) : undefined;
+                const itemsFilter = field.valuesFilter ? field.valuesFilter(curFilter, noLabelQuery) : undefined;
                 const json = JSON.stringify(itemsFilter);
 
                 if ((modeClient && json != lastItemsFilterJson) ||
@@ -202,6 +237,7 @@ export function itemsSearch<
                         },
                         allowMultiple: field.multipleValues,
                         fields: [field.name],
+                        rank: field.priority ?? 0,
                         apply: filter => {
 
                             if (field.multipleValues) {
@@ -228,11 +264,9 @@ export function itemsSearch<
 
                         if (modeClient) {
 
-                            if (query.parts.length > 0 && !labelMatch) {
+                            if (noLabelQuery.parts.length > 0) {
 
-                                const matchText = text.toLowerCase() + "|" + label.toLowerCase();
-
-                                if (!query.parts.every(a => matchText.includes(a)))
+                                if (!noLabelQuery.parts.every(a => text.toLowerCase().includes(a)))
                                     continue;
                             }
                         }
@@ -343,12 +377,7 @@ export class FilterEditor<TFilter, TItem>
         if (this._firstLoad)
             return;
 
-        const searchQuery = {
-            parts: [...(query?.trim().toLowerCase() ?? "").matchAll(QUERY_SPLIT)]
-                .map(m => m[1] || m[2] || m[3])
-                .filter(a=> a.trim().length > 0),
-            full: query
-        } as ISearchQuery;
+        const searchQuery = parseSearchQuery(query);
 
         if (!this.value)
             this.value = {} as TFilter;
@@ -362,6 +391,8 @@ export class FilterEditor<TFilter, TItem>
             if (res)
                 newSug.push(...Array.from(res));
         }
+         
+        newSug.sort((a, b) => a.rank - b.rank);
 
         this.suggestions = newSug;
 
@@ -384,7 +415,7 @@ export class FilterEditor<TFilter, TItem>
         const curFilter = {} as TFilter;
 
         for (const item of this.activeFilters)
-            item.apply(curFilter, item.value);
+            item.apply?.(curFilter, item.value);
 
         this.value = this.prepareFilter(curFilter);
     }
@@ -417,12 +448,13 @@ export class FilterEditor<TFilter, TItem>
         }
         this.activeFilters.push(item);
         this.updateFilter();
-        this.showSuggestions = false;
 
         if (this.searchText.length > 0) {
             this.searchText = "";
-            this.hasFocus = true;
+            //this.hasFocus = true;
         }
+
+        setTimeout(() => this.showSuggestions = false, 10);
     }
 
     removeFilter(item: ISearchItem<TFilter, unknown>) {
