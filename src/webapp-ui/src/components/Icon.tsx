@@ -1,7 +1,8 @@
 import { type ComponentStyle, buildStyle } from "@eusoft/webapp-core";
-import { type ViewNode } from "../Types";
+import { type ViewNode } from "../types";
 import { type MaterialIconName, type MaterialSymbolName } from "./Material";
 import "./Icon.scss";
+
 
 export interface IIconOptions {
     content: ViewNode;

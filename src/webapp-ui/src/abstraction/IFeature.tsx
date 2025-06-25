@@ -1,4 +1,4 @@
-import type { LoadResult } from "../Types";
+import type { LoadResult } from "../types";
 import type { IContent } from "./IContent";
 
 

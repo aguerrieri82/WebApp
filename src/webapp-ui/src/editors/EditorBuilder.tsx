@@ -1,5 +1,5 @@
 import { Expression, type BindExpression, type ComponentStyle, toKebabCase, type ITemplate, type TemplateBuilder, Bind, template } from "@eusoft/webapp-core";
-import { type ViewNode } from "../Types";
+import { type ViewNode } from "../types";
 import { type IEditor, type IEditorOptions } from "../abstraction/IEditor";
 import { type Validator } from "../abstraction/Validator";
 import { type IInputFieldOptions, InputField } from "../components";

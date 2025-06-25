@@ -5,7 +5,7 @@ import { type IItemsSource } from "../abstraction/IItemsSource";
 import { type IAsyncLoad } from "../abstraction/IAsyncLoad";
 import { CommitableEditor, type ICommitableEditorOptions } from "./CommitableEditor";
 import "./MultiSelector.scss";
-import type { ViewNode } from "../Types";
+import type { ViewNode } from "../types";
 import type { IItemsContainer } from "../abstraction/IItemsContainer";
 import { Attribute } from "../behavoirs/Attribute";
 

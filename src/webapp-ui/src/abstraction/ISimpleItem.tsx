@@ -1,4 +1,4 @@
-import { type LocalString, type ViewNode } from "../Types";
+import { type LocalString, type ViewNode } from "../types";
 
 export interface ISimpleItem<TValue> {
     text: LocalString;

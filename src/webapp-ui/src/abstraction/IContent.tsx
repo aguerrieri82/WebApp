@@ -1,6 +1,6 @@
 import { type IComponent } from "@eusoft/webapp-core";
 import { type IFeature } from "./IFeature";
-import { type LoadResult, type LocalString, type ViewNode } from "../Types";
+import { type LoadResult, type LocalString, type ViewNode } from "../types";
 import { type IAction } from "./IAction";
 import { type IContentHost } from "./IContentHost";
 

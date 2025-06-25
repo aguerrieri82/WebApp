@@ -1,11 +1,12 @@
-﻿
-import type { BindExpression } from "@eusoft/webapp-core/abstraction/IBinder";
+﻿import type { BindExpression } from "@eusoft/webapp-core/abstraction/IBinder";
 import { Component } from "@eusoft/webapp-core/Component";
 import { forModel } from "@eusoft/webapp-jsx/Helpers";
-import { formatText, MaterialIcon, type IEditor, type IEditorOptions, type IItemsSource, type LocalString, type ValueChangedReason, type ViewNode } from "@eusoft/webapp-ui";
+import { formatText, HideOnClick, MaterialIcon, type IEditor, type IEditorOptions, type IItemsSource, type LocalString, type ValueChangedReason, type ViewNode } from "@eusoft/webapp-ui";
 import { Variable } from "@eusoft/webapp-ui/behavoirs/Variable";
 import { toKebabCase } from "@eusoft/webapp-core";
 import "./FilterEditor.scss"
+import type { ISearchItem, ISearchItemFormatter, ISearchItemProvider, ISearchQuery } from "../abstraction/ISearchItemProvider";
+
 
 /**********************************/
 /*  Const  */
@@ -22,17 +23,11 @@ type ItemType<TValue, Multiple> = Multiple extends true ? (TValue extends Array<
 
 type FilterFields<TFilter, TValuesFilter> = {
     [K in keyof TFilter & string]?: Omit<IFilterField<TFilter, K, boolean, TValuesFilter>, "name">;
-};
-
-
-type KeyOfValue<TFilter, TValue> = {
-    [K in keyof TFilter]: TFilter[K] extends TValue ? K : never
-}[keyof TFilter];
-
+}
 
 type MatchFields<TItem> = {
     [K in keyof TItem as K extends string ? K : never]: ISearchItemFormatter<TItem[K]>;
-};
+}
 
 /**********************************/
 /*  Interfaces  */
@@ -92,47 +87,6 @@ export interface IFilterField<
     enabled?: boolean | BindExpression<TFilter, boolean>;
 }
 
-interface ISearchItemView {
-
-    label: string;
-
-    displayValue: ViewNode;
-
-    icon?: ViewNode;
-
-    color?: string;
-}
-
-interface ISearchItemFormatter<TValue> {
-    formatValue(value: TValue): ISearchItemView;
-}
-
-export interface ISearchItem<TFilter, TValue> {
-
-    view: ISearchItemView;
-
-    priority?: number;
-
-    value?: TValue;
-
-    apply?(filter: TFilter): void;
-
-    editAsync?(): Promise<TValue>;
-}
-
-export interface ISearchQuery {
-    full: string;
-    parts: string[];
-}
-
-
-export interface ISearchItemProvider<TFilter, TValue> {
-
-    searchAsync(query: ISearchQuery, curFilter: TFilter, curItems: ISearchItem<TFilter, unknown>[]): Promise<Iterable<ISearchItem<TFilter, TValue>>>;
-
-    parse?(filter: TFilter): ISearchItem<TFilter, unknown>[];
-}
-
 export interface IFilterEditorOptions<TFilter, TItem, TKey extends keyof TFilter & string> extends IEditorOptions<TFilter> {
 
     fields: IFilterField<TFilter, TKey, boolean, ObjectLike>[] | FilterFields<TFilter, unknown>;
@@ -145,48 +99,7 @@ export interface IFilterEditorOptions<TFilter, TItem, TKey extends keyof TFilter
 
     searchProviders?: ISearchItemProvider<TFilter, unknown>[];
 
-    queryField: KeyOfValue<TFilter, string>;
-}
-
-export interface IDateRange {
-    from?: Date;
-    to?: Date;
-}
-
-/**********************************/
-/*  dateRangeSearch */
-/**********************************/
-
-export function dateRangeSearch<TFilter>(from: KeyOfValue<TFilter, Date | string>, to: KeyOfValue<TFilter, Date | string>) {
-
-    const keywords = ["from", "to", "today", "yesterday", "month", "week", "year"];
-
-    const icon = <MaterialIcon name="date"/>
-
-    return {
-
-        searchAsync(query, curFilter, curItems) {
-
-            for (const keyword in keywords) {
-                if (query.parts.a)
-            }
-        }
-
-    } as ISearchItemProvider<TFilter, IDateRange>;
-}
-
-/**********************************/
-/*  numberSearch */
-/**********************************/
-
-export function numberSearch<TFilter>(field: KeyOfValue<TFilter, number>) {
-    return {
-
-        searchAsync(query, curFilter, curItems) {
-
-        }
-
-    } as ISearchItemProvider<TFilter, number>;
+    queryField: KeyOfType<TFilter, string>;
 }
 
 /**********************************/
@@ -220,7 +133,7 @@ export function itemsSearch<
         for (const match of matchList) {
 
             if (typeof match == "string") {
-                if (query.parts.every(a => match.includes(a)))
+                if (query.parts.find(a => match.includes(a)))
                     return true;
             }
             else {
@@ -240,29 +153,27 @@ export function itemsSearch<
 
         async searchAsync(query, curFilter, curItems) {
 
-            if (field.minQueryLen && query.full.length < field.minQueryLen)
-                return;
-
+       
             const res: ISearchItem<TFilter, TItemValue>[] = [];
-
-            const labelMatch = query.parts.length > 0 && matchLabel(query);
 
             if (field.searchMode & FieldSearchMode.LabelOnly) {
 
-                if (labelMatch) {
-
-                    res.push({
-                        apply: undefined,
-                        priority: field.priority,
-                        editAsync: editAsync ? () => editAsync(null) : undefined,
-                        view: {
-                            label: label,
-                            icon: field.icon,
-                            displayValue: <span className="select">{formatText("field-select")}</span>
-                        }
-                    });
-                };
+                res.push({
+                    apply: undefined,
+                    rank: field.priority,
+                    editAsync: editAsync ? () => editAsync(null) : undefined,
+                    view: {
+                        label: label,
+                        icon: field.icon,
+                        displayValue: <span className="select">{formatText("field-select")}</span>
+                    }
+                });
             }
+
+            const labelMatch = query.parts.length > 0 && matchLabel(query);
+
+            if (field.minQueryLen && query.full.length < field.minQueryLen)
+                return;
 
             if ((labelMatch && modeMatchLabel) || !modeMatchLabel) { 
 
@@ -273,6 +184,7 @@ export function itemsSearch<
                     modeSource || !items) {
 
                     items = await field.valuesSource.getItemsAsync(itemsFilter) as TItem[];
+                    lastItemsFilterJson = json;
                 }
 
                 const addItem = (item: TItem, text: string) => {
@@ -288,6 +200,8 @@ export function itemsSearch<
                             color: field.color,
                             icon: field.valuesSource.getIcon?.(item) ?? field.icon
                         },
+                        allowMultiple: field.multipleValues,
+                        fields: [field.name],
                         apply: filter => {
 
                             if (field.multipleValues) {
@@ -342,7 +256,9 @@ export function itemsSearch<
 export class FilterEditor<TFilter, TItem>
     extends Component<IFilterEditorOptions<TFilter, TItem, keyof TFilter & string>>
     implements IEditor<TFilter> {
+
     protected _curSearchProviders: ISearchItemProvider<TFilter, unknown>[] = [];
+    protected _firstLoad = true;
 
     constructor(options: IFilterEditorOptions<TFilter, TItem, keyof TFilter & string>) {
 
@@ -351,17 +267,19 @@ export class FilterEditor<TFilter, TItem>
         this.init(FilterEditor, {
             ...options,
             template: forModel<this>(m => <div className={m.className} visible={m.visible}>
+                <HideOnClick isVisible={m.showSuggestions} inline={false} />
                 <div className="search-bar">
-                    <input type="text" value={m.searchText} value-pool={500} />
+                    <input focus={m.hasFocus} type="text" value={m.searchText} value-pool={500} />
                     <button className="clear-filters" on-click={() => m.clearFilters()}>
                         <MaterialIcon name="clear" />
                     </button>
                     <button className="show-filters" on-click={() => m.showFilters()}>
-                        <MaterialIcon name="filter" />
+                        <MaterialIcon name="tune" />
                     </button>
                 </div>
                 <div className="suggestions" visible={m.showSuggestions}>
                     {m.suggestions.forEach(i => <div on-click={() => m.addFilter(i)} className="suggestion">
+                        <Variable name="color" value={i.view.color} />
                         {i.view.icon}
                         {i.view.label && <label>{i.view.label}</label>}
                         <div>{i.view.displayValue}</div>
@@ -373,7 +291,6 @@ export class FilterEditor<TFilter, TItem>
                         <Variable name="color" value={i.view.color} />
                         <div className="body" on-click={() => m.editFilter(i)}>
                             {i.view.icon}
-                            {i.view.label && <label>{i.view.label}</label>}
                             <div>{i.view.displayValue}</div>
                         </div>
                         <button on-click={() => m.removeFilter(i)}>
@@ -386,7 +303,13 @@ export class FilterEditor<TFilter, TItem>
 
         this.onChanged("searchText", v => this.searchAsync(v));
 
+        this.onChanged("value", (v, o) => this.onValueChanged(v, o, "edit"));
+
+        this.onChanged("hasFocus", v => this.onFocusChanged(v));
+        
         this.build();
+
+        this.showSuggestions = false;
     }
 
     protected build() {
@@ -417,6 +340,9 @@ export class FilterEditor<TFilter, TItem>
 
     async searchAsync(query: string) {
 
+        if (this._firstLoad)
+            return;
+
         const searchQuery = {
             parts: [...(query?.trim().toLowerCase() ?? "").matchAll(QUERY_SPLIT)]
                 .map(m => m[1] || m[2] || m[3])
@@ -438,6 +364,29 @@ export class FilterEditor<TFilter, TItem>
         }
 
         this.suggestions = newSug;
+
+        this.showSuggestions = true;
+    }
+     
+    protected onFocusChanged(value: boolean) {
+
+        if (value) {
+            this.showSuggestions = true;
+            if (this._firstLoad) {
+                this._firstLoad = false;
+                this.searchAsync("");
+            }
+        }
+    }
+
+    protected updateFilter() {
+
+        const curFilter = {} as TFilter;
+
+        for (const item of this.activeFilters)
+            item.apply(curFilter, item.value);
+
+        this.value = this.prepareFilter(curFilter);
     }
 
     showFilters() {
@@ -445,20 +394,46 @@ export class FilterEditor<TFilter, TItem>
     }
 
     clearFilters() {
-
+        this.activeFilters = [];
+        this.updateFilter()
     }
 
     editFilter(item: ISearchItem<TFilter, unknown>) {
 
     }
 
-
     addFilter(item: ISearchItem<TFilter, unknown>) {
 
+        this.activeFilters ??= [];
+
+        if (!item.allowMultiple) {
+            for (const field of item.fields) {
+                const current = this.activeFilters.find(a => a.fields.includes(field));
+                if (current) {
+                    this.removeFilter(current);
+                    break;
+                }
+            }
+        }
+        this.activeFilters.push(item);
+        this.updateFilter();
+        this.showSuggestions = false;
+
+        if (this.searchText.length > 0) {
+            this.searchText = "";
+            this.hasFocus = true;
+        }
     }
 
     removeFilter(item: ISearchItem<TFilter, unknown>) {
 
+        const idx = this.activeFilters.indexOf(item);
+
+        if (idx != -1)
+            this.activeFilters.splice(idx, 1);
+
+        this.updateFilter()
+        this.showSuggestions = false;
     }
 
     onValueChanged(value: TFilter, oldValue: TFilter, reason: ValueChangedReason) {
@@ -476,7 +451,7 @@ export class FilterEditor<TFilter, TItem>
 
     searchProviders?: ISearchItemProvider<TFilter, unknown>[];
 
-    queryField: KeyOfValue<TFilter, string>;
+    queryField: KeyOfType<TFilter, string>;
 
     renderMode: FilterRenderMode;
 
@@ -486,11 +461,13 @@ export class FilterEditor<TFilter, TItem>
 
     value: TFilter;
 
+    hasFocus: boolean;
+
     showSuggestions: boolean;
 
     activeFilters: ISearchItem<TFilter, unknown>[];
 
     suggestions: ISearchItem<TFilter, unknown>[];
 
-    searchText: string;
+    searchText: string = "";
 }

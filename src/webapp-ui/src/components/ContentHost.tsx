@@ -3,7 +3,7 @@ import { Content, forModel } from "@eusoft/webapp-jsx";
 import { type IContent } from "../abstraction/IContent";
 import "./ContentHost.scss";
 import type { IContentHost } from "../abstraction/IContentHost";
-import type { LoadResult } from "../Types";
+import type { LoadResult } from "../types";
 
 interface IContentHostOptions extends IComponentOptions {
     useTransition: boolean;

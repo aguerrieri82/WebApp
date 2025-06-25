@@ -78,7 +78,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
     protected _updateNode: Node = null;
     protected _shadowUpdate = false;
     protected _isRemoved = false;
-    protected _behavoirs: IBehavoir<HTMLElement, unknown>[] = [];
+    protected _behavoirs: IBehavoir<HTMLElement, unknown>[];
 
     constructor(model: TModel, element: TElement, parent?: TemplateBuilder<unknown>) {
 
@@ -266,7 +266,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
                     for (const item of bld._behavoirs)
                         item.detach(this.getContext());
 
-                    bld._behavoirs = [];
+                    bld._behavoirs = undefined;
                 }
 
                 bld.cleanBindings(cleanValue, false);
@@ -372,7 +372,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
 
     appendChild(node: Node): this {
 
-        if (!this._lastElement || !this._lastElement.parentNode) //TODO WARN: this || didn't exists
+        if (!this._lastElement || !this._lastElement.parentNode) 
             this.element.appendChild(node);
         else {
             if (this._lastElement.nextSibling)
@@ -380,9 +380,9 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             else
                 this._lastElement.parentNode.appendChild(node);
         }
-        //TODO WARN: this line was inside else
+
         this._lastElement = node;
-        //
+
         return this;
     }
 
@@ -765,7 +765,31 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             return this.template(result.component, result.model);
 
         return this;
+    }
 
+    inlineComponentContent<TComp extends ClassComponenType<TProps> & TProps,
+        TResult extends FunctionalComponenType<TProps>,
+        TProps extends ObjectLike = ComponentProps<TComp>>(constructor: ComponentType<TProps, TComp, TResult>, props: TProps): ITemplateProvider<TProps> {
+
+        if (isBehavoir(constructor))
+            throw new Error("Can't use Behavoir as inline component");
+
+        const content = isClass(constructor) ?
+            new constructor(props) :
+            {
+                template: constructor(props),
+                model: props as TProps
+            } as ITemplateProvider<TProps>
+
+        return content as ITemplateProvider<TProps>;
+    }
+
+
+    inlineComponent<TComp extends ClassComponenType<TProps> & TProps,
+        TResult extends FunctionalComponenType<TProps>,
+        TProps extends ObjectLike = ComponentProps<TComp>>(constructor: ComponentType<TProps, TComp, TResult>, props: TProps): this {
+
+        return this.content(this.inlineComponentContent(constructor, props));
     }
 
     content<TInnerModel extends ITemplateProvider | string>(content: BindValue<TModel, TInnerModel>, inline?: boolean, updateMode?: ContentUpdateMode): this {
@@ -1177,6 +1201,7 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
             else if (typeof item == "function")
                 item = new item();
 
+            this._behavoirs ??= [];
             this._behavoirs.push(item as IBehavoir);
         }
 
@@ -1258,8 +1283,11 @@ class ChildTemplateBuilder<TModel, TElement extends HTMLElement, TParent extends
                 this.parent["_lastElement"] = this._lastElement;
         }
 
-        for (const item of this._behavoirs)
-            item.attach(this.getContext());
+        if (this._behavoirs) {
+
+            for (const item of this._behavoirs)
+                item.attach(this.getContext());
+        }
 
         return <TParent>this.parent;
     }

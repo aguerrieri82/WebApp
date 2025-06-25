@@ -82,6 +82,8 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<Object
 
 export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemListOptions<TItem, TFilter>> {
 
+    protected _curFilter: TFilter;
+
     constructor(options?: IItemListOptions<TItem, TFilter>) {
 
         super();
@@ -234,7 +236,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
     async refreshAsync() {
 
-        const items = await this.itemsSource.getItemsAsync(this.prepareFilter());
+        const items = await this.itemsSource.getItemsAsync(this.prepareFilter(this._curFilter));
 
         this.items = items;
     }
@@ -298,10 +300,20 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
     createFilterEditor(): IEditor<TFilter>  {
 
-        if (isClass(this.filterEditor))
-            return new this.filterEditor();
+        let editor: IEditor<TFilter>;
 
-        return this.filterEditor() as IEditor<TFilter>;
+        if (isClass(this.filterEditor))
+            editor = new this.filterEditor();
+        else
+            editor = this.filterEditor() as IEditor<TFilter>;
+
+        editor.onValueChanged = v => {
+
+            this._curFilter = v;
+            this.refreshAsync();
+        }
+
+        return editor;
     }
 
     addLabel?: LocalString;

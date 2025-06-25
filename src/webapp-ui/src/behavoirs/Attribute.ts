@@ -1,12 +1,12 @@
 import { Behavoir, propOf, type ITemplateContext } from "@eusoft/webapp-core";
 
-export interface IAttachOptions {
+export interface IAttributeOptions {
 
     name: string;
 
     condition: boolean;
 }
-export class Attribute extends Behavoir<IAttachOptions>{
+export class Attribute extends Behavoir<IAttributeOptions>{
 
     protected _sub: Function;
 

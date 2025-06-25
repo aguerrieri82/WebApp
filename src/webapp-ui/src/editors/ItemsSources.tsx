@@ -1,5 +1,5 @@
 import { toKebabCase } from "@eusoft/webapp-core";
-import { type LocalString, type ViewNode } from "../Types";
+import { type LocalString, type ViewNode } from "../types";
 import { type IItemsSource } from "../abstraction/IItemsSource";
 import { type ISimpleItem } from "../abstraction/ISimpleItem";
 import { formatText } from "../utils/Format";

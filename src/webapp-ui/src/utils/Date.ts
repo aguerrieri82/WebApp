@@ -1,6 +1,7 @@
 import { Services } from "@eusoft/webapp-core";
 import { LOCALIZATION, type ILocalization } from "../abstraction";
 import { replaceArgs } from "./Format";
+import { TimeSpan } from "../types/TimeSpan";
 
 export function stringOrUndef(value: unknown) {
     if (typeof value == "string")
@@ -80,4 +81,44 @@ export function formatDateArgument(date: Date | string, arg: string, lang: strin
             return date.getMilliseconds().toString();
     }
     return arg;
+}
+
+export function dateAdd(date: Date | string, value: TimeSpan): Date {
+    if (!(date = parseDate(date)))
+        return null;
+    return new Date(date.getTime() + value.ticks);
+}
+
+export function dateDiff(date1: Date | string, date2: Date | string): TimeSpan {
+    return new TimeSpan(parseDate(date1).getTime() - parseDate(date2).getTime());
+}
+
+export function now(): Date {
+    return new Date();
+}
+
+export function today(): Date {
+    return truncateTime(now());
+}
+
+export function isSameDay(dateA: Date | string, dateB: Date | string): boolean {
+    return truncateTime(dateA).getTime() == truncateTime(dateB).getTime();
+}
+
+export function truncateTime(date: Date | string): Date {
+    if (!(date = parseDate(date)))
+        return null;
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+
+export function dayStart(date: Date | string): Date {
+    if (!(date = parseDate(date)))
+        return null;
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+export function dayEnd(date: Date | string): Date {
+    if (!(date = parseDate(date)))
+        return null;
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
 }

@@ -1,6 +1,6 @@
 ﻿import { mount } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
-import type { ViewNode } from "../Types";
+import type { ViewNode } from "../types";
 import type { ComponentStyle } from "@eusoft/webapp-core";
 import { buildStyle, delayAsync } from "@eusoft/webapp-core";
 import "./Toaster.scss";

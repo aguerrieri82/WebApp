@@ -1,4 +1,4 @@
-import type { LocalString } from "@eusoft/webapp-ui/Types";
+import type { LocalString } from "@eusoft/webapp-ui/types";
 import { HttpError, userInteraction } from "../services";
 import { formatText } from "@eusoft/webapp-ui/utils/Format";
 

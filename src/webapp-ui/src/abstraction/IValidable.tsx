@@ -1,4 +1,4 @@
-import { type ViewNode } from "../Types";
+import { type ViewNode } from "../types";
 import { type IValidationContext } from "./Validator";
 
 export interface IValidable {

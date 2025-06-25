@@ -3,7 +3,7 @@ import { Editor } from "./Editor";
 import { type CommitMode, type ICommitable } from "../abstraction/ICommitable";
 import { type IValidable } from "../abstraction/IValidable";
 import { type IValidationContext } from "../abstraction/Validator";
-import { type ViewNode } from "../Types";
+import { type ViewNode } from "../types";
 import { cleanProxy, getTypeName } from "@eusoft/webapp-core";
 
 type EditState = "" | "committed" | "committing" | "validating" | "editing" | "loading";

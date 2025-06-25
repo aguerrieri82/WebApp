@@ -1,5 +1,5 @@
 ﻿import { Component, type IComponentOptions, cleanProxy, delayAsync, mount } from "@eusoft/webapp-core";
-import { type LocalString, type ViewNode } from "../Types";
+import { type LocalString, type ViewNode } from "../types";
 import { forModel } from "@eusoft/webapp-jsx";
 import { Action, createAction } from "./Action";
 import { formatText } from "../utils/Format";

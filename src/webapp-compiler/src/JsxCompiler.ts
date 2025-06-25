@@ -22,7 +22,7 @@ interface ITextReplacement {
 
 export class JsxCompiler extends BaseCompiler {
 
-    constructor(options?: ICompilerOptions) {
+    constructor(options?: Partial<ICompilerOptions>) {
         super(options);
         this.type = "Jsx";
     }

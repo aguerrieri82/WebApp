@@ -1,7 +1,7 @@
 import { type ITemplate, type ITemplateProvider } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
 import "./Blocker.scss";
-import { type ViewNode } from "../Types";
+import { type ViewNode } from "../types";
 
 export class Blocker<TContent extends ViewNode = ViewNode> implements ITemplateProvider {
 

@@ -17,6 +17,9 @@ importers:
       '@eusoft/webapp-ui':
         specifier: link:../webapp-ui/src
         version: link:../webapp-ui/src
+      pikaday:
+        specifier: 1.8.2
+        version: 1.8.2
     devDependencies:
       '@eslint/js':
         specifier: 9.28.0
@@ -464,6 +467,9 @@ packages:
   picomatch@2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
+
+  pikaday@1.8.2:
+    resolution: {integrity: sha512-TNtsE+34BIax3WtkB/qqu5uepV1McKYEgvL3kWzU7aqPCpMEN6rBF3AOwu4WCwAealWlBGobXny/9kJb49C1ew==}
 
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
@@ -1001,6 +1007,8 @@ snapshots:
   path-key@3.1.1: {}
 
   picomatch@2.3.1: {}
+
+  pikaday@1.8.2: {}
 
   prelude-ls@1.2.1: {}
 

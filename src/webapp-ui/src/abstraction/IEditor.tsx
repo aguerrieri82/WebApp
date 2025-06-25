@@ -1,5 +1,5 @@
 import { type Bindable, type IComponent, type IComponentOptions } from "@eusoft/webapp-core";
-import { type ViewNode } from "../Types";
+import { type ViewNode } from "../types";
 
 export type ValueChangedReason = undefined | "edit" | "load";
 

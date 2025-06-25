@@ -1,46 +1,44 @@
-﻿import { forModel } from "@eusoft/webapp-jsx";
-import { Content, contentInfo, formatCurrency, formatText } from "@eusoft/webapp-ui";
-import { Field } from "../../components/Field";
-import { StatusTag } from "../../components/StatusTag";
-import { UserAccountType, type Guid, type IOrderDetailsView } from "../../entities/Commands";
-import { formatOrderType, formatOrderStatus, formatPaymentMethod } from "../../helpers/Format";
-import { Authorize } from "../../services/Authorize";
-import { apiClient } from "../../services/PmApiClient";
-import { formatDateTime } from "@eusoft/webapp-framework/helpers/Format";
-import "./OrderDetailsPage.scss";
-import { Card } from "../../components/Card";
+﻿import { RouteContentHost } from "@eusoft/webapp-framework";
+import { Class } from "@eusoft/webapp-jsx/components/Class";
+import { Content } from "@eusoft/webapp-jsx/components/Content";
+import { forModel } from "@eusoft/webapp-jsx/Helpers";
+import { NodeView, MaterialIcon, type Content as UIContent } from "@eusoft/webapp-ui";
+import { Action } from "@eusoft/webapp-ui/components/Action";
+import { formatText } from "@eusoft/webapp-ui/utils/Format";
+import { ContextView, type IContextInfo } from "./ContextView";
+import "./AppContentHost.scss"
+import { userSession } from "../services/UserSession";
 
 
-export interface IOrderDetailsArgs {
-    id?: Guid;
-    order?: IOrderDetailsView;
-}
+const ContentHostTemplate = forModel<AppContentHost>(m => <main className={m.className}>
+    {m.content && <section className="content">
+        <div className={m.content?.className}>
 
-export class OrderDetailsPage extends Content<IOrderDetailsArgs> {
+            <Class name="page" />
 
-    constructor() {
-
-        super();
-
-        this.init(OrderDetailsPage, {
-            title: "order",
-            style: ["panel"],
-            body: forModel(this, m => <>
-
-                <Card style="items">
-                    <div>Q</div>
-
-                    {m.order.items.forEach(a => <>
-                        <div>{a.quantity}</div>
-                        <div>{a.description}</div>
-                        <div>{formatCurrency(a.unitAmount)}</div>
-                    </>)}
-                    <div>Test</div>
-
-                </Card>
-            </>)
-        });
-    }
-}
-
-export default OrderDetailsPage;
+            <header>
+                <Class name="hide-context" condition={!m.showContext || m.content?.hideContext} />
+                <div className="action-bar">
+                    {m.content?.showBack && <Action inline={false} name="back" onExecuteAsync={() => m.content?.host.closeAsync()} style="icon">❮</Action>}
+                    <span className="title">{formatText(m.content?.title)}</span>
+                    {m.supportContext && <Action name="toggle-context" style="icon" onExecuteAsync={() => m.toggleContext()} >
+                        <MaterialIcon name="keyboard_arrow_down" />
+                    </Action>}
+                </div>
+                {m.supportContext && <ContextView />}
+            </header>
+            <div className="body">
+                <Content src={m.content?.body} update="" />
+                <NodeView>{m.test}</NodeView>
+            </div>
+            <footer>
+                {m.content?.actions?.forEach(a =>
+                    <Action name={a.name} type={a.type} onExecuteAsync={a.executeAsync}>
+                        {a.icon}
+                        {formatText(a.text)}
+                    </Action>
+                )}
+            </footer>
+        </div>
+    </section>}
+</main>)

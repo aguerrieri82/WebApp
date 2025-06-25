@@ -4,5 +4,6 @@ export * from "./behavoirs"
 export * from "./editors"
 export * from "./services"
 export * from "./utils"
-export * from "./Types"
+export * from "./types"
+
 

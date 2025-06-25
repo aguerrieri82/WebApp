@@ -3,7 +3,7 @@ import { Class, forModel } from "@eusoft/webapp-jsx";
 import { type IEditorOptions } from "../abstraction/IEditor";
 import { EditorBuilder } from "./EditorBuilder";
 import { Editor } from "./Editor";
-import { type ViewNode } from "../Types";
+import { type ViewNode } from "../types";
 import "./BooleanEditor.scss";
 import { NodeView } from "../components";
 import { type ILabel } from "../abstraction/ILabel";

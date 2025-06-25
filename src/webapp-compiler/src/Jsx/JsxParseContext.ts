@@ -384,7 +384,7 @@ export class JsxParseContext {
 
         if (name.startsWith("on-") ||
             name.startsWith("style-") ||
-            TemplateAttributes.indexOf(name) != -1)
+            TemplateAttributes.includes(name))
 
         return "t:" + name;
 

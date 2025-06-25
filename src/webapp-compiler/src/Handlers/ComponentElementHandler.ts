@@ -1,8 +1,18 @@
 import { HandleResult, type ITemplateHandler } from "../Abstraction/ITemplateHandler.js";
-import { type ITemplateElement, type ITemplateNode, TemplateNodeType } from "../Abstraction/ITemplateNode.js";
+import { type ITemplateAttribute, type ITemplateElement, type ITemplateNode, TemplateNodeType } from "../Abstraction/ITemplateNode.js";
 import { StringBuilder } from "../StringBuilder.js";
 import { type TemplateContext } from "../TemplateContext.js";
 import { TemplateWriter } from "../Text/TemplateWriter.js";
+
+function replaceAtTags(input: string, map: Record<string, string>) {
+    return input.replace(/@(\w+)/g, (_, key) => {
+        return key in map ? map[key] : `@${key}`;
+    });
+}
+
+function isAttributeTrue(attr?: ITemplateAttribute) {
+    return attr && (attr.value === null || attr.value === undefined || attr.value === "true");
+}
 
 export class ComponentElementHandler implements ITemplateHandler {
      
@@ -14,8 +24,8 @@ export class ComponentElementHandler implements ITemplateHandler {
     handle(ctx: TemplateContext, element: ITemplateElement): HandleResult {
 
         const type = element.attributes[`${ctx.htmlNamespace}:type`]?.value;
-
-        const isCreate = element.attributes[`${ctx.htmlNamespace}:create`]?.value == "true";
+        const isCreate = isAttributeTrue(element.attributes[`${ctx.htmlNamespace}:create`]);
+        let isInline = isAttributeTrue(element.attributes[`inline`]);
 
         if (!type) {
             ctx.error("Type not specified in component.");
@@ -24,9 +34,12 @@ export class ComponentElementHandler implements ITemplateHandler {
 
         const oldWriter = ctx.writer;
 
-        const props: Record<string, any> = {};
-
+        const props: Record<string, string> = {};
         const modes: Record<string, string> = {};
+
+        let hasBinding = false;
+        let options: string;
+
 
         for (const name in element.attributes) {
             if (!name.startsWith(`${ctx.htmlNamespace}:`)) {
@@ -49,10 +62,22 @@ export class ComponentElementHandler implements ITemplateHandler {
 
                     ctx.writer = oldWriter;
                 }
-                if (attr.bindMode)
-                    modes[name] = JSON.stringify(attr.bindMode);
+
+                if (attr.bindMode) {
+                    if (attr.bindMode != "default")
+                        modes[name] = JSON.stringify(attr.bindMode);
+                    hasBinding = true;
+                }
+         
+            }
+            else {
+                const htmlName = name.substring(ctx.htmlNamespace.length + 1);
+
+                if (htmlName == "options")
+                    options = props[name] as string;
             }
         }
+
 
         element.childNodes = element.childNodes.filter(a => a.type != TemplateNodeType.Text || a.value.trim().length > 0);
 
@@ -112,7 +137,10 @@ export class ComponentElementHandler implements ITemplateHandler {
             }
             else if (element.childNodes.length == 1 && ctx.isElement(element.childNodes[0], "content")) {
 
-                contentWriter.write(element.childNodes[0].attributes["src"].value);
+                const src = element.childNodes[0].attributes["src"];
+                if (src.bindMode)
+                    hasBinding = true;
+                contentWriter.write(src.value);
             }
             else
             {
@@ -132,22 +160,42 @@ export class ComponentElementHandler implements ITemplateHandler {
             ctx.writer = oldWriter;
         }
 
+        if (!hasBinding && ctx.compiler.options.autoInline && isInline !== false)
+            isInline = true;
+
+        if (!isInline && options) {
+            props["@options"] = options;
+            options = undefined;
+        }
+
+        const extension = ctx.compiler.options?.extensions?.find(a => a.component == type);
+
+        if (extension) {
+            if (typeof extension.builder == "function")
+                return extension.builder(ctx, element);
+
+            ctx.writer.write(".").write(replaceAtTags(extension.builder, props));
+            return;
+        }
+
         let funcName: string;
 
         if (isCreate) {
-            funcName = "componentContent";
+            funcName = isInline ? "inlineComponentContent" : "componentContent";
             ctx.writer.write(ctx.currentFrame.builderNameJs);
         }
         else {
-            funcName = "component";
+            funcName = isInline ? "inlineComponent" : "component";
             ctx.writer.ensureNewLine();
         }
 
+
+            
         ctx.writer.write(".").write(funcName).write("(")
             .write(type).write(", ")
-            .writeObject(props);
+            .writeObject(props, options);
 
-        if (Object.keys(modes).length > 0)
+        if (Object.keys(modes).length > 0 && !isInline)
             ctx.writer.write(", ").writeObject(modes);
 
         ctx.writer.write(")");

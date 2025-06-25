@@ -98,6 +98,7 @@ declare global {
 
         type IntrinsicClassAttributes<T> = {
             ref?: BindValue<T, any>;
+            inline?: boolean;
         }
 
         type IntrinsicElements = Omit<{

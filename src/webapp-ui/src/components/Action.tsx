@@ -3,7 +3,7 @@ import { Class, type JsxNode, Style, forModel } from "@eusoft/webapp-jsx";
 import { type ActionType, type IAction, type IActionContext } from "../abstraction/IAction";
 import { type OperationManager } from "../services";
 import { OPERATION_MANAGER } from "../abstraction";
-import { type LocalString, type ViewNode } from "../Types";
+import { type LocalString, type ViewNode } from "../types";
 import "./Action.scss";
 import { NodeView } from "./NodeView";
 import { ContextMenu } from "./ContextMenu";

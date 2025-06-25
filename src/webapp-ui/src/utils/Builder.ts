@@ -1,14 +1,18 @@
-import { type LocalString, type ViewNode } from "../types";
-import { template, type ITemplateProvider, type TemplateBuilder, isTemplate, isTemplateProvider } from "@eusoft/webapp-core";
-import { formatText } from "../utils";
-
-export interface INodeViewOptions {
-    content: ViewNode;
-}
+import type { BindValue } from "@eusoft/webapp-core/abstraction/IBinder"
+import { TemplateBuilder } from "@eusoft/webapp-core/TemplateBuilder"
+import type { LocalString, ViewNode } from "../types"
+import { isTemplateProvider, isTemplate, type ITemplateProvider } from "@eusoft/webapp-core"
+import { formatText } from "./Format"
 
 type NodeType = LocalString | ITemplateProvider;
 
-export function NodeView(options: INodeViewOptions) {
+declare module "@eusoft/webapp-core/TemplateBuilder" {
+    interface TemplateBuilder<TModel, TElement> {
+        nodeView<TInnerModel extends ViewNode>(content: BindValue<TModel, TInnerModel>) : this
+    }
+}
+
+TemplateBuilder.prototype.nodeView = function (content) {
 
     const singleNode = (t: TemplateBuilder<NodeType>) => {
 
@@ -29,8 +33,7 @@ export function NodeView(options: INodeViewOptions) {
             t.template(t.model);
     }
 
-    return template<INodeViewOptions>(t =>
-        t.enter(m => m.content, t2 => {
+    return this.enter(content, t2 => {
             if (t2.model === undefined || t2.model === null)
                 return;
             if (Array.isArray(t2.model))
@@ -43,5 +46,5 @@ export function NodeView(options: INodeViewOptions) {
                 });
             else
                 singleNode(t2 as TemplateBuilder<NodeType>)
-        }));
+        });
 }

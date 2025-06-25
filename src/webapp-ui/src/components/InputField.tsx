@@ -1,7 +1,7 @@
 import { type IComponentOptions,  Component,  type TemplateMap, type Bindable } from "@eusoft/webapp-core";
 import { Class, type JsxTypedComponent, Template, forModel } from "@eusoft/webapp-jsx";
 import { type IEditor, type IEditorOptions } from "../abstraction/IEditor";
-import { type ViewNode } from "../Types";
+import { type ViewNode } from "../types";
 import { type IValidationContext, type Validator } from "../abstraction/Validator";
 import { type IValidable } from "../abstraction/IValidable";
 import { NodeView } from "./NodeView";

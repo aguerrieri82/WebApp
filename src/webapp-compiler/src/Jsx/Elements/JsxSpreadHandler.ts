@@ -11,7 +11,7 @@ export function JsxSpreadHandler(ctx: JsxParseContext, stage: "enter", path: Nod
 
     path.get("argument").visit();
 
-    ctx.createAttribute("@options", path.get("argument").toString(), ctx.curElement);
+    ctx.createAttribute("t:options", path.get("argument").toString(), ctx.curElement);
 
     return true;
 }

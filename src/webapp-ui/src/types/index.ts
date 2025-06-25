@@ -1,4 +1,6 @@
-import { type ITemplateProvider } from "@eusoft/webapp-core"
+import type { ITemplateProvider } from "@eusoft/webapp-core/abstraction/ITemplateProvider";
+
+export * from "./TimeSpan"
 
 export type LocalString = string | { (): string }
 

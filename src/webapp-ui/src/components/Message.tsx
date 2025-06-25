@@ -1,7 +1,7 @@
 ﻿import { buildStyle } from "@eusoft/webapp-core/utils/Style";
 import type { ComponentStyle } from "@eusoft/webapp-core/abstraction/IComponentOptions";
 import "./Message.scss";
-import type { ViewNode } from "../Types";
+import type { ViewNode } from "../types";
 import type { MaterialSymbolName } from "./Material";
 import { MaterialIcon } from "./Icon";
 

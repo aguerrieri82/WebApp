@@ -16,7 +16,7 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
             return;
     }
 
-    const bindMode = ctx.getHelper(path)?.name as BindMode;
+    let bindMode = ctx.getHelper(path)?.name as BindMode;
 
     let createBind = !ctx.isBinding(path) &&
         (bindMode || ctx.hasModelRefs(path) || ctx.hasTrackingRefs(path)) &&
@@ -40,8 +40,10 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
         if (path.isObjectExpression())
             value = `(${value})`;
 
-        if (!bindMode) 
+        if (!bindMode) {
             value = `Bind.exp(${ctx.curModel?.name ?? "m"} => ${value})`;
+            bindMode = "default";
+        }
         else
             value = `${ctx.curModel.name} => ${value}`;
 
@@ -51,11 +53,13 @@ export function JsxExpressionHandler(ctx: JsxParseContext, stage: "enter", path:
     if (ctx.curAttribute) {
         ctx.curAttribute.value = value;
         ctx.curAttribute.bindMode = toKebabCase(bindMode) as BindMode;
+
     }
     else {
 
         ctx.enterNewElement("t:content")
-        ctx.createAttribute("src", value, ctx.curElement);
+        const attr = ctx.createAttribute("src", value, ctx.curElement);
+        attr.bindMode = toKebabCase(bindMode) as BindMode;
         ctx.exitElement();
     }
 

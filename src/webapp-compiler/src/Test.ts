@@ -14,7 +14,12 @@ export async function runTest1(){
 
 export async function runTest2() {
 
-    const compiler = new JsxCompiler();
+    const compiler = new JsxCompiler({
+        extensions: [{
+            component: "NodeView",
+            builder: "nodeView(@content)"
+        }]
+    });
 
     await compiler.compileAsync("../../src/webapp-compiler/test/Index.tsx", null, true);
 

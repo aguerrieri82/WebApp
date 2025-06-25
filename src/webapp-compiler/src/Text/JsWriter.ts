@@ -17,7 +17,7 @@ export class JsWriter extends TextWriter {
         return this.write(JSON.stringify(data));
     }
 
-    writeObject(obj: Record<string, string>) {
+    writeObject(obj: Record<string, string>, spread?: string) {
         this.write("({").indentAdd();
         let i = 0;
         for (const prop in obj) {
@@ -25,6 +25,11 @@ export class JsWriter extends TextWriter {
                 this.write(", ");
             this.ensureNewLine().writeJson(prop).write(": ").write(obj[prop]);
             i++;
+        }
+        if (spread) {
+            if (i > 0)
+                this.write(", ");
+            this.ensureNewLine().write("...(").write(spread).write(")");
         }
         return this.indentSub().write("})");
     }

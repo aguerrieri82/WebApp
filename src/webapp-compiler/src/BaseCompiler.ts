@@ -24,6 +24,11 @@ export enum CompilerLanguage {
     Javascript
 }
 
+export interface ICompilerExtension {
+    component: string;
+    builder: string | { (ctx: TemplateContext, element: ITemplateElement): HandleResult }
+}    
+
 export interface ICompilerOptions {
 
     includeWhitespace?: boolean;
@@ -31,19 +36,22 @@ export interface ICompilerOptions {
     emitWarning?: boolean;
     language?: CompilerLanguage;
     autoTrack?: (string | RegExp)[];
+    autoInline?: boolean;
+    extensions?: ICompilerExtension[];
 }
 
 export abstract class BaseCompiler<TOptions extends ICompilerOptions = ICompilerOptions>  {
 
     protected _handlers: ITemplateHandler[] = [];
 
-    constructor(options?: TOptions) {
+    constructor(options?: Partial<TOptions>) {
 
         this.options = {
             language: CompilerLanguage.Javascript,
             emitWarning: true,
             generateOutput: CompilerOutMode.Always,
             includeWhitespace: false,
+            autoInline: true,
             autoTrack: ["state"],
             ...options
         } as TOptions;

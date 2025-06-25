@@ -1,6 +1,6 @@
 ﻿import { Component, type IComponentOptions, delayAsync, mount } from "@eusoft/webapp-core";
 import { type IAction } from "../abstraction/IAction";
-import { type ViewNode } from "../Types";
+import { type ViewNode } from "../types";
 import { createAction } from "./Action";
 import "./ContextMenu.scss";
 import { forModel } from "@eusoft/webapp-jsx";

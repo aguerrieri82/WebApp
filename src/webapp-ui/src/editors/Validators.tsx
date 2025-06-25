@@ -1,4 +1,4 @@
-import { type ViewNode } from "../Types";
+import { type ViewNode } from "../types";
 import { type IValidationContext, type IValidationResult, type Validator } from "../abstraction/Validator";
 import { formatText } from "../utils/Format";
 

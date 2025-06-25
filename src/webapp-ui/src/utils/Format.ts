@@ -1,5 +1,5 @@
 import { type ITemplate, Services, toKebabCase } from "@eusoft/webapp-core";
-import { type LocalString } from "../Types";
+import { TimeSpan, type LocalString } from "../types";
 import { type ILocalization, LOCALIZATION } from "../abstraction";
 
 export function formatTextSimple(text: LocalString, ...args: any[]) {
@@ -23,6 +23,10 @@ export function formatTextSimple(text: LocalString, ...args: any[]) {
     return text;
 }
 
+export function formatString(text: LocalString, ...args: any[]): string {
+    return formatText(text, ...args) as string;
+}
+
 export function formatText(text: LocalString, ...args: any[]): string | ITemplate<unknown>  { 
 
     const simple = formatTextSimple(text, ...args);
@@ -37,16 +41,68 @@ export function formatText(text: LocalString, ...args: any[]): string | ITemplat
     }); 
 }
 
-
 export function formatEnum<T extends object, TKey extends T[keyof T]>(enumType: T, value: TKey) {
 
     return formatText(toKebabCase(enumType[value as string|number] as string));
 }
 
-
 export function formatCurrency(value: number, symbol = "€") {
 
     return symbol + " " + (Math.round(value * 100) / 100).toFixed(2);
+}
+
+export function ellapsed(span: TimeSpan, direction: number): string {
+
+    let text: string;
+
+    if (span.totalDays > 1) {
+        if (Math.round(span.totalDays) == 1)
+            text = formatString("one-day");
+        else
+            text = Math.round(span.totalDays) + " " + formatString("days");
+
+        if (direction == 0)
+            text = formatString("from-time") + " " + text;
+        else if (direction == -1)
+            text += " " + formatString("ago-time");
+        else
+            text = formatString("in-time") + " " + text;
+    }
+
+    else if (span.totalHours > 1) {
+        if (Math.round(span.totalHours) == 1)
+            text = formatString("one-hour");
+        else
+            text = Math.round(span.totalHours) + " " + formatString("hours");
+
+        if (direction == 0)
+            text = formatString("from-time") + " " + text;
+        else if (direction == -1)
+            text += " " + formatString("ago-time");
+        else
+            text = formatString("in-time") + " " + text;
+    }
+
+    else if (span.totalMinutes < 2) {
+        if (direction == 0)
+            text = formatString("now-time");
+        else if (direction == -1)
+            text = formatString("few-time-ago");
+        else
+            text = formatString("in-few-time");
+    }
+    else {
+        text = Math.round(span.totalMinutes) + " " + formatString("minutes");
+
+        if (direction == 0)
+            text = formatString("from-time") + " " + text;
+        else if (direction == -1)
+            text += " " + formatString("ago-time");
+        else
+            text = formatString("in-time") + " " + text;
+    }
+
+    return text;
 }
 
 export function replaceArgs(value: string, args: ObjectLike | { (key: string) : unknown }): string {

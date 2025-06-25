@@ -31,6 +31,7 @@
   "dependencies": {
     "@eusoft/webapp-core": "link:../webapp-core/src",
     "@eusoft/webapp-jsx": "link:../webapp-jsx/src",
-    "@eusoft/webapp-ui": "link:../webapp-ui/src"
+    "@eusoft/webapp-ui": "link:../webapp-ui/src",
+    "pikaday": "1.8.2"
   }
 }

@@ -3,7 +3,7 @@ import { Class, forModel } from "@eusoft/webapp-jsx";
 import { type IEditor, type IEditorOptions } from "../abstraction/IEditor";
 import { EditorBuilder } from "./EditorBuilder";
 import { CommitableEditor } from "./CommitableEditor";
-import { type LocalString, type ViewNode } from "../Types";
+import { type LocalString, type ViewNode } from "../types";
 import { createAction, ItemView, MaterialIcon, Popup } from "../components";
 import { type IAction, isCommitable, isValidable } from "../abstraction";
 import { formatText } from "../utils/Format";

@@ -1,5 +1,5 @@
 import { type IService } from "@eusoft/webapp-core";
-import { type ViewNode } from "../Types";
+import { type ViewNode } from "../types";
 
 export const OPERATION_MANAGER : symbol = Symbol.for("$operationManager");
 

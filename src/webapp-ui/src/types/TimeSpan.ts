@@ -1,4 +1,4 @@
-﻿import { replaceArgs } from "@eusoft/webapp-ui/utils/Format";
+﻿import { replaceArgs } from "../utils/Format";
 
 export enum TimePart {
     Milliseconds,
@@ -124,3 +124,5 @@ export class TimeSpan {
 
     ticks: number;
 }    
+
+

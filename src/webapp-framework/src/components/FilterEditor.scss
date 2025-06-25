@@ -1,10 +1,97 @@
 @use "../_common" as *;
+@use "@eusoft/webapp-ui/themes/_vars" as *;
 
 
 div.filter-editor {
     position: relative;
 
+
     > .search-bar {
+        border: solid 1px var(--border-color);
+        border-radius: 4px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 4px;
+
+        input {
+            border: none;
+            padding: 8px 4px;
+            background: none;
+            flex-grow: 1;
+
+            &:focus {
+                outline: none;
+            }
+        }
+
+        &:has(input:focus) {
+            border: solid 1px var(--primary-color);
+        }
+
+        button {
+            border: none;
+            background: none;
+            padding: 4px;
+            margin: 0;
+
+            i {
+                vertical-align: middle;
+            }
+
+            &.show-filters {
+                color: var(--primary-color);
+            }
+        }
+    }
+
+
+    > .active-filters {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: size(1);
+        margin-top: size(1);
+    }
+
+    .chip {
+        border: solid 1px #ccc;
+        border-radius: 10px;
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 4px;
+        border-color: var(--color);
+        background-color: color-mix(in srgb, var(--color) 5%, white 95%);
+        --color: #777;
+
+        .body {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 4px;
+
+            i {
+                color: var(--color);
+            }
+        }
+
+        button {
+            border: none;
+            background: none;
+            padding: 4px;
+            margin: 0;
+            border-radius: 100%;
+
+            i {
+                font-size: 16px;
+                width: 18px;
+                height: 16px;
+                line-height: 16px;
+                vertical-align: middle;
+            }
+        }
     }
 
     > .suggestions {
@@ -33,7 +120,7 @@ div.filter-editor {
                 background-color: #eee;
             }
 
-            .select{
+            .select {
                 color: var(--primary-color);
             }
 
@@ -44,12 +131,24 @@ div.filter-editor {
 
                 margin-right: size(1);
                 font-weight: bold;
-                color: var(--color);
             }
 
             i {
                 margin-right: 4px;
                 color: var(--color);
+            }
+        }
+    }
+
+
+    button {
+        cursor: pointer;
+        transition-duration: 0.3s;
+        border-radius: 4px;
+
+        @media #{$not-mobile-device} {
+            &:hover {
+                background: #ccc;
             }
         }
     }

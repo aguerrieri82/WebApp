@@ -1,5 +1,5 @@
 ﻿import { type CatalogTemplate, Component, type IComponentOptions } from "@eusoft/webapp-core";
-import { type ViewNode } from "../Types";
+import { type ViewNode } from "../types";
 import { Class, type JsxTypedComponent, forModel } from "@eusoft/webapp-jsx";
 import { Action } from "./Action";
 import { NodeView } from "./NodeView";

@@ -6,7 +6,7 @@ import { type IAsyncLoad } from "../abstraction/IAsyncLoad";
 import { CommitableEditor, type ICommitableEditorOptions } from "./CommitableEditor";
 import { Action, type Content, MaterialIcon } from "../components";
 import "./SinglePicker.scss";
-import { type ViewNode } from "../Types";
+import { type ViewNode } from "../types";
 
 interface ISinglePickerOptions<TItem, TValue> extends ICommitableEditorOptions<TValue, TValue> {
 
