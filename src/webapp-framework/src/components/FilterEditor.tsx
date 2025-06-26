@@ -5,8 +5,9 @@ import { formatText, HideOnClick, MaterialIcon, type IEditor, type IEditorOption
 import { Variable } from "@eusoft/webapp-ui/behavoirs/Variable";
 import { toKebabCase } from "@eusoft/webapp-core";
 import "./FilterEditor.scss"
-import type { ISearchItem, ISearchItemFormatter, ISearchItemProvider, ISearchQuery } from "../abstraction/ISearchItemProvider";
+import type { ISearchItem, ISearchItemFormatter, ISearchItemProvider, ISearchItemView, ISearchQuery, ITextValue } from "../abstraction/ISearchItemProvider";
 import { parseSearchQuery } from "../helpers/SmartSearch";
+import { Foreach } from "@eusoft/webapp-jsx";
 
 /**********************************/
 /*  Types  */
@@ -43,11 +44,13 @@ export interface IFilterField<
     TKey extends keyof TFilter & string,
     Multiple extends boolean,
     TValuesFilter,
-    TValue = TFilter[TKey]> {
+    TValue = TFilter[TKey],
+    TItemValue = ItemType<TValue, Multiple>> {
+    
 
     name: TKey;
 
-    valuesSource?: IItemsSource<unknown, ItemType<TValue, Multiple>, TValuesFilter>;
+    valuesSource?: IItemsSource<unknown, TItemValue, TValuesFilter>;
 
     valuesFilter?: (curFilter: TFilter, query: ISearchQuery) => TValuesFilter,
 
@@ -70,6 +73,8 @@ export interface IFilterField<
     priority?: number;
 
     minQueryLen?: number;
+
+    pickAsync?: () => Promise<ITextValue<TItemValue>>;
 
     keywords?: (string | RegExp)[];
 
@@ -175,6 +180,57 @@ export function itemsSearch<
         return [false, noLabelQuery]
     }
 
+    const createView = (value: TItemValue, text?: string, isSearchMode?: boolean) => {
+
+        const result = {
+            label: label,
+            icon: field.icon,
+            color: field.color,
+        } as ISearchItemView;
+
+        if (value === null || value === undefined) {
+            result.displayValue = isSearchMode ?
+                <span className="search">{text}</span> :
+                <span className="select">{formatText("field-select")}</span>
+        }
+        else
+            result.displayValue = text;
+
+        return result;
+    };
+
+    const apply = (filter: TFilter, value: TItemValue) => {
+
+        if (field.multipleValues) {
+
+            let curVal = filter[field.name] as TItemValue[];
+            if (!curVal)
+                curVal = [];
+            if (!curVal.includes(value))
+                curVal.push(value);
+            filter[field.name] = curVal as any;
+        }
+        else {
+            filter[field.name] = value as any;
+        }
+    }
+
+    const createItem = (item: Partial<ISearchItem<TFilter, TItemValue>>) => {
+
+        const result = {
+            apply,
+            fields: [field.name],
+            editAsync: field.pickAsync ? () => field.pickAsync() : undefined,
+            allowMultiple: field.multipleValues,
+            rank: field.priority ?? 0,
+            ...item,
+        } as ISearchItem<TFilter, TItemValue>;
+
+        result.view = result.createView(result.value);
+
+        return result;
+    }
+
 
     return {
 
@@ -190,20 +246,11 @@ export function itemsSearch<
                 const isSearchMode = hasExtraQuery && field.dataType == "text";
 
                 if (labelMatch && (isSearchMode || !hasExtraQuery) || query.full.length == 0) {
- 
-                    res.push({
-                        apply: undefined,
+
+                    res.push(createItem({
                         rank: -1,
-                        fields: [field.name],
-                        editAsync: editAsync ? () => editAsync(null) : undefined,
-                        view: {
-                            label: label,
-                            icon: field.icon,
-                            displayValue: isSearchMode ? 
-                                <span className="search">{noLabelQuery.full}</span> :
-                                <span className="select">{formatText("field-select")}</span>
-                        }
-                    });
+                        createView: (value, text) => createView(value, text ?? noLabelQuery.full, isSearchMode),
+                    }));
                 }
             }            
 
@@ -226,34 +273,10 @@ export function itemsSearch<
 
                     const value = field.valuesSource.getValue(item) as TItemValue;
 
-                    res.push({
+                    res.push(createItem({
                         value,
-                        editAsync: editAsync ? () => editAsync(value) : undefined,
-                        view: {
-                            displayValue: text,
-                            label: label,
-                            color: field.color,
-                            icon: field.valuesSource.getIcon?.(item) ?? field.icon
-                        },
-                        allowMultiple: field.multipleValues,
-                        fields: [field.name],
-                        rank: field.priority ?? 0,
-                        apply: filter => {
-
-                            if (field.multipleValues) {
-
-                                let curVal = filter[field.name] as TItemValue[];
-                                if (!curVal)
-                                    curVal = [];
-                                if (!curVal.includes(value))
-                                    curVal.push(value);
-                                filter[field.name] = curVal as any;
-                            }
-                            else {
-                                filter[field.name] = value as any;
-                            }
-                        }
-                    })
+                        createView: () => createView(value, text)
+                    }));
                 }
 
                 if (items) {
@@ -312,8 +335,8 @@ export class FilterEditor<TFilter, TItem>
                     </button>
                 </div>
                 <div className="suggestions" visible={m.showSuggestions}>
-                    {m.suggestions.forEach(i => <div on-click={() => m.addFilter(i)} className="suggestion">
-                        <Variable name="color" value={i.view.color} />
+                    {m.suggestions.forEach(i => <div on-click={() => m.addFilterAsync(i)} className="suggestion">
+                        <Variable name="color" value={i.view?.color} />
                         {i.view.icon}
                         {i.view.label && <label>{i.view.label}</label>}
                         <div>{i.view.displayValue}</div>
@@ -388,8 +411,15 @@ export class FilterEditor<TFilter, TItem>
         const newSug: ISearchItem<TFilter, unknown>[] = [];
 
         for (const res of results) {
-            if (res)
-                newSug.push(...Array.from(res));
+
+            if (!res)
+                return;
+
+            for (const item of res) {
+                if (!item.view)
+                    item.view = item.createView(item.value);
+                newSug.push(item);
+            }
         }
          
         newSug.sort((a, b) => a.rank - b.rank);
@@ -433,9 +463,20 @@ export class FilterEditor<TFilter, TItem>
 
     }
 
-    addFilter(item: ISearchItem<TFilter, unknown>) {
+    async addFilterAsync(item: ISearchItem<TFilter, unknown>) {
 
         this.activeFilters ??= [];
+
+        if (item.value === null || item.value === undefined) {
+
+            item = { ...item };
+
+            const edit = await item.editAsync?.(item.value);
+            if (!edit)
+                return;
+            item.value = edit.value;
+            item.view = item.createView(edit.value, edit.text);
+        }
 
         if (!item.allowMultiple) {
             for (const field of item.fields) {

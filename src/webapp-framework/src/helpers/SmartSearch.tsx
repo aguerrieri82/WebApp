@@ -122,12 +122,12 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                 filter[options.fromField] = value.from as any;
                 filter[options.toField] = value.to as any;
             },
-            view: {
+            createView: () => ({
                 displayValue: text,
                 label: curLabel,
                 icon,
                 color: options.color
-            }
+            })
         } satisfies ISearchItem<TFilter, IDateRange>;
     }
 
@@ -293,12 +293,12 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                     apply: (filter, value) => {
                         filter[options.fromField] = value?.from as any;
                     },
-                    view: {
+                    createView: ()=> ({
                         displayValue: <>{rangeParts.fromLabel ?? "" + " "}<span className="select">{formatText("field-select")}</span></>,
                         label: curLabel,
                         icon,
                         color: options.color
-                    }
+                    })
                 })
             }
             
@@ -310,12 +310,12 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                     apply: (filter, value) => {
                         filter[options.toField] = value?.to as any;
                     },
-                    view: {
+                    createView: () => ({
                         displayValue: <>{rangeParts.toLabel + " "}<span className="select">{formatText("field-select")}</span></>,
                         label: curLabel,
                         icon,
                         color: options.color
-                    }
+                    })
                 })
             }
 
@@ -328,18 +328,24 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                     const trans = formatText(keyword) as string;
                     if (!query.parts.some(a => trans.toLowerCase().startsWith(a)))
                         continue;
+
+                    let range: IDateRange;
+
                     if (keyword == "today") {
-                        res.push(createItem({
+                        range = {
                             from: dayStart(now()),
                             to: dayEnd(now()),
-                        }));
+                        };
                     }
                     if (keyword == "yesterday") {
-                        res.push(createItem({
+                        range = {
                             from: dayStart(dateAdd(now(), TimeSpan.fromDays(-1))),
                             to: dayEnd(dateAdd(now(), TimeSpan.fromDays(-1))),
-                        }));
+                        };
                     }
+
+                    if (range)
+                        res.push(createItem(range));
                 }
             }
 

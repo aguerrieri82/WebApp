@@ -15,9 +15,16 @@ export interface ISearchItemFormatter<TValue> {
     formatValue(value: TValue): ISearchItemView;
 }
 
+export interface ITextValue<TValue> {
+    text: string;
+    value: TValue;
+}
+
 export interface ISearchItem<TFilter, TValue> {
 
-    view: ISearchItemView;
+    createView: (value: TValue, text?: string) => ISearchItemView;
+
+    view?: ISearchItemView;
 
     rank?: number;
 
@@ -27,7 +34,7 @@ export interface ISearchItem<TFilter, TValue> {
 
     apply?(filter: TFilter, value?: TValue): void;
 
-    editAsync?(): Promise<TValue>;
+    editAsync?(value?: TValue): Promise<ITextValue<TValue>>;
 
     fields?: (keyof TFilter & string)[];
 }
