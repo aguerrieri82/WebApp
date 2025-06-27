@@ -1,12 +1,13 @@
-import { type TemplateMap, type BindExpression } from "@eusoft/webapp-core";
+import { type TemplateMap, type BindExpression, type ComponentStyle } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "./EditorBuilder";
 import { type IItemsSource } from "../abstraction/IItemsSource";
 import { type IAsyncLoad } from "../abstraction/IAsyncLoad";
 import { CommitableEditor, type ICommitableEditorOptions } from "./CommitableEditor";
-import { Action, type Content, MaterialIcon } from "../components";
+import { Action, type Content, type IPopUpAction, MaterialIcon, Popup } from "../components";
+import { type LocalString, type ViewNode } from "../types";
+import { formatText } from "../utils/Format";
 import "./SinglePicker.scss";
-import { type ViewNode } from "../types";
 
 interface ISinglePickerOptions<TItem, TValue> extends ICommitableEditorOptions<TValue, TValue> {
 
@@ -15,6 +16,55 @@ interface ISinglePickerOptions<TItem, TValue> extends ICommitableEditorOptions<T
     pickItemAsync: () => Promise<TItem>;
 
 }
+
+interface IPickItemOptions<T> {
+    itemsSource: IItemsSource<unknown, T, unknown>;
+    value?: T;
+    title?: LocalString;
+    cancelLabel?: LocalString;
+    canCancel?: boolean;
+    style?: ComponentStyle;
+}
+
+export async function pickItemAsync<T>(options: IPickItemOptions<T>) : Promise<T> {
+
+    const items = await options.itemsSource.getItemsAsync();
+
+    let value = options.value;
+
+    const actions: IPopUpAction[] = [];
+    if (options.canCancel !== false)
+        actions.push({
+            name: "cancel",
+            text: "cancel",
+            executeAsync: async () => true
+        })
+
+    const popup = new Popup({
+        title: formatText(options.title ?? "select"),
+        style: options.style,
+        name: "picker",
+        actions: actions,
+        body: <>
+            {items.forEach(a => <div on-click={() => {
+                value = options.itemsSource.getValue(a);
+                popup.close();
+            }}>
+                <Class name="selected" condition={options.itemsSource.getValue(a) == value} />
+                <MaterialIcon name="check" />
+                <span>{options.itemsSource.getText(a)}</span>
+            </div>)}
+        </>
+    });
+
+    const res = await popup.showAsync();
+    if (res == "cancel")
+        return;
+
+    return value;
+}
+
+
 
 export const SinglePickerTemplates: TemplateMap<SinglePicker<unknown, unknown>> = {
 

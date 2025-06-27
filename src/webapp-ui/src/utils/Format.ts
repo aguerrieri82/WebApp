@@ -1,5 +1,5 @@
-import { type ITemplate, Services, toKebabCase } from "@eusoft/webapp-core";
-import { TimeSpan, type LocalString } from "../types";
+import { getTypeName, type ITemplate, Services, toKebabCase } from "@eusoft/webapp-core";
+import { TimeSpan, type EnumValue, type LocalString } from "../types";
 import { type ILocalization, LOCALIZATION } from "../abstraction";
 
 export function formatTextSimple(text: LocalString, ...args: any[]) {
@@ -23,6 +23,11 @@ export function formatTextSimple(text: LocalString, ...args: any[]) {
     return text;
 }
 
+export function hasLocal(label: string) {
+    const local = Services[LOCALIZATION] as ILocalization;
+    return local.has(label);
+}
+
 export function formatString(text: LocalString, ...args: any[]): string {
     return formatText(text, ...args) as string;
 }
@@ -41,9 +46,11 @@ export function formatText(text: LocalString, ...args: any[]): string | ITemplat
     }); 
 }
 
-export function formatEnum<T extends object, TKey extends T[keyof T]>(enumType: T, value: TKey) {
+export function formatEnum<TEnum extends object>(value: EnumValue<TEnum> & string, prefix = "enum") {
 
-    return formatText(toKebabCase(enumType[value as string|number] as string));
+    const key1 = toKebabCase(value);
+    const key2 = prefix + "-" + key1;
+    return formatText(hasLocal(key2) ? key2 : key1);
 }
 
 export function formatCurrency(value: number, symbol = "€") {

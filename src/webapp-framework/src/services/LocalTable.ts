@@ -17,6 +17,14 @@ class LocalTable implements ILocalization {
         Object.assign(this._tables[options.lang], table);
     }
 
+    has(id: string) {
+        if (this.language) {
+            const table = this._tables[this.language];
+            return table && id in table;
+        }
+        return false
+    }
+
     getContent(id: string): LocalizationContent {
 
         if (this.language) {

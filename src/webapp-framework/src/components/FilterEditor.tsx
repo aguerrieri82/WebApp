@@ -6,7 +6,7 @@ import { Variable } from "@eusoft/webapp-ui/behavoirs/Variable";
 import { toKebabCase } from "@eusoft/webapp-core";
 import "./FilterEditor.scss"
 import type { ISearchItem, ISearchItemFormatter, ISearchItemProvider, ISearchItemView, ISearchQuery, ITextValue } from "../abstraction/ISearchItemProvider";
-import { parseSearchQuery } from "../helpers/SmartSearch";
+import { matchLabel, parseSearchQuery } from "../helpers/SmartSearch";
 import { Foreach } from "@eusoft/webapp-jsx";
 
 /**********************************/
@@ -136,50 +136,6 @@ export function itemsSearch<
 
     const modeLabelOnly = field.searchMode & FieldSearchMode.LabelOnly;
 
-
-    const matchLabel = (query: ISearchQuery) : [boolean, ISearchQuery] => {
-
-        const noLabelQuery = {
-            parts: [],
-            full: ""
-        } as ISearchQuery;
-
-        if (query.parts.length == 0)
-            return [false, noLabelQuery]
- 
-        for (const match of matchList) {
-
-            if (typeof match == "string") {
-
-                const matchParts = parseSearchQuery(match).parts;
-
-                let isMatch = false;
-
-                for (const queryPart of query.parts) {
-
-                    if (matchParts.some(a => a.startsWith(queryPart))) {
-
-                        if (noLabelQuery.parts.length == 0)
-                            isMatch = true;
-                    }                        
-                    else
-                        noLabelQuery.parts.push(queryPart);
-                }
-
-                noLabelQuery.full = noLabelQuery.parts.join(" ");
-
-                return [isMatch, noLabelQuery]
-            }
-            else {
-
-                if (query.full.match(match))
-                    return [true, noLabelQuery]
-            }
-        }
-
-        return [false, noLabelQuery]
-    }
-
     const createView = (value: TItemValue, text?: string, isSearchMode?: boolean) => {
 
         const result = {
@@ -238,7 +194,7 @@ export function itemsSearch<
        
             const res: ISearchItem<TFilter, TItemValue>[] = [];
 
-            const [labelMatch, noLabelQuery]  = matchLabel(query);
+            const [labelMatch, noLabelQuery] = matchLabel(query, matchList);
 
             if (modeLabelOnly) {
 

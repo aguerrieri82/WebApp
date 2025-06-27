@@ -7,3 +7,5 @@ export type LocalString = string | { (): string }
 export type ViewNode = LocalString | ITemplateProvider | JSX.Element | ViewNode[];
 
 export type LoadResult = boolean;
+
+export type EnumValue<T> = T[keyof T];

@@ -4,3 +4,27 @@
 
 
 }
+
+.popup {
+    &.picker {
+        main {
+            > * {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                padding: 4px 0;
+                gap: 4px;
+
+                i {
+                    visibility: hidden;
+                }
+
+                &.selected {
+                    i {
+                        visibility: unset;
+                    }
+                }
+            }
+        }
+    }
+}

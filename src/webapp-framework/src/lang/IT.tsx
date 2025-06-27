@@ -10,6 +10,7 @@ localTable.add({
     "in-few-time": "tra poco",
     "few-time-ago": "pochi istanti fa",
     "now-time": "ora",
-    "one-hour": "un'ora"
+    "one-hour": "un'ora",
+    "load-more": "Carica altri {0}"
 }, { lang: "IT" })
 

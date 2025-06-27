@@ -1,4 +1,4 @@
-import { Content, type IAction, type IContent, type IContentInstance, type IContentOptions, type IEditor, type IItemsSource, type IItemViewOptions, ItemView, ListView, type LocalString, MaterialIcon, useOperation, type ViewNode } from "@eusoft/webapp-ui";
+import { Action, Content, formatText, type IAction, type IContent, type IContentInstance, type IContentOptions, type IEditor, type IItemsSource, type IItemViewOptions, ItemView, ListView, type LocalString, MaterialIcon, useOperation, type ViewNode } from "@eusoft/webapp-ui";
 import { type IFilterField } from "../abstraction/IFilterEditor";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import router from "../services/Router";
@@ -6,7 +6,7 @@ import { userInteraction } from "../services/UserInteraction";
 import "./ItemListContent.scss"
 import { cleanProxy } from "@eusoft/webapp-core/Expression";
 import { ContentBuilder } from "./Builder";
-import { isClass } from "@eusoft/webapp-core";
+import { isClass, type ComponentStyle } from "@eusoft/webapp-core";
 
 export interface IItemActionContext<TItem> {
     target: TItem;
@@ -31,6 +31,8 @@ export type ListSelectionMode = "none" | "single" | "multiple";
 
 export type ListEditMode = "modal" | "page" | "auto";
 
+export type ListPaginationMode = "manual" | "auto" | "none";
+
 export interface IItemListOptions<TItem, TFilter> extends IContentOptions<ObjectLike> {
 
     canAdd?: boolean | { (): Promise<boolean> | boolean };
@@ -38,6 +40,8 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<Object
     canEdit?: boolean | { (item?: TItem): Promise<boolean> | boolean };
 
     canDelete?: boolean | { (item: TItem): Promise<boolean> | boolean };
+
+    itemStyle: (item: TItem) => ComponentStyle;
 
     canOpen?: boolean;
 
@@ -47,13 +51,13 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<Object
 
     deleteItemAsync?: (item: TItem) => Promise<boolean>;
 
-    confirmDeleteMessage?: ViewNode;
+    confirmDeleteMessage?: LocalString;
 
     addLabel?: ViewNode;
 
     itemsSource: IItemsSource<TItem, unknown, unknown>;
 
-    itemActions?: (item: TItem, result: IAction<TItem, IItemActionContext<TItem>>[]) => IAction<TItem, IItemActionContext<TItem>>[],
+    itemActions?: (item: TItem, result: IAction<TItem, IItemActionContext<TItem>>[]) => void,
 
     columns: IListColumn<TItem, unknown>[];
 
@@ -78,6 +82,8 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<Object
     emptyView?: ViewNode;
 
     maxItemActions?: number;
+
+    paginationMode?: ListPaginationMode;
 }
 
 export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemListOptions<TItem, TFilter>> {
@@ -105,6 +111,11 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
                 <ListView createItemView={item => m.createItemView(item, m.getItemActions(item))}>
                     {m.items}
                 </ListView>
+                {(m.paginationMode == "manual" && m.canLoadMore) &&
+                    <Action style="text" name="load-more" onExecuteAsync={() => m.loadNextPageAsync()}>
+                        {formatText("load-more", this.pageSize.toString())}
+                    </Action>
+                }
             </div>),
 
             ...options
@@ -115,11 +126,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
         const result = [...this.builtInActions];
 
-        if (Array.isArray(this.itemActions))
-            result.push(... this.itemActions);
-
-        else if (this.itemActions)
-            result.push(...this.itemActions(item, []));
+        this.itemActions(item, result);
 
         let i = 0;
         for (const action of result) { 
@@ -221,6 +228,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
             evidence: evidence ? this.getColumnContent(item, evidence) : undefined,
             icon: this.itemsSource.getIcon ? this.itemsSource.getIcon(item) : undefined,
             actions: actions,
+            style: this.itemStyle(item),
             onClick: () => {
                 if (this.canOpen)
                     this.openItem(item);
@@ -236,9 +244,16 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
     async refreshAsync() {
 
-        const items = await this.itemsSource.getItemsAsync(this.prepareFilter(this._curFilter));
+        this.items = [];
+        await this.loadNextPageAsync();
+    }
 
-        this.items = items;
+
+    async loadNextPageAsync() {
+        const newItems = await this.itemsSource.getItemsAsync(
+            this.prepareFilter(this._curFilter, this.items.length, this.pageSize));
+        this.items.push(...newItems);
+        this.canLoadMore = newItems.length >= this.pageSize;
     }
 
     async editItemAsync(item: TItem) {
@@ -283,7 +298,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
         return useOperation(async () => {
 
             if (this.confirmDeleteMessage) {
-                if (!await userInteraction.confirmAsync(this.confirmDeleteMessage, "confirm"))
+                if (!await userInteraction.confirmAsync(formatText(this.confirmDeleteMessage), "confirm"))
                     return;
             }
 
@@ -316,6 +331,14 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
         return editor;
     }
 
+    itemStyle(item: TItem) {
+        return undefined;
+    }
+
+    itemActions(item: TItem, result: IAction<TItem, IItemActionContext<TItem>>[]) {
+
+    }
+
     addLabel?: LocalString;
 
     builtInActions: IAction<TItem, IItemActionContext<TItem>>[];
@@ -328,7 +351,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
     canOpen: boolean;
 
-    confirmDeleteMessage: ViewNode;
+    confirmDeleteMessage: LocalString;
 
     itemsSource: IItemsSource<TItem, unknown, unknown>;
 
@@ -346,7 +369,11 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
     itemView?: Partial<IItemViewOptions<TItem>> | { (item: TItem): Partial<IItemViewOptions<TItem>> };
 
-    itemActions: (item: TItem, result: IAction<TItem, IItemActionContext<TItem>>[]) => IAction<TItem, IItemActionContext<TItem>>[];
+    pageSize: number;
+
+    paginationMode?: ListPaginationMode;
+
+    canLoadMore: boolean;
 
     filterEditor?: () => IEditor<TFilter> | Class<IEditor<TFilter>>;
 

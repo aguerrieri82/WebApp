@@ -9,5 +9,7 @@ export interface ILocalization extends IService<typeof LOCALIZATION> {
 
     getContent(id: string): LocalizationContent;
 
+    has(Id: string): boolean;
+
     language: string;
 }

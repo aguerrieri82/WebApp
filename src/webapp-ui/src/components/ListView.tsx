@@ -8,6 +8,7 @@ export interface IListViewOptions<TItem> extends IComponentOptions {
     content: TItem[];
 
     createItemView: (item: TItem, index?: number) => ViewNode;
+
 }
 
 export const ListViewTemplates: TemplateMap<ListView<unknown>> = {

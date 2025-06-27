@@ -2,23 +2,53 @@ import { MaterialIcon, type LocalString, formatText,  dateAdd, dayEnd, dayStart,
 import type { ISearchItem, ISearchItemProvider, ISearchQuery } from "../abstraction/ISearchItemProvider";
 import { localTable } from "../services";
 
-export interface IDateRange {
-    from?: Date;
-    to?: Date;
+
+
+export function matchLabel(query: ISearchQuery, matchList: (string | RegExp)[]): [boolean, ISearchQuery]  {
+
+    const noLabelQuery = {
+        parts: [],
+        full: ""
+    } as ISearchQuery;
+
+    if (query.parts.length == 0)
+        return [false, noLabelQuery]
+
+    for (const match of matchList) {
+
+        if (typeof match == "string") {
+
+            const matchParts = parseSearchQuery(match).parts;
+
+            let isMatch = false;
+
+            for (const queryPart of query.parts) {
+
+                if (matchParts.some(a => a.startsWith(queryPart))) {
+
+                    if (noLabelQuery.parts.length == 0)
+                        isMatch = true;
+                }
+                else
+                    noLabelQuery.parts.push(queryPart);
+            }
+
+            noLabelQuery.full = noLabelQuery.parts.join(" ");
+
+            return [isMatch, noLabelQuery]
+        }
+        else {
+
+            if (query.full.match(match))
+                return [true, noLabelQuery]
+        }
+    }
+
+    return [false, noLabelQuery]
 }
 
-/**********************************/
-/*  dateRangeSearch */
-/**********************************/
 
-interface IDatePart {
-    keyword: string;
-    value: number;
-    rank?: number;
-}
-
-
-export function indexOfStartsWith(list: string[], value: string)  {
+export function indexOfStartsWith(list: string[], value: string) {
 
     return indexOf(list, value, (a, b) => a.toLowerCase().startsWith(b.toLowerCase()));
 }
@@ -27,7 +57,7 @@ export function indexOf(
     list: string[],
     value: string,
     compareFunc: (a: string, b: string) => boolean
-): [number, number]  {
+): [number, number] {
     let foundIndex = -1;
     let curLeftChar = -1;
 
@@ -45,6 +75,22 @@ export function indexOf(
 
     return [foundIndex, rank];
 }
+
+
+/**********************************/
+/*  dateRangeSearch */
+/**********************************/
+export interface IDateRange {
+    from?: Date;
+    to?: Date;
+}
+
+interface IDatePart {
+    keyword: string;
+    value: number;
+    rank?: number;
+}
+
 
 interface IDateRangeSearchOptions<TFilter> {
 
@@ -359,7 +405,33 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
 /*  numberSearch */
 /**********************************/
 
-export function numberSearch<TFilter>(field: KeyOfType<TFilter, number>) {
+interface INumberRange {
+
+    min?: number;
+
+    max?: number;
+
+    name?: LocalString;
+}
+
+interface INumberRangeSearchOptions<TFilter> {
+
+    minField: KeyOfType<TFilter, number>;
+
+    maxField: KeyOfType<TFilter, number>;
+
+    label?: LocalString;
+
+    color?: string;
+
+    rank?: number;
+
+    staticItems?: INumberRange[];
+
+    keywords?: (string | RegExp)[];
+}
+
+export function numberRangeSearch<TFilter>(options: INumberRangeSearchOptions<TFilter>) {
     return {
 
 
