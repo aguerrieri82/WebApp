@@ -1,4 +1,4 @@
-import { MaterialIcon, type LocalString, formatText,  dateAdd, dayEnd, dayStart, now, TimeSpan } from "@eusoft/webapp-ui";
+import { MaterialIcon, type LocalString, formatText,  dateAdd, dayEnd, dayStart, now, TimeSpan, formatString } from "@eusoft/webapp-ui";
 import type { ISearchItem, ISearchItemProvider, ISearchQuery } from "../abstraction/ISearchItemProvider";
 import { localTable } from "../services";
 
@@ -432,10 +432,44 @@ interface INumberRangeSearchOptions<TFilter> {
 }
 
 export function numberRangeSearch<TFilter>(options: INumberRangeSearchOptions<TFilter>) {
+
+    const createItem = () => {
+        return {
+
+        } as ISearchItemProvider<TFilter, number>;
+    }
+
     return {
 
-
         searchAsync(query, curFilter, curItems) {
+
+            const res = [] as ISearchItemProvider<TFilter, number>[];
+
+            if (options.staticItems) {
+                res.push({
+                    ...createItem()
+                });
+            }
+
+            const curLabel = formatString(options.label);
+            const [macthLabel, noLabelQuery] = matchLabel(query, [curLabel]);
+
+            const nums: number[] = [];
+
+            for (const part of noLabelQuery.parts) {
+                const num = parseInt(part);
+                if (!isNaN(num))
+                    nums.push(num);
+            }
+
+            if (nums.length == 1) {
+                res.push({
+                    ...createItem(),                    
+                });
+                res.push({
+                    ...createItem()
+                });
+            }
 
         }
 
