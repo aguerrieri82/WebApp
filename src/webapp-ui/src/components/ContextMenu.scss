@@ -34,7 +34,7 @@
         width: 100%;
 
         &:hover {
-            background-color: var(--border-color);
+            background: var(--item-hover-color);
         }
 
         .icon {

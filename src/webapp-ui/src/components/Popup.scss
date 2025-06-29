@@ -8,7 +8,7 @@
     right: 0;
     background-color: rgba(0,0,0,0.4);
     transition-property: opacity;
-    transition-duration: 0.3s;
+    transition-duration: var(--duration-normal);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -37,7 +37,7 @@
 
     > .message {
         background-color: var(--surface-color);
-        transition-duration: 0.3s;
+        transition-duration: var(--duration-normal);
         border-radius: 5px;
         box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
         min-width: 200px;

@@ -20,6 +20,8 @@ export interface IMaterialIconOptions<TCat extends MaterialIconCategory> {
 
     style?: ComponentStyle;
 
+    color?: string;
+
     name: TCat extends 'icons' ? MaterialIconName : MaterialSymbolName;
 }
 
@@ -35,7 +37,7 @@ export function MaterialIcon<TCat extends MaterialIconCategory>(options: IMateri
 
     const baseClass = options.category == "icons" ? "material-icons-" : "material-symbols-";
 
-    return <i className={buildStyle("icon", baseClass + (options.variant ?? "outlined"), options.style)}>
+    return <i style-color={options.color} className={buildStyle("icon", baseClass + (options.variant ?? "outlined"), options.style)}>
         {options.name}
     </i>
 }

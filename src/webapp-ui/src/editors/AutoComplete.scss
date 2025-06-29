@@ -1,25 +1,125 @@
 @use "index" as *;
 
-.array-editor {
 
-    > ul.items {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        margin-bottom: size(1);
+div.auto-complete {
+    position: relative;
+
+    &.has-selection {
     }
 
-    &.round-item {
+    > .search-bar {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 1em;
 
-        > ul.items {
-            gap: size(1);
-            display: flex;
-            flex-direction: column;
+        > .edit-view {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            min-height: 1em;
+
+            > * {
+                position: absolute;
+                top: 0;
+                width: 100%;
+
+                &.selected {
+                    pointer-events: none;
+                    user-select: none;
+                    background: none;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: 4px;
+                }
+            }
+
+            input {
+                border: none;
+                background: none;
+                opacity: 0;
+
+                &:focus {
+                    outline: none;
+                    opacity: 1;
+                }
+            }
+
+            &:has(input:focus) {
+
+                .selected {
+                    display: none;
+                }
+            }
         }
 
-        .item-view {
-            background: var(--item-background);
-            border-radius: 4px;
+
+
+
+        button {
+            border: none;
+            background: none;
+            margin: 0;
+
+            i {
+                vertical-align: middle;
+            }
+
+            &.show-filters {
+                color: var(--primary-color);
+            }
+        }
+    }
+
+
+
+    > .suggestions {
+        position: absolute;
+        z-index: 100;
+        background-color: var(--surface-color);
+        box-sizing: border-box;
+        width: 100%;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        padding: size(1) size(1);
+        max-height: 200px;
+        min-height: 50px;
+        overflow-y: scroll;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        top: calc(1em + 8px);
+        scroll-snap-type: y mandatory;
+
+
+        > * {
+            display: flex;
+            align-items: center;
+            padding: size(1) size(1);
+            cursor: pointer;
+            transition-duration: var(--duration-normal);
+            flex-direction: row;
+            align-items: center;
+            gap: 4px;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+
+            &:hover {
+                background: var(--item-hover-color);
+            }
+        }
+    }
+
+
+    button {
+        cursor: pointer;
+        transition-duration: var(--duration-normal);
+        border-radius: 4px;
+
+        @media #{$not-mobile-device} {
+            &:hover {
+                background: var(--item-hover-color);
+            }
         }
     }
 }

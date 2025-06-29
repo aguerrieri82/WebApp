@@ -24,7 +24,7 @@ div.text-filter-editor {
         }
 
         &:has(input:focus) {
-            border: solid 1px var(--primary-color);
+            border: solid 1px var(--border-color-focus);
         }
 
         button {
@@ -45,12 +45,12 @@ div.text-filter-editor {
 
     button {
         cursor: pointer;
-        transition-duration: 0.3s;
+        transition-duration: var(--duration-normal);
         border-radius: 4px;
 
         @media #{$not-mobile-device} {
             &:hover {
-                background: #ccc;
+                background: var(--item-hover-color);
             }
         }
     }

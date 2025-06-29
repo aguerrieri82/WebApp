@@ -26,7 +26,7 @@ div.filter-editor {
         }
 
         &:has(input:focus) {
-            border: solid 1px var(--primary-color);
+            border: solid 1px var(--border-color-focus);
         }
 
         button {
@@ -109,15 +109,16 @@ div.filter-editor {
         flex-direction: column;
         gap: 4px;
 
+
         > * {
             display: flex;
             align-items: center;
             padding: size(1) size(1);
             cursor: pointer;
-            transition-duration: 0.3s;
+            transition-duration: var(--duration-normal);
 
             &:hover {
-                background-color: #eee;
+                background: var(--item-hover-color);
             }
 
             .select {
@@ -156,7 +157,7 @@ div.filter-editor {
 
     button {
         cursor: pointer;
-        transition-duration: 0.3s;
+        transition-duration: var(--duration-normal);
         border-radius: 4px;
 
         @media #{$not-mobile-device} {

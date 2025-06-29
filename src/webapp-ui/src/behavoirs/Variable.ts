@@ -17,7 +17,7 @@ export class Variable extends Behavoir<IVariableOptions>{
             const propName = "--" + this.name;
 
             if (value === undefined || value === null)
-                ctx.element.parentElement.style.removeProperty(propName);
+                ctx.element.parentElement?.style.removeProperty(propName);
             else
                 ctx.element.parentElement.style.setProperty(propName, this.value);
         }
