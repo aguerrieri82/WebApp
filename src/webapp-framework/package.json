@@ -19,6 +19,7 @@
   "keywords": [],
   "author": "Andrea Guerrieri",
   "devDependencies": {
+    "@types/pikaday": "1.7.9",
     "@eusoft/webapp-compiler-rollup": "link:..\\..\\dist\\webapp-compiler-rollup",
     "@typescript-eslint/parser": "8.33.0",
     "typescript": "5.8.3",

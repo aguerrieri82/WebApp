@@ -13,7 +13,8 @@
     "experimentalDecorators": true,
     "noImplicitOverride": true,
     "forceConsistentCasingInFileNames": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "allowSyntheticDefaultImports": true
 
   },
   "include": ["src", "src/env.d.ts"]

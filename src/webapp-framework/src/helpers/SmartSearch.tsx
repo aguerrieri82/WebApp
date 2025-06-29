@@ -1,6 +1,8 @@
 import { MaterialIcon, type LocalString, formatText, dateAdd, dayEnd, dayStart, now, TimeSpan, formatString, type ViewNode } from "@eusoft/webapp-ui";
-import type { ISearchItem, ISearchItemProvider, ISearchItemView, ISearchQuery } from "../abstraction/ISearchItemProvider";
+import type { ISearchItem, ISearchItemProvider, ISearchItemView, ISearchQuery, ITextValue } from "../abstraction/ISearchItemProvider";
 import { localTable } from "../services";
+import { popupEditAsync } from "./Editor";
+import { CalendarEditor } from "../components/CalendarEditor";
 
 export function matchText(query: ISearchQuery, matchList: (string | RegExp)[]): [boolean, ISearchQuery] {
 
@@ -135,9 +137,25 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
 
     }
 
-    const createItem = (range: IDateRange, keyword?: string) => {
 
-        let text = keyword;
+    const pickDateAsync = async (value: Date) => {
+
+        const res = await popupEditAsync(new CalendarEditor(), value, {
+            title: "select-date"
+        });
+        if (!res)
+            return;
+
+        return {
+            value: {
+                from: res,
+                to: res
+            }
+        } as ITextValue<IDateRange>
+    }
+
+    const createView = (range: IDateRange, text?: string) => {
+
         if (!text) {
 
             const viewRange = { ...range }
@@ -158,20 +176,29 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
         }
 
         return {
+            displayValue: text,
+            label: curLabel,
+            icon,
+            color: options.color
+        }
+    }
+
+
+    const createItem = (range: IDateRange, text?: string) => {
+
+        return {
             value: range,
             fields: [options.fromField, options.toField],
             rank: options.rank ?? 0,
             allowMultiple: false,
+
             apply: (filter, value) => {
                 filter[options.fromField] = value.from as any;
                 filter[options.toField] = value.to as any;
             },
-            createView: () => ({
-                displayValue: text,
-                label: curLabel,
-                icon,
-                color: options.color
-            })
+
+            createView: v => createView(v, text)
+
         } satisfies ISearchItem<TFilter, IDateRange>;
     }
 
@@ -334,15 +361,24 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                     rank: -1,
                     fields: [options.fromField],
                     allowMultiple: false,
+                    editAsync: v => pickDateAsync(v?.from),
                     apply: (filter, value) => {
                         filter[options.fromField] = value?.from as any;
                     },
-                    createView: () => ({
-                        displayValue: <>{rangeParts.fromLabel ?? "" + " "}<span className="select">{formatText("field-select")}</span></>,
-                        label: curLabel,
-                        icon,
-                        color: options.color
-                    })
+                    createView: v => {
+
+                        if (!v?.from)
+                            return {
+                                displayValue: <>
+                                    {rangeParts.fromLabel ?? "" + " "}
+                                    <span className="select">{formatText("field-select")}</span>
+                                </>,
+                                label: curLabel,
+                                icon,
+                                color: options.color
+                            }
+                        return createView(v);
+                    }
                 })
             }
 
@@ -354,12 +390,20 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                     apply: (filter, value) => {
                         filter[options.toField] = value?.to as any;
                     },
-                    createView: () => ({
-                        displayValue: <>{rangeParts.toLabel + " "}<span className="select">{formatText("field-select")}</span></>,
-                        label: curLabel,
-                        icon,
-                        color: options.color
-                    })
+                    editAsync: v => pickDateAsync(v?.to),
+                    createView: v => {
+                        if (!v?.to)
+                            return {
+                                displayValue: <>{
+                                    rangeParts.toLabel + " "}
+                                    <span className="select">{formatText("field-select")}</span>
+                                </>,
+                                label: curLabel,
+                                icon,
+                                color: options.color
+                            }
+                        return createView(v);
+                    }
                 })
             }
 
@@ -418,7 +462,7 @@ interface INumberRangeSearchOptions<TFilter> {
     maxField: KeyOfType<TFilter, number>;
 
     label?: LocalString;
-     
+
     color?: string;
 
     rank?: number;
@@ -456,7 +500,7 @@ export function numberRangeSearch<TFilter>(options: INumberRangeSearchOptions<TF
             canSelect: !!value,
 
             createView: (value, text) => {
-                let displayValue : ViewNode;
+                let displayValue: ViewNode;
 
                 if (text)
                     displayValue = text;
@@ -533,7 +577,7 @@ export function numberRangeSearch<TFilter>(options: INumberRangeSearchOptions<TF
                         res.push({
                             ...createItem(item),
                         });
-                    }              
+                    }
                 }
             }
 
@@ -559,7 +603,7 @@ export interface IMatchField<TItem, TValue> {
 
     get(item: TItem): TValue;
 
-    format(value: TValue) : ISearchItemView
+    format(value: TValue): ISearchItemView
 }
 
 
@@ -579,7 +623,7 @@ export interface IQuerySearchOptions<TFilter, TItem, TId> {
 }
 
 export interface IQuerySearchProvider<TFilter, TItem> extends ISearchItemProvider<TFilter, string> {
-    
+
 }
 
 export function querySearch<TFilter, TItem, TId>(options: IQuerySearchOptions<TFilter, TItem, TId>) {
@@ -617,7 +661,7 @@ export function querySearch<TFilter, TItem, TId>(options: IQuerySearchOptions<TF
 
         async searchAsync(query, curFilter, curItems) {
 
-            const res = [] as ISearchItem<TFilter, TId[]|string>[];
+            const res = [] as ISearchItem<TFilter, TId[] | string>[];
 
             if (!options.minLength || query.full.length >= options.minLength) {
 
@@ -638,7 +682,7 @@ export function querySearch<TFilter, TItem, TId>(options: IQuerySearchOptions<TF
 
                 if (options.match) {
 
-                    items = await options.executeAsync(query.full); 
+                    items = await options.executeAsync(query.full);
 
                     for (const match of options.match) {
 

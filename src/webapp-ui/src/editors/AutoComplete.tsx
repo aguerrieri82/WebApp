@@ -3,11 +3,10 @@ import { Class, forModel } from "@eusoft/webapp-jsx";
 import type { IEditorOptions, IItemsSource, ValueChangedReason } from "../abstraction";
 import { Editor } from "./Editor";
 import { EditorBuilder } from "./EditorBuilder";
-import "./AutoComplete.scss";
 import type { ViewNode } from "../types";
 import { MaterialIcon } from "../components/Icon";
-import { Variable } from "../behavoirs/Variable";
 import { HideOnClick } from "../behavoirs/HideOnClick";
+import "./AutoComplete.scss";
 
 interface IAutoCompleteOptions<TItem, TValue, TFilter> extends IEditorOptions<TValue> {
 
