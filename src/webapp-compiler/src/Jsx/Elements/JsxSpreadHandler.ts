@@ -9,9 +9,7 @@ export function JsxSpreadHandler(ctx: JsxParseContext, stage: "enter", path: Nod
     if (ctx.curElement.name != "t:component")
         return ctx.error(path, "Spread operator is supported only in components");
 
-    path.get("argument").visit();
-
-    ctx.createAttribute("t:options", path.get("argument").toString(), ctx.curElement);
+    ctx.curAttribute = ctx.createAttribute("t:options", undefined, ctx.curElement);
 
     return true;
 }

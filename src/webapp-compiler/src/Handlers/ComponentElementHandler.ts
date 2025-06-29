@@ -42,8 +42,11 @@ export class ComponentElementHandler implements ITemplateHandler {
 
 
         for (const name in element.attributes) {
+
+            const attr = element.attributes[name];
+
             if (!name.startsWith(`${ctx.htmlNamespace}:`)) {
-                const attr = element.attributes[name];
+  
                 if (typeof attr.value == "string")
                     props[name] = attr.value;
                 else {
@@ -73,8 +76,12 @@ export class ComponentElementHandler implements ITemplateHandler {
             else {
                 const htmlName = name.substring(ctx.htmlNamespace.length + 1);
 
-                if (htmlName == "options")
-                    options = props[name] as string;
+                if (htmlName == "options") {
+                    options = attr.value as string;
+                    if (attr.bindMode)
+                        hasBinding = true;
+                }
+           
             }
         }
 
@@ -97,6 +104,8 @@ export class ComponentElementHandler implements ITemplateHandler {
             ctx.writer = contentWriter;
 
             if (isComponent && !isSingleHtml) {
+
+                hasBinding = true;
 
                 if (element.childNodes.length > 1) 
                     contentWriter.write("[");
@@ -188,8 +197,6 @@ export class ComponentElementHandler implements ITemplateHandler {
             funcName = isInline ? "inlineComponent" : "component";
             ctx.writer.ensureNewLine();
         }
-
-
             
         ctx.writer.write(".").write(funcName).write("(")
             .write(type).write(", ")

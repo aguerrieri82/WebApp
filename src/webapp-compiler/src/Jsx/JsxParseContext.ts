@@ -101,7 +101,7 @@ export class JsxParseContext {
 
             const func = template.getFunctionParent();
 
-            if (func && func.type != "ArrowFunctionExpression") {
+            if (func && func.type == "FunctionDeclaration") {
           
                 const params = func.get("params");
 
@@ -359,6 +359,7 @@ export class JsxParseContext {
         try {
             if (!bind.constant)
                 return;
+
             const init = bind.path.get("init");
 
             if (!init)
