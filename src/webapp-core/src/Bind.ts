@@ -142,10 +142,20 @@ export type TwoWays<T> = T;
 
 type StaticBindings = { [BIND_MODES]?: Record<string, BindMode>; }
 
-export function configureBindings<
-    T extends IComponent | IBehavoir<HTMLElement, unknown>>(
-        component: Class<T> & StaticBindings,
-        values: Partial<Record<keyof T & string, BindMode>>
+type PropsOf<T> =
+    T extends new (arg: infer A) => any ? A :
+    T extends (arg: infer A) => any ? A :
+    never;
+
+export type ComponentType<TProps> =
+    ClassWithArg<IComponent<TProps>, TProps> |
+    ClassWithArg<IBehavoir<HTMLElement, TProps>, TProps> |
+    { (props: TProps): unknown };
+
+
+export function configureBindings<TComp extends ComponentType<TProps>, TProps>(
+    component: TComp,
+    values: Partial<Record<keyof PropsOf<TComp> & string, BindMode>>
 ) {
 
     let modes = component[BIND_MODES];

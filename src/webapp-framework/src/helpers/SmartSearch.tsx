@@ -1,10 +1,8 @@
-import { MaterialIcon, type LocalString, formatText,  dateAdd, dayEnd, dayStart, now, TimeSpan, formatString } from "@eusoft/webapp-ui";
-import type { ISearchItem, ISearchItemProvider, ISearchQuery } from "../abstraction/ISearchItemProvider";
+import { MaterialIcon, type LocalString, formatText, dateAdd, dayEnd, dayStart, now, TimeSpan, formatString, type ViewNode } from "@eusoft/webapp-ui";
+import type { ISearchItem, ISearchItemProvider, ISearchItemView, ISearchQuery } from "../abstraction/ISearchItemProvider";
 import { localTable } from "../services";
 
-
-
-export function matchLabel(query: ISearchQuery, matchList: (string | RegExp)[]): [boolean, ISearchQuery]  {
+export function matchText(query: ISearchQuery, matchList: (string | RegExp)[]): [boolean, ISearchQuery] {
 
     const noLabelQuery = {
         parts: [],
@@ -155,7 +153,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                 text = formatText("date-to", formatDate(viewRange.to)) as string;
             else if (viewRange.from && !viewRange.to)
                 text = formatText("date-from", formatDate(viewRange.from)) as string;
-            else 
+            else
                 text = formatText("date-range", formatDate(viewRange.from), formatDate(viewRange.to)) as string;
         }
 
@@ -240,7 +238,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
             return { from, to };
         }
 
-        if (yearPart && !dayPart && !monthPart) { 
+        if (yearPart && !dayPart && !monthPart) {
             const from = new Date(yearPart.value, 0, 1);
             const to = new Date(yearPart.value, 11, 31);
             return { from, to };
@@ -267,7 +265,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
             toLabel: undefined as string
         };
 
-        const fromLabels = ["from-date", "from-date-art"].map(a=> formatText(a) as string);
+        const fromLabels = ["from-date", "from-date-art"].map(a => formatText(a) as string);
         const toLabels = ["to-date", "to-date-art"].map(a => formatText(a) as string);
 
         let mode = 0;
@@ -294,7 +292,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                 result.from.push(part);
 
             else if (mode == 2)
-                result.to.push(part);     
+                result.to.push(part);
 
         }
 
@@ -316,7 +314,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
             const fromRange = rangeParts.from?.length > 0 ? match(rangeParts.from) : undefined;
             const toRange = rangeParts.to?.length > 0 ? match(rangeParts.to) : undefined;
 
-            let combinedRange : IDateRange;
+            let combinedRange: IDateRange;
 
             if (noFromTo)
                 combinedRange = fromRange;
@@ -339,7 +337,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                     apply: (filter, value) => {
                         filter[options.fromField] = value?.from as any;
                     },
-                    createView: ()=> ({
+                    createView: () => ({
                         displayValue: <>{rangeParts.fromLabel ?? "" + " "}<span className="select">{formatText("field-select")}</span></>,
                         label: curLabel,
                         icon,
@@ -347,7 +345,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                     })
                 })
             }
-            
+
             if (rangeParts.to && rangeParts.to.length == 0) {
                 res.push({
                     fields: [options.toField],
@@ -365,8 +363,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                 })
             }
 
-            if (combinedRange)
-            {
+            if (combinedRange) {
                 res.push(createItem(combinedRange));
             }
             else {
@@ -421,7 +418,7 @@ interface INumberRangeSearchOptions<TFilter> {
     maxField: KeyOfType<TFilter, number>;
 
     label?: LocalString;
-
+     
     color?: string;
 
     rank?: number;
@@ -429,30 +426,73 @@ interface INumberRangeSearchOptions<TFilter> {
     staticItems?: INumberRange[];
 
     keywords?: (string | RegExp)[];
+
+    icon?: ViewNode;
+
+    format?: (value: number) => string;
 }
 
 export function numberRangeSearch<TFilter>(options: INumberRangeSearchOptions<TFilter>) {
 
-    const createItem = () => {
-        return {
+    const curLabel = formatString(options.label);
 
-        } as ISearchItemProvider<TFilter, number>;
+    const format = options.format ?? ((v: number) => v.toString());
+
+    const createItem = (value?: INumberRange) => {
+        const result = {
+            value,
+
+            allowMultiple: false,
+
+            fields: [options.minField, options.maxField],
+
+            apply: (filter, value) => {
+                filter[options.minField as any] = value.min;
+                filter[options.maxField as any] = value.max;
+            },
+
+            rank: 1,
+
+            canSelect: !!value,
+
+            createView: (value, text) => {
+                let displayValue : ViewNode;
+
+                if (text)
+                    displayValue = text;
+                if (!value)
+                    displayValue = <i className="info">{formatText("digit-a-number")}</i>
+                else if (value.name)
+                    displayValue = formatText(value.name);
+                else if (value.max !== undefined && value.min === undefined)
+                    displayValue = formatText("search-num-max", format(value.max));
+                else if (value.max === undefined && value.min !== undefined)
+                    displayValue = formatText("search-num-min", format(value.min));
+                else if (value.max !== undefined && value.min !== undefined)
+                    displayValue = formatText("search-num-range", format(value.min), format(value.max));
+
+                return {
+                    displayValue,
+                    label: curLabel,
+                    icon: options.icon,
+                    color: options.color
+                }
+            }
+        } as ISearchItem<TFilter, INumberRange>;
+
+        result.view = result.createView(value);
+
+        return result;
     }
 
     return {
 
-        searchAsync(query, curFilter, curItems) {
+        async searchAsync(query, curFilter, curItems) {
 
-            const res = [] as ISearchItemProvider<TFilter, number>[];
+            const res = [] as ISearchItem<TFilter, INumberRange>[];
 
-            if (options.staticItems) {
-                res.push({
-                    ...createItem()
-                });
-            }
 
-            const curLabel = formatString(options.label);
-            const [macthLabel, noLabelQuery] = matchLabel(query, [curLabel]);
+            const [macthLabel, noLabelQuery] = matchText(query, [curLabel]);
 
             const nums: number[] = [];
 
@@ -464,17 +504,182 @@ export function numberRangeSearch<TFilter>(options: INumberRangeSearchOptions<TF
 
             if (nums.length == 1) {
                 res.push({
-                    ...createItem(),                    
+                    ...createItem({
+                        min: nums[0]
+                    }),
                 });
                 res.push({
-                    ...createItem()
+                    ...createItem({
+                        max: nums[0]
+                    }),
+                });
+            }
+            else if (nums.length == 2) {
+                res.push({
+                    ...createItem({
+                        min: nums[0],
+                        max: nums[1],
+                    }),
                 });
             }
 
+
+            if (options.staticItems) {
+                for (const item of options.staticItems) {
+
+                    const [match] = matchText(query, [formatString(item.name)]);
+
+                    if (noLabelQuery.parts.length == 0 || match) {
+                        res.push({
+                            ...createItem(item),
+                        });
+                    }              
+                }
+            }
+
+            if (nums.length == 0) {
+                res.push({
+                    ...createItem(),
+                    rank: -1
+                });
+            }
+
+            return res;
         }
 
-    } as ISearchItemProvider<TFilter, number>;
+    } as ISearchItemProvider<TFilter, INumberRange>;
 }
+
+/**********************************/
+/*  QuerySearch */
+/**********************************/
+
+export interface IMatchField<TItem, TValue> {
+
+
+    get(item: TItem): TValue;
+
+    format(value: TValue) : ISearchItemView
+}
+
+
+export interface IQuerySearchOptions<TFilter, TItem, TId> {
+
+    queryField: KeyOfType<TFilter, string>;
+
+    idsFilterField?: KeyOfType<TFilter, TId>;
+
+    idItemField?: KeyOfType<TItem, TId>;
+
+    match?: IMatchField<TItem, unknown>[];
+
+    executeAsync: (query: string) => Promise<TItem[]>;
+
+    minLength?: number;
+}
+
+export interface IQuerySearchProvider<TFilter, TItem> extends ISearchItemProvider<TFilter, string> {
+    
+}
+
+export function querySearch<TFilter, TItem, TId>(options: IQuerySearchOptions<TFilter, TItem, TId>) {
+
+    let items: TItem[] = [];
+
+    const idItemField = (options.idItemField ?? "id") as KeyOfType<TItem, TId>;
+    const idsFilterField = (options.idsFilterField ?? "ids") as KeyOfType<TFilter, TId[]>;
+
+    const createItem = (id: TId[], text: string, match: IMatchField<TItem, unknown>) => {
+        const result = {
+
+            value: id,
+
+            allowMultiple: false,
+
+            fields: [idsFilterField],
+
+            apply: (filter, value) => {
+                let values = filter[idsFilterField] as TId[];
+                values ??= [];
+                values.push(...value);
+                filter[idsFilterField as any] = values;
+            },
+            rank: 0,
+
+            view: match.format(text),
+
+        } as ISearchItem<TFilter, TId[]>;
+
+        return result;
+    }
+
+    return {
+
+        async searchAsync(query, curFilter, curItems) {
+
+            const res = [] as ISearchItem<TFilter, TId[]|string>[];
+
+            if (!options.minLength || query.full.length >= options.minLength) {
+
+                res.push({
+                    apply: (filter, value) => {
+                        filter[options.queryField as any] = value;
+                    },
+                    allowMultiple: false,
+                    value: query.full,
+                    fields: [options.queryField],
+                    rank: -1,
+                    view: {
+                        icon: <MaterialIcon name="search" />,
+                        label: formatText("search"),
+                        displayValue: <span>"{query.full}"</span>
+                    }
+                } as ISearchItem<TFilter, string>)
+
+                if (options.match) {
+
+                    items = await options.executeAsync(query.full); 
+
+                    for (const match of options.match) {
+
+                        const map = new Map<string, TId[]>;
+
+                        for (const item of items) {
+
+                            const fieldValue = match.get(item)?.toString();
+
+                            if (!fieldValue)
+                                continue;
+
+                            if (query.parts.every(a => fieldValue.toLowerCase().includes(a))) {
+
+                                const id = item[idItemField] as TId;
+
+                                if (!map.has(fieldValue))
+                                    map.set(fieldValue, [id]);
+                                else {
+                                    map.get(fieldValue).push(id);
+                                }
+                            }
+                        }
+
+                        for (const key of map.keys()) {
+
+                            res.push({
+                                ...createItem(map.get(key), key, match),
+                            })
+                        }
+                    }
+
+                }
+            }
+
+            return res;
+        }
+
+    } as IQuerySearchProvider<TFilter, TItem>;
+}
+
 
 /**********************************/
 /*  Helepers */

@@ -1,5 +1,4 @@
-import { getTypeName, toKebabCase } from "@eusoft/webapp-core";
-import { type EnumValue, type LocalString, type ViewNode } from "../types";
+import { type Enum, type EnumValue, type LocalString, type ViewNode } from "../types";
 import { type IItemsSource } from "../abstraction/IItemsSource";
 import { type ISimpleItem } from "../abstraction/ISimpleItem";
 import { formatEnum, formatText } from "../utils/Format";
@@ -54,12 +53,12 @@ export function stringItemsSource(...values: string[]) {
     } as IItemsSource<string, string, void>
 }
 
-export function enumItemsSource<TEnum extends object, TValue = EnumValue<TEnum>>(enumType: TEnum, prefix = "enum") {
+export function enumItemsSource<TEnum extends Enum, TValue = EnumValue<TEnum>>(enumType: TEnum, prefix = "enum") {
     return {
         getText: a => a.text,
         getValue: a => a.value,
         getItemsAsync: async () => Object.keys(enumType).filter(a => isNaN(parseInt(a))).map(a => ({
-            text: formatEnum(a as EnumValue<TEnum> & string, prefix),
+            text: formatEnum(enumType, a as EnumValue<TEnum> & string, prefix),
             value: enumType[a]
         } as ISimpleItem<TValue>)),
 

@@ -353,6 +353,6 @@ export function declareComponent<
     return extendComponent(Component, body, options) as InlineComponentType<Component, TBody>;
 }
 
-export function registerComponent<T extends Component<unknown>>(ctr: { new(...args: any[]): T }, name: string) {
+export function registerComponent<T extends Component<unknown>>(ctr: Class<T>, name: string) {
     setTypeName(ctr, name);
 }

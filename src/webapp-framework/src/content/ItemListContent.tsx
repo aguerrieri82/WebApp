@@ -1,5 +1,5 @@
 import { Action, Content, formatText, type IAction, type IContent, type IContentInstance, type IContentOptions, type IEditor, type IItemsSource, type IItemViewOptions, ItemView, ListView, type LocalString, MaterialIcon, useOperation, type ViewNode } from "@eusoft/webapp-ui";
-import { type IFilterField } from "../abstraction/IFilterEditor";
+import { type IFilterEditor  } from "../abstraction/IFilterEditor";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import router from "../services/Router";
 import { userInteraction } from "../services/UserInteraction";
@@ -7,6 +7,7 @@ import "./ItemListContent.scss"
 import { cleanProxy } from "@eusoft/webapp-core/Expression";
 import { ContentBuilder } from "./Builder";
 import { isClass, type ComponentStyle } from "@eusoft/webapp-core";
+
 
 export interface IItemActionContext<TItem> {
     target: TItem;
@@ -21,7 +22,7 @@ export interface IListColumn<TItem, TValue> {
     value: (item: TItem) => TValue;
     sortValue?: (item: TItem) => string | number;
     content?: (item: TItem) => ViewNode;
-    filter?: Omit<IFilterField<TItem, TValue, boolean>, "name" | "value">;
+    //filter?: Omit<IFilterField<TItem, TValue, boolean, unknown>, "name" | "value">;
     canSort?: boolean;
 }
 
@@ -67,7 +68,7 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<Object
 
     itemAddContent?: (item?: TItem) => Content<ObjectLike> | Class<Content<ObjectLike>>;
 
-    createItemView?: (item: TItem, actions?: IAction<TItem>[]) => ViewNode | Class<Content<ObjectLike>>;
+    createItemView?: (item: TItem, actions?: IAction<TItem>[], openItem?: (item: TItem) => unknown) => ViewNode | Class<Content<ObjectLike>>;
 
     itemView?: Partial<IItemViewOptions<TItem>> | { (item: TItem): Partial<IItemViewOptions<TItem>> },
 
@@ -77,7 +78,7 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<Object
 
     filterMode?: ListFilterMode;
 
-    filterEditor?: () => IEditor<TFilter> | Class<IEditor<TFilter>>;
+    filterEditor?: () => IFilterEditor<TFilter, TItem> | Class<IFilterEditor<TFilter, TItem>>;
 
     emptyView?: ViewNode;
 
@@ -89,6 +90,8 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<Object
 export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemListOptions<TItem, TFilter>> {
 
     protected _curFilter: TFilter;
+
+    protected _filterEditor: IFilterEditor<TFilter, TItem>;
 
     constructor(options?: IItemListOptions<TItem, TFilter>) {
 
@@ -108,7 +111,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
                     <>
                     </>
                 }
-                <ListView createItemView={item => m.createItemView(item, m.getItemActions(item))}>
+                <ListView createItemView={item => m.createItemView(item, m.getItemActions(item), m.openItem)}>
                     {m.items}
                 </ListView>
                 {(m.paginationMode == "manual" && m.canLoadMore) &&
@@ -211,7 +214,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
         return column.value(item) as ViewNode;
     }
 
-    createItemView(item: TItem, actions?: IAction<TItem>[]) {
+    createItemView(item: TItem, actions?: IAction<TItem>[], openItem?: (item: TItem) => unknown) {
 
         const primary = this.columns?.find(a => a.priority == "primary");
 
@@ -229,10 +232,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
             icon: this.itemsSource.getIcon ? this.itemsSource.getIcon(item) : undefined,
             actions: actions,
             style: this.itemStyle(item),
-            onClick: () => {
-                if (this.canOpen)
-                    this.openItem(item);
-            },
+            onClick: () => openItem?.(item),
             ...options
         });
     }
@@ -243,16 +243,20 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
     }
 
     async refreshAsync() {
-
-        this.items = [];
-        await this.loadNextPageAsync();
+        await this.loadNextPageAsync(true);
     }
 
 
-    async loadNextPageAsync() {
+    async loadNextPageAsync(clear?: boolean) {
+
         const newItems = await this.itemsSource.getItemsAsync(
-            this.prepareFilter(this._curFilter, this.items.length, this.pageSize));
-        this.items.push(...newItems);
+            this.prepareFilter(this._curFilter, clear ? 0 : this.items.length, this.pageSize));
+
+        if (clear)
+            this.items = [...newItems];
+        else
+            this.items.push(...newItems);
+
         this.canLoadMore = newItems.length >= this.pageSize;
     }
 
@@ -313,22 +317,30 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
         });
     }
 
-    createFilterEditor(): IEditor<TFilter>  {
+    createFilterEditor() {
 
-        let editor: IEditor<TFilter>;
+        if (!this._filterEditor) {
 
-        if (isClass(this.filterEditor))
-            editor = new this.filterEditor();
-        else
-            editor = this.filterEditor() as IEditor<TFilter>;
+            if (isClass(this.filterEditor))
+                this._filterEditor = new this.filterEditor();
+            else
+                this._filterEditor = this.filterEditor() as IFilterEditor<TFilter, TItem>;
 
-        editor.onValueChanged = v => {
+            this._filterEditor.onValueChanged = v => {
 
-            this._curFilter = v;
-            this.refreshAsync();
+                this._curFilter = v;
+                this.refreshAsync();            
+            }
+
+            this._filterEditor.queryAsync = async filter => {
+
+                const newItems = await this.itemsSource.getItemsAsync(
+                    this.prepareFilter(filter, 0, this.pageSize));
+                return newItems;
+            }
         }
 
-        return editor;
+        return this._filterEditor;
     }
 
     itemStyle(item: TItem) {
@@ -375,7 +387,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
     canLoadMore: boolean;
 
-    filterEditor?: () => IEditor<TFilter> | Class<IEditor<TFilter>>;
+    filterEditor?: () => IFilterEditor<TFilter, TItem> | Class<IFilterEditor<TFilter, TItem>>;
 
     static builder<TItem, TFilter>() {
         return new ItemListContentBuilder<TItem, TFilter>();

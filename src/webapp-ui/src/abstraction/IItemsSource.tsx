@@ -12,7 +12,7 @@ export interface IItemsSource<TItem, TValue, TFilter> {
 
     getItemsAsync(filter?: TFilter): Promise<TItem[]>;
 
-    getItemByValueAsync(value: TValue): Promise<TItem>;
+    getItemByValueAsync?(value: TValue): Promise<TItem>;
 
     itemEquals?(a: TItem, b: TItem) : boolean;
 

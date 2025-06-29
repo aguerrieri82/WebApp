@@ -1,5 +1,5 @@
 import { getTypeName, type ITemplate, Services, toKebabCase } from "@eusoft/webapp-core";
-import { TimeSpan, type EnumValue, type LocalString } from "../types";
+import { TimeSpan, type Enum, type EnumValue, type LocalString } from "../types";
 import { type ILocalization, LOCALIZATION } from "../abstraction";
 
 export function formatTextSimple(text: LocalString, ...args: any[]) {
@@ -45,10 +45,11 @@ export function formatText(text: LocalString, ...args: any[]): string | ITemplat
         return formatText(arg, args);  
     }); 
 }
+ 
+export function formatEnum<TEnum extends Enum>(obj: TEnum, value: EnumValue<TEnum>, prefix = "enum") {
 
-export function formatEnum<TEnum extends object>(value: EnumValue<TEnum> & string, prefix = "enum") {
-
-    const key1 = toKebabCase(value);
+    const text = typeof value == "number" ? obj[value] as string : value as string;
+    const key1 = toKebabCase(text);
     const key2 = prefix + "-" + key1;
     return formatText(hasLocal(key2) ? key2 : key1);
 }

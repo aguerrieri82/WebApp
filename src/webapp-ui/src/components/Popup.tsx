@@ -1,4 +1,4 @@
-﻿import { Component, type IComponentOptions, cleanProxy, delayAsync, mount } from "@eusoft/webapp-core";
+﻿import { Component, type ComponentStyle, type IComponentOptions, buildStyle, cleanProxy, delayAsync, mount } from "@eusoft/webapp-core";
 import { type LocalString, type ViewNode } from "../types";
 import { forModel } from "@eusoft/webapp-jsx";
 import { Action, createAction } from "./Action";
@@ -27,6 +27,8 @@ export interface IPopupOptions extends IComponentOptions {
     actions: IPopUpAction[];
 
     hideOnClick?: boolean;
+
+    bodyStyle?: ComponentStyle;
 }
 
 export class Popup extends Component<IPopupOptions> {
@@ -43,7 +45,7 @@ export class Popup extends Component<IPopupOptions> {
                     <header>
                         {m.title}
                     </header>
-                    <main>
+                    <main className={buildStyle(m.bodyStyle)}>
                         {m.body}
                     </main>
                     <footer>
@@ -121,4 +123,6 @@ export class Popup extends Component<IPopupOptions> {
     actions: IPopUpAction[]
 
     hideOnClick: boolean;
+
+    bodyStyle: ComponentStyle;
 }

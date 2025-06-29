@@ -45,6 +45,9 @@
         padding: size(2);
         box-sizing: border-box;
         will-change: transform;
+        max-height: calc(100vh - size(4));
+        display: flex;
+        flex-direction: column;
 
         > header {
             font-size: 28px;
@@ -52,6 +55,7 @@
 
         > main {
             padding: size(4) size(0);
+            overflow-y: scroll;
         }
 
         > footer {

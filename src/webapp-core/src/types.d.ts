@@ -19,6 +19,8 @@ type StringLike = string | number | object | boolean | { toString(): string }
 
 type Class<T> = new (...args: any) => T;
 
+type ClassWithArg<T, TArg> = new (arg?: TArg) => T;
+
 type AbstractClass<T> = abstract new (...args: any[]) => T;
 
 type CommonKeys<TSrc, TDst> = {

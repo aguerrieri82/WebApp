@@ -11,6 +11,11 @@ localTable.add({
     "few-time-ago": "pochi istanti fa",
     "now-time": "ora",
     "one-hour": "un'ora",
-    "load-more": "Carica altri {0}"
+    "load-more": "Carica altri {0}",
+    "search-num-min": "Maggiore di {0}",
+    "search-num-max": "Minore di {0}",
+    "search-num-range": "Compreso tra {0} e {1}",
+    "digit-a-number": "<scrivere un numero>",
+    "search": "Ricerca"
 }, { lang: "IT" })
 

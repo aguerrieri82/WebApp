@@ -1,3 +1,4 @@
+import type { Bindable } from "@eusoft/webapp-core/abstraction/IBindable";
 import { type LocalString, type ViewNode } from "../types";
 
 export type ActionPriority = "primary" | "secondary";
@@ -24,7 +25,7 @@ export interface IAction<
 
     subActions?: IAction<TTarget>[];
 
-    //canExecuteAsync?: (ctx: IActionContext<TTarget>) => Promise<boolean>;
+    canExecute?: (ctx: IActionContext<TTarget>) => boolean;
 
     executeAsync: (ctx: TCtx) => Promise<unknown>;
 }

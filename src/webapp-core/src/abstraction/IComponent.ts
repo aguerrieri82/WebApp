@@ -1,6 +1,6 @@
 ﻿import { type BIND_MODES, type IBindable } from "./IBindable";
 import type { BindMode } from "./IBinder";
-import type { IComponentOptions } from "./IComponentOptions";
+import type { ComponentStyle, IComponentOptions } from "./IComponentOptions";
 import { type ITemplateContext } from "./ITemplateContext";
 import type { CatalogTemplate } from "./ITemplateProvider";
 
@@ -17,6 +17,10 @@ export interface IComponent<TOptions extends IComponentOptions = IComponentOptio
     visible?: boolean;
 
     name?: string;
+
+    style?: ComponentStyle;
+
+    className?: string;
 }
 
 export interface IComponentConstructor<
@@ -33,3 +37,4 @@ export function isComponent(obj: unknown): obj is IComponent {
 
     return obj && typeof obj == "object" && "template" in obj;
 }
+

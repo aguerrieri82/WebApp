@@ -7,18 +7,27 @@ import { type LocalString, type ViewNode } from "../types";
 import { createAction, ItemView, MaterialIcon, Popup } from "../components";
 import { type IAction, isCommitable, isValidable } from "../abstraction";
 import { formatText } from "../utils/Format";
+import "./ArrayEditor.scss";
 
 interface IArrayEditorOptions<TItem> extends IEditorOptions<TItem[]> {
 
-    itemEditor: (item: TItem) => IEditor<TItem>;
+    itemEditor?: (item: TItem) => IEditor<TItem>;
 
     newItem?: () => Partial<TItem>;
 
     itemView?: (item: TItem) => ViewNode;
 
+    pickItemAsync?: () => Promise<TItem>;
+
     newItemLabel?: LocalString;
 
-    editMode: "inplace" | "popup";
+    canAdd?: boolean;
+
+    canEdit?: boolean | { (item: TItem) : boolean };
+
+    canDelete?: boolean | { (item: TItem) : boolean };
+
+    editMode: "inplace" | "popup" | "picker";
 }
 
 export const ArrayEditorTemplates: TemplateMap<ArrayEditor<unknown>> = {
@@ -26,30 +35,44 @@ export const ArrayEditorTemplates: TemplateMap<ArrayEditor<unknown>> = {
     "Default": forModel(m => <div className={m.className} visible={m.visible}>
         <Class name="no-box" />
         <Class name="disabled" condition={m.disabled} />
-        <div className="items">
+        <ul className="items">
             {m.editValue.forEach(a => <ItemView
                 actions={[{
                     name: "edit",
                     icon: <MaterialIcon name="edit" />,
                     priority: "secondary",
                     type: "local",
+                    canExecute: c => (m.canEdit !== false) && (typeof m.canEdit != "function" || m.canEdit(c.target)),
                     executeAsync: c => m.updateItemAsync(c.target)
                 },{
                     name: "delete",
                     icon: <MaterialIcon name="delete" />,
                     priority: "secondary",
+                    canExecute: c => (m.canDelete !== false) && (typeof m.canDelete != "function" || m.canDelete(c.target)),
                     executeAsync: async c => m.deleteItem(c.target)
                 }]}
                 maxActions={2}
                 primary={m.itemView(a)}
                 content={a} />)}
-        </div>
+        </ul>
         <div className="actions">
-            {createAction(m.addAction, "text")}
+            {m.canAdd !== false && createAction({
+                name: "add",
+                text: m.newItemLabel,
+                type: "local",
+                executeAsync: () => m.addItemAsync(),
+                priority: "primary"
+            }, "text")}
         </div>
         {m.editMode == "inplace" && <div className="editor-contaner">
             {m.activeEditor}
-            {m.activeEditor && createAction(m.saveAction, "text")}
+            {m.activeEditor && createAction({
+                name: "save",
+                text: "save-item",
+                type: "local",
+                executeAsync: () => m.saveItemAsync(),
+                priority: "primary"
+            }, "text")}
         </div>}
     </div>)
 }
@@ -66,30 +89,11 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
         this.init(ArrayEditor, {
             template: ArrayEditorTemplates.Default,
             editMode: "popup",
+            newItemLabel: "add-item",
             ...options,
         });
     }
 
-    override initProps() {
-
-        super.initProps();
-
-        this.addAction = {
-            name: "add",
-            text: this.newItemLabel ?? "add-item",
-            type: "local",
-            executeAsync: () => this.addItemAsync(),
-            priority: "primary"
-        }
-
-        this.saveAction = {
-            name: "save",
-            text: "save-item",
-            type: "local",
-            executeAsync: () => this.saveItemAsync(),
-            priority: "primary"
-        }
-    }
 
     async updateItemAsync(item: TItem) {
 
@@ -101,7 +105,12 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
 
     async addItemAsync() {
 
-        const item = await this.editItemAsync(this.newItem(), this.newItemLabel);
+        let item: TItem;
+
+        if (this.editMode == "picker") 
+            item = await this.pickItemAsync();
+        else
+            item = await this.editItemAsync(this.newItem(), this.newItemLabel);
 
         if (!item)
             return;
@@ -110,6 +119,11 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
             this.editValue = [];
 
         this.editValue.push(item);  
+    }
+
+    async pickItemAsync(): Promise<TItem> {
+
+        throw new Error("not supported");
     }
 
     async saveItemAsync() {
@@ -202,16 +216,20 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
         throw new Error("Not implemented");
     }
 
+
+    canEdit: boolean | { (item: TItem): boolean };
+
+    canDelete: boolean | { (item: TItem): boolean };
+
+    canAdd: boolean;
+
     editMode: IArrayEditorOptions<TItem>["editMode"];
-
-    addAction: IAction;
-
-    saveAction: IAction;
 
     activeEditor: IComponent;
 
     newItemLabel: LocalString;
 }
+
 
 declare module "./EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {

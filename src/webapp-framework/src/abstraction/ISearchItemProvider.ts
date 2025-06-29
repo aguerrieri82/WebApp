@@ -11,8 +11,8 @@ export interface ISearchItemView {
     color?: string;
 }
 
-export interface ISearchItemFormatter<TValue> {
-    formatValue(value: TValue): ISearchItemView;
+export type SearchItemFormatter<TValue> = {
+    (value: TValue): ISearchItemView;
 }
 
 export interface ITextValue<TValue> {
@@ -22,13 +22,15 @@ export interface ITextValue<TValue> {
 
 export interface ISearchItem<TFilter, TValue> {
 
-    createView: (value: TValue, text?: string) => ISearchItemView;
+    createView?: (value: TValue, text?: string) => ISearchItemView;
 
     view?: ISearchItemView;
 
     rank?: number;
 
     value?: TValue;
+
+    canSelect?: boolean;
 
     allowMultiple?: boolean;
 

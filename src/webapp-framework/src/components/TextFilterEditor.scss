@@ -1,0 +1,57 @@
+@use "../_common" as *;
+@use "@eusoft/webapp-ui/themes/_vars" as *;
+
+
+div.text-filter-editor {
+
+    > .search-bar {
+        border: solid 1px var(--border-color);
+        border-radius: 4px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 4px;
+
+        input {
+            border: none;
+            padding: 8px 4px;
+            background: none;
+            flex-grow: 1;
+
+            &:focus {
+                outline: none;
+            }
+        }
+
+        &:has(input:focus) {
+            border: solid 1px var(--primary-color);
+        }
+
+        button {
+            border: none;
+            background: none;
+            padding: 4px;
+            margin: 0;
+
+            i {
+                vertical-align: middle;
+            }
+
+            &.show-filters {
+                color: var(--primary-color);
+            }
+        }
+    }
+
+    button {
+        cursor: pointer;
+        transition-duration: 0.3s;
+        border-radius: 4px;
+
+        @media #{$not-mobile-device} {
+            &:hover {
+                background: #ccc;
+            }
+        }
+    }
+}

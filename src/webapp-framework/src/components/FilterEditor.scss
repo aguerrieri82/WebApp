@@ -124,9 +124,10 @@ div.filter-editor {
                 color: var(--primary-color);
             }
 
-            .search{
+            .search {
                 font-style: italic;
-                &:before, &:after{
+
+                &:before, &:after {
                     content: '*';
                 }
             }
@@ -141,7 +142,11 @@ div.filter-editor {
                 font-weight: bold;
             }
 
-            i {
+            i.info {
+                color: var(--primary-color);
+            }
+
+            i.icon {
                 margin-right: 4px;
                 color: var(--color);
             }
@@ -156,7 +161,7 @@ div.filter-editor {
 
         @media #{$not-mobile-device} {
             &:hover {
-                background: #ccc;
+                background: var(--item-hover-color);
             }
         }
     }

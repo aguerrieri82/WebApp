@@ -40,7 +40,7 @@ export const ItemViewTemplates: TemplateMap<ItemView<unknown>> = {
                 {m.secondaryActions?.forEach(a => m.createAction(a, "icon"))}
             </div>
         </div>
-        {m.primaryActions.length > 0 && <div className="primary-actions">
+        {m.primaryActions?.length > 0 && <div className="primary-actions">
             {m.primaryActions?.forEach(a => m.createAction(a, "text"))}
         </div>}
     </li>)
@@ -92,8 +92,9 @@ export class ItemView<TItem> extends Component<IItemViewOptions<TItem>> {
         return newAction;
     }
 
-    createAction(action: IAction, style = "text") {
-
+     createAction(action: IAction, style = "text") {
+        if (action.canExecute && !action.canExecute({ target: this.content }))
+            return null;
         return createAction(this.patchAction(action), style);
     }
 

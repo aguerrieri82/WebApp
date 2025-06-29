@@ -1,14 +1,14 @@
 import { type Bindable, type IComponentOptions, type IComponent, Component, type TemplateMap, type ComponentStyle, configureBindings, registerComponent } from "@eusoft/webapp-core";
-import { Class, type JsxNode, Style, forModel } from "@eusoft/webapp-jsx";
+import { Class, type JsxNode, forModel } from "@eusoft/webapp-jsx";
 import { type ActionType, type IAction, type IActionContext } from "../abstraction/IAction";
 import { type OperationManager } from "../services";
 import { OPERATION_MANAGER } from "../abstraction";
 import { type LocalString, type ViewNode } from "../types";
-import "./Action.scss";
 import { NodeView } from "./NodeView";
 import { ContextMenu } from "./ContextMenu";
 import { formatText } from "../utils";
 import { Variable } from "../behavoirs/Variable";
+import "./Action.scss";
 
 interface IActionOptions<TTarget> extends IComponentOptions {
 
@@ -86,6 +86,7 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
     }
 
     onExecuteAsync(ctx?: IActionContext<TTarget>): Promise<unknown> | void {
+
     }
 
     color: string;  
@@ -113,7 +114,7 @@ configureBindings(Action, {
 export function createAction(action: IAction, style?: ComponentStyle) {
 
     const mainAction: IActionOptions<unknown> = {
-        content: style == "icon" ? action.icon : [action.icon, action.text],
+        content: style == "icon" ? action.icon : [action.icon, action.text], 
         info: action.text,
         name: action.name,
         onExecuteAsync: action.executeAsync,

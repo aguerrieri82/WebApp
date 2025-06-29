@@ -1,3 +1,4 @@
+import type { ComponentStyle } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx/Helpers";
 import { formatText, isCommitable, Popup, useOperation, type IContent, type IContentHost, type IEditor, type IPopUpAction, type LocalString, type ViewNode } from "@eusoft/webapp-ui";
 
@@ -6,6 +7,11 @@ export interface IPopupEditorOptions {
     title?: LocalString;
     cancelLabel?: LocalString;
     okLabel?: LocalString;
+}
+
+export interface IPopupContentOptions {
+    style?: ComponentStyle;
+    closeLabel?: LocalString;
 }
 
 
@@ -44,12 +50,17 @@ export async function popupEditAsync<T>(editor: IEditor<T>, value?: T, options?:
 
 
 
-export async function showContentPopup<TContent extends IContent<TArgs>, TArgs extends ObjectLike>
-    (content: TContent, args?: TArgs) {
+export async function showContentPopup<
+    TContent extends IContent<TArgs> & { result?: TResult },
+    TArgs extends ObjectLike,
+    TResult>
+    (content: TContent, args?: TArgs, options?: IPopupContentOptions) : Promise<TResult> {
 
     const popup = new Popup({
         body: content.body,
-        actions: content.actions.map(a => ({
+        style: [options?.style],
+        bodyStyle: content.className?.split(" "),
+        actions: content.actions?.map(a => ({
             name: a.name,
             text: a.text,
             executeAsync: a.executeAsync,
@@ -58,11 +69,13 @@ export async function showContentPopup<TContent extends IContent<TArgs>, TArgs e
         title: formatText(content.title),
         hideOnClick: true,
         name: content.name
-    });
+    }); 
+
+    popup.actions ??= [];
 
     popup.actions.unshift({
         name: "close",
-        text: "close",
+        text: options?.closeLabel ?? "close",
         executeAsync: () => Promise.resolve(true)
     });
 
@@ -70,7 +83,7 @@ export async function showContentPopup<TContent extends IContent<TArgs>, TArgs e
     const host: IContentHost = {
         canGoBack: false,
         result: undefined,
-        closeAsync: async (result) => {
+        closeAsync: async (result: TResult) => {
             content.host.result = result;
             popup.close();
         }
@@ -81,5 +94,5 @@ export async function showContentPopup<TContent extends IContent<TArgs>, TArgs e
 
     await popup.showAsync();
 
-    return content.host.result as boolean;
+    return content.host.result as TResult;
 }

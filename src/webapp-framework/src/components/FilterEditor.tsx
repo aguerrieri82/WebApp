@@ -1,13 +1,13 @@
 ﻿import type { BindExpression } from "@eusoft/webapp-core/abstraction/IBinder";
 import { Component } from "@eusoft/webapp-core/Component";
 import { forModel } from "@eusoft/webapp-jsx/Helpers";
-import { formatText, HideOnClick, MaterialIcon, type IEditor, type IEditorOptions, type IItemsSource, type LocalString, type ValueChangedReason, type ViewNode } from "@eusoft/webapp-ui";
+import { formatString, formatText, HideOnClick, MaterialIcon, type IEditor, type IEditorOptions, type IItemsSource, type LocalString, type ValueChangedReason, type ViewNode } from "@eusoft/webapp-ui";
 import { Variable } from "@eusoft/webapp-ui/behavoirs/Variable";
-import { toKebabCase } from "@eusoft/webapp-core";
+import { Expression, GetExpression, toKebabCase } from "@eusoft/webapp-core";
 import "./FilterEditor.scss"
-import type { ISearchItem, ISearchItemFormatter, ISearchItemProvider, ISearchItemView, ISearchQuery, ITextValue } from "../abstraction/ISearchItemProvider";
-import { matchLabel, parseSearchQuery } from "../helpers/SmartSearch";
-import { Foreach } from "@eusoft/webapp-jsx";
+import type { ISearchItem, SearchItemFormatter, ISearchItemProvider, ISearchItemView, ISearchQuery, ITextValue } from "../abstraction/ISearchItemProvider";
+import { matchText, parseSearchQuery, querySearch, type IMatchField, type IQuerySearchProvider } from "../helpers/SmartSearch";
+import type { IFilterEditor } from "../abstraction/IFilterEditor";
 
 /**********************************/
 /*  Types  */
@@ -20,8 +20,10 @@ type FilterFields<TFilter, TValuesFilter> = {
 }
 
 type MatchFields<TItem> = {
-    [K in keyof TItem as K extends string ? K : never]: ISearchItemFormatter<TItem[K]>;
+    [K in keyof TItem as K extends string ? K : never]: SearchItemFormatter<TItem[K]>;
 }
+
+
 
 /**********************************/
 /*  Interfaces  */
@@ -182,7 +184,8 @@ export function itemsSearch<
             ...item,
         } as ISearchItem<TFilter, TItemValue>;
 
-        result.view = result.createView(result.value);
+        if (result.createView)
+            result.view = result.createView(result.value);
 
         return result;
     }
@@ -194,7 +197,7 @@ export function itemsSearch<
        
             const res: ISearchItem<TFilter, TItemValue>[] = [];
 
-            const [labelMatch, noLabelQuery] = matchLabel(query, matchList);
+            const [labelMatch, noLabelQuery] = matchText(query, matchList);
 
             if (modeLabelOnly) {
 
@@ -268,10 +271,11 @@ export function itemsSearch<
 
 export class FilterEditor<TFilter, TItem>
     extends Component<IFilterEditorOptions<TFilter, TItem, keyof TFilter & string>>
-    implements IEditor<TFilter> {
+    implements IFilterEditor<TFilter, TItem> {
 
     protected _curSearchProviders: ISearchItemProvider<TFilter, unknown>[] = [];
     protected _firstLoad = true;
+    protected _querySearch: IQuerySearchProvider<TFilter, TItem>;
 
     constructor(options: IFilterEditorOptions<TFilter, TItem, keyof TFilter & string>) {
 
@@ -348,6 +352,92 @@ export class FilterEditor<TFilter, TItem>
 
         if (this.queryField) {
 
+            const icon = <MaterialIcon name="abc" />
+
+            const match: IMatchField<TItem, unknown>[] = [];
+
+            if (Array.isArray(this.matchFields)) {
+                for (const key of this.matchFields) {
+                    match.push({
+                        get: item => item[key],
+                        format: a => ({
+                            displayValue: a?.toString() ?? "",
+                            label: formatString(toKebabCase(key)),
+                            icon,
+                            color: undefined
+                        })
+                    })
+                }
+            }
+            else if (typeof this.matchFields == "function") {
+
+                const exp = Expression.build(null, this.matchFields).expression;
+
+                const fields: string[] = [];
+
+
+                const visit = (curExp: Expression<unknown>, curParts: string[]) => {
+                    if (curExp.actions.length == 0) {
+                        if (curExp != exp)
+                            fields.push(curParts.join("."));
+                    }
+                    else {
+                        for (const action of curExp.actions) {
+                            if (!(action instanceof GetExpression))
+                                continue;
+                            visit(action, [...curParts, action.propName])
+                        }
+                    }        
+                }
+
+                visit(exp, []);
+
+                for (const field of fields) {
+
+                    const parts = field.split(".");
+
+                    match.push({
+                        get: item => {
+                            let curValue = item;
+
+                            for (const part of parts) {
+                                if (curValue === null || curValue === undefined)
+                                    break;
+                                curValue = curValue[part];
+                            }
+
+                            return curValue;
+                        },
+                        format: a => ({
+                            displayValue: a?.toString() ?? "",
+                            label: formatString(toKebabCase(field.replace(".", "-"))),
+                            color: undefined,
+                            icon
+                        })
+                    })
+                }
+
+                console.log(exp);
+            }
+            else {
+                for (const key in this.matchFields) {
+                    match.push({
+                        get: item => item[key as keyof TItem],
+                        format: this.matchFields[key]
+                    })
+                }
+            }
+
+            this._querySearch = querySearch({
+                queryField: this.queryField,
+                minLength: 2,
+                match,
+                executeAsync: query => this.queryAsync({
+                    [this.queryField]: query
+                } as TFilter)
+            });
+
+            this._curSearchProviders.push(this._querySearch);
         }
     }
 
@@ -400,8 +490,10 @@ export class FilterEditor<TFilter, TItem>
 
         const curFilter = {} as TFilter;
 
-        for (const item of this.activeFilters)
-            item.apply?.(curFilter, item.value);
+        if (this.activeFilters) {
+            for (const item of this.activeFilters)
+                item.apply?.(curFilter, item.value);
+        }
 
         this.value = this.prepareFilter(curFilter);
     }
@@ -421,6 +513,9 @@ export class FilterEditor<TFilter, TItem>
 
     async addFilterAsync(item: ISearchItem<TFilter, unknown>) {
 
+        if (item.canSelect === false)
+            return;
+
         this.activeFilters ??= [];
 
         if (item.value === null || item.value === undefined) {
@@ -431,7 +526,8 @@ export class FilterEditor<TFilter, TItem>
             if (!edit)
                 return;
             item.value = edit.value;
-            item.view = item.createView(edit.value, edit.text);
+            if (item.createView)
+                item.view = item.createView(edit.value, edit.text);
         }
 
         if (!item.allowMultiple) {
@@ -472,6 +568,11 @@ export class FilterEditor<TFilter, TItem>
     prepareFilter?(curFilter: TFilter) {
 
         return curFilter;
+    }
+
+    queryAsync(filter: TFilter): Promise<TItem[]> {
+
+        throw new Error("not supported");
     }
 
     fields: IFilterField<TFilter, keyof TFilter & string, boolean, ObjectLike>[] | FilterFields<TFilter, unknown>;

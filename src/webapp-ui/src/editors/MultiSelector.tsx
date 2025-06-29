@@ -8,6 +8,7 @@ import "./MultiSelector.scss";
 import type { ViewNode } from "../types";
 import type { IItemsContainer } from "../abstraction/IItemsContainer";
 import { Attribute } from "../behavoirs/Attribute";
+import type { ISelectableItem } from "../abstraction/ISelectableItem";
 
 interface IMultiSelectorOptions<TItem, TValue, TFilter> extends ICommitableEditorOptions<TValue[], string> {
 
@@ -23,11 +24,6 @@ interface IMultiSelectorOptions<TItem, TValue, TFilter> extends ICommitableEdito
 
     canSelect?(value: TItem): boolean;
 
-}
-
-interface ISelectableItem<TItem> {
-    isSelected: boolean;    
-    item: TItem;    
 }
 
 
