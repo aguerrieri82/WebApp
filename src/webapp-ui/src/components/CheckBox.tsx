@@ -11,12 +11,17 @@ interface ICheckBoxOptions {
     style?: ComponentStyle;
     value: boolean;
     content: ViewNode;
+    disabled?: boolean;
+    visible?: boolean;
 }
 
 export function CheckBox(options: ICheckBoxOptions) {
 
-    return <div on-click={() => options.value = !options.value} className={buildStyle(options.style, "check-box")}>
-        <Class name="checked" condition={options.value}/>
+    return <div visible={options.visible}
+        on-click={() => options.value = !options.value}
+        className={buildStyle(options.style, "check-box")}>
+        <Class name="checked" condition={options.value} />
+        <Class name="disabled" condition={options.disabled} />
         <div className="box">
             <MaterialIcon name="check" />
         </div>

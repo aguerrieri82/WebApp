@@ -1,0 +1,25 @@
+@use "index" as *;
+
+.array-editor {
+
+    > ul.items {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        margin-bottom: size(1);
+    }
+
+    &.round-item {
+
+        > ul.items {
+            gap: size(1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-view {
+            background: var(--item-background);
+            border-radius: 4px;
+        }
+    }
+}

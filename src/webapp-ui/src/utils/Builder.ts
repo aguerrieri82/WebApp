@@ -8,7 +8,7 @@ type NodeType = LocalString | ITemplateProvider;
 
 declare module "@eusoft/webapp-core/TemplateBuilder" {
     interface TemplateBuilder<TModel, TElement> {
-        nodeView<TInnerModel extends ViewNode>(content: BindValue<TModel, TInnerModel>) : this
+        nodeView<TInnerModel extends ViewNode>(content: BindValue<TModel, TInnerModel>): this
     }
 }
 
@@ -34,17 +34,17 @@ TemplateBuilder.prototype.nodeView = function (content) {
     }
 
     return this.enter(content, t2 => {
-            if (t2.model === undefined || t2.model === null)
-                return;
-            if (Array.isArray(t2.model))
-                t2.model.forEach(item => {
+        if (t2.model === undefined || t2.model === null)
+            return;
+        if (Array.isArray(t2.model))
+            t2.model.forEach(item => {
 
-                    if (isTemplate(item))
-                        t2.template(item);
-                    else
-                        t2.enter(item as object, t3 => singleNode(t3 as TemplateBuilder<NodeType>));
-                });
-            else
-                singleNode(t2 as TemplateBuilder<NodeType>)
-        });
+                if (isTemplate(item))
+                    t2.template(item);
+                else
+                    t2.enter(item as object, t3 => singleNode(t3 as TemplateBuilder<NodeType>));
+            });
+        else
+            singleNode(t2 as TemplateBuilder<NodeType>)
+    });
 }

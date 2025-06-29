@@ -1,4 +1,4 @@
-import { type TemplateMap, type BindExpression, type ITemplateContext, INDEX, delayAsync } from "@eusoft/webapp-core";
+import { type TemplateMap, type BindExpression, type ITemplateContext, INDEX, delayAsync, Bind } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "./EditorBuilder";
 import { type IItemsSource } from "../abstraction/IItemsSource";
@@ -9,6 +9,8 @@ import type { ViewNode } from "../types";
 import type { IItemsContainer } from "../abstraction/IItemsContainer";
 import { Attribute } from "../behavoirs/Attribute";
 import type { ISelectableItem } from "../abstraction/ISelectableItem";
+import { CheckBox } from "../components";
+import { Subscribe } from "../behavoirs/Subscribe";
 
 interface IMultiSelectorOptions<TItem, TValue, TFilter> extends ICommitableEditorOptions<TValue[], string> {
 
@@ -36,15 +38,12 @@ export const MultiSelectorTemplates: TemplateMap<MultiSelector<unknown, unknown,
         <Class name="disabled" condition={m.disabled}/>
         {m.content?.forEach(i => 
             <li>
+                <Subscribe value={i.isSelected} handler={v => m.onSelectionChanged(i, m)} />
                 <Class name="selected" condition={i.isSelected} />                
-                <input type="checkbox"
-                    disabled={m.canSelect(i.item) === false}
-                    value={i.isSelected}
-                    on-change={(_, ev) => {
-                        m.onSelectionChanged(i, m);
-                    }}>
-                </input>
-                {m.createItemView(i.item)}
+                <CheckBox disabled={m.canSelect(i.item) === false}
+                    value={Bind.twoWays(i.isSelected)}>
+                    {m.createItemView(i.item)}
+                </CheckBox>
             </li>
         )}
         </ul>

@@ -9,6 +9,7 @@
     > .message {
         border-radius: 24px;
         background-color: var(--message-box-back);
+        overflow: hidden;
 
         > * {
             padding: 0;

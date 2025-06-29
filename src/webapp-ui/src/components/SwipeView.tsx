@@ -33,7 +33,7 @@ export const SwipeViewTemplates: TemplateMap<SwipeView> = {
         <div className="bullets">
             {m.content?.forEach(i => <span>
                 <Class name="active" condition={m.activeContent == i} />
-                <MaterialIcon name="circle" />
+                <MaterialIcon name="circle" style={m.activeContent == i ? "fill": undefined} />
             </span>)}
         </div>
     </div>)
@@ -57,17 +57,22 @@ export class SwipeView extends Component<ISwipeViewOptions> {
 
         this.leftAlign = "0";
 
+        const updateActiveContent = (v: number) => {
+            this.activeContent = v == -1 || !this.content ? null : this.content[v];
+            this.leftAlign = -(v * 100) + "%";
+        }
+
         this.onChanged("content", v => {
             if (v?.length > 0)
                 this.activeIndex = 0;
+            updateActiveContent(this.activeIndex);
         });
 
-        this.onChanged("activeIndex", v => {
-            this.activeContent = v == -1 || !this.content ? null : this.content[this.activeIndex];
-            this.leftAlign = -(v * 100) + "%";
-        });
+        this.onChanged("activeIndex", v => updateActiveContent(v));
 
         this.onChanged("activeContent", v => this.activeIndex = this.content?.indexOf(v));
+
+
     }
 
     override mount(ctx: ITemplateContext) {

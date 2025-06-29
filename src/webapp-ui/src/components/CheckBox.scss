@@ -5,6 +5,13 @@
     flex-direction: row;
     gap: size(1);
     align-items: center;
+    cursor: pointer;
+
+    &.disabled {
+        opacity: 0.6;
+        filter: grayscale(100);
+        pointer-events: none;
+    }
 
     .box {
         border: solid 1px var(--border-color);
@@ -13,6 +20,7 @@
         height: 1em;
         border-radius: 4px;
         font-size: 24px;
+        user-select: none;
 
         i {
             font-size: 24px;
