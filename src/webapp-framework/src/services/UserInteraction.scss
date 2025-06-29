@@ -9,7 +9,6 @@
     > .message {
         border-radius: 24px;
         background-color: var(--message-box-back);
-        overflow: hidden;
 
         > * {
             padding: 0;
@@ -21,6 +20,7 @@
 
         > main {
             padding: size(4) size(0);
+            overflow: hidden;
         }
 
         > footer {
