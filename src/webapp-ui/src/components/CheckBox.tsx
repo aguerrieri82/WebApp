@@ -25,7 +25,7 @@ export function CheckBox(options: ICheckBoxOptions) {
         <div className="box">
             <MaterialIcon name="check" />
         </div>
-        <NodeView>{options.content}</NodeView> 
+        <div className="content"><NodeView>{options.content}</NodeView></div> 
     </div>
 }
 
