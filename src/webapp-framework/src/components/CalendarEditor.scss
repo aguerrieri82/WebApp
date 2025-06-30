@@ -2,4 +2,36 @@
 
 .calendar-editor {
 
+    .pika-single {
+        font-size: 14px;
+        border: none;
+
+        .pika-lendar {
+
+            @media #{$mobile-device} {
+                min-width: 70vw;
+            }
+        }
+
+        .pika-title {
+            .pika-label {
+                font-size: 18px;
+            }
+        }
+
+        table.pika-table {
+
+
+            td {
+                button {
+                    font-size: 16px;
+                    aspect-ratio: 1;
+                }
+            }
+
+            th {
+                font-size: 16px;
+            }
+        }
+    }
 }

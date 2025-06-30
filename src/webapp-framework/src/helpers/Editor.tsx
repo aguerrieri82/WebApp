@@ -1,12 +1,15 @@
-import type { ComponentStyle } from "@eusoft/webapp-core";
+import { propOf, type ComponentStyle } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx/Helpers";
 import { formatText, isCommitable, Popup, useOperation, type IContent, type IContentHost, type IEditor, type IPopUpAction, type LocalString, type ViewNode } from "@eusoft/webapp-ui";
+import "./Editor.scss"
 
 export interface IPopupEditorOptions {
     message?: ViewNode;
     title?: LocalString;
     cancelLabel?: LocalString;
     okLabel?: LocalString;
+    style?: ComponentStyle;
+    selectOnChanged?: boolean;
 }
 
 export interface IPopupContentOptions {
@@ -22,7 +25,8 @@ export async function popupEditAsync<T>(editor: IEditor<T>, value?: T, options?:
             {options.message}
             {editor}
         </>),
-        "name": options?.title as string,
+        style: [options.style, "editor"],
+        name: options?.title as string,
         title: formatText(options?.title),
         actions: [{
             name: "cancel",
@@ -30,12 +34,19 @@ export async function popupEditAsync<T>(editor: IEditor<T>, value?: T, options?:
         }, {
             name: "ok",
             text: options?.okLabel ?? "ok",
+            priority: "primary",
             executeAsync: async () => {
                 if (isCommitable(editor))
                     return await editor.commitAsync();
                 return true;
             }
         }]
+    });
+
+    propOf(editor, "value").subscribe(v => {
+
+        if (v !== undefined && v !== null && options.selectOnChanged)
+            popup.close();
     });
 
     editor.value = value;

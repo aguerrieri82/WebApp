@@ -306,7 +306,7 @@ export class FilterEditor<TFilter, TItem>
                 <div className="active-filters">
                     {m.activeFilters.forEach(i => <div className="chip">
                         <Variable name="color" value={i.view.color} />
-                        <div className="body" on-click={() => m.editFilter(i)}>
+                        <div className="body" on-click={() => m.editFilterAsync(i)}>
                             {i.view.icon}
                             <div>{i.view.displayValue}</div>
                         </div>
@@ -507,8 +507,21 @@ export class FilterEditor<TFilter, TItem>
         this.updateFilter()
     }
 
-    editFilter(item: ISearchItem<TFilter, unknown>) {
+    async editFilterAsync(item: ISearchItem<TFilter, unknown>, apply = true) {
 
+        if (!item.editAsync)
+            return;
+        const edit = await item.editAsync(item.value);
+        if (!edit)
+            return;
+        item.value = edit.value;
+        if (item.createView)
+            item.view = item.createView(edit.value, edit.text);
+
+        if (apply)
+            this.updateFilter();
+
+        return true;
     }
 
     async addFilterAsync(item: ISearchItem<TFilter, unknown>) {
@@ -522,12 +535,8 @@ export class FilterEditor<TFilter, TItem>
 
             item = { ...item };
 
-            const edit = await item.editAsync?.(item.value);
-            if (!edit)
+            if (!await this.editFilterAsync(item, false))
                 return;
-            item.value = edit.value;
-            if (item.createView)
-                item.view = item.createView(edit.value, edit.text);
         }
 
         if (!item.allowMultiple) {

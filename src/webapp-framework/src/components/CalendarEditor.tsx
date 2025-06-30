@@ -3,8 +3,9 @@ import { forModel } from "@eusoft/webapp-jsx/Helpers";
 import type { IEditorOptions } from "@eusoft/webapp-ui/abstraction/IEditor";
 import { Editor } from "@eusoft/webapp-ui/editors/Editor";
 import Pikaday from 'pikaday';
-import 'pikaday/css/pikaday.css';
 import localTable from "../services/LocalTable";
+import 'pikaday/css/pikaday.css';
+import './CalendarEditor.scss';
 
 
 
@@ -26,6 +27,7 @@ const langs = {
 
 
 interface ICalendarEditorOptions extends IEditorOptions<Date> {
+    initialValue?: Date;
 }
 
 export class CalendarEditor extends Editor<Date, ICalendarEditorOptions> {
@@ -54,9 +56,13 @@ export class CalendarEditor extends Editor<Date, ICalendarEditorOptions> {
                 container: ctx.element,
                 i18n: langs[localTable.language],
                 bound: false,
+                defaultDate: this.initialValue, 
+                setDefaultDate: true,
                 onSelect: v => this.value = v
             })
 
         }, 0);
     }
+
+    initialValue: Date;
 }

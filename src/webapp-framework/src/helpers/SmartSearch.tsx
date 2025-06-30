@@ -134,24 +134,36 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
             month: "short",
             day: "numeric"
         })
-
     }
 
 
-    const pickDateAsync = async (value: Date) => {
+    const pickDateAsync = async (value: Date, editFrom: boolean, editTo: boolean) => {
 
-        const res = await popupEditAsync(new CalendarEditor(), value, {
-            title: "select-date"
+        const res = await popupEditAsync(new CalendarEditor({
+            initialValue: value
+        }), value, {
+            title: "select-date",
+            okLabel: "select"
         });
+
         if (!res)
             return;
 
         return {
             value: {
-                from: res,
-                to: res
+                from: editFrom ? res : undefined,
+                to: editTo ? res : undefined
             }
         } as ITextValue<IDateRange>
+    }
+
+    const applyFilter = (filter: TFilter, value: IDateRange) => {
+
+        if (value.from)
+            filter[options.fromField] = value.from as any;
+
+        if (value.to)
+            filter[options.toField] = value.to as any;
     }
 
     const createView = (range: IDateRange, text?: string) => {
@@ -191,12 +203,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
             fields: [options.fromField, options.toField],
             rank: options.rank ?? 0,
             allowMultiple: false,
-
-            apply: (filter, value) => {
-                filter[options.fromField] = value.from as any;
-                filter[options.toField] = value.to as any;
-            },
-
+            apply: applyFilter,
             createView: v => createView(v, text)
 
         } satisfies ISearchItem<TFilter, IDateRange>;
@@ -361,10 +368,8 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                     rank: -1,
                     fields: [options.fromField],
                     allowMultiple: false,
-                    editAsync: v => pickDateAsync(v?.from),
-                    apply: (filter, value) => {
-                        filter[options.fromField] = value?.from as any;
-                    },
+                    editAsync: v => pickDateAsync(v?.from, true, rangeParts.fromLabel == null),
+                    apply: applyFilter,
                     createView: v => {
 
                         if (!v?.from)
@@ -387,10 +392,8 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                     fields: [options.toField],
                     allowMultiple: false,
                     rank: -1,
-                    apply: (filter, value) => {
-                        filter[options.toField] = value?.to as any;
-                    },
-                    editAsync: v => pickDateAsync(v?.to),
+                    apply: applyFilter,
+                    editAsync: v => pickDateAsync(v?.to, false, true),
                     createView: v => {
                         if (!v?.to)
                             return {

@@ -16,6 +16,7 @@ localTable.add({
     "search-num-max": "Minore di {0}",
     "search-num-range": "Compreso tra {0} e {1}",
     "digit-a-number": "<scrivere un numero>",
-    "search": "Ricerca"
+    "search": "Ricerca",
+    "select-date": "Seleziona data",
 }, { lang: "IT" })
 
