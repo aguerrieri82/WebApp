@@ -1,6 +1,6 @@
 {
   "name": "@eusoft/webapp-ui",
-  "version": "0.0.65",
+  "version": "0.0.66",
   "packageManager": "pnpm",
   "type": "module",
   "main": "src/index.ts",
