@@ -85,6 +85,25 @@ export class JsxParseContext {
         }
     }
 
+    isFunctionalComponent(path: NodePath) {
+
+        const func = path.getFunctionParent();
+
+        if (!func || func.type != "FunctionDeclaration")
+            return false;
+
+        if (func.isFunctionDeclaration()) {
+            const id = func.get("id");
+            if (!id.isIdentifier() || id.node.name[0] == id.node.name[0].toLowerCase())
+                return false;
+        }
+
+        const params = func.get("params");
+
+        return params.length == 0 || (params.length == 1 && params[0].isIdentifier());
+
+    }
+
     parse(template: NodePath<JSXElement | JSXFragment>): ITemplateElement  {
 
         const rootName = template.isJSXElement() && template.get("openingElement").get("name").toString();
@@ -99,28 +118,16 @@ export class JsxParseContext {
         }
         else {
 
-            const func = template.getFunctionParent();
+            if (this.isFunctionalComponent(template)) {
 
-            if (func && func.type == "FunctionDeclaration") {
-          
+                const func = template.getFunctionParent();
+
                 const params = func.get("params");
 
-                //Skip lowercase
-                let isFuncComp = true;
-
-                if (func.isFunctionDeclaration()) {
-                    const id = func.get("id");
-                    if (id.isIdentifier() && id.node.name[0] == id.node.name[0].toLowerCase())
-                        isFuncComp = false; 
-                }
-   
-                if (isFuncComp) {
-                    if (params.length == 1 && params[0].isIdentifier())
-                        this.curModel = params[0].node as Identifier;
-                    else
-                        this.curModel = t.identifier("emptyProps");
-                }
-
+                if (params.length == 1)
+                    this.curModel = params[0].node as Identifier;
+                else
+                    this.curModel = t.identifier("emptyProps");
             }
         }
 
@@ -352,6 +359,9 @@ export class JsxParseContext {
         const bind = path.scope.getBinding(memberName);
 
         if (!bind?.path.isVariableDeclarator())
+            return;
+
+        if (!this.isFunctionalComponent(path))
             return;
 
         let isTrack;
