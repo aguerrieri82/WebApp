@@ -171,7 +171,7 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
             setTimeout(() => this.showSuggestions = false, 10);
     }
 
-    listItemView(item: TItem, fake?) : ViewNode {
+    listItemView(item: TItem) : ViewNode {
         return <>
             {this.itemsSource.getIcon(item)}
             <span>{this.itemsSource.getText(item)}</span>
