@@ -538,7 +538,6 @@ export function numberRangeSearch<TFilter>(options: INumberRangeSearchOptions<TF
 
             const res = [] as ISearchItem<TFilter, INumberRange>[];
 
-
             const [macthLabel, noLabelQuery] = matchText(query, [curLabel]);
 
             const nums: number[] = [];
@@ -584,7 +583,7 @@ export function numberRangeSearch<TFilter>(options: INumberRangeSearchOptions<TF
                 }
             }
 
-            if (nums.length == 0) {
+            if (noLabelQuery.parts.length == 0) {
                 res.push({
                     ...createItem(),
                     rank: -1
@@ -675,7 +674,7 @@ export function querySearch<TFilter, TItem, TId>(options: IQuerySearchOptions<TF
                     allowMultiple: false,
                     value: query.full,
                     fields: [options.queryField],
-                    rank: -1,
+                    rank: -2,
                     view: {
                         icon: <MaterialIcon name="search" />,
                         label: formatText("search"),
