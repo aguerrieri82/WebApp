@@ -7,8 +7,6 @@ import localTable from "../services/LocalTable";
 import 'pikaday/css/pikaday.css';
 import './CalendarEditor.scss';
 
-
-
 const langs = {
     "IT": {
         previousMonth: 'Mese prec.',
@@ -25,7 +23,6 @@ const langs = {
     }
 }
 
-
 interface ICalendarEditorOptions extends IEditorOptions<Date> {
     initialValue?: Date;
 }
@@ -37,7 +34,6 @@ export class CalendarEditor extends Editor<Date, ICalendarEditorOptions> {
     constructor(options?: ICalendarEditorOptions) {
 
         super();
-      
 
         this.init(CalendarEditor, {
             template: forModel<this>(m => <div className={m.className}>

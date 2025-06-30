@@ -1,4 +1,3 @@
-import type { Bindable } from "@eusoft/webapp-core/abstraction/IBindable";
 import { type LocalString, type ViewNode } from "../types";
 
 export type ActionPriority = "primary" | "secondary";

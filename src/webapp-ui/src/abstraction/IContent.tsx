@@ -32,8 +32,6 @@ export interface IContent<TArgs extends ObjectLike = undefined> extends ICompone
 
     host: IContentHost;
 
-
-
     readonly loadState: LoadState;
 }
 

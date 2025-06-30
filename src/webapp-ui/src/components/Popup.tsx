@@ -1,7 +1,7 @@
 ﻿import { Component, type ComponentStyle, type IComponentOptions, buildStyle, cleanProxy, delayAsync, mount } from "@eusoft/webapp-core";
 import { type LocalString, type ViewNode } from "../types";
 import { forModel } from "@eusoft/webapp-jsx";
-import { Action, createAction } from "./Action";
+import { Action } from "./Action";
 import { formatText } from "../utils/Format";
 import "./Popup.scss";
 import { withUnblock } from "../utils";

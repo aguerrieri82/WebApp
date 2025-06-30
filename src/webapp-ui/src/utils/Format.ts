@@ -1,5 +1,5 @@
-import { getTypeName, type ITemplate, Services, toKebabCase } from "@eusoft/webapp-core";
-import { TimeSpan, type Enum, type EnumValue, type LocalString } from "../types";
+import { type ITemplate, Services, toKebabCase } from "@eusoft/webapp-core";
+import { type TimeSpan, type Enum, type EnumValue, type LocalString } from "../types";
 import { type ILocalization, LOCALIZATION } from "../abstraction";
 
 export function formatTextSimple(text: LocalString, ...args: any[]) {

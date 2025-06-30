@@ -5,7 +5,7 @@ import { EditorBuilder } from "./EditorBuilder";
 import { CommitableEditor } from "./CommitableEditor";
 import { type LocalString, type ViewNode } from "../types";
 import { createAction, ItemView, MaterialIcon, Popup } from "../components";
-import { type IAction, isCommitable, isValidable } from "../abstraction";
+import { isCommitable, isValidable } from "../abstraction";
 import { formatText } from "../utils/Format";
 import "./ArrayEditor.scss";
 
@@ -93,7 +93,6 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
             ...options,
         });
     }
-
 
     async updateItemAsync(item: TItem) {
 
@@ -216,7 +215,6 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
         throw new Error("Not implemented");
     }
 
-
     canEdit: boolean | { (item: TItem): boolean };
 
     canDelete: boolean | { (item: TItem): boolean };
@@ -229,7 +227,6 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
 
     newItemLabel: LocalString;
 }
-
 
 declare module "./EditorBuilder" {
     interface EditorBuilder<TModel, TModelContainer> {

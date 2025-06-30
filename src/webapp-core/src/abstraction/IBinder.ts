@@ -35,7 +35,6 @@ export type BoundObjectModes<T> = {
     [K in keyof T & string]?: BindMode;
 }
 
-
 export function isBindExpression(value: unknown): value is BindExpression<unknown, unknown> {
 
     return value &&

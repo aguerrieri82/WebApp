@@ -73,7 +73,6 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
         this.onChanged("showSuggestions", v => this.onShowSuggestions(v));
     }
 
-
     async searchAsync(query: string) {
 
         if (this._firstLoad)
@@ -108,7 +107,7 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
         if (value === null || value === undefined)
             this.selectItem(null);
         else {
-            let item = await this.itemsSource.getItemByValueAsync?.(value);
+            const item = await this.itemsSource.getItemByValueAsync?.(value);
             if (this.freeText && typeof value == "string" && (item === null || item === undefined)) {
                 const item = this.createItem(value);
                 if (item)
@@ -149,7 +148,6 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
             this._input.select();
         }
     }
-
 
     override mount(ctx: ITemplateContext) {
         super.mount(ctx);

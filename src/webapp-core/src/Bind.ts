@@ -77,7 +77,6 @@ export namespace Bind {
         value[BIND_MODE] = "expression";
         return value as BindExpression<TModel, TValue> & { [BIND_MODE]: "expression" };
     }
-
      
     export function action<T extends BindValue<unknown, unknown>>(value: T): T {
 
@@ -151,7 +150,6 @@ export type ComponentType<TProps> =
     ClassWithArg<IComponent<TProps>, TProps> |
     ClassWithArg<IBehavoir<HTMLElement, TProps>, TProps> |
     { (props: TProps): unknown };
-
 
 export function configureBindings<TComp extends ComponentType<TProps>, TProps>(
     component: TComp,

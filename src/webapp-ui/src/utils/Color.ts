@@ -1,4 +1,3 @@
-
 const testCanvas = document.createElement("canvas").getContext("2d");
 
 export function bestContrastWhiteOrBlack(bgColor: string): string {
@@ -14,7 +13,6 @@ export function bestContrastWhiteOrBlack(bgColor: string): string {
     return contrastWithWhite >= contrastWithBlack ? "white" : "black";
 }
 
-
 function toHex(color: string): string | null {
 
     testCanvas.fillStyle = "#000"; 
@@ -22,7 +20,6 @@ function toHex(color: string): string | null {
     const computed = testCanvas.fillStyle;
     return computed.length === 7 ? computed : null;
 }
-
 
 function getContrastRatio(hex1: string, hex2: string): number {
     const lum1 = getLuminance(hex1);

@@ -3,7 +3,6 @@ import { type ViewNode } from "../types";
 import { type MaterialIconName, type MaterialSymbolName } from "./Material";
 import "./Icon.scss";
 
-
 export interface IIconOptions {
     content: ViewNode;
 }

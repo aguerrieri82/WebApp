@@ -5,7 +5,6 @@ import { formatEnum, formatText } from "../utils/Format";
 
 const LARGE_ITEMS_SIZE_VALUE = 50;
 
-
 export function staticItemsSourceWithIcon<TValue>(...items: [LocalString, TValue, ViewNode][]) {
 
     const simpleItems = items.map(a => ({
@@ -24,7 +23,6 @@ export function staticItemsSourceWithIcon<TValue>(...items: [LocalString, TValue
         id: null
     } as IItemsSource<ISimpleItem<TValue>, TValue, void> & { id: string }
 }
-
 
 export function staticItemsSource<TValue>(...items: [LocalString, TValue][]) {
 

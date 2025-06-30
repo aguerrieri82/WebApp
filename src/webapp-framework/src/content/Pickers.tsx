@@ -1,4 +1,4 @@
-import { Bind, cleanProxy, propOf, type ComponentStyle } from "@eusoft/webapp-core";
+import { Bind, cleanProxy, type ComponentStyle } from "@eusoft/webapp-core";
 import { type LocalString, type IItemsSource, CheckBox } from "@eusoft/webapp-ui";
 import type { IFilterEditor } from "../abstraction/IFilterEditor";
 import { TextFilterEditor } from "../components/TextFilterEditor";
@@ -32,7 +32,6 @@ interface IPickMultipleItemsOptions<TItem, TValue, TFilter> extends IPickerOptio
     showSelectAll?: boolean;
 }
 export function pickSingleItemContent<TItem, TValue, TFilter>(options: IPickSingleItemOptions<TItem, TValue, TFilter>) {
-
 
     let filterEditor: () => IFilterEditor<TFilter, TItem>;
 
@@ -90,7 +89,6 @@ export function pickSingleItemContent<TItem, TValue, TFilter>(options: IPickSing
 }
 
 export function pickMultipleItemsContent<TItem, TValue, TFilter>(options: IPickMultipleItemsOptions<TItem, TValue, TFilter>) {
-
 
     let filterEditor: () => IFilterEditor<TFilter, ISelectableItem<TItem>>;
 

@@ -111,7 +111,6 @@ export function truncateTime(date: Date | string): Date {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
-
 export function dayStart(date: Date | string): Date {
     if (!(date = parseDate(date)))
         return null;

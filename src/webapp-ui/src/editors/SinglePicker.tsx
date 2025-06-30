@@ -64,8 +64,6 @@ export async function pickItemAsync<T>(options: IPickItemOptions<T>) : Promise<T
     return value;
 }
 
-
-
 export const SinglePickerTemplates: TemplateMap<SinglePicker<unknown, unknown>> = {
 
     "Default": forModel(m => <div

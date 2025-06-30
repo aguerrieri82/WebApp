@@ -47,7 +47,6 @@ export function matchText(query: ISearchQuery, matchList: (string | RegExp)[]): 
     return [false, noLabelQuery]
 }
 
-
 export function indexOfStartsWith(list: string[], value: string) {
 
     return indexOf(list, value, (a, b) => a.toLowerCase().startsWith(b.toLowerCase()));
@@ -76,7 +75,6 @@ export function indexOf(
     return [foundIndex, rank];
 }
 
-
 /**********************************/
 /*  dateRangeSearch */
 /**********************************/
@@ -90,7 +88,6 @@ interface IDatePart {
     value: number;
     rank?: number;
 }
-
 
 interface IDateRangeSearchOptions<TFilter> {
 
@@ -110,7 +107,6 @@ interface IDateRangeSearchOptions<TFilter> {
 }
 
 export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilter>) {
-
 
     const MONTHS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(a => new Date(2025, a, 1).toLocaleDateString(localTable.language, {
         month: "long"
@@ -135,7 +131,6 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
             day: "numeric"
         })
     }
-
 
     const pickDateAsync = async (value: Date, editFrom: boolean, editTo: boolean) => {
 
@@ -195,7 +190,6 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
         }
     }
 
-
     const createItem = (range: IDateRange, text?: string) => {
 
         return {
@@ -210,7 +204,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
     }
 
     const match = (keywords: string[]) => {
-        let now = new Date();
+        const now = new Date();
 
         let dayPart: IDatePart;
         let monthPart: IDatePart;
@@ -235,7 +229,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                 monthPart = { keyword, value: monthIdx + 1 };
 
             const [weekIdx] = indexOf(WEEK_DAYS, keyword, (a, b) =>
-                a.replace("ì", "i").toLowerCase().startsWith(b.replace("ì", "i").toLowerCase())
+                a.replace("ï¿½", "i").toLowerCase().startsWith(b.replace("ï¿½", "i").toLowerCase())
             );
             if (weekIdx !== -1 && !weekDayPart)
                 weekDayPart = { keyword, value: weekIdx };
@@ -279,7 +273,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
         }
 
         if (weekDayPart) {
-            let cur = new Date(now);
+            const cur = new Date(now);
             while (true) {
                 const weekDay = (cur.getDay() + 6) % 7; // map Sunday=6, Monday=0
                 if (weekDay === weekDayPart.value) break;
@@ -569,7 +563,6 @@ export function numberRangeSearch<TFilter>(options: INumberRangeSearchOptions<TF
                 });
             }
 
-
             if (options.staticItems) {
                 for (const item of options.staticItems) {
 
@@ -602,12 +595,10 @@ export function numberRangeSearch<TFilter>(options: INumberRangeSearchOptions<TF
 
 export interface IMatchField<TItem, TValue> {
 
-
     get(item: TItem): TValue;
 
     format(value: TValue): ISearchItemView
 }
-
 
 export interface IQuerySearchOptions<TFilter, TItem, TId> {
 
@@ -725,7 +716,6 @@ export function querySearch<TFilter, TItem, TId>(options: IQuerySearchOptions<TF
 
     } as IQuerySearchProvider<TFilter, TItem>;
 }
-
 
 /**********************************/
 /*  Helepers */

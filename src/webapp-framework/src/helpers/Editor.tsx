@@ -1,6 +1,6 @@
 import { propOf, type ComponentStyle } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx/Helpers";
-import { formatText, isCommitable, Popup, useOperation, type IContent, type IContentHost, type IEditor, type IPopUpAction, type LocalString, type ViewNode } from "@eusoft/webapp-ui";
+import { formatText, isCommitable, Popup, type IContent, type IContentHost, type IEditor, type IPopUpAction, type LocalString, type ViewNode } from "@eusoft/webapp-ui";
 import "./Editor.scss"
 
 export interface IPopupEditorOptions {
@@ -16,7 +16,6 @@ export interface IPopupContentOptions {
     style?: ComponentStyle;
     closeLabel?: LocalString;
 }
-
 
 export async function popupEditAsync<T>(editor: IEditor<T>, value?: T, options?: IPopupEditorOptions) {
 
@@ -59,8 +58,6 @@ export async function popupEditAsync<T>(editor: IEditor<T>, value?: T, options?:
     return editor.value;
 }
 
-
-
 export async function showContentPopup<
     TContent extends IContent<TArgs> & { result?: TResult },
     TArgs extends ObjectLike,
@@ -89,7 +86,6 @@ export async function showContentPopup<
         text: options?.closeLabel ?? "close",
         executeAsync: () => Promise.resolve(true)
     });
-
 
     const host: IContentHost = {
         canGoBack: false,

@@ -27,7 +27,6 @@ export class Variable extends Behavoir<IVariableOptions>{
         update(this.value);        
     }
 
-
     name: string;
 
     value: string;

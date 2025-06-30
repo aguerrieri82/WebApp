@@ -1,4 +1,4 @@
-import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, type LoadResult, formatText, isResultContainer, isStateManager, replaceArgs, useOperation, withUnblock } from "@eusoft/webapp-ui";
+import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, type LoadResult, formatText, isResultContainer, isStateManager, replaceArgs, withUnblock } from "@eusoft/webapp-ui";
 import { app } from "../App";
 
 type StringLike = { toString(): string } | string;
@@ -45,7 +45,6 @@ function restoreState<T>(key: string, defValue: T) {
 }
 
 export class Router {
-
 
     protected _history: IRouteState[];
     protected _entries: IRounteEntry<ObjectLike>[] = [];
@@ -108,7 +107,6 @@ export class Router {
 
         return this.navigateActiveRouteAsync();
     }
-
 
     addAction<TArgs extends RouteArgs>(route: string, action: RouteAction<TArgs>) {
 
@@ -369,8 +367,6 @@ export class Router {
         const activeTrans = transition ?? ((entry.tag as IContentInfo)?.transition ?? "push");
 
         document.documentElement.dataset.transition = activeTrans;
-
-
 
         const url = this.replaceUrl(entry.route as string, newArgs);
 

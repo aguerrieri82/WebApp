@@ -1,4 +1,4 @@
-import { Behavoir, configureBindings, propOf, registerComponent, type Bindable, type ITemplateContext } from "@eusoft/webapp-core";
+import { Behavoir, configureBindings, type Bindable, type ITemplateContext } from "@eusoft/webapp-core";
 import { isParentOrSelf } from "../utils";
 
 export interface IHideOnClickOptions {

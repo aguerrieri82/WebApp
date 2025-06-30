@@ -4,7 +4,6 @@ import {  MaterialIcon,  type IEditorOptions,  type ValueChangedReason } from "@
 import type { IFilterEditor } from "../abstraction/IFilterEditor";
 import "./TextFilterEditor.scss"
 
-
 export interface ITextFilterEditorOptions<TFilter> extends IEditorOptions<TFilter> {
 
     queryField: KeyOfType<TFilter, string>;
@@ -13,7 +12,6 @@ export interface ITextFilterEditorOptions<TFilter> extends IEditorOptions<TFilte
 export class TextFilterEditor<TFilter>
     extends Component<ITextFilterEditorOptions<TFilter>>
     implements IFilterEditor<TFilter, unknown> {
-
 
     constructor(options: ITextFilterEditorOptions<TFilter>) {
 
@@ -49,7 +47,6 @@ export class TextFilterEditor<TFilter>
     protected onFocusChanged(value: boolean) {
 
     }
-
 
     onValueChanged(value: TFilter, oldValue: TFilter, reason: ValueChangedReason) {
 

@@ -2,7 +2,6 @@ import type { ComponentStyle } from "@eusoft/webapp-core/abstraction/IComponentO
 import { buildStyle } from "@eusoft/webapp-core/utils/Style";
 import { ImageLoader } from "../behavoirs/ImageLoader";
 
-
 export interface IImageOptions {
     content: Blob | string;
     style?: ComponentStyle;

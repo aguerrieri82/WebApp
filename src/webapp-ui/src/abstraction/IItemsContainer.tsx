@@ -1,4 +1,3 @@
-import type { IEditor, IEditorOptions } from "./IEditor";
 import type { IItemsSource } from "./IItemsSource";
 
 export interface IItemsContainer<TItem = unknown, TValue = unknown, TFilter = unknown>  {

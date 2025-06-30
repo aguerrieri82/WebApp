@@ -784,7 +784,6 @@ export class TemplateBuilder<TModel, TElement extends HTMLElement = HTMLElement>
         return content as ITemplateProvider<TProps>;
     }
 
-
     inlineComponent<TComp extends ClassComponenType<TProps> & TProps,
         TResult extends FunctionalComponenType<TProps>,
         TProps extends ObjectLike = ComponentProps<TComp>>(constructor: ComponentType<TProps, TComp, TResult>, props: TProps): this {

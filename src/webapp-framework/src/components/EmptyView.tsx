@@ -1,4 +1,4 @@
-﻿import { Action, type LocalString, MaterialIcon, NodeView, type ViewNode, formatText } from "@eusoft/webapp-ui"
+﻿import { Action, MaterialIcon, NodeView, type ViewNode } from "@eusoft/webapp-ui"
 import { type MaterialIconName } from "@eusoft/webapp-ui"
 import "./EmptyView.scss"
 

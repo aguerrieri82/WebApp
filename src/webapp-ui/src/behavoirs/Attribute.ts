@@ -25,7 +25,6 @@ export class Attribute extends Behavoir<IAttributeOptions>{
         update(this.condition);        
     }
 
-
     name: string;
 
     condition: boolean;

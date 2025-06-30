@@ -11,7 +11,6 @@ interface IMessageOptions {
     style?: ComponentStyle;
 }
 
-
 export function Message(options: IMessageOptions) {
 
     function getIconName(type: IMessageOptions["type"]): MaterialSymbolName {

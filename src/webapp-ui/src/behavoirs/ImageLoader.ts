@@ -6,7 +6,6 @@ export interface IImageLoaderOptions {
 }
 export class ImageLoader extends Behavoir<IImageLoaderOptions>{
 
-
     override attach(ctx: ITemplateContext<this, HTMLImageElement>): void {
 
         const updateContent = (content: string | Blob) => {

@@ -16,7 +16,6 @@ export abstract class Behavoir<
         this.updateOptions();
     }
 
-
     protected updateOptions() {
 
         for (const key in this.options) {

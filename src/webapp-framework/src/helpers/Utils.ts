@@ -1,6 +1,3 @@
-
-
-
 export function fullUri(uri: string): string {
 
     if (!uri.startsWith("http://") && !uri.startsWith("https://")) {

@@ -1,4 +1,4 @@
-import { Action, Content, formatText, type IAction, type IContent, type IContentInstance, type IContentOptions, type IEditor, type IItemsSource, type IItemViewOptions, ItemView, ListView, type LocalString, MaterialIcon, useOperation, type ViewNode } from "@eusoft/webapp-ui";
+import { Action, Content, formatText, type IAction, type IContent, type IContentInstance, type IContentOptions, type IItemsSource, type IItemViewOptions, ItemView, ListView, type LocalString, MaterialIcon, useOperation, type ViewNode } from "@eusoft/webapp-ui";
 import { type IFilterEditor  } from "../abstraction/IFilterEditor";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import router from "../services/Router";
@@ -8,12 +8,10 @@ import { cleanProxy } from "@eusoft/webapp-core/Expression";
 import { ContentBuilder } from "./Builder";
 import { isClass, type ComponentStyle } from "@eusoft/webapp-core";
 
-
 export interface IItemActionContext<TItem> {
     target: TItem;
     index: number;
 }
-
 
 export interface IListColumn<TItem, TValue> {
     name?: string;
@@ -246,7 +244,6 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
         await this.loadNextPageAsync(true);
     }
 
-
     async loadNextPageAsync(clear?: boolean) {
 
         const newItems = await this.itemsSource.getItemsAsync(
@@ -393,7 +390,6 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
         return new ItemListContentBuilder<TItem, TFilter>();
     }
 }
-
 
 export class ItemListContentBuilder<
     TItem,

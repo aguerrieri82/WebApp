@@ -1,4 +1,4 @@
-import { type TemplateMap, type BindExpression, type ITemplateContext, INDEX, delayAsync, Bind } from "@eusoft/webapp-core";
+import { type TemplateMap, type BindExpression, Bind } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import { EditorBuilder } from "./EditorBuilder";
 import { type IItemsSource } from "../abstraction/IItemsSource";
@@ -7,7 +7,6 @@ import { CommitableEditor, type ICommitableEditorOptions } from "./CommitableEdi
 import "./MultiSelector.scss";
 import type { ViewNode } from "../types";
 import type { IItemsContainer } from "../abstraction/IItemsContainer";
-import { Attribute } from "../behavoirs/Attribute";
 import type { ISelectableItem } from "../abstraction/ISelectableItem";
 import { CheckBox } from "../components";
 import { Subscribe } from "../behavoirs/Subscribe";
@@ -27,7 +26,6 @@ interface IMultiSelectorOptions<TItem, TValue, TFilter> extends ICommitableEdito
     canSelect?(value: TItem): boolean;
 
 }
-
 
 export const MultiSelectorTemplates: TemplateMap<MultiSelector<unknown, unknown, unknown>> = {
 

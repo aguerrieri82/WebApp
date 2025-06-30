@@ -79,7 +79,6 @@ export class TimeSpan {
         return new TimeSpan(value * 1000 * 60 * 60);
     }
 
-
     static fromDays(value: number) {
         return new TimeSpan(value * 1000 * 60 * 60 * 24);
     }
@@ -124,5 +123,4 @@ export class TimeSpan {
 
     ticks: number;
 }    
-
 

@@ -64,7 +64,6 @@ export class ObjectEditor<TObj extends ObjectLike>
         }) as any;
     }
 
-
     override async beginEdit(value) {
         /*
         if (!this._isLoaded)

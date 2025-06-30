@@ -111,7 +111,6 @@ export class Content<
         else
             this._loadState = "error";
 
-
         this.showBack = host.canGoBack;
 
         return isValid;
@@ -120,7 +119,6 @@ export class Content<
     protected async onLoadAsync(args?: TArgs) {
         return true;
     }
-
 
     async onOpenAsync(): Promise<unknown> {
 
@@ -170,7 +168,6 @@ export function singleton<T>(type: Class<T>) {
     }
 }
 
-
 export function content<
     TArgs extends {},
     TContent extends IContent<TArgs>>(
@@ -182,6 +179,5 @@ export function content<
         factory: info.factory,
     } as IContentInstance<TArgs, TContent>;
 }
-
 
 export default Content;

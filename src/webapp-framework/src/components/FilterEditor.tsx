@@ -23,8 +23,6 @@ type MatchFields<TItem> = {
     [K in keyof TItem as K extends string ? K : never]: SearchItemFormatter<TItem[K]>;
 }
 
-
-
 /**********************************/
 /*  Interfaces  */
 /**********************************/
@@ -48,7 +46,6 @@ export interface IFilterField<
     TValuesFilter,
     TValue = TFilter[TKey],
     TItemValue = ItemType<TValue, Multiple>> {
-    
 
     name: TKey;
 
@@ -124,11 +121,9 @@ export function itemsSearch<
 
     let lastItemsFilterJson: string;
 
-
     const label = formatText(field.label ?? toKebabCase(field.name)) as string;
 
     const matchList = field.keywords ?? [label.toLowerCase()];
-
 
     const modeMatchLabel = field.searchMode & FieldSearchMode.MatchLabel;
 
@@ -189,7 +184,6 @@ export function itemsSearch<
 
         return result;
     }
-
 
     return {
 
@@ -263,7 +257,6 @@ export function itemsSearch<
 
     } as ISearchItemProvider<TFilter, TItemValue>;
 }
-
 
 /**********************************/
 /*  FilterEditor */
@@ -374,7 +367,6 @@ export class FilterEditor<TFilter, TItem>
                 const exp = Expression.build(null, this.matchFields).expression;
 
                 const fields: string[] = [];
-
 
                 const visit = (curExp: Expression<unknown>, curParts: string[]) => {
                     if (curExp.actions.length == 0) {
