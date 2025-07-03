@@ -37,7 +37,7 @@ div.text-filter-editor {
                 vertical-align: middle;
             }
 
-            &.show-filters {
+            &.show-filters > i{
                 color: var(--primary-color);
             }
         }
