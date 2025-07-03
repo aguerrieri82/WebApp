@@ -22,8 +22,12 @@
     list-style: none;
     display: flex;
     flex-direction: column;
-
-    > .action {
+    
+    > button.action.text {
+        line-height: normal;
+        margin-left: size(1);
+        color: var(--text-color);
+        flex-grow: 1;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -38,14 +42,8 @@
         }
 
         .icon {
-            color: var(--surface-color-light);
+            color: var(--primary-color);
             width: 24px;
-        }
-
-        .text {
-            line-height: normal;
-            margin-left: size(1);
-            flex-grow: 1;
-        }
+        }         
     }
 }
