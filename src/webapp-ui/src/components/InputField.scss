@@ -118,6 +118,7 @@
 
                 &:-webkit-autofill {
                     -webkit-box-shadow: 0 0 0px 1000px var(--input-back-color) inset;
+                    -webkit-text-fill-color: var(--text-color);
                 }
             }
         }
@@ -192,7 +193,7 @@
 
                 > label {
                     top: -6px;
-                    background-color: white;
+                    background-color: var(--back-color);
                 }
             }
 

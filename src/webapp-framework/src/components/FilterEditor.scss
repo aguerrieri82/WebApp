@@ -63,7 +63,7 @@ div.filter-editor {
         align-items: center;
         padding: 0 4px;
         border-color: var(--color);
-        background-color: color-mix(in srgb, var(--color) 5%, white 95%);
+        background-color: color-mix(in srgb, var(--color) 5%, var(--mix-to-color) 95%);
         --color: #777;
 
         .body {
