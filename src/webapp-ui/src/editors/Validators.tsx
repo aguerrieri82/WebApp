@@ -31,11 +31,18 @@ export function validateWhen<TValiator extends Validator<unknown, unknown>>(sele
     }
 }
 
+export async function requiredTrue(ctx: IValidationContext<unknown>, value: unknown) {
+
+    if (value !== true)
+        return ValidationResult.error(formatText("err-must-check", ctx?.fieldName));
+
+    return ValidationResult.valid;
+}
+
 export async function required(ctx: IValidationContext<unknown>, value: unknown)  {
 
     if (value === null ||
         value === undefined ||
-        value === false ||
         (Array.isArray(value) && value.length == 0) ||
         (typeof (value) == "string" && value.trim().length == 0))
         return ValidationResult.error(formatText("err-field-required", ctx?.fieldName));
