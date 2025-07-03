@@ -8,3 +8,13 @@ export function fullUri(uri: string): string {
 
     return uri;
 }
+
+export function distinct<T>(items: Iterable<T>) {
+
+    const map = new Map<T, true>();
+
+    for (const item of items) 
+        map.set(item, true);
+
+    return Array.from(map.keys());
+}

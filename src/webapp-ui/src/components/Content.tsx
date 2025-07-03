@@ -8,7 +8,7 @@ import { stringOrUndef, useOperation } from "../utils";
 import { type IAction } from "../abstraction/IAction";
 import { type IContentHost } from "../abstraction";
 import "./Content.scss";
-import { Action } from "./Action";
+import { Action, filterActions } from "./Action";
 
 export interface IContentOptions<TArgs extends ObjectLike> extends IComponentOptions {
 
@@ -42,7 +42,7 @@ export const ContentTemplates: TemplateMap<Content> = {
         </div>
         <footer>
             {m.actions?.forEach(a =>
-                <Action name={a.name} type={a.type} onExecuteAsync={a.executeAsync}>
+                <Action visible={!a.canExecute || a.canExecute({})} name={a.name} type={a.type} onExecuteAsync={a.executeAsync}>
                     {a.icon}
                     {formatText(a.text)}
                 </Action>

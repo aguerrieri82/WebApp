@@ -20,7 +20,9 @@ interface IActionOptions<TTarget> extends IComponentOptions {
 
     color?: Bindable<string>;   
 
-    onExecuteAsync?: (ctx?: IActionContext<TTarget>) => Promise<unknown> | void;
+    canExecute?(ctx?: IActionContext<TTarget>): boolean;
+
+    onExecuteAsync?(ctx?: IActionContext<TTarget>) : Promise<unknown> | void;
 
     enabled?: Bindable<boolean>;
 }
@@ -58,6 +60,9 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
         if (this.isExecuting)
             return;
 
+        if (!this.canExecute(ctx))
+            return;
+
         ev.stopPropagation();
         ev.stopImmediatePropagation();
 
@@ -83,6 +88,10 @@ export class Action<TTarget = unknown> extends Component<IActionOptions<TTarget>
 
             this.isExecuting = false;
         }
+    }
+
+    canExecute(ctx?: IActionContext<TTarget>): boolean {
+        return true;
     }
 
     onExecuteAsync(ctx?: IActionContext<TTarget>): Promise<unknown> | void {
@@ -118,6 +127,7 @@ export function createAction(action: IAction, style?: ComponentStyle) {
         info: action.text,
         name: action.name,
         onExecuteAsync: action.executeAsync,
+        canExecute: action.canExecute,
         type: action.type,
         style
     }; 
@@ -132,4 +142,9 @@ export function createAction(action: IAction, style?: ComponentStyle) {
     }
 
     return new Action(mainAction);
+}
+
+export function filterActions<T>(actions: IAction<T>[], target?: T) {
+
+    return actions?.filter(a => !a.canExecute || a.canExecute({ target }));
 }

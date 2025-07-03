@@ -63,7 +63,7 @@ export class ContentBuilder<
         return this;
     }
 
-    feature(value: IFeature<IContent>) {
+    feature(value: IFeature<TContent>) {
 
         this._options.features ??= [];
         this._options.features.push(value);

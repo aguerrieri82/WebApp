@@ -34,11 +34,11 @@ export type ListPaginationMode = "manual" | "auto" | "none";
 
 export interface IItemListOptions<TItem, TFilter> extends IContentOptions<ObjectLike> {
 
-    canAdd?: boolean | { (): Promise<boolean> | boolean };
+    canAdd?: boolean | { (): boolean };
 
-    canEdit?: boolean | { (item?: TItem): Promise<boolean> | boolean };
+    canEdit?: boolean | { (item?: TItem):  boolean };
 
-    canDelete?: boolean | { (item: TItem): Promise<boolean> | boolean };
+    canDelete?: boolean | { (item: TItem): boolean };
 
     itemStyle: (item: TItem) => ComponentStyle;
 
@@ -125,14 +125,17 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
     protected getItemActions(item: TItem) {
 
-        const result = [...this.builtInActions];
+        let result = [...this.builtInActions];
 
         this.itemActions(item, result);
+
+        result = result.filter(a => !a.canExecute || a.canExecute({ target: item }));
 
         let i = 0;
         for (const action of result) { 
 
             const oldExecute = action.executeAsync;
+
 
             result[i] = {
                 ...action,
@@ -175,6 +178,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
                 text: "delete",
                 icon: <MaterialIcon name="delete" />,
                 priority: "secondary",
+                canExecute: ctx => (typeof this.canDelete == "function") ? this.canDelete(ctx.target) : true,
                 executeAsync: ctx => this.deleteItemInternalAsync(ctx.target, ctx.index)
             });
 
@@ -185,6 +189,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
                 type: "local",
                 icon: <MaterialIcon name="edit" />,
                 priority: "secondary",
+                canExecute: ctx => (typeof this.canEdit == "function") ? this.canEdit(ctx.target) : true,
                 executeAsync: ctx => this.editItemAsync(ctx.target)
             });
 
@@ -197,6 +202,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
                 priority: "primary",
                 type: "local",
                 text: this.addLabel ?? "add-new",
+                canExecute: ctx => (typeof this.canAdd == "function") ? this.canAdd() : true,
                 executeAsync: async () => this.addItemAsync()
             });
 
@@ -352,11 +358,11 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
     builtInActions: IAction<TItem, IItemActionContext<TItem>>[];
 
-    canAdd: boolean | { (): Promise<boolean> | boolean };
+    canAdd: boolean | { (): boolean };
 
-    canDelete: boolean | { (item: TItem): Promise<boolean> | boolean };
+    canDelete: boolean | { (item: TItem): boolean };
 
-    canEdit: boolean | { (item: TItem): Promise<boolean> | boolean };
+    canEdit: boolean | { (item: TItem): boolean };
 
     canOpen: boolean;
 
