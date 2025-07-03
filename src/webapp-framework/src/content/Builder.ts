@@ -91,7 +91,8 @@ export class ContentBuilder<
         return {
             name: this._options.name,            
             route: this._options.route,
-            icon: this._options.icon,            
+            icon: this._options.icon,      
+            features: this._options.features,
             factory: () => this.createInstance(body)
         } as IContentInfo<TArgs, TContent & TBody>
     }

@@ -12,8 +12,15 @@
                 display: flex;
                 flex-direction: row;
                 align-items: center;
-                padding: 4px 0;
+                padding: size(1) 0;
                 gap: 4px;
+                cursor: pointer;
+
+                @media #{$not-mobile-device} {
+                    &:hover {
+                        background: var(--item-hover-color);
+                    }
+                }
 
                 i {
                     visibility: hidden;
