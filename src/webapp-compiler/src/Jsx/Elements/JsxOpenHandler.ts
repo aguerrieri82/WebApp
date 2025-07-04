@@ -1,5 +1,5 @@
 import type { NodePath } from "@babel/traverse";
-import type { JsxParseContext } from "../JsxParseContext.js";
+import { trace, type JsxParseContext } from "../JsxParseContext.js";
 import { TemplateElements } from "../../Consts.js";
 
 export function JsxOpenHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
@@ -37,6 +37,9 @@ export function JsxOpenHandler(ctx: JsxParseContext, stage: "enter", path: NodeP
             ctx.createAttribute("t:type", elName, newElement);
         }
     }
+
+    trace("ENTER: ", ctx.curElement.attributes["t:type"]?.value ?? ctx.curElement.name);
+
     return true;
 }
 

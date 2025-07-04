@@ -198,7 +198,9 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
 
     deleteItem(item: TItem) {
 
-        this.editValue.splice(this.editValue.indexOf(item), 1);
+        const index = this.editValue.indexOf(item); 
+        if (index != -1)
+            this.editValue.splice(index, 1);
     }
 
     itemView(item: TItem) {

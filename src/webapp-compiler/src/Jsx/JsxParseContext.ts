@@ -36,6 +36,10 @@ interface IStack {
     builder: string;
 };
 
+export function trace(...message: unknown[]) {
+    //console.log(...message);
+}
+
 export class JsxParseContext {
 
     constructor(compiler: JsxCompiler) {
@@ -150,12 +154,23 @@ export class JsxParseContext {
             },
 
             exit: path => {
-      
-                if (path.isJSXAttribute())
-                    this.curAttribute = null;
 
-                else if (path.isJSXElement() || path.isJSXFragment()) 
+                if (path.isJSXSpreadAttribute()) {
+
+                    this.curAttribute = null;
+                }
+
+      
+                if (path.isJSXAttribute()) {
+                    
+                    trace("END: ", this.curAttribute?.name, "=", this.curAttribute?.value);
+                    this.curAttribute = null;
+                }
+
+                else if (path.isJSXElement() || path.isJSXFragment()) {
+                    trace("EXIT: ", this.curElement.attributes["t:type"]?.value ?? this.curElement?.name);
                     this.exitElement();
+                }
 
             }
         });
@@ -163,6 +178,7 @@ export class JsxParseContext {
         return this.rootElement;
 
     }
+
 
     findThisBindind(path: NodePath<ThisExpression>) {
         let curPath: NodePath = path;
@@ -281,6 +297,7 @@ export class JsxParseContext {
     }
 
     exitElement() {
+
         const pop = this.stack.pop();
         this.curElement = pop?.element;
         this.curModel = pop?.model;

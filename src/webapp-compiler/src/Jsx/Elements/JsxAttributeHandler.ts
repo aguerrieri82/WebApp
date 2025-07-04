@@ -1,5 +1,5 @@
 import type { NodePath } from "@babel/traverse";
-import type { JsxParseContext } from "../JsxParseContext.js";
+import { trace, type JsxParseContext } from "../JsxParseContext.js";
 import type { JSXIdentifier } from "@babel/types";
 
 export function JsxAttributeHandler(ctx: JsxParseContext, stage: "enter", path: NodePath): boolean {
@@ -16,6 +16,8 @@ export function JsxAttributeHandler(ctx: JsxParseContext, stage: "enter", path: 
 
     if (!path.node.value)
         ctx.curAttribute.value = "true";
+
+    trace("START: ", ctx.curAttribute?.name);
 
     return true;
 }

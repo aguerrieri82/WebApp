@@ -80,8 +80,7 @@ export class ComponentElementHandler implements ITemplateHandler {
                     options = attr.value as string;
                     if (attr.bindMode)
                         hasBinding = true;
-                }
-           
+                }           
             }
         }
 

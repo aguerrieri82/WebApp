@@ -1,4 +1,4 @@
-import { type Bindable, type IComponentOptions, Component, type TemplateMap, type ComponentStyle, configureBindings, registerComponent } from "@eusoft/webapp-core";
+import { type Bindable, type IComponentOptions, Component, type TemplateMap, type ComponentStyle, configureBindings, registerComponent, cleanProxy } from "@eusoft/webapp-core";
 import { Class, type JsxNode, forModel } from "@eusoft/webapp-jsx";
 import { type ActionType, type IAction, type IActionContext } from "../abstraction/IAction";
 import { type OperationManager } from "../services";
@@ -37,7 +37,7 @@ export const ActionTemplates: TemplateMap<Action> = {
         className={m.className}
         title={formatText(m.info) as string}
         disabled={m.enabled === false}
-        on-click={(_, ev) => m.executeAsync({ target: m.target }, ev)}>
+        on-click={(_, ev) => m.executeAsync({ target: cleanProxy(m.target) }, ev)}>
         <Class name="executing" condition={m.isExecuting} />
         <Variable name="color" value={m.color} />
         <NodeView>{m.content}</NodeView>
