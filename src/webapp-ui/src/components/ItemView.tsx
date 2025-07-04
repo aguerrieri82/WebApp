@@ -59,12 +59,12 @@ export class ItemView<TItem> extends Component<IItemViewOptions<TItem>> {
         })
     }
 
-    get primaryActions(): IAction[]{
+    get primaryActions(): IAction<TItem>[]{
 
         return this.actions?.filter(a => a.priority == "primary");
     }
 
-    get secondaryActions() : IAction[] {
+    get secondaryActions() : IAction<TItem>[] {
 
         const value = this.actions?.filter(a => a.priority == "secondary");
         if (value?.length > this.maxActions) {
@@ -79,20 +79,17 @@ export class ItemView<TItem> extends Component<IItemViewOptions<TItem>> {
         return value;
     }
 
-    protected patchAction(action: IAction): IAction {
-        const newAction = {
-            ...action,
-            executeAsync: () =>
-                action.executeAsync({ target: this.content })
-        }
+    protected patchAction(action: IAction<TItem>) {
 
-        if (newAction.subActions)
-            newAction.subActions = action.subActions.map(a => this.patchAction(a));
+        action.target = this.content;
 
-        return newAction;
+        if (action.subActions)
+            action.subActions = action.subActions.map(a => this.patchAction(a));
+
+        return action;
     }
 
-     createAction(action: IAction, style = "text") {
+     createAction(action: IAction<TItem>, style = "text") {
         if (action.canExecute && !action.canExecute({ target: this.content }))
             return null;
         return createAction(this.patchAction(action), style);

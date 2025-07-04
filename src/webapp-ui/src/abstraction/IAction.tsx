@@ -24,6 +24,8 @@ export interface IAction<
 
     subActions?: IAction<TTarget>[];
 
+    target?: TTarget;
+
     canExecute?: (ctx: IActionContext<TTarget>) => boolean;
 
     executeAsync: (ctx: TCtx) => Promise<unknown>;

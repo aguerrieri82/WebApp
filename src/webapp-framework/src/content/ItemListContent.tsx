@@ -129,39 +129,33 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
         this.itemActions(item, result);
 
-        result = result.filter(a => !a.canExecute || a.canExecute({ target: item }));
-
-        let i = 0;
-        for (const action of result) { 
-
-            const oldExecute = action.executeAsync;
-
-
-            result[i] = {
-                ...action,
-                executeAsync: async () => {
-
-                    const index = this.items.indexOf(cleanProxy(item));
-
-                    const ctx = {
-                        target: item,
-                        index
-                    }
-
-                    const res = await oldExecute(ctx);
-
-                    if (res === true)
-                        this.refreshItem(index);
-                    else if (res === false)
-                        this.refreshAsync();
-
-                    return res;
-                }
-            }
-            i++;
-        }
+        result = result
+            .filter(a => !a.canExecute || a.canExecute({ target: item }))
+            .map(a => this.patchAction(a, item));
 
         return result;
+    }
+
+    protected patchAction(action: IAction<TItem>, item: TItem) {
+
+        return {
+            ...action,
+            target: item,
+            executeAsync: async () => {
+
+                const index = this.items.indexOf(cleanProxy(item));
+
+                const res = await action.executeAsync({ target: item });
+
+                if (res === true)
+                    this.refreshItem(index);
+
+                else if (res === false)
+                    this.refreshAsync();
+
+                return res;
+            }
+        } as IAction<TItem>;
     }
 
     refreshItem(index: number) {
@@ -270,10 +264,9 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
         const instance = this.itemEditContent(item);
 
-        const newItem = await router.navigatePageForResultAsync(instance.factory(), instance.args);    
+        const editItem = await router.navigatePageForResultAsync(instance.factory(), instance.args);    
 
-        if (newItem)
-            await this.refreshAsync();
+        return editItem ? false : undefined;
     }
 
     async addItemAsync() {
@@ -287,8 +280,7 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
         const newItem = await router.navigatePageForResultAsync(content);    
 
-        if (newItem)
-            await this.refreshAsync();
+        return newItem ? false : undefined;
     }
 
     prepareFilter(curFilter?: TFilter, offset?: number, limit?: number) : TFilter{

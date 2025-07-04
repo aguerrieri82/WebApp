@@ -105,6 +105,8 @@ export class ItemEditContent<
 
     editor: IEditor<TItem>;
 
+    result: TItem;
+
     static bulder<TItem extends object, TArgs extends IItemEditArgs<TItem> = IItemEditArgs<TItem>>() {
         return new ItemEditContentBuilder<TItem, TArgs>();
     }

@@ -20,6 +20,8 @@ interface IActionOptions<TTarget> extends IComponentOptions {
 
     color?: Bindable<string>;   
 
+    target?: TTarget;
+
     canExecute?(ctx?: IActionContext<TTarget>): boolean;
 
     onExecuteAsync?(ctx?: IActionContext<TTarget>) : Promise<unknown> | void;
@@ -129,6 +131,7 @@ export function createAction(action: IAction, style?: ComponentStyle) {
         onExecuteAsync: action.executeAsync,
         canExecute: action.canExecute,
         type: action.type,
+        target: action.target,
         style
     }; 
 
