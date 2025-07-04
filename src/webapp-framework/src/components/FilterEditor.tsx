@@ -1,7 +1,7 @@
 ﻿import type { BindExpression } from "@eusoft/webapp-core/abstraction/IBinder";
 import { Component } from "@eusoft/webapp-core/Component";
 import { forModel } from "@eusoft/webapp-jsx/Helpers";
-import { formatString, formatText, HideOnClick, MaterialIcon, type IEditor, type IEditorOptions, type IItemsSource, type LocalString, type ValueChangedReason, type ViewNode } from "@eusoft/webapp-ui";
+import { formatString, formatText, HideOnClick, MaterialIcon, type FuckTS, type IEditor, type IEditorOptions, type IItemsSource, type LocalString, type ValueChangedReason, type ViewNode } from "@eusoft/webapp-ui";
 import { Variable } from "@eusoft/webapp-ui/behavoirs/Variable";
 import { Expression, GetExpression, toKebabCase } from "@eusoft/webapp-core";
 import "./FilterEditor.scss"
@@ -111,9 +111,7 @@ export function itemsSearch<
     TValue = TFilter[TKey],
     TItemValue = ItemType<TValue, Multiple>>(
 
-        field: IFilterField<TFilter, TKey, Multiple, ObjectLike>,
-
-        editAsync?: (value: TItemValue) => Promise<TItemValue>
+        field: IFilterField<TFilter, TKey, Multiple, ObjectLike>
     )
 {
 
@@ -161,10 +159,10 @@ export function itemsSearch<
                 curVal = [];
             if (!curVal.includes(value))
                 curVal.push(value);
-            filter[field.name] = curVal as any;
+            filter[field.name] = curVal as FuckTS;
         }
         else {
-            filter[field.name] = value as any;
+            filter[field.name] = value as FuckTS;
         }
     }
 
@@ -185,7 +183,56 @@ export function itemsSearch<
         return result;
     }
 
+    const refreshItemsAsync = async (itemsFilter: object) => {
+
+        const json = JSON.stringify(itemsFilter);
+
+        if ((modeClient && json != lastItemsFilterJson) ||
+            modeSource || !items) {
+
+            items = await field.valuesSource.getItemsAsync(itemsFilter) as TItem[];
+            lastItemsFilterJson = json;
+        }
+    }
+
     return {
+
+        async parseAsync(filter: TFilter) { 
+
+            if (!filter)
+                return;
+
+            const value = filter[field.name] as TItemValue;
+            if (value) {
+                const res: ISearchItem<TFilter, TItemValue>[] = [];
+
+                let item: TItem;
+
+                let text: string;
+
+                if (field.valuesSource?.getItemByValueAsync) 
+
+                    item = (await field.valuesSource?.getItemByValueAsync(value as FuckTS)) as TItem;
+
+                else {
+
+                    await refreshItemsAsync({});
+
+                    if (field.valuesSource && items) 
+                         item = items.find(a => field.valuesSource.getValue(a) == value);
+                }
+         
+                if (item)
+                    text = formatText(field.valuesSource.getText(item)) as string;
+
+                res.push(createItem({
+                    value,
+                    createView: () => createView(value, text)
+                }));
+
+                return res;
+            }                
+        },
 
         async searchAsync(query, curFilter, curItems) {
        
@@ -213,14 +260,8 @@ export function itemsSearch<
             if ((labelMatch && modeMatchLabel) || !modeMatchLabel) { 
 
                 const itemsFilter = field.valuesFilter ? field.valuesFilter(curFilter, noLabelQuery) : undefined;
-                const json = JSON.stringify(itemsFilter);
 
-                if ((modeClient && json != lastItemsFilterJson) ||
-                    modeSource || !items) {
-
-                    items = await field.valuesSource.getItemsAsync(itemsFilter) as TItem[];
-                    lastItemsFilterJson = json;
-                }
+                await refreshItemsAsync(itemsFilter);
 
                 const addItem = (item: TItem, text: string) => {
 
@@ -466,6 +507,17 @@ export class FilterEditor<TFilter, TItem>
 
         this.showSuggestions = true;
     }
+
+    saveFilter(container: Record<string, unknown>) {
+
+        container["@filter"] = this.activeFilters;
+    }
+
+    restoreFilter(container: Record<string, unknown>) {
+
+        if (container && "@filter" in container)
+            this.activeFilters = container["@filter"] as typeof this.activeFilters;
+    }
      
     protected onFocusChanged(value: boolean) {
 
@@ -560,6 +612,20 @@ export class FilterEditor<TFilter, TItem>
 
         this.updateFilter()
         this.showSuggestions = false;
+    }
+
+    async loadFilterAsync(value: TFilter) {
+
+        var items: ISearchItem<TFilter, unknown>[] = [];
+
+        for (const provider of this._curSearchProviders) {
+            if (!provider.parseAsync)
+                continue;
+            const provItems = await provider.parseAsync(value);
+            if (provItems)
+                items.push(...provItems);
+        }
+        this.activeFilters = items;
     }
 
     onValueChanged(value: TFilter, oldValue: TFilter, reason: ValueChangedReason) {

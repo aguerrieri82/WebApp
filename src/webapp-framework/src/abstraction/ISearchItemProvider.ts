@@ -52,5 +52,5 @@ export interface ISearchItemProvider<TFilter, TValue> {
 
     searchAsync(query: ISearchQuery, curFilter: TFilter, curItems: ISearchItem<TFilter, unknown>[]): Promise<Iterable<ISearchItem<TFilter, TValue>>>;
 
-    parse?(filter: TFilter): ISearchItem<TFilter, unknown>[];
+    parseAsync?(filter: TFilter): Promise<ISearchItem<TFilter, unknown>[]>;
 }

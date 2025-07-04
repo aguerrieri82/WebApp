@@ -198,6 +198,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
             rank: options.rank ?? 0,
             allowMultiple: false,
             apply: applyFilter,
+            view: createView(range, text),
             createView: v => createView(v, text)
 
         } satisfies ISearchItem<TFilter, IDateRange>;
@@ -328,6 +329,21 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
     }
 
     return {
+        async parseAsync(filter: TFilter) {
+
+            if (!filter)
+                return;
+
+            const from = filter[options.fromField] as Date;
+            const to = filter[options.toField] as Date;
+
+            if (from || to) {
+                return [createItem({
+                    from,
+                    to
+                })]
+            }
+        },
 
         async searchAsync(query, curFilter, curItems) {
 
@@ -527,7 +543,21 @@ export function numberRangeSearch<TFilter>(options: INumberRangeSearchOptions<TF
     }
 
     return {
+        async parseAsync(filter: TFilter) {
 
+            if (!filter)
+                return;
+
+            const min = filter[options.minField] as number;
+            const max = filter[options.maxField] as number;
+
+            if (min !== undefined || max !== undefined) {
+                return [createItem({
+                    min,
+                    max
+                })]
+            }
+        },
         async searchAsync(query, curFilter, curItems) {
 
             const res = [] as ISearchItem<TFilter, INumberRange>[];
@@ -619,6 +649,8 @@ export interface IQuerySearchProvider<TFilter, TItem> extends ISearchItemProvide
 
 }
 
+let lastQueryItem: ISearchItem<any, any>;
+
 export function querySearch<TFilter, TItem, TId>(options: IQuerySearchOptions<TFilter, TItem, TId>) {
 
     let items: TItem[] = [];
@@ -640,6 +672,7 @@ export function querySearch<TFilter, TItem, TId>(options: IQuerySearchOptions<TF
                 values ??= [];
                 values.push(...value);
                 filter[idsFilterField as any] = values;
+                lastQueryItem = result;
             },
             rank: 0,
 
@@ -650,7 +683,43 @@ export function querySearch<TFilter, TItem, TId>(options: IQuerySearchOptions<TF
         return result;
     }
 
+    const craeteQueryItem = (query: string) => ({
+        apply: (filter, value) => {
+            filter[options.queryField as any] = value;
+        },
+        allowMultiple: false,
+        value: query,
+        fields: [options.queryField],
+        rank: -2,
+        view: {
+            icon: <MaterialIcon name="search" />,
+            label: formatText("search"),
+            displayValue: <span>"{query}"</span>
+        }
+    } as ISearchItem<TFilter, string>);
+
     return {
+        async parseAsync(filter: TFilter) {
+
+            if (!filter)
+                return;
+
+            const query = filter[options.queryField] as string;
+
+            if (query)
+                return [craeteQueryItem(query)];
+
+            if (lastQueryItem?.value) {
+
+                const idsFilterField = (options.idsFilterField ?? "ids") as KeyOfType<TFilter, TId[]>;
+
+                let values = filter[idsFilterField] as TId[];
+
+                if (values?.every(a => lastQueryItem.value.includes(a)))
+                    return [lastQueryItem];
+            }
+        },
+
 
         async searchAsync(query, curFilter, curItems) {
 
@@ -658,20 +727,7 @@ export function querySearch<TFilter, TItem, TId>(options: IQuerySearchOptions<TF
 
             if (!options.minLength || query.full.length >= options.minLength) {
 
-                res.push({
-                    apply: (filter, value) => {
-                        filter[options.queryField as any] = value;
-                    },
-                    allowMultiple: false,
-                    value: query.full,
-                    fields: [options.queryField],
-                    rank: -2,
-                    view: {
-                        icon: <MaterialIcon name="search" />,
-                        label: formatText("search"),
-                        displayValue: <span>"{query.full}"</span>
-                    }
-                } as ISearchItem<TFilter, string>)
+                res.push(craeteQueryItem(query.full));
 
                 if (options.match) {
 

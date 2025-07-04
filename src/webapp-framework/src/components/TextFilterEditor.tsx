@@ -37,6 +37,25 @@ export class TextFilterEditor<TFilter>
 
     }
 
+
+    loadFilterAsync(filter: TFilter): Promise<unknown> {
+
+        if (!filter)
+            return;
+        this.searchText = filter[this.queryField] as string ?? "";
+    }
+
+    saveFilter(container: Record<string, unknown>): void {
+
+        container["@filter"] = this.searchText;
+    }
+
+    restoreFilter?(container: Record<string, unknown>): void {
+
+        if (container && "@filter" in container)
+            this.searchText = container["@filter"] as string;
+    }
+
     async searchAsync(query: string) {
 
         const curFilter = {} as TFilter;

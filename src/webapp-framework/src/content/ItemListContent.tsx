@@ -1,4 +1,4 @@
-import { Action, Content, formatText, type IAction, type IContent, type IContentInstance, type IContentOptions, type IItemsSource, type IItemViewOptions, ItemView, ListView, type LocalString, MaterialIcon, useOperation, type ViewNode } from "@eusoft/webapp-ui";
+import { Action, Content, formatText, type IAction, type IContent, type IContentInstance, type IContentOptions, type IItemsSource, type IItemViewOptions, type IStateContext, type IStateManager, ItemView, ListView, type LocalString, MaterialIcon, useOperation, type ViewNode } from "@eusoft/webapp-ui";
 import { type IFilterEditor  } from "../abstraction/IFilterEditor";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import router from "../services/Router";
@@ -85,9 +85,14 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<Object
     paginationMode?: ListPaginationMode;
 }
 
-export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemListOptions<TItem, TFilter>> {
+export class ItemListContent<TItem, TFilter>
+    extends Content<ObjectLike, IItemListOptions<TItem, TFilter>>
+    implements IStateManager
+{
 
     protected _curFilter: TFilter;
+
+    protected _lastState: Record<string, unknown>;
 
     protected _filterEditor: IFilterEditor<TFilter, TItem>;
 
@@ -121,45 +126,6 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
             ...options
         });
-    }
-
-    protected getItemActions(item: TItem) {
-
-        let result = [...this.builtInActions];
-
-        this.itemActions(item, result);
-
-        result = result
-            .filter(a => !a.canExecute || a.canExecute({ target: item }))
-            .map(a => this.patchAction(a, item));
-
-        return result;
-    }
-
-    protected patchAction(action: IAction<TItem>, item: TItem) {
-
-        return {
-            ...action,
-            target: item,
-            executeAsync: async () => {
-
-                const index = this.items.indexOf(cleanProxy(item));
-
-                const res = await action.executeAsync({ target: item });
-
-                if (res === true)
-                    this.refreshItem(index);
-
-                else if (res === false)
-                    this.refreshAsync();
-
-                return res;
-            }
-        } as IAction<TItem>;
-    }
-
-    refreshItem(index: number) {
-        this.items.set(index, { ...this.items[index] }); 
     }
 
     override async onLoadAsync() {
@@ -235,9 +201,9 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
         });
     }
 
-    createNewItem(): TItem {
 
-        return undefined;
+    refreshItem(index: number) {
+        this.items.set(index, { ...this.items[index] });
     }
 
     async refreshAsync() {
@@ -283,6 +249,71 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
         return newItem ? false : undefined;
     }
 
+
+    createFilterEditor() {
+
+        if (!this._filterEditor) {
+
+            if (isClass(this.filterEditor))
+                this._filterEditor = new this.filterEditor();
+            else
+                this._filterEditor = this.filterEditor() as IFilterEditor<TFilter, TItem>;
+
+            this._filterEditor.onValueChanged = v => {
+
+                this._curFilter = v;
+                this.refreshAsync();
+            }
+
+            this._filterEditor.queryAsync = async filter => {
+
+                const newItems = await this.itemsSource.getItemsAsync(
+                    this.prepareFilter(filter, 0, this.pageSize));
+                return newItems;
+            }
+
+            if (this._lastState && this._filterEditor.restoreFilter) {
+
+                this._filterEditor.restoreFilter(this._lastState);
+                this._lastState = undefined;
+            }
+
+            else if (this._curFilter)
+                this._filterEditor.loadFilterAsync(this._curFilter);
+        }
+
+        return this._filterEditor;
+    }
+
+    restoreState(container: Record<string, unknown>, ctx: IStateContext) {
+
+        this._lastState = container;
+
+        if (container && "lastFilter" in container) 
+            this._curFilter = container["lastFilter"] as TFilter;
+    }
+
+    saveState(container: Record<string, unknown>, ctx: IStateContext) {
+
+        container["lastFilter"] = this._curFilter;
+
+        this._filterEditor?.saveFilter?.(container);            
+    }
+
+    createNewItem(): TItem {
+
+        return undefined;
+    }
+
+    itemStyle(item: TItem) {
+
+        return undefined;
+    }
+
+    itemActions(item: TItem, result: IAction<TItem, IItemActionContext<TItem>>[]) {
+
+    }
+
     prepareFilter(curFilter?: TFilter, offset?: number, limit?: number) : TFilter{
         return curFilter;
     }
@@ -290,6 +321,41 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
     async deleteItemAsync(item: TItem) : Promise<boolean>{
 
         return false;
+    }
+
+    protected getItemActions(item: TItem) {
+
+        let result = [...this.builtInActions];
+
+        this.itemActions(item, result);
+
+        result = result
+            .filter(a => !a.canExecute || a.canExecute({ target: item }))
+            .map(a => this.patchAction(a, item));
+
+        return result;
+    }
+
+    protected patchAction(action: IAction<TItem>, item: TItem) {
+
+        return {
+            ...action,
+            target: item,
+            executeAsync: async () => {
+
+                const index = this.items.indexOf(cleanProxy(item));
+
+                const res = await action.executeAsync({ target: item });
+
+                if (res === true)
+                    this.refreshItem(index);
+
+                else if (res === false)
+                    this.refreshAsync();
+
+                return res;
+            }
+        } as IAction<TItem>;
     }
 
     protected deleteItemInternalAsync(item: TItem, index?: number) {
@@ -310,40 +376,6 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
             }
                 
         });
-    }
-
-    createFilterEditor() {
-
-        if (!this._filterEditor) {
-
-            if (isClass(this.filterEditor))
-                this._filterEditor = new this.filterEditor();
-            else
-                this._filterEditor = this.filterEditor() as IFilterEditor<TFilter, TItem>;
-
-            this._filterEditor.onValueChanged = v => {
-
-                this._curFilter = v;
-                this.refreshAsync();            
-            }
-
-            this._filterEditor.queryAsync = async filter => {
-
-                const newItems = await this.itemsSource.getItemsAsync(
-                    this.prepareFilter(filter, 0, this.pageSize));
-                return newItems;
-            }
-        }
-
-        return this._filterEditor;
-    }
-
-    itemStyle(item: TItem) {
-        return undefined;
-    }
-
-    itemActions(item: TItem, result: IAction<TItem, IItemActionContext<TItem>>[]) {
-
     }
 
     addLabel?: LocalString;
@@ -384,10 +416,11 @@ export class ItemListContent<TItem, TFilter> extends Content<ObjectLike, IItemLi
 
     filterEditor?: () => IFilterEditor<TFilter, TItem> | Class<IFilterEditor<TFilter, TItem>>;
 
-    static builder<TItem, TFilter>() {
+    static builder<TItem, TFilter>(singleInstance = false) {
         return new ItemListContentBuilder<TItem, TFilter>();
     }
 }
+
 
 export class ItemListContentBuilder<
     TItem,

@@ -11,3 +11,5 @@ export type LoadResult = boolean;
 export type EnumValue<T> = T[keyof T];
 
 export type Enum = Record<string, string | number>;
+
+export type FuckTS = any;
