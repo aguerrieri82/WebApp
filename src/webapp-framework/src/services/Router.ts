@@ -1,11 +1,12 @@
 import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, type LoadResult, formatText, isResultContainer, isStateManager, replaceArgs, withUnblock } from "@eusoft/webapp-ui";
 import { app } from "../App";
 
-type StringLike = { toString(): string } | string;
 
 export type RouteArgs = ObjectLike;
 
 export type RouteAction<TArgs extends RouteArgs> = (args: TArgs, content?: unknown) => void | Promise<LoadResult>;
+
+export type NavigationMode = "push" | "replace" | "history-or-push";
 
 interface IRounteEntry<TArgs extends RouteArgs>  {
 
@@ -50,6 +51,7 @@ export class Router {
     protected _entries: IRounteEntry<ObjectLike>[] = [];
     protected _activeIndex: number;
     protected _popResolves: (() => void)[] = [];
+    protected _startHistoryLen: number;
 
     constructor() {
 
@@ -67,6 +69,9 @@ export class Router {
         window.addEventListener("pageshow", ev => {
             console.log(ev);
         });
+
+        this._startHistoryLen = history.length - this._history.length - 1;
+
     } 
 
     protected matchRoute(route: string, path: string) {
@@ -91,9 +96,6 @@ export class Router {
         }
     }
 
-    getCurrentLocation() {
-        return location.pathname;
-    }
 
     startAsync() {
 
@@ -161,8 +163,26 @@ export class Router {
         return result;
     }
 
-    get canGoBack() {
-        return this._activeIndex > 0;
+    findPage(pageName: string) {
+
+        const entry = this.getEntryForPage(pageName);
+        return entry?.tag as IContent;
+    }
+
+    findHistoryPage(pageName: string) {
+
+        for (const history of this._history) {
+
+            if (history.entryIndex === undefined)
+                continue;
+
+            const entry = this._entries[history.entryIndex];
+            if (typeof entry.tag != "object")
+                continue;
+            const name = (entry.tag as IContentInfo).name;
+            if (name == pageName)
+                return history.historyIndex;
+        }
     }
 
     backAsync() { 
@@ -173,7 +193,7 @@ export class Router {
         });
     }
 
-    navigatePageForResultAsync<TResult, TArgs extends RouteArgs>(pageOrName: string|IContent<TArgs>, args?: TArgs, replace = false) {
+    navigatePageForResultAsync<TResult, TArgs extends RouteArgs>(pageOrName: string | IContent<TArgs>, args?: TArgs, mode: NavigationMode = "push") {
 
         return withUnblock(() => new Promise<TResult>(res => {
 
@@ -200,12 +220,12 @@ export class Router {
                 }
             }
 
-            this.navigatePageAsync(page, args, replace);
+            this.navigatePageAsync(page, args, mode);
 
         }), "navigatePageForResult");
     }
 
-    async navigatePageAsync<TArgs extends RouteArgs>(pageOrName: string | IContent<TArgs>, args?: TArgs, replace = false) {
+    async navigatePageAsync<TArgs extends RouteArgs>(pageOrName: string | IContent<TArgs>, args?: TArgs, mode: NavigationMode = "push") {
 
         const entry = this.getEntryForPage(pageOrName);
 
@@ -216,7 +236,13 @@ export class Router {
             return pageOrName;
         } 
 
-        return await this.navigateEntryAsync(entry, args, replace, typeof pageOrName == "string" ? undefined : pageOrName);
+        return await this.navigateEntryAsync(entry, args, mode, typeof pageOrName == "string" ? undefined : pageOrName);
+    }
+
+    goToAsync(historyIndex: number) {   
+
+        const delta = this._activeIndex - historyIndex;
+        history.go(-delta);
     }
 
     /*
@@ -321,7 +347,7 @@ export class Router {
             if (isBack && prevState.isCancel)
                 transition = undefined;
 
-            await this.navigateEntryAsync(entry, { ...state.args, "@isBack": true }, true, null, transition);
+            await this.navigateEntryAsync(entry, { ...state.args, "@isBack": true }, "replace", null, transition);
         }
     }
 
@@ -332,14 +358,14 @@ export class Router {
 
     protected async navigateActiveRouteAsync() {
 
-        const url = this.getCurrentLocation();
+        const url = this.currentLocation;
 
         for (const entry of this._entries) {
 
             const matchArgs = this.matchRoute(entry.route as string, url);
 
             if (matchArgs) 
-                return await this.navigateEntryAsync(entry, matchArgs, true, null, "reload");
+                return await this.navigateEntryAsync(entry, matchArgs, "replace", null, "reload");
         }
     }
 
@@ -348,18 +374,26 @@ export class Router {
         return replaceArgs(path, args);
     }
 
-    protected async navigateEntryAsync<TArgs extends ObjectLike>(entry: IRounteEntry<TArgs>, args?: TArgs, replace = false, content?: unknown, transition?: string) {
+    protected async navigateEntryAsync<TArgs extends ObjectLike>(entry: IRounteEntry<TArgs>, args?: TArgs, mode: NavigationMode = "push", content?: unknown, transition?: string) {
 
         const newArgs = { ...args } as TArgs;
 
+        if (mode == "history-or-push") {
+            const history = this._history.find(a => a.entryIndex !== undefined && this._entries[a.entryIndex] == entry);
+            if (history) 
+                return await this.goToAsync(history.historyIndex);
+        }
+
         //Need to increment here becouse canGoBack is called here
 
-        if (!replace)
+        const isReplace = mode == "replace";
+
+        if (!isReplace)
             this._activeIndex++;
 
         if (!await entry.action(newArgs, content)) {
 
-            if (!replace)
+            if (!isReplace)
                 this._activeIndex--;
             return;
         }
@@ -379,22 +413,32 @@ export class Router {
 
         const jsonState = JSON.stringify(state); 
 
-        console.log(replace ? "HISTORY: replace" : "push", url);
+        console.log(isReplace ? "HISTORY: replace" : "push", url);
 
-        if (replace)
+        if (isReplace)
             history.replaceState(jsonState, "", url);
         else
             history.pushState(jsonState, "", url);
 
         this._history[this._activeIndex] = state;
 
-        if (!replace)
+        if (!isReplace)
             this._history.splice(this._activeIndex + 1, this._history.length - this._activeIndex);
 
         return true;
     }
 
     useTransition: boolean = true;
+
+    get currentLocation() {
+        return location.pathname;
+    }
+
+    get canGoBack() {
+        return this._activeIndex > 0;
+    }
+
+    get history() { return this._history  }
 
 }
 

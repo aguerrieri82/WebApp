@@ -60,6 +60,7 @@ body {
 
 ::view-transition-group(page) {
     animation-duration: 0.5s;
+
 }
 
 :root[data-transition="reload"] {
@@ -69,6 +70,7 @@ body {
 
     &::view-transition-new(page) {
         animation-name: fade-in, scale-up;
+
     }
 }
 
@@ -76,6 +78,7 @@ body {
     &::view-transition-old(page) {
         animation-name: shrink;
         transform-origin: 100% 50%;
+            
     }
 
     &::view-transition-new(page) {

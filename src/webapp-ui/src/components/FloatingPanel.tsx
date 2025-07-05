@@ -25,7 +25,7 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
 
         this.init(FloatingPanel, {
 
-            template: forModel((m: this) => <div className={m.className} visible={m.visible}>
+            template: forModel<this>(m => <div className={m.className} visible={m.visible}>
                 <Class name="fixed" condition={m.isFixed} />
                 {m.body}
             </div>),
@@ -49,9 +49,9 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
         let anchorEl: HTMLElement;
 
         if (isComponent(this.anchor))
-            anchorEl = this.anchor.context.element;
+            anchorEl = this.anchor.context?.element;
 
-        if (this.anchor instanceof HTMLElement)
+        else if (this.anchor instanceof HTMLElement)
             anchorEl = this.anchor;
 
         if (!anchorEl)
@@ -60,8 +60,7 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
         const panel = this.context.element;
 
         this.isFixed = !!findParent(anchorEl, a => window.getComputedStyle(a).position == "fixed");
-        
-
+       
         const ofs = getScreenPos(anchorEl, false);
         panel.style.top = (ofs.y + anchorEl.clientHeight) + "px";
         panel.style.left = (ofs.x) + "px";

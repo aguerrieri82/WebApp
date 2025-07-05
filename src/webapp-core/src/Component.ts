@@ -228,12 +228,18 @@ export abstract class Component<
             console.debug("mount", getTypeName(this));
 
         this.context = ctx as ITemplateContext<this, HTMLElement>;
+
+        this.onMounted();
     }
 
     unmount() {
 
         if (webApp.debugMount)
             console.debug("unmount", getTypeName(this));
+    }
+
+    protected onMounted() {
+
     }
 
     get binder() {

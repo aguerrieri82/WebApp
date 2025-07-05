@@ -3,18 +3,20 @@ import { type ContentHost, LOCALIZATION, OPERATION_MANAGER, OperationManager } f
 import localTable from "./services/LocalTable";
 import { RouteContentHost } from "./components/RouteContentHost";
 import "./Transition.scss"
+
+
 export interface IAppOptions {
 
 }
 
-export interface IApp {
+export interface IApp<TContentHost extends ContentHost = ContentHost> {
 
     runAsync(root?: HTMLElement | string);
 
-    contentHost: ContentHost;
+    contentHost: TContentHost;
 }
 
-export class App  {
+export class App<TContentHost extends ContentHost = RouteContentHost> implements IApp<TContentHost> {
 
     constructor(options?: IAppOptions) {
 
@@ -68,8 +70,8 @@ export class App  {
 
     }
 
-    protected createContentHost() {
-        return new RouteContentHost();
+    protected createContentHost() : TContentHost {
+        return new RouteContentHost() as unknown as TContentHost;
     }
 
     readonly contentHost = this.createContentHost();
