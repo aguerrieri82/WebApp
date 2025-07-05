@@ -9,7 +9,7 @@ import { isCommitable, isValidable } from "../abstraction";
 import { formatText } from "../utils/Format";
 import "./ArrayEditor.scss";
 
-interface IArrayEditorOptions<TItem> extends IEditorOptions<TItem[]> {
+export interface IArrayEditorOptions<TItem> extends IEditorOptions<TItem[]> {
 
     itemEditor?: (item: TItem) => IEditor<TItem>;
 

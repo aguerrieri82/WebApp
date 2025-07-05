@@ -1,12 +1,12 @@
-import type { TemplateMap, BindExpression, ITemplateContext } from "@eusoft/webapp-core";
+import { type TemplateMap, type BindExpression, type ITemplateContext, Behavoir } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import type { IEditorOptions, IItemsSource, ValueChangedReason } from "../abstraction";
 import { Editor } from "./Editor";
 import { EditorBuilder } from "./EditorBuilder";
 import type { ViewNode } from "../types";
 import { MaterialIcon } from "../components/Icon";
-import { HideOnClick } from "../behavoirs/HideOnClick";
 import "./AutoComplete.scss";
+import { FloatingPanel } from "../components";
 
 interface IAutoCompleteOptions<TItem, TValue, TFilter> extends IEditorOptions<TValue> {
 
@@ -30,7 +30,6 @@ interface IAutoCompleteOptions<TItem, TValue, TFilter> extends IEditorOptions<TV
 export const AutoCompleteTemplates: TemplateMap<AutoComplete<unknown, unknown, unknown>> = {
 
     "Default": forModel(m => <div className={m.className} visible={m.visible}>
-        <HideOnClick isVisible={m.showSuggestions} inline={false} />
         <Class name="has-selection" condition={m.selectedItem != null} />
         <div className="search-bar">
             <div className="edit-view">
@@ -41,19 +40,20 @@ export const AutoCompleteTemplates: TemplateMap<AutoComplete<unknown, unknown, u
                 <MaterialIcon name="clear" />
             </button>
         </div>
-        <div className="suggestions" visible={m.showSuggestions}>
-            {m.suggestions.forEach(i => <div on-click={() => m.selectItem(i, true)}>
-                {m.listItemView(i)}
-            </div>)
-            }
-        </div>
+
     </div>)
+}
+
+export interface IAnchorOptions {
+    anchor: HTMLElement;
 }
 
 export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCompleteOptions<TItem, TValue, TFilter>> {
 
+
     protected _firstLoad = true;
     private _input: HTMLInputElement;
+    protected _suggestions: FloatingPanel;
 
     constructor(options?: IAutoCompleteOptions<TItem, TValue, TFilter>) {
 
@@ -71,6 +71,20 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
         this.onChanged("hasFocus", v => this.onFocusChanged(v));
 
         this.onChanged("showSuggestions", v => this.onShowSuggestions(v));
+
+        this._suggestions = new FloatingPanel({
+
+            name: "suggestions",
+
+            onClickOut: () => this.showSuggestions = false,
+
+            body: forModel(this, m => <>
+                {m.suggestions.forEach(i => <div on-click={() => m.selectItem(i, true)}>
+                    {m.listItemView(i)}
+                </div>)
+                }
+            </>)
+        });
     }
 
     async searchAsync(query: string) {
@@ -93,15 +107,17 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
         this.showSuggestions = true;
     }
 
+
+
     onKeyDown(ev: KeyboardEvent) {
 
         if (ev.key == "Tab" || ev.key == "Enter") {
             this.showSuggestions = false;
             document.body.focus();
-        }
-   
+        }   
     }
 
+   
     override async onValueChanged(value: TValue, oldValue: TValue, reason: ValueChangedReason) {
 
         if (value === null || value === undefined)
@@ -119,8 +135,12 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
 
     protected onShowSuggestions(value: boolean) {
 
-        if (this._firstLoad)
-            return;
+        console.log(value);
+
+        if (value) 
+            this._suggestions?.show();
+        else
+            this._suggestions?.close();
 
         if (!value) {
             if (this.freeText) {
@@ -150,10 +170,11 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
     }
 
     override mount(ctx: ITemplateContext) {
+
         super.mount(ctx);
 
-        this._input = ctx.element.querySelector("input"); 
-
+        this._input = ctx.element.querySelector("input");
+        this._suggestions.anchor = this._input;
     }
 
     clearSelection() {
@@ -163,17 +184,23 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
 
     }
 
-    selectItem(item: TItem, hide: boolean = false)  {
-        this.value = this.itemsSource.getValue(item);
-        this.searchText = this.itemsSource.getText(item);
+    selectItem(item: TItem, hide: boolean = false) {
+
+        this.value = item ? this.itemsSource.getValue(item) : (this.freeText ? this.searchText as TValue : undefined);
+
+        if (item)
+            this.searchText = this.itemsSource.getText(item);
+
         this.selectedItem = item;
         if (hide)
-            setTimeout(() => this.showSuggestions = false, 10);
+            setTimeout(() => this.showSuggestions = false, 50);
     }
 
-    listItemView(item: TItem) : ViewNode {
+    listItemView(item: TItem): ViewNode {
+        if (!item)
+            return;
         return <>
-            {this.itemsSource.getIcon(item)}
+            {this.itemsSource.getIcon?.(item)}
             <span>{this.itemsSource.getText(item)}</span>
         </>;
     }
@@ -192,7 +219,7 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
 
     createItem(text: string) {
         return text as unknown as TItem;
-    }
+    }    
 
     freeText: boolean;
 

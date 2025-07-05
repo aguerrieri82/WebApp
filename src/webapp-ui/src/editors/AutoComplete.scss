@@ -71,46 +71,7 @@ div.auto-complete {
             }
         }
     }
-
-
-
-    > .suggestions {
-        position: absolute;
-        z-index: 100;
-        background-color: var(--surface-color);
-        box-sizing: border-box;
-        width: 100%;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        padding: size(1) size(1);
-        max-height: 200px;
-        min-height: 50px;
-        overflow-y: scroll;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        top: calc(1em + 8px);
-        scroll-snap-type: y mandatory;
-
-
-        > * {
-            display: flex;
-            align-items: center;
-            padding: size(1) size(1);
-            cursor: pointer;
-            transition-duration: var(--duration-normal);
-            flex-direction: row;
-            align-items: center;
-            gap: 4px;
-            scroll-snap-align: start;
-            scroll-snap-stop: always;
-
-            &:hover {
-                background: var(--item-hover-color);
-            }
-        }
-    }
-
-
+    
     button {
         cursor: pointer;
         transition-duration: var(--duration-normal);
@@ -120,6 +81,51 @@ div.auto-complete {
             &:hover {
                 background: var(--item-hover-color);
             }
+        }
+    }
+}
+
+.floating-panel.suggestions {
+    position: absolute;
+    z-index: 110;
+    background-color: var(--surface-color);
+    box-sizing: border-box;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    padding: size(1) size(1);
+    max-height: 200px;
+    min-height: 50px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    scroll-snap-type: y mandatory;
+    top: unset;
+    left: unset;
+    right: unset;
+
+    &.fixed{
+        position: fixed;
+    }
+
+    &:empty {
+        display: none;
+    }
+
+
+    > * {
+        display: flex;
+        align-items: center;
+        padding: size(1) size(1);
+        cursor: pointer;
+        transition-duration: var(--duration-normal);
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+
+        &:hover {
+            background: var(--item-hover-color);
         }
     }
 }

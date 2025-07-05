@@ -98,14 +98,14 @@ export class ContextMenu extends Component<IContextMenuOptions> {
         let xTrans = "";
         let yTrans = "";
 
-        if (curOfs.x + this._menuContainer.clientWidth > document.body.clientWidth) {
+        if (curOfs.x + this._menuContainer.clientWidth > window.visualViewport.width) {
             curOfs.x -= this._menuContainer.clientWidth;
             xTrans = "right";
         }
         else
             xTrans = "left";
 
-        if (curOfs.y + this._menuContainer.clientHeight > document.body.clientHeight) {
+        if (curOfs.y + this._menuContainer.clientHeight > window.visualViewport.height) {
             curOfs.y -= this._menuContainer.clientHeight;
             yTrans = "bottom";
         }

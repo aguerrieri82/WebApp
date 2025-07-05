@@ -10,6 +10,43 @@ export function isParentOrSelf(element: HTMLElement, parent: HTMLElement): boole
     return false;
 }
 
+export function findParent(element: HTMLElement, selector: (el: HTMLElement) => boolean ): HTMLElement {
+
+    let curElement = element;
+
+    while (curElement) {
+        if (selector(curElement))
+            return curElement;
+        curElement = curElement.parentElement;
+    }
+}
+
+
+export function getScreenPos(element: HTMLElement, includeScroll = true) {
+
+    let curEl = element;
+    let offsetEl = element;
+
+    const curOfs = { x: 0, y: 0 };
+
+    while (curEl) {
+        if (curEl == offsetEl) {
+            curOfs.y += curEl.offsetTop;
+            curOfs.x += curEl.offsetLeft;
+            offsetEl = curEl.offsetParent as HTMLElement;
+        }
+
+        if (includeScroll) {
+            curOfs.y -= curEl.scrollTop;
+            curOfs.x -= curEl.scrollLeft;
+        }
+        curEl = curEl.parentElement;
+    }
+
+    return curOfs;
+}
+
+
 export function getScrollParent(element: HTMLElement): HTMLElement {
 
     if (!element)
