@@ -87,10 +87,20 @@ export function remap<TKey, TValue, TResult>(map: Map<TKey, TValue>, selector: (
 
 export function groupBy<T, TKey>(items: T[] | undefined, selector: (item: T) => TKey, sortByKey = true) {
     const map = new Map<TKey, T[]>();
+    const keyMap = new Map<string, TKey>();
 
     if (items) {
         for (const item of items) {
-            const key = selector(item);
+
+            let key = selector(item);
+
+            const json = JSON.stringify(key);
+
+            if (!keyMap.has(json))
+                keyMap.set(json, key);
+            else
+                key = keyMap.get(json);
+
             if (!map.has(key))
                 map.set(key, [item]);
             else

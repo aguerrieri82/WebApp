@@ -29,7 +29,7 @@ export class ObservableProperty<TValue = unknown> implements IObservableProperty
 
         if (oldValue !== value && this._handlers) {
             forEachRev(this._handlers, handler =>
-                handler(value, oldValue));
+                handler?.(value, oldValue));
         }
     }
 
