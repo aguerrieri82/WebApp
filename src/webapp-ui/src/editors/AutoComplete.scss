@@ -54,24 +54,22 @@ div.auto-complete {
             }
         }
 
-
-
-
         button {
             border: none;
             background: none;
             margin: 0;
+            width: 24px;
 
             i {
                 vertical-align: middle;
             }
 
-            &.show-filters > i{
+            &.show-filters > i {
                 color: var(--primary-color);
             }
         }
     }
-    
+
     button {
         cursor: pointer;
         transition-duration: var(--duration-normal);

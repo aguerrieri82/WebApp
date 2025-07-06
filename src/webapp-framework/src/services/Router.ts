@@ -384,6 +384,11 @@ export class Router {
                 return await this.goToAsync(history.historyIndex);
         }
 
+        if (!entry) {
+            console.warn("Route entry not found");
+            return;
+        }
+
         //Need to increment here becouse canGoBack is called here
 
         const isReplace = mode == "replace";

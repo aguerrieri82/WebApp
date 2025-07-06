@@ -11,7 +11,7 @@ export interface IFloatingPanelOptions extends IComponentOptions {
 
     anchor?: ViewNode;
 
-    onClickOut?: () => void;
+    onClickOut?: (element: HTMLElement) => void;
 }
 
 export class FloatingPanel extends Component<IFloatingPanelOptions> {
@@ -36,7 +36,7 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
         this._onClick = ev => {
 
             if (!isParentOrSelf(ev.target as HTMLElement, this.context.element))
-                this.onClickOut();
+                this.onClickOut(ev.target as HTMLElement);
         }
     }
 
@@ -108,7 +108,7 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
         window.addEventListener("pointerup", this._onClick);
     }
 
-    onClickOut() {
+    onClickOut(el: HTMLElement) {
 
     }
 

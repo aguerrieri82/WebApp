@@ -130,3 +130,14 @@ export function enumOverrides<
 
     return result;
 }
+
+export function* mapObject<TObj extends object, TKey extends keyof TObj & string>(obj: TObj): Iterable<{key: TKey, value: TObj[TKey]}> {
+
+    for (const key in obj) {
+        yield {
+            key: key as TKey,
+            value: obj[key]
+        }
+
+    }
+}

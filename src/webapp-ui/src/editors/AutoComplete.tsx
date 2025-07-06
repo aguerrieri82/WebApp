@@ -7,6 +7,10 @@ import type { ViewNode } from "../types";
 import { MaterialIcon } from "../components/Icon";
 import "./AutoComplete.scss";
 import { FloatingPanel } from "../components";
+import { isParentOrSelf } from "../utils/Dom";
+
+
+type SearchMode = "once" | "source-filter" | "client-filter"
 
 interface IAutoCompleteOptions<TItem, TValue, TFilter> extends IEditorOptions<TValue> {
 
@@ -20,7 +24,7 @@ interface IAutoCompleteOptions<TItem, TValue, TFilter> extends IEditorOptions<TV
 
     canSelect: (item: TItem) => boolean;
 
-    sourceMode?: boolean;
+    searchMode: SearchMode;
 
     freeText: boolean;
 
@@ -52,8 +56,10 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
 
 
     protected _firstLoad = true;
-    private _input: HTMLInputElement;
+    protected _input: HTMLInputElement;
     protected _suggestions: FloatingPanel;
+    protected _suspendSearch = 0;
+    protected _itemsCache: TItem[];
 
     constructor(options?: IAutoCompleteOptions<TItem, TValue, TFilter>) {
 
@@ -61,6 +67,7 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
 
         this.init(AutoComplete, {
             template: AutoCompleteTemplates.Default,
+            searchMode: "once",
             ...options
         });
 
@@ -76,7 +83,10 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
 
             name: "suggestions",
 
-            onClickOut: () => this.showSuggestions = false,
+            onClickOut: element => {
+                if (!isParentOrSelf(element, this.context.element))
+                    this.showSuggestions = false;
+            },
 
             body: forModel(this, m => <>
                 {m.suggestions.forEach(i => <div on-click={() => m.selectItem(i, true)}>
@@ -89,13 +99,16 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
 
     async searchAsync(query: string) {
 
-        if (this._firstLoad)
+        if (this._firstLoad || this._suspendSearch)
             return;
 
-        let items = await this.itemsSource.getItemsAsync(this.prepareFilter({} as TFilter, this.searchText));
+        if (!this._itemsCache || this.searchMode != "once")
+            this._itemsCache = await this.itemsSource.getItemsAsync(this.prepareFilter({} as TFilter, query));
 
-        if (!this.sourceMode) {
-            const parts = (this.searchText ?? "").toLowerCase().split(' ').map(a => a.trim()).filter(a => a.length > 0);
+        let items = this._itemsCache;
+
+        if (this.searchMode != "source-filter") {
+            const parts = (query ?? "").toLowerCase().split(' ').map(a => a.trim()).filter(a => a.length > 0);
             items = items.filter(a => {
                 const text = this.itemsSource.getText(a).toLowerCase();
                 return parts.every(a => text.includes(a));
@@ -106,8 +119,6 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
 
         this.showSuggestions = true;
     }
-
-
 
     onKeyDown(ev: KeyboardEvent) {
 
@@ -123,12 +134,19 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
         if (value === null || value === undefined)
             this.selectItem(null);
         else {
-            const item = await this.itemsSource.getItemByValueAsync?.(value);
-            if (this.freeText && typeof value == "string" && (item === null || item === undefined)) {
-                const item = this.createItem(value);
-                if (item)
-                    this.selectItem(item);
-            }
+
+            const curSelValue = this.selectedItem ? this.itemsSource.getValue(this.selectedItem) : undefined;
+
+            if (curSelValue == value)
+                return;
+
+            let item: TItem = await this.itemsSource.getItemByValueAsync?.(value);
+
+            if (this.freeText && typeof value == "string" && (item === null || item === undefined)) 
+                item = this.createItem(value);
+      
+            if (item)
+                this.selectItem(item);
         }
     
     }
@@ -150,21 +168,25 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
                         this.selectItem(item);
                 }
             }
-            else
+            else {
+                this._suspendSearch++;
                 this.searchText = "";
-       
-        }
-            
+                this._suspendSearch--;
+            }
+                
+        }            
     }
 
     protected onFocusChanged(value: boolean) {
 
         if (value) {
+
             this.showSuggestions = true;
-            if (this._firstLoad) {
+
+            if (this._firstLoad) 
                 this._firstLoad = false;
-                this.searchAsync("");
-            }
+
+            this.searchAsync("");
             this._input.select();
         }
     }
@@ -178,20 +200,27 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
     }
 
     clearSelection() {
+        this._suspendSearch++;
         this.searchText = "";
-        this.value = null;
         this.selectedItem = null;
+        this.value = null;
+        this._suspendSearch--;
 
     }
 
     selectItem(item: TItem, hide: boolean = false) {
 
+        this.selectedItem = item;
+
         this.value = item ? this.itemsSource.getValue(item) : (this.freeText ? this.searchText as TValue : undefined);
 
-        if (item)
+        if (item) {
+            this._suspendSearch++;
             this.searchText = this.itemsSource.getText(item);
+            this._suspendSearch--;
+        }
+            
 
-        this.selectedItem = item;
         if (hide)
             setTimeout(() => this.showSuggestions = false, 50);
     }
@@ -225,7 +254,7 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
 
     selectedItem: TItem;
 
-    sourceMode: boolean;
+    searchMode: SearchMode;
 
     itemsSource: IItemsSource<TItem, TValue, TFilter>;
 

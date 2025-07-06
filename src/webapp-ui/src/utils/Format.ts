@@ -56,6 +56,8 @@ export function formatEnum<TEnum extends Enum>(obj: TEnum, value: EnumValue<TEnu
 
 export function formatCurrency(value: number, symbol = "€") {
 
+    if (value === null || value === undefined)
+        return "";
     return symbol + " " + (Math.round(value * 100) / 100).toFixed(2);
 }
 
