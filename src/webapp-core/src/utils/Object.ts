@@ -141,3 +141,10 @@ export function* mapObject<TObj extends object, TKey extends keyof TObj & string
 
     }
 }
+
+export function isProbablyConstructor(value: unknown) {
+    return typeof value === 'function' &&
+        value.prototype &&
+        value.prototype.constructor === value &&
+        Object.getOwnPropertyNames(value.prototype).length > 1;
+}

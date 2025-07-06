@@ -14,6 +14,8 @@ interface ISingleSelectorOptions<TItem, TValue, TFilter extends ObjectLike|unkno
 
     itemsSource: IItemsSource<TItem, TValue, TFilter>;
 
+    valuesEquals?: (a: TValue, b: TValue) => boolean;
+
     applyFilter?: (currentFilter: Partial<TFilter>) => Partial<TFilter>;
 }
 
@@ -96,6 +98,14 @@ export class SingleSelector<
         this.onChanged("editValue", () => this.commitAsync());
     }
 
+
+
+    valuesEquals(a: TValue, b: TValue) {
+
+        return a == b;
+    }
+
+
     protected override editToValue(value: string, clone?: boolean): TValue {
 
         if (value == "@empty" || !this.content) {
@@ -115,7 +125,7 @@ export class SingleSelector<
 
         const index = (value === null || value === undefined) ?
             "@empty" :
-            (this.content?.findIndex(a => this.itemsSource.getValue(a) == value) ?? "@empty");
+            (this.content?.findIndex(a => this.valuesEquals(this.itemsSource.getValue(a), value)) ?? "@empty");
 
         return index.toString();
     }

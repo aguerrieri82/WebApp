@@ -6,7 +6,7 @@ import type { IObservableProperty, IPropertyChangedHandler } from "./abstraction
 import { compareArray, forEachRev } from "./utils/Array";
 import { WebApp } from "./utils/Debug";
 import { cleanProxy, Expression, type IExpressionProp } from "./Expression";
-import { getPropertyDescriptor } from "./utils/Object";
+import { getPropertyDescriptor, isProbablyConstructor } from "./utils/Object";
 import { createObservableArray } from "./ObservableArray";
 import { getOrCreateProp } from "./Properties";
 
@@ -126,8 +126,23 @@ export class Binder<TModel extends BindModel> {
             const refs = Array.from(exp.expression.references()).filter(a =>
                 !a.readonly &&
                 typeof a.object == "object" &&
-                typeof a.value !== "function");
+                !isProbablyConstructor(a.value));
 
+            /************************************ */
+            /* WARN!!!!!!!!!!!!
+            /* WARN!!!!!!!!!!!!
+            /* WARN!!!!!!!!!!!!
+            /* WARN!!!!!!!!!!!!
+            /* WARN!!!!!!!!!!!!
+            /* before was isProbablyConstructor => typeof a.value != function
+            /************************************ */
+
+            /*
+            const funcs = refs.filter(a =>
+                typeof a.value == "function").map(a => a.value);
+            if (funcs)
+                console.log(...funcs);
+            */
             compareArray(binding.refs, refs, {
 
                 equals: (a, b) => (a.object === b.object && a.propName === b.propName),

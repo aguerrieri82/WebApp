@@ -7,6 +7,11 @@ interface ICompareArrayHandler<T> {
     equals(a: T, b: T): boolean;
 }
 
+export interface IGroup<TKey, TValue> {
+    key: TKey;
+    values: TValue[];
+}
+
 export function forEachRev<T>(items: T[], action: (item: T) => void) {
 
     if (!items || items.length == 0)
@@ -48,6 +53,63 @@ export function compareArray<T>(oldValue: T[], newValue: T[], handler: ICompareA
         if (!oldValue.some(ov => handler.equals(ov, nv)))
             handler.onAdded(nv, i);
     });
+}
+
+
+export function remap<TKey, TValue, TResult>(map: Map<TKey, TValue>, selector: (key: TKey, value: TValue) => Promise<TResult>, keySort?: (key: TKey) => string | number): Promise<TResult[]>;
+
+export function remap<TKey, TValue, TResult>(map: Map<TKey, TValue>, selector: (key: TKey, value: TValue) => TResult, keySort?: (key: TKey) => string | number): TResult[];
+
+export function remap<TKey, TValue, TResult>(map: Map<TKey, TValue>, selector: (key: TKey, value: TValue) => TResult | Promise<TResult>, keySort?: (key: TKey) => string | number) {
+
+    const result: (TResult | Promise<TResult>)[] = [];
+
+    const keys = Array.from(map.keys());
+    if (keySort)
+        keys.sort((a, b) => {
+            const newA = keySort(a);
+            const newB = keySort(b);
+            if (typeof newA === "string")
+                return newA.localeCompare(newB as string);
+            return newA - (newB as number);
+        })
+
+    for (const key of keys) {
+        const item = selector(key, map.get(key)!);
+        result.push(item);
+    }
+
+    if (result[0] instanceof Promise)
+        return Promise.all(result) as Promise<TResult[]>;
+
+    return result as TResult[];
+}
+
+export function groupBy<T, TKey>(items: T[] | undefined, selector: (item: T) => TKey, sortByKey = true) {
+    const map = new Map<TKey, T[]>();
+
+    if (items) {
+        for (const item of items) {
+            const key = selector(item);
+            if (!map.has(key))
+                map.set(key, [item]);
+            else
+                map.get(key)?.push(item);
+        }
+    }
+
+    const result = remap(map, (key, values) => ({ key, values } as IGroup<TKey, T>));
+
+    if (sortByKey) {
+        result.sort((a, b) => {
+            if (typeof a.key == "string")
+                return a.key.localeCompare(b.key as string);
+            if (typeof a.key == "number")
+                return a.key - (b.key as number);
+        });
+    }
+
+    return result;
 }
 
 declare global {

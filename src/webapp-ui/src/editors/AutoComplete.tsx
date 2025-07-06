@@ -24,6 +24,8 @@ interface IAutoCompleteOptions<TItem, TValue, TFilter> extends IEditorOptions<TV
 
     canSelect: (item: TItem) => boolean;
 
+    valuesEquals?: (a: TValue, b: TValue) => boolean;
+
     searchMode: SearchMode;
 
     freeText: boolean;
@@ -53,13 +55,14 @@ export interface IAnchorOptions {
 }
 
 export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCompleteOptions<TItem, TValue, TFilter>> {
-
-
+   
     protected _firstLoad = true;
     protected _input: HTMLInputElement;
     protected _suggestions: FloatingPanel;
     protected _suspendSearch = 0;
     protected _itemsCache: TItem[];
+    protected _lastFilterJson: string;
+
 
     constructor(options?: IAutoCompleteOptions<TItem, TValue, TFilter>) {
 
@@ -102,8 +105,17 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
         if (this._firstLoad || this._suspendSearch)
             return;
 
-        if (!this._itemsCache || this.searchMode != "once")
-            this._itemsCache = await this.itemsSource.getItemsAsync(this.prepareFilter({} as TFilter, query));
+        const curFilter = this.prepareFilter({} as TFilter, query);
+        const curFilterJson = JSON.stringify(curFilter);
+
+        if (!this._itemsCache || this.searchMode != "once" || curFilterJson != this._lastFilterJson) {
+
+            this.suggestions = [];
+
+            this._itemsCache = await this.itemsSource.getItemsAsync(curFilter);
+            this._lastFilterJson = curFilterJson;
+        }
+
 
         let items = this._itemsCache;
 
@@ -128,6 +140,11 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
         }   
     }
 
+    valuesEquals(a: TValue, b: TValue) {
+
+        return a == b;
+    }
+
    
     override async onValueChanged(value: TValue, oldValue: TValue, reason: ValueChangedReason) {
 
@@ -137,10 +154,12 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
 
             const curSelValue = this.selectedItem ? this.itemsSource.getValue(this.selectedItem) : undefined;
 
-            if (curSelValue == value)
+            if (this.valuesEquals(curSelValue, value))
                 return;
 
-            let item: TItem = await this.itemsSource.getItemByValueAsync?.(value);
+            let item: TItem = this._itemsCache?.find(a => this.valuesEquals(this.itemsSource.getValue(a), value));
+            if (!item)
+                item = await this.itemsSource.getItemByValueAsync?.(value);
 
             if (this.freeText && typeof value == "string" && (item === null || item === undefined)) 
                 item = this.createItem(value);
@@ -155,11 +174,6 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
 
         console.log(value);
 
-        if (value) 
-            this._suggestions?.show();
-        else
-            this._suggestions?.close();
-
         if (!value) {
             if (this.freeText) {
                 if (this.searchText?.length > 0) {
@@ -172,9 +186,14 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
                 this._suspendSearch++;
                 this.searchText = "";
                 this._suspendSearch--;
-            }
-                
-        }            
+            }                
+        }   
+
+        if (value)
+            this._suggestions?.show();
+        else
+            this._suggestions?.close();
+
     }
 
     protected onFocusChanged(value: boolean) {
