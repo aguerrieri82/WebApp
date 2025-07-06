@@ -135,9 +135,9 @@ export function* mapObject<TObj extends object, TKey extends keyof TObj & string
 
     for (const key in obj) {
         yield {
-            key: key as TKey,
+            key: key,
             value: obj[key]
-        }
+        } as any
 
     }
 }
