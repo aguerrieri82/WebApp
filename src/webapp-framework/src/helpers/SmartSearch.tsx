@@ -213,8 +213,11 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
         let weekDayPart: IDatePart;
 
         for (const keyword of keywords) {
+
             const intValue = parseInt(keyword);
+
             if (!isNaN(intValue)) {
+
                 if (!dayPart && intValue >= 1 && intValue <= 31)
                     dayPart = { keyword, value: intValue };
 
@@ -226,12 +229,14 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
                 continue;
 
             const [monthIdx] = indexOfStartsWith(MONTHS, keyword);
+
             if (monthIdx !== -1 && !monthPart)
                 monthPart = { keyword, value: monthIdx + 1 };
 
             const [weekIdx] = indexOf(WEEK_DAYS, keyword, (a, b) =>
                 a.replace("�", "i").toLowerCase().startsWith(b.replace("�", "i").toLowerCase())
             );
+
             if (weekIdx !== -1 && !weekDayPart)
                 weekDayPart = { keyword, value: weekIdx };
         }
@@ -239,47 +244,64 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
         let year = 0, month = 0, day = 0;
 
         if (dayPart) {
+
             day = dayPart.value;
+
             if (!monthPart && !yearPart) {
+
                 year = now.getFullYear();
                 month = (day < now.getDate() && options.preferFuture) ? now.getMonth() + 2 : now.getMonth() + 1;
+
             } else if (monthPart && !yearPart) {
+
                 month = monthPart.value;
                 year = now.getFullYear();
-                if (month < now.getMonth() + 1) year++;
+                if (options.preferFuture && month < now.getMonth() + 1)
+                    year++;
+
             } else if (monthPart && yearPart) {
+
                 year = yearPart.value;
                 month = monthPart.value;
             }
 
             return {
+
                 from: new Date(year, month - 1, day),
                 to: new Date(year, month - 1, day)
             };
         }
 
         if (monthPart && !dayPart) {
+
             year = yearPart ? yearPart.value : now.getFullYear();
             if (!yearPart && monthPart.value < now.getMonth() + 1) year++;
 
             const from = new Date(year, monthPart.value - 1, 1);
             const to = new Date(year, monthPart.value, 0);
+
             return { from, to };
         }
 
         if (yearPart && !dayPart && !monthPart) {
+
             const from = new Date(yearPart.value, 0, 1);
             const to = new Date(yearPart.value, 11, 31);
+
             return { from, to };
         }
 
         if (weekDayPart) {
+
             const cur = new Date(now);
+
             while (true) {
-                const weekDay = (cur.getDay() + 6) % 7; // map Sunday=6, Monday=0
+
+                const weekDay = (cur.getDay() + 6) % 7; 
                 if (weekDay === weekDayPart.value) break;
                 cur.setDate(cur.getDate() + 1);
             }
+
             return { from: cur, to: cur };
         }
 
@@ -287,6 +309,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
     }
 
     const splitRangeParts = (parts: string[]) => {
+
         const result = {
             from: undefined as string[],
             to: undefined as string[],
@@ -299,6 +322,7 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
 
         let mode = 0;
         let partIx = -1;
+
         for (const part of parts) {
 
             partIx++;
@@ -322,7 +346,6 @@ export function dateRangeSearch<TFilter>(options: IDateRangeSearchOptions<TFilte
 
             else if (mode == 2)
                 result.to.push(part);
-
         }
 
         return result;
@@ -713,13 +736,12 @@ export function querySearch<TFilter, TItem, TId>(options: IQuerySearchOptions<TF
 
                 const idsFilterField = (options.idsFilterField ?? "ids") as KeyOfType<TFilter, TId[]>;
 
-                let values = filter[idsFilterField] as TId[];
+                const values = filter[idsFilterField] as TId[];
 
                 if (values?.every(a => lastQueryItem.value.includes(a)))
                     return [lastQueryItem];
             }
         },
-
 
         async searchAsync(query, curFilter, curItems) {
 

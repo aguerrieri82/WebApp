@@ -21,8 +21,7 @@ export function findParent(element: HTMLElement, selector: (el: HTMLElement) => 
     }
 }
 
-
-export function getScreenPos(element: HTMLElement, includeScroll = true) {
+export function getScreenPos(element: HTMLElement, includeScroll = true, skipBody = false) {
 
     let curEl = element;
     let offsetEl = element;
@@ -36,7 +35,7 @@ export function getScreenPos(element: HTMLElement, includeScroll = true) {
             offsetEl = curEl.offsetParent as HTMLElement;
         }
 
-        if (includeScroll) {
+        if (includeScroll && (!skipBody || curEl != document.documentElement)) {
             curOfs.y -= curEl.scrollTop;
             curOfs.x -= curEl.scrollLeft;
         }
@@ -45,7 +44,6 @@ export function getScreenPos(element: HTMLElement, includeScroll = true) {
 
     return curOfs;
 }
-
 
 export function getScrollParent(element: HTMLElement): HTMLElement {
 

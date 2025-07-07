@@ -4,7 +4,6 @@ import localTable from "./services/LocalTable";
 import { RouteContentHost } from "./components/RouteContentHost";
 import "./Transition.scss"
 
-
 export interface IAppOptions {
 
 }

@@ -201,7 +201,6 @@ export class ItemListContent<TItem, TFilter>
         });
     }
 
-
     refreshItem(index: number) {
         this.items.set(index, { ...this.items[index] });
     }
@@ -248,7 +247,6 @@ export class ItemListContent<TItem, TFilter>
 
         return newItem ? false : undefined;
     }
-
 
     createFilterEditor() {
 
@@ -420,7 +418,6 @@ export class ItemListContent<TItem, TFilter>
         return new ItemListContentBuilder<TItem, TFilter>();
     }
 }
-
 
 export class ItemListContentBuilder<
     TItem,

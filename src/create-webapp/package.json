@@ -1,6 +1,6 @@
 {
   "name": "@eusoft/create-webapp",
-  "version": "0.0.44",
+  "version": "0.0.45",
   "packageManager": "pnpm",
   "type": "module",
   "main": "src/index.ts",

@@ -1,7 +1,6 @@
 import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, type LoadResult, formatText, isResultContainer, isStateManager, replaceArgs, withUnblock } from "@eusoft/webapp-ui";
 import { app } from "../App";
 
-
 export type RouteArgs = ObjectLike;
 
 export type RouteAction<TArgs extends RouteArgs> = (args: TArgs, content?: unknown) => void | Promise<LoadResult>;
@@ -95,7 +94,6 @@ export class Router {
             return params;
         }
     }
-
 
     startAsync() {
 

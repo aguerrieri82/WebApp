@@ -4,7 +4,6 @@ import { Class, forModel } from "@eusoft/webapp-jsx";
 import { findParent, getScreenPos, isParentOrSelf } from "../utils/Dom";
 import "./FloatingPanel.scss";
 
-
 export interface IFloatingPanelOptions extends IComponentOptions {
 
     body: ViewNode;
@@ -19,6 +18,7 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
     protected _closePromise: (value: string) => void;
     protected _isMounted;
     protected _onClick: (ev: PointerEvent) => void;
+    protected _onLayout: (ev: Event) => void;
 
     constructor(options?: IFloatingPanelOptions) {
         super();
@@ -38,8 +38,25 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
             if (!isParentOrSelf(ev.target as HTMLElement, this.context.element))
                 this.onClickOut(ev.target as HTMLElement);
         }
+        this._onLayout = ev => {
+
+            if (this.visible)
+                this.updateSuggestionsPos();
+        }
     }
 
+    protected attachEvents() {
+
+        window.addEventListener("pointerup", this._onClick);
+        window.addEventListener("scroll", this._onLayout, true);
+        window.addEventListener("resize", this._onLayout); 
+    }
+
+    protected detachEvents() {
+        window.removeEventListener("pointerup", this._onClick);
+        window.removeEventListener("scroll", this._onLayout, true);
+        window.removeEventListener("resize", this._onLayout); 
+    }
 
     protected updateSuggestionsPos() {
 
@@ -57,25 +74,29 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
         if (!anchorEl)
             return;
 
+        if (!this.context?.element.isConnected) {
+            this.detachEvents();
+            return;
+        }
+            
         const panel = this.context.element;
 
         this.isFixed = !!findParent(anchorEl, a => window.getComputedStyle(a).position == "fixed");
        
-        const ofs = getScreenPos(anchorEl, false);
+        const ofs = getScreenPos(anchorEl, true, true);
         panel.style.top = (ofs.y + anchorEl.clientHeight) + "px";
         panel.style.left = (ofs.x) + "px";
         panel.style.width = (anchorEl.clientWidth) + "px";
     }
-
 
     close() {
 
         if (!this.visible)
             return;
 
-        window.removeEventListener("pointerup", this._onClick);
-
         this.visible = false;
+
+        this.detachEvents();
 
         setTimeout(() => {
 
@@ -88,8 +109,6 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
     }
 
     show() {
-
-        console.log("show");
 
         if (this.visible)
             return;
@@ -105,7 +124,7 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
 
         this.visible = true;
 
-        window.addEventListener("pointerup", this._onClick);
+        this.attachEvents();
     }
 
     onClickOut(el: HTMLElement) {

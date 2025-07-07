@@ -37,7 +37,6 @@ export class TextFilterEditor<TFilter>
 
     }
 
-
     loadFilterAsync(filter: TFilter): Promise<unknown> {
 
         if (!filter)

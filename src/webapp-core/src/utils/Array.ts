@@ -55,7 +55,6 @@ export function compareArray<T>(oldValue: T[], newValue: T[], handler: ICompareA
     });
 }
 
-
 export function remap<TKey, TValue, TResult>(map: Map<TKey, TValue>, selector: (key: TKey, value: TValue) => Promise<TResult>, keySort?: (key: TKey) => string | number): Promise<TResult[]>;
 
 export function remap<TKey, TValue, TResult>(map: Map<TKey, TValue>, selector: (key: TKey, value: TValue) => TResult, keySort?: (key: TKey) => string | number): TResult[];
@@ -87,10 +86,20 @@ export function remap<TKey, TValue, TResult>(map: Map<TKey, TValue>, selector: (
 
 export function groupBy<T, TKey>(items: T[] | undefined, selector: (item: T) => TKey, sortByKey = true) {
     const map = new Map<TKey, T[]>();
+    const keyMap = new Map<string, TKey>();
 
     if (items) {
         for (const item of items) {
-            const key = selector(item);
+
+            let key = selector(item);
+
+            const json = JSON.stringify(key);
+
+            if (!keyMap.has(json))
+                keyMap.set(json, key);
+            else
+                key = keyMap.get(json);
+
             if (!map.has(key))
                 map.set(key, [item]);
             else

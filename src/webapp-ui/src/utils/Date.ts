@@ -9,6 +9,18 @@ export function stringOrUndef(value: unknown) {
     return undefined;
 }
 
+export function fixEndDate(date: Date | string) {
+    if (!date)
+        return;
+    return new Date(parseDate(date).setHours(23, 59, 59, 999));
+}
+
+export function fixStartDate(date: Date | string) {
+    if (!date)
+        return;
+    return new Date(parseDate(date).setHours(0, 0, 0, 0));
+}
+
 export function parseDate(value: Date | string): Date {
 
     if (!value)

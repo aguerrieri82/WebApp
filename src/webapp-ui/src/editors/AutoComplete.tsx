@@ -1,4 +1,4 @@
-import { type TemplateMap, type BindExpression, type ITemplateContext, Behavoir } from "@eusoft/webapp-core";
+import { type TemplateMap, type BindExpression, type ITemplateContext } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import type { IEditorOptions, IItemsSource, ValueChangedReason } from "../abstraction";
 import { Editor } from "./Editor";
@@ -8,7 +8,6 @@ import { MaterialIcon } from "../components/Icon";
 import "./AutoComplete.scss";
 import { FloatingPanel } from "../components";
 import { isParentOrSelf } from "../utils/Dom";
-
 
 type SearchMode = "once" | "source-filter" | "client-filter"
 
@@ -63,7 +62,6 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
     protected _itemsCache: TItem[];
     protected _lastFilterJson: string;
 
-
     constructor(options?: IAutoCompleteOptions<TItem, TValue, TFilter>) {
 
         super();
@@ -116,7 +114,6 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
             this._lastFilterJson = curFilterJson;
         }
 
-
         let items = this._itemsCache;
 
         if (this.searchMode != "source-filter") {
@@ -144,7 +141,6 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
 
         return a == b;
     }
-
    
     override async onValueChanged(value: TValue, oldValue: TValue, reason: ValueChangedReason) {
 
@@ -238,7 +234,6 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
             this.searchText = this.itemsSource.getText(item);
             this._suspendSearch--;
         }
-            
 
         if (hide)
             setTimeout(() => this.showSuggestions = false, 50);
