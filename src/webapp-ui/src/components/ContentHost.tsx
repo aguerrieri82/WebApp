@@ -33,6 +33,7 @@ export class ContentHost<TContent extends IContent<ObjectLike> = IContent<Object
             useTransition: true,
             ...options
         });
+
     }
 
     async loadContentAsync<TArgs extends ObjectLike = ObjectLike>(content: TContent & IContent<TArgs>, args?: TArgs): Promise<LoadResult>{
@@ -71,7 +72,13 @@ export class ContentHost<TContent extends IContent<ObjectLike> = IContent<Object
         if (this.content?.onOpenAsync)
             await content.onOpenAsync();
 
+        this.onContentLoaded();
+
         return true;
+    }
+
+    protected onContentLoaded() {
+
     }
 
     push(page: TContent) {
