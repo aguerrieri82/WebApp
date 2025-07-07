@@ -40,7 +40,6 @@ export class ComponentElementHandler implements ITemplateHandler {
         let hasBinding = false;
         let options: string;
 
-
         for (const name in element.attributes) {
 
             const attr = element.attributes[name];
@@ -83,7 +82,6 @@ export class ComponentElementHandler implements ITemplateHandler {
                 }           
             }
         }
-
 
         element.childNodes = element.childNodes.filter(a => a.type != TemplateNodeType.Text || a.value.trim().length > 0);
 

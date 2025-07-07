@@ -4,7 +4,6 @@ import { Class, forModel } from "@eusoft/webapp-jsx";
 import { findParent, getScreenPos, isParentOrSelf } from "../utils/Dom";
 import "./FloatingPanel.scss";
 
-
 export interface IFloatingPanelOptions extends IComponentOptions {
 
     body: ViewNode;
@@ -40,7 +39,6 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
         }
     }
 
-
     protected updateSuggestionsPos() {
 
         if (!this.anchor)
@@ -66,7 +64,6 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
         panel.style.left = (ofs.x) + "px";
         panel.style.width = (anchorEl.clientWidth) + "px";
     }
-
 
     close() {
 

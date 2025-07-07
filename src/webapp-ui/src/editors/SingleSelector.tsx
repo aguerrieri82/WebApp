@@ -98,13 +98,10 @@ export class SingleSelector<
         this.onChanged("editValue", () => this.commitAsync());
     }
 
-
-
     valuesEquals(a: TValue, b: TValue) {
 
         return a == b;
     }
-
 
     protected override editToValue(value: string, clone?: boolean): TValue {
 

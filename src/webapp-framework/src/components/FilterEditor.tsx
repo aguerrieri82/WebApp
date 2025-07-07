@@ -616,7 +616,7 @@ export class FilterEditor<TFilter, TItem>
 
     async loadFilterAsync(value: TFilter) {
 
-        var items: ISearchItem<TFilter, unknown>[] = [];
+        const items: ISearchItem<TFilter, unknown>[] = [];
 
         for (const provider of this._curSearchProviders) {
             if (!provider.parseAsync)

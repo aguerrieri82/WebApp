@@ -159,7 +159,6 @@ export class JsxParseContext {
 
                     this.curAttribute = null;
                 }
-
       
                 if (path.isJSXAttribute()) {
                     
@@ -178,7 +177,6 @@ export class JsxParseContext {
         return this.rootElement;
 
     }
-
 
     findThisBindind(path: NodePath<ThisExpression>) {
         let curPath: NodePath = path;

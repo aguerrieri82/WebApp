@@ -1,5 +1,3 @@
-import { parseDate } from "@eusoft/webapp-ui/utils/Date";
-
 export function fullUri(uri: string): string {
 
     if (!uri.startsWith("http://") && !uri.startsWith("https://")) {
@@ -20,7 +18,6 @@ export function distinct<T>(items: Iterable<T>) {
 
     return Array.from(map.keys());
 }
-
 
 export function createInstance<TContent, TOptions>(factory: (options?: TOptions) => TContent, singleInstance: boolean) {
 

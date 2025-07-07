@@ -1,4 +1,4 @@
-import { cleanProxy, Component, type IComponentOptions, type TemplateMap } from "@eusoft/webapp-core";
+import { Component, type IComponentOptions, type TemplateMap } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
 import { type ViewNode } from "../types";
 import { type IAction } from "../abstraction";

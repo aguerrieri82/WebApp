@@ -21,7 +21,6 @@ export function findParent(element: HTMLElement, selector: (el: HTMLElement) => 
     }
 }
 
-
 export function getScreenPos(element: HTMLElement, includeScroll = true) {
 
     let curEl = element;
@@ -45,7 +44,6 @@ export function getScreenPos(element: HTMLElement, includeScroll = true) {
 
     return curOfs;
 }
-
 
 export function getScrollParent(element: HTMLElement): HTMLElement {
 

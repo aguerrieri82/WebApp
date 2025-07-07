@@ -736,13 +736,12 @@ export function querySearch<TFilter, TItem, TId>(options: IQuerySearchOptions<TF
 
                 const idsFilterField = (options.idsFilterField ?? "ids") as KeyOfType<TFilter, TId[]>;
 
-                let values = filter[idsFilterField] as TId[];
+                const values = filter[idsFilterField] as TId[];
 
                 if (values?.every(a => lastQueryItem.value.includes(a)))
                     return [lastQueryItem];
             }
         },
-
 
         async searchAsync(query, curFilter, curItems) {
 

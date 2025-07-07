@@ -55,7 +55,6 @@ export function compareArray<T>(oldValue: T[], newValue: T[], handler: ICompareA
     });
 }
 
-
 export function remap<TKey, TValue, TResult>(map: Map<TKey, TValue>, selector: (key: TKey, value: TValue) => Promise<TResult>, keySort?: (key: TKey) => string | number): Promise<TResult[]>;
 
 export function remap<TKey, TValue, TResult>(map: Map<TKey, TValue>, selector: (key: TKey, value: TValue) => TResult, keySort?: (key: TKey) => string | number): TResult[];

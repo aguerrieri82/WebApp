@@ -8,7 +8,7 @@ import { stringOrUndef, useOperation } from "../utils";
 import { type IAction } from "../abstraction/IAction";
 import { type IContentHost } from "../abstraction";
 import "./Content.scss";
-import { Action, filterActions } from "./Action";
+import { Action } from "./Action";
 
 export interface IContentOptions<TArgs extends ObjectLike> extends IComponentOptions {
 
