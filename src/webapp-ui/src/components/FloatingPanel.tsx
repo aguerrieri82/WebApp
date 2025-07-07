@@ -45,6 +45,19 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
         }
     }
 
+    protected attachEvents() {
+
+        window.addEventListener("pointerup", this._onClick);
+        window.addEventListener("scroll", this._onLayout, true);
+        window.addEventListener("resize", this._onLayout); 
+    }
+
+    protected detachEvents() {
+        window.removeEventListener("pointerup", this._onClick);
+        window.removeEventListener("scroll", this._onLayout, true);
+        window.removeEventListener("resize", this._onLayout); 
+    }
+
     protected updateSuggestionsPos() {
 
         if (!this.anchor)
@@ -61,11 +74,16 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
         if (!anchorEl)
             return;
 
+        if (!this.context?.element.isConnected) {
+            this.detachEvents();
+            return;
+        }
+            
         const panel = this.context.element;
 
         this.isFixed = !!findParent(anchorEl, a => window.getComputedStyle(a).position == "fixed");
        
-        const ofs = getScreenPos(anchorEl, true);
+        const ofs = getScreenPos(anchorEl, true, true);
         panel.style.top = (ofs.y + anchorEl.clientHeight) + "px";
         panel.style.left = (ofs.x) + "px";
         panel.style.width = (anchorEl.clientWidth) + "px";
@@ -76,11 +94,9 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
         if (!this.visible)
             return;
 
-        window.removeEventListener("pointerup", this._onClick);
-        window.removeEventListener("scroll", this._onLayout, true); 
-        window.removeEventListener("resize", this._onLayout); 
-
         this.visible = false;
+
+        this.detachEvents();
 
         setTimeout(() => {
 
@@ -93,8 +109,6 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
     }
 
     show() {
-
-        console.log("show");
 
         if (this.visible)
             return;
@@ -110,10 +124,7 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
 
         this.visible = true;
 
-        window.addEventListener("pointerup", this._onClick);
-        window.addEventListener("scroll", this._onLayout, true); 
-        window.addEventListener("resize", this._onLayout); 
-
+        this.attachEvents();
     }
 
     onClickOut(el: HTMLElement) {
