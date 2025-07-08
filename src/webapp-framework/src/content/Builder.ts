@@ -87,7 +87,7 @@ export class ContentBuilder<
         return res as (TBody & TContent);
     }
 
-    asContent<TBody extends object>(body?: BindThis<TContent, TBody & TContent>) {
+    asContent<TBody extends object>(body?: BindThis<TContent, TBody & TContent> & TBody) {
         return {
             name: this._options.name,            
             route: this._options.route,
