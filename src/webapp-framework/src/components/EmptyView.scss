@@ -5,10 +5,10 @@
     align-items: center;
     flex-direction: column;
     gap: size(1);
-    pointer-events: none;
-    user-select: none;
 
     .icon {
+        pointer-events: none;
+        user-select: none;
         color: var(--primary-color);
         opacity: 0.2;
         font-size: 250px;
