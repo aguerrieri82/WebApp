@@ -290,5 +290,3 @@ declare module "./EditorBuilder" {
 EditorBuilder.prototype.autoComplete = function (this: EditorBuilder<any, any>, value, options) {
     return this.editor(value, AutoComplete, options);
 }
-
-export default AutoComplete;

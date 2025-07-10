@@ -111,5 +111,3 @@ export class ContentHost<TContent extends IContent<ObjectLike> = IContent<Object
 
     result: unknown;
 }
-
-export default ContentHost;

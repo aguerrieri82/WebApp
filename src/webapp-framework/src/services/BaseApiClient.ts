@@ -108,5 +108,3 @@ export class BaseApiClient {
 
     endpoint: string;
 }
-
-export default BaseApiClient;

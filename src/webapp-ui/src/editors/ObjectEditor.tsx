@@ -249,5 +249,3 @@ EditorBuilder.prototype.object = function (this: EditorBuilder<any, any>, value,
 export function objectEditor<TObj extends {}>(builder: (builder: EditorBuilder<TObj, ObjectEditor<TObj>>) => ITemplate<TObj> | JSX.Element, options?: IObjectEditorOptions<TObj>) {
     return new ObjectEditor<TObj>({ ...options, builder });
 }
-
-export default ObjectEditor;

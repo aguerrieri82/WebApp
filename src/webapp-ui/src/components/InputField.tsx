@@ -132,5 +132,3 @@ export class InputField<TValue, TEditor extends IEditor<TValue>, TTarget = unkno
 
     value: TValue;
 }
-
-export default InputField;

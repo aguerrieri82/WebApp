@@ -1,12 +1,12 @@
 import { Action, Content, formatText, type IAction, type IContent, type IContentInstance, type IContentOptions, type IItemsSource, type IItemViewOptions, type IStateContext, type IStateManager, ItemView, ListView, type LocalString, MaterialIcon, useOperation, type ViewNode } from "@eusoft/webapp-ui";
 import { type IFilterEditor  } from "../abstraction/IFilterEditor";
 import { Class, forModel } from "@eusoft/webapp-jsx";
-import router from "../services/Router";
 import { userInteraction } from "../services/UserInteraction";
 import "./ItemListContent.scss"
 import { cleanProxy } from "@eusoft/webapp-core/Expression";
 import { ContentBuilder } from "./Builder";
-import { isClass, type ComponentStyle } from "@eusoft/webapp-core";
+import { isClass, registerComponent, type ComponentStyle } from "@eusoft/webapp-core";
+import { router } from "../services/Router";
 
 export interface IItemActionContext<TItem> {
     target: TItem;
@@ -418,6 +418,8 @@ export class ItemListContent<TItem, TFilter>
         return new ItemListContentBuilder<TItem, TFilter>();
     }
 }
+
+registerComponent(ItemListContent, "ItemListContent");
 
 export class ItemListContentBuilder<
     TItem,

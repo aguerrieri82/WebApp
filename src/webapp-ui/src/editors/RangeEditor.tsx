@@ -75,5 +75,3 @@ declare module "./EditorBuilder" {
 EditorBuilder.prototype.range = function (this: EditorBuilder<any, any>, value, options) {
     return this.editor(value, RangeEditor, options);
 }
-
-export default RangeEditor;

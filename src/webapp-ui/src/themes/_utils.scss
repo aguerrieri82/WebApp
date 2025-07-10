@@ -1,3 +1,4 @@
+@use "_vars" as *;
 
 @keyframes rotation {
     from {
@@ -6,5 +7,15 @@
 
     to {
         transform: rotate(359deg);
+    }
+}
+
+@mixin clickable {
+    cursor: pointer;
+
+    @media #{$not-mobile-device} {
+        &:hover {
+            background: var(--item-hover-color);
+        }
     }
 }

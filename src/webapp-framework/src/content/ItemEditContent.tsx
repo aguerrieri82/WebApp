@@ -1,7 +1,7 @@
 import { forModel } from "@eusoft/webapp-jsx";
 import { CommitableEditor, Content, type EditorBuilder, type IContentOptions, type IEditor, type IObjectEditorOptions, isAsyncLoad, ObjectEditor } from "@eusoft/webapp-ui";
 import { ContentBuilder } from "./Builder";
-import { type ITemplate } from "@eusoft/webapp-core";
+import { registerComponent, type ITemplate } from "@eusoft/webapp-core";
 
 export interface IItemEditArgs<TItem> {
 
@@ -148,3 +148,4 @@ export class ItemEditContentBuilder<
     }
 }
 
+registerComponent(ItemEditContent, "ItemEditContent");

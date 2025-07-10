@@ -55,5 +55,3 @@ EditorBuilder.prototype.boolean = function (this: EditorBuilder<boolean, unknown
        ...options
     });
 }
-
-export default BooleanEditor;

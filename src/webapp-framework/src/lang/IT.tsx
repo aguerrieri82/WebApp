@@ -1,4 +1,4 @@
-﻿import localTable from "../services/LocalTable";
+﻿import { localTable } from "../services/LocalTable";
 
 localTable.add({
     "one-day": "un giorno",

@@ -60,5 +60,3 @@ declare module "./EditorBuilder" {
 EditorBuilder.prototype.number = function (this: EditorBuilder<number, unknown>, value, options) {
     return this.editor(value, NumberEditor, options);
 }
-
-export default NumberEditor;

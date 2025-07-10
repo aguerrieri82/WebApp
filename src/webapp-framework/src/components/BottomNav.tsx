@@ -1,8 +1,8 @@
 import {  type IComponentOptions, Component, type TemplateMap, registerComponent } from "@eusoft/webapp-core";
 import { forModel } from "@eusoft/webapp-jsx";
-import router, { type NavigationMode } from "../services/Router";
 import { createAction, type IAction, type IContent } from "@eusoft/webapp-ui";
 import "./BottomNav.scss";
+import { router, type NavigationMode } from "../services/Router";
 
 interface IBottomNavOptions extends IComponentOptions {
 

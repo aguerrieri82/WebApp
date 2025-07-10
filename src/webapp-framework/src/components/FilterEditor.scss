@@ -114,12 +114,8 @@ div.filter-editor {
             display: flex;
             align-items: center;
             padding: size(1) size(1);
-            cursor: pointer;
             transition-duration: var(--duration-normal);
-
-            &:hover {
-                background: var(--item-hover-color);
-            }
+            @include clickable;
 
             .select {
                 color: var(--primary-color);
@@ -156,14 +152,8 @@ div.filter-editor {
 
 
     button {
-        cursor: pointer;
         transition-duration: var(--duration-normal);
         border-radius: 4px;
-
-        @media #{$not-mobile-device} {
-            &:hover {
-                background: var(--item-hover-color);
-            }
-        }
+        @include clickable;
     }
 }

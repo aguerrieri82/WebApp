@@ -3,9 +3,9 @@ import { forModel } from "@eusoft/webapp-jsx/Helpers";
 import type { IEditorOptions } from "@eusoft/webapp-ui/abstraction/IEditor";
 import { Editor } from "@eusoft/webapp-ui/editors/Editor";
 import Pikaday from 'pikaday';
-import localTable from "../services/LocalTable";
 import 'pikaday/css/pikaday.css';
 import './CalendarEditor.scss';
+import { localTable } from "../services/LocalTable";
 
 const langs = {
     "IT": {

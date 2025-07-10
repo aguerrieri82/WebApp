@@ -43,8 +43,6 @@ class LocalTable implements ILocalization {
 
 export const localTable = new LocalTable();
 
-export default localTable;
-
 declare module "@eusoft/webapp-core" {
     interface IServices {
 

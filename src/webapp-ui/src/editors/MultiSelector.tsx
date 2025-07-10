@@ -134,5 +134,3 @@ declare module "./EditorBuilder" {
 EditorBuilder.prototype.multiSelector = function (this: EditorBuilder<any, unknown>, value, options) {
     return this.editor(value, MultiSelector, options);
 }
-
-export default MultiSelector;

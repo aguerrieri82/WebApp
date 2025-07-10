@@ -1,4 +1,4 @@
-﻿import { type Bindable, type IComponentOptions, Component, type TemplateMap } from "@eusoft/webapp-core";
+﻿import { type Bindable, type IComponentOptions, Component, type TemplateMap, registerComponent } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, type LoadState } from "../abstraction/IContent";
 import { type IFeature } from "../abstraction/IFeature";
@@ -180,4 +180,4 @@ export function content<
     } as IContentInstance<TArgs, TContent>;
 }
 
-export default Content;
+registerComponent(Content, "Content");

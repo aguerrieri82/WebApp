@@ -1,5 +1,6 @@
 @use  "../themes/_vars" as *;
 @forward "../themes/_vars";
+@forward "../themes/_utils";
 
 @mixin edit-box {
     padding: size(1) size(2);

@@ -65,5 +65,3 @@ declare module "./EditorBuilder" {
 EditorBuilder.prototype.text = function (this: EditorBuilder<string, unknown>, value, options) {
     return this.editor(value, TextEditor, options);
 }
-
-export default TextEditor;

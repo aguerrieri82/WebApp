@@ -37,21 +37,15 @@ div.text-filter-editor {
                 vertical-align: middle;
             }
 
-            &.show-filters > i{
+            &.show-filters > i {
                 color: var(--primary-color);
             }
         }
     }
 
     button {
-        cursor: pointer;
         transition-duration: var(--duration-normal);
         border-radius: 4px;
-
-        @media #{$not-mobile-device} {
-            &:hover {
-                background: var(--item-hover-color);
-            }
-        }
+        @include clickable;
     }
 }

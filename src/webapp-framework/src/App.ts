@@ -1,8 +1,8 @@
 import { Services, mount } from "@eusoft/webapp-core";
 import { type ContentHost, LOCALIZATION, OPERATION_MANAGER, OperationManager } from "@eusoft/webapp-ui";
-import localTable from "./services/LocalTable";
 import { RouteContentHost } from "./components/RouteContentHost";
 import "./Transition.scss"
+import { localTable } from "./services/LocalTable";
 
 export interface IAppOptions {
 

@@ -1,4 +1,5 @@
 @use "../themes/_vars" as *;
+@use "../themes/_utils" as *;
 
 .popup-container {
     position: absolute;
@@ -22,7 +23,7 @@
     list-style: none;
     display: flex;
     flex-direction: column;
-    
+
     > button.action.text {
         line-height: normal;
         margin-left: size(1);
@@ -36,14 +37,11 @@
         box-sizing: border-box;
         justify-content: start;
         width: 100%;
-
-        &:hover {
-            background: var(--item-hover-color);
-        }
+        @include clickable;
 
         .icon {
             color: var(--primary-color);
             width: 24px;
-        }         
+        }
     }
 }

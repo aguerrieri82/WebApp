@@ -135,5 +135,3 @@ declare module "./EditorBuilder" {
 EditorBuilder.prototype.singlePicker = function (this: EditorBuilder<any, any>, value, options) {
     return this.editor(value, SinglePicker, options);
 }
-
-export default SinglePicker;
