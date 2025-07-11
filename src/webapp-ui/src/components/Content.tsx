@@ -56,7 +56,8 @@ export class Content<
     TOptions extends IContentOptions<TArgs> = IContentOptions<TArgs>,
 >
 
-    extends Component<TOptions> implements IContent<TArgs> {
+    extends Component<TOptions>
+    implements IContent<TArgs> {
 
     protected _loadState: LoadState;
 
@@ -118,6 +119,11 @@ export class Content<
 
     protected async onLoadAsync(args?: TArgs) {
         return true;
+    }
+
+    refreshAsync(): Promise<unknown> {
+
+        return Promise.resolve();
     }
 
     async onOpenAsync(): Promise<unknown> {

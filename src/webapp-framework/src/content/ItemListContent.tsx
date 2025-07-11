@@ -205,7 +205,7 @@ export class ItemListContent<TItem, TFilter>
         this.items.set(index, { ...this.items[index] });
     }
 
-    async refreshAsync() {
+    override async refreshAsync() {
         await this.loadNextPageAsync(true);
     }
 

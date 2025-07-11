@@ -26,7 +26,7 @@
 
     > button.action.text {
         line-height: normal;
-        margin-left: size(1);
+        //margin-left: size(1);
         color: var(--text-color);
         flex-grow: 1;
         display: flex;
@@ -37,7 +37,8 @@
         box-sizing: border-box;
         justify-content: start;
         width: 100%;
-        @include clickable;
+        box-sizing: border-box;
+        cursor: pointer;
 
         .icon {
             color: var(--primary-color);

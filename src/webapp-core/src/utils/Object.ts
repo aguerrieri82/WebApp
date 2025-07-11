@@ -11,6 +11,7 @@ export function getFunctionName(func: Function): string {
         const results = (funcNameRegex).exec(func.toString());
         curName = (results && results.length > 1) ? results[1].trim() : "";
     }
+
     return curName;
 }
 
@@ -50,8 +51,13 @@ export function getTypeName(obj: WithTypeName): string {
 
     if (!name) {
 
-        if (type == "function")
+        if (type == "function") {
             name = getFunctionName(obj as Function);
+            if (getFunctionType(obj as Function) == "class" && name.startsWith("_")) {
+                name = name.substring(1);
+            }
+        }
+            
 
         else if (type == "object") {
 

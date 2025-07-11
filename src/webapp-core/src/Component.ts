@@ -360,5 +360,6 @@ export function declareComponent<
 }
 
 export function registerComponent<T extends Component<unknown>>(ctr: Class<T>, name: string) {
-    setTypeName(ctr, name);
+    //TODO comment for risk managment, uncomment when needed
+    //setTypeName(ctr, name);
 }

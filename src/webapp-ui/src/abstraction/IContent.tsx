@@ -14,6 +14,8 @@ export interface IContent<TArgs extends ObjectLike = undefined> extends ICompone
 
     onCloseAsync(): Promise<LoadResult>;
 
+    refreshAsync?(): Promise<unknown>;
+
     route: string;
 
     features: IFeature<this>[];
