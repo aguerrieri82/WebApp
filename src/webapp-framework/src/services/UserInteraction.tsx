@@ -1,8 +1,8 @@
-import { type Component, SERVICE_TYPE, mount } from "@eusoft/webapp-core";
+import { SERVICE_TYPE } from "@eusoft/webapp-core";
 import { type IUserInteraction, USER_INTERACTION } from "../abstraction/IUserInteraction";
-import { forModel } from "@eusoft/webapp-jsx";
-import { type IEditor, type LocalString, Popup, Toaster, type ViewNode, formatText, isCommitable, withUnblock } from "@eusoft/webapp-ui";
+import { FloatingPanel, type IAction, type IEditor, type LocalString, MaterialIcon, Popup, Toaster, type ViewNode, createAction, formatText, isCommitable, withUnblock } from "@eusoft/webapp-ui";
 import "./UserInteraction.scss";  
+import { forModel } from "@eusoft/webapp-jsx/Helpers";
 
 export type MessageType = "info" | "error" | "warning" | "success";
 export enum MessageBoxButton {
@@ -13,6 +13,7 @@ export enum MessageBoxButton {
     Cancel = 16,
     RetryCancel = Retry|Cancel,
     YesNo = Yes | No,
+    Close = 32
 }
 
 type MessageBoxCustomActions = Record<string, {
@@ -23,9 +24,6 @@ class UserInteraction implements IUserInteraction {
 
     constructor() {
 
-        mount(document.body, forModel(this, m => <div className="modal-container">
-            {m.dialogs?.forEach(a => <>{a}</>)}
-        </div>));
     }
 
     async messageBoxAsync(body: ViewNode, title: LocalString, buttons: MessageBoxButton): Promise<MessageBoxButton>;
@@ -88,6 +86,64 @@ class UserInteraction implements IUserInteraction {
 
     }
 
+
+    async fullMessageAsync(body: ViewNode, style: "info" | "error" | "success" | "warning", actions: (MessageBoxButton|IAction)[]) {
+
+        let icon;
+        if (style == "success")
+            icon = <MaterialIcon name="check_circle" color="#0f0" />
+        else if (style == "error")
+            icon = <MaterialIcon name="error" color="#f00" />
+
+        await withUnblock(() => new Promise<boolean>(res => {
+
+            let popup: FloatingPanel;
+
+            const onPopState = () => {
+                popup.close();
+            }
+
+            const buildAction = (action: IAction | MessageBoxButton) => {
+
+                if (typeof action != "object") {
+                    action = {
+                        text: formatText(MessageBoxButton[action].toLowerCase()) as string,
+                        name: MessageBoxButton[action],
+                        executeAsync: async () => true
+                    } as IAction;
+                }
+
+                return createAction({
+                    ...action,
+                    executeAsync: async ctx => {
+                        await action.executeAsync?.(ctx);
+                        window.removeEventListener("popstate", onPopState);
+                        popup.close();
+                        res(true);
+                    }
+                }, "text");
+            }
+
+            popup = new FloatingPanel({
+                style: [style, "full-message"],
+                body: forModel(() => <>
+                    {icon}
+                    <div className="body">{body}</div>
+                    <div className="actions">
+                        {actions.forEach(a => buildAction(a))}
+                    </div>
+                </>)
+            });
+
+            popup.show();
+
+            window.addEventListener("popstate", onPopState);
+        }));
+
+
+      
+    }
+
     async inputAsync<T>(body: IEditor<T>, title: LocalString): Promise<T> {
 
         const popup = new Popup();
@@ -118,10 +174,8 @@ class UserInteraction implements IUserInteraction {
         return result == "ok" ? body.value : null;  
     }
 
-    dialogs: Component[] = [];
 
     [SERVICE_TYPE] = USER_INTERACTION;
-
 }
 
 export const userInteraction = new UserInteraction();

@@ -525,8 +525,8 @@ export class FilterEditor<TFilter, TItem>
             this.showSuggestions = true;
             if (this._firstLoad) {
                 this._firstLoad = false;
-                this.searchAsync("");
             }
+            this.searchAsync("");
         }
     }
 
