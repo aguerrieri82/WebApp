@@ -1,7 +1,7 @@
-﻿import { Component, type IComponentOptions, isComponent, mount } from "@eusoft/webapp-core";
+﻿import { Component, delayAsync, type IComponentOptions, isComponent, mount } from "@eusoft/webapp-core";
 import { type ViewNode } from "../types";
 import { Class, forModel } from "@eusoft/webapp-jsx";
-import { findParent, getScreenPos, isParentOrSelf } from "../utils/Dom";
+import { findParent, getScreenPos, isParentOrSelf, type IPoint } from "../utils/Dom";
 import "./FloatingPanel.scss";
 
 export interface IFloatingPanelOptions extends IComponentOptions {
@@ -10,8 +10,15 @@ export interface IFloatingPanelOptions extends IComponentOptions {
 
     anchor?: ViewNode;
 
+    sizeToAnchor?: boolean;
+
+    anchorX?: "left" | "right";
+
+    anchorY?: "top" | "bottom";
+
     onClickOut?: (element: HTMLElement) => void;
 }
+
 
 export class FloatingPanel extends Component<IFloatingPanelOptions> {
 
@@ -19,6 +26,7 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
     protected _isMounted;
     protected _onClick: (ev: PointerEvent) => void;
     protected _onLayout: (ev: Event) => void;
+    protected _curPos: IPoint;
 
     constructor(options?: IFloatingPanelOptions) {
         super();
@@ -37,11 +45,13 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
 
             if (!isParentOrSelf(ev.target as HTMLElement, this.context.element))
                 this.onClickOut(ev.target as HTMLElement);
+            else
+                this.onClickIn(ev.target as HTMLElement);
         }
         this._onLayout = ev => {
 
             if (this.visible)
-                this.updateSuggestionsPos();
+                this.updatePanelPos();
         }
     }
 
@@ -58,7 +68,7 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
         window.removeEventListener("resize", this._onLayout); 
     }
 
-    protected updateSuggestionsPos() {
+    protected updatePanelPos() {
 
         if (!this.anchor)
             return;
@@ -79,14 +89,31 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
             return;
         }
             
-        const panel = this.context.element;
-
         this.isFixed = !!findParent(anchorEl, a => window.getComputedStyle(a).position == "fixed");
        
-        const ofs = getScreenPos(anchorEl, true, true);
-        panel.style.top = (ofs.y + anchorEl.clientHeight) + "px";
-        panel.style.left = (ofs.x) + "px";
-        panel.style.width = (anchorEl.clientWidth) + "px";
+        this._curPos = getScreenPos(anchorEl, true, true);
+        this._curPos.x += this.anchorOffset.x;
+        this._curPos.y += this.anchorOffset.y;
+
+        this.applyPanelPos(anchorEl);
+    }
+
+    protected applyPanelPos(anchorEl: HTMLElement) {
+
+        const panel = this.context.element;
+
+        if (this.anchorX == "right")
+            this._curPos.x += anchorEl.clientWidth;
+
+        if (this.anchorY == "bottom")
+            this._curPos.y += anchorEl.clientHeight;
+
+        panel.style.top = (this._curPos.y) + "px";
+        panel.style.left = (this._curPos.x) + "px";
+
+        if (this.sizeToAnchor)
+            panel.style.width = (anchorEl.clientWidth) + "px";
+
     }
 
     close() {
@@ -108,7 +135,7 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
         }, 500)
     }
 
-    show() {
+    async show() {
 
         if (this.visible)
             return;
@@ -118,9 +145,12 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
         if (!this.context?.element) {
             mount(document.body, this);
             this._isMounted = true;
+
+            await delayAsync(0);
         }
 
-        setTimeout(() => this.updateSuggestionsPos(), 20);
+
+        this.updatePanelPos();
 
         this.visible = true;
 
@@ -131,9 +161,21 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
 
     }
 
+    onClickIn(el: HTMLElement) {
+
+    }
+
     isFixed: boolean;
 
     body: ViewNode;
 
     anchor: ViewNode | Node;
+
+    anchorOffset: IPoint = { x: 0, y: 0 };
+
+    sizeToAnchor: boolean;
+
+    anchorX: "left" | "right" = "left";
+
+    anchorY: "top" | "bottom" = "top";
 }

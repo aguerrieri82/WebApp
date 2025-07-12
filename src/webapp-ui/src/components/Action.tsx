@@ -140,7 +140,7 @@ export function createAction(action: IAction, style?: ComponentStyle) {
         mainAction.onExecuteAsync = async ctx => {
             const menu = new ContextMenu();
             menu.addActions(...action.subActions);
-            menu.showAsync();
+            menu.show();
         }
     }
 

@@ -1,52 +1,71 @@
-﻿import { Component, type IComponentOptions, delayAsync, mount } from "@eusoft/webapp-core";
-import { type IAction } from "../abstraction/IAction";
+﻿import { type IAction } from "../abstraction/IAction";
 import { type ViewNode } from "../types";
 import { createAction } from "./Action";
+import  { FloatingPanel, type IFloatingPanelOptions } from "./FloatingPanel";
 import "./ContextMenu.scss";
-import { forModel } from "@eusoft/webapp-jsx";
-import { NodeView } from "./NodeView";
 
-export interface IContextMenuOptions extends IComponentOptions {
-    content?: ViewNode;
+export interface IContextMenuOptions extends IFloatingPanelOptions {
 }
 
-export class ContextMenu extends Component<IContextMenuOptions> {
-
-    private _menuContainer: HTMLElement;
-    private _clickHandler;
+export class ContextMenu extends FloatingPanel {
 
     constructor(options?: IContextMenuOptions) {
         super();
 
         this.init(ContextMenu, {
-
-            template: forModel<this>(m => <div style-display="none" className={m.className}>
-                <NodeView>{m.content}</NodeView>
-            </div>),
-
+            onClickOut: () => this.close(),
+            visible: false,
             ...options
         });
 
-        this._menuContainer = document.createElement("DIV");
-        this._menuContainer.className = "popup-container";
+    }
 
-        this._clickHandler = this.onClick.bind(this);
+    override onClickIn(el: HTMLElement) {
+        setTimeout(() => this.close(), 20);
     }
 
     addActions(...action: IAction[]) {
 
-        let newContent = this.content ?? [];
+        let newContent = this.body ?? [];
+
         if (!Array.isArray(newContent))
             newContent = [newContent];
 
         (newContent as ViewNode[]).push(...action.map(a => createAction(a, "text")));
 
-        this.content = newContent;
+        this.body = newContent;
     }
 
-    async showAsync(element?: HTMLElement, event?: MouseEvent | TouchEvent | PointerEvent) {
+    protected override applyPanelPos(anchorEl: HTMLElement) {
 
-        const curOfs = { x: 0, y: 0 };
+        let xTrans = "";
+        let yTrans = "";
+
+
+        const width = Math.max(window.visualViewport.width, document.body.clientWidth);
+        const height = Math.max(window.visualViewport.height, document.documentElement.scrollTop + document.documentElement.clientHeight);
+
+        if (this._curPos.x + this.context.element.clientWidth > width) {
+            this._curPos.x -= this.context.element.clientWidth;
+            xTrans = "right";
+        }
+        else
+            xTrans = "left";
+
+        if (this._curPos.y + this.context.element.clientHeight > height) {
+            this._curPos.y -= this.context.element.clientHeight;
+            yTrans = "bottom";
+        }
+        else
+            yTrans = "top";
+
+        this.context.element.style.transformOrigin = xTrans + " " + yTrans;
+
+        super.applyPanelPos(anchorEl);
+    }
+
+
+    override async show(element?: HTMLElement, event?: MouseEvent | TouchEvent | PointerEvent) {
 
         if (!element && !event)
             event = window.event as MouseEvent;
@@ -54,85 +73,17 @@ export class ContextMenu extends Component<IContextMenuOptions> {
         if (!element && event) {
 
             if (event instanceof MouseEvent) {
-                element = event.currentTarget as HTMLElement;
-                curOfs.x = event.offsetX;
-                curOfs.y = event.offsetY;
+                this.anchor = event.currentTarget as HTMLElement;
+                this.anchorOffset.x = event.offsetX;
+                this.anchorOffset.y = event.offsetY;
             }
             else {
-                curOfs.x = event.touches[0].clientX;
-                curOfs.y = event.touches[0].clientY;
+                this.anchorOffset.x = event.touches[0].clientX;
+                this.anchorOffset.y = event.touches[0].clientY;
             }
         }
 
-        if (!this.context?.element)
-            mount(this._menuContainer, this);
-        else {
-            this._menuContainer.appendChild(this.context?.element);
-        }
-
-        this.context.element.style.removeProperty("display");
-
-        document.body.appendChild(this._menuContainer);
-
-        await delayAsync(0);
-
-        window.addEventListener("pointerdown", this._clickHandler, { passive: true });
-
-        if (element) {
-
-            let curEl = element;
-            let offsetEl = element;
-
-            while (curEl) {
-                if (curEl == offsetEl) {
-                    curOfs.y += curEl.offsetTop;
-                    curOfs.x += curEl.offsetLeft;
-                    offsetEl = curEl.offsetParent as HTMLElement;
-                }
-                curOfs.y -= curEl.scrollTop;
-                curOfs.x -= curEl.scrollLeft;
-                curEl = curEl.parentElement;
-            }
-        }
-
-        let xTrans = "";
-        let yTrans = "";
-
-        if (curOfs.x + this._menuContainer.clientWidth > window.visualViewport.width) {
-            curOfs.x -= this._menuContainer.clientWidth;
-            xTrans = "right";
-        }
-        else
-            xTrans = "left";
-
-        if (curOfs.y + this._menuContainer.clientHeight > window.visualViewport.height) {
-            curOfs.y -= this._menuContainer.clientHeight;
-            yTrans = "bottom";
-        }
-        else
-            yTrans = "top";
-
-        this._menuContainer.style.top = curOfs.y + "px";
-        this._menuContainer.style.left = curOfs.x + "px";
-        this._menuContainer.style.transformOrigin = xTrans + " " + yTrans;
-
-        await delayAsync(0);
-
-        this._menuContainer.classList.add("visible");
+        await super.show();
     }
 
-    hide() {
-
-        this._menuContainer.classList.remove("visible");
-
-        window.removeEventListener("pointerdown", this._clickHandler);
-
-        setTimeout(() => document.body.removeChild(this._menuContainer), 500);
-    }
-
-    protected onClick(e: MouseEvent) {
-        setTimeout(() => this.hide(), 300);
-    }
-
-    content: ViewNode;
 }

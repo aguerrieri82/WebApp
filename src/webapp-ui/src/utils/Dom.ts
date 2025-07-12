@@ -1,3 +1,9 @@
+export interface IPoint {
+    x: number;
+    y: number;
+}
+
+
 export function isParentOrSelf(element: HTMLElement, parent: HTMLElement): boolean {
 
     let curElement = element;
@@ -26,7 +32,7 @@ export function getScreenPos(element: HTMLElement, includeScroll = true, skipBod
     let curEl = element;
     let offsetEl = element;
 
-    const curOfs = { x: 0, y: 0 };
+    const curOfs: IPoint = { x: 0, y: 0 };
 
     while (curEl) {
         if (curEl == offsetEl) {

@@ -81,8 +81,10 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
         this.onChanged("showSuggestions", v => this.onShowSuggestions(v));
 
         this._suggestions = new FloatingPanel({
+            sizeToAnchor: true,
 
             name: "suggestions",
+            anchorY: "bottom",
 
             onClickOut: element => {
                 if (!isParentOrSelf(element, this.context.element))
