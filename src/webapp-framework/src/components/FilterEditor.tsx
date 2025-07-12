@@ -548,6 +548,7 @@ export class FilterEditor<TFilter, TItem>
 
     clearFilters() {
         this.activeFilters = [];
+        this.searchText = "";
         this.updateFilter()
     }
 
@@ -575,25 +576,30 @@ export class FilterEditor<TFilter, TItem>
 
         this.activeFilters ??= [];
 
+        let canAdd = true;
+
         if (item.value === null || item.value === undefined) {
 
             item = { ...item };
 
             if (!await this.editFilterAsync(item, false))
-                return;
+                canAdd = false;
         }
 
-        if (!item.allowMultiple) {
-            for (const field of item.fields) {
-                const current = this.activeFilters.find(a => a.fields.includes(field));
-                if (current) {
-                    this.removeFilter(current);
-                    break;
+        if (canAdd) {
+
+            if (!item.allowMultiple) {
+                for (const field of item.fields) {
+                    const current = this.activeFilters.find(a => a.fields.includes(field));
+                    if (current) {
+                        this.removeFilter(current);
+                        break;
+                    }
                 }
             }
+            this.activeFilters.push(item);
+            this.updateFilter();
         }
-        this.activeFilters.push(item);
-        this.updateFilter();
 
         if (this.searchText.length > 0) {
             this.searchText = "";
