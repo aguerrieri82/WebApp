@@ -186,7 +186,7 @@ export class Router {
     backAsync() { 
         return new Promise<void>(res => {
             this._popResolves.push(res)
-            console.log("back called", history);
+            console.log("back called");
             history.back();
         });
     }
