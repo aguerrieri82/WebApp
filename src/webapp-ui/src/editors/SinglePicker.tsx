@@ -52,6 +52,7 @@ export async function pickItemAsync<T>(options: IPickItemOptions<T>) : Promise<T
             }}>
                 <Class name="selected" condition={options.itemsSource.getValue(a) == value} />
                 <MaterialIcon name="check" />
+                {options.itemsSource.getIcon?.(a)}
                 <span>{options.itemsSource.getText(a)}</span>
             </div>)}
         </>

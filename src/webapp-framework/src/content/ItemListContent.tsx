@@ -48,6 +48,8 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<Object
 
     editMode?: ListEditMode;
 
+    createNewItem?: () => TItem | Promise<TItem>;
+
     deleteItemAsync?: (item: TItem) => Promise<boolean>;
 
     confirmDeleteMessage?: LocalString;
@@ -64,7 +66,7 @@ export interface IItemListOptions<TItem, TFilter> extends IContentOptions<Object
 
     itemEditContent?: (item: TItem) => IContentInstance<ObjectLike, IContent>;
 
-    itemAddContent?: (item?: TItem) => Content<ObjectLike> | Class<Content<ObjectLike>>;
+    itemAddContent?: (item?: TItem) => Content<ObjectLike> | Class<Content<ObjectLike>> | IContentInstance<ObjectLike, IContent>;
 
     createItemView?: (item: TItem, actions?: IAction<TItem>[], openItem?: (item: TItem) => unknown) => ViewNode | Class<Content<ObjectLike>>;
 
@@ -239,11 +241,18 @@ export class ItemListContent<TItem, TFilter>
         if (!this.canAdd || !this.itemAddContent)
             return;
 
-        const builder = this.itemAddContent(this.createNewItem());
+        const builder = this.itemAddContent(await this.createNewItem());
 
-        const content = typeof builder == "function" ? new builder() : builder;
+        let content = typeof builder == "function" ? new builder() : builder;
 
-        const newItem = await router.navigatePageForResultAsync(content);    
+        let args = {};
+
+        if ("factory" in content) {
+            args = content.args;
+            content = content.factory() as Content<ObjectLike>;
+        }
+                        
+        const newItem = await router.navigatePageForResultAsync(content, args);    
 
         return newItem ? false : undefined;
     }
@@ -298,7 +307,7 @@ export class ItemListContent<TItem, TFilter>
         this._filterEditor?.saveFilter?.(container);            
     }
 
-    createNewItem(): TItem {
+    createNewItem(): TItem | Promise<TItem> {
 
         return undefined;
     }
@@ -392,7 +401,7 @@ export class ItemListContent<TItem, TFilter>
 
     itemsSource: IItemsSource<TItem, unknown, unknown>;
 
-    itemAddContent?: (item?: TItem) => Content<ObjectLike> | Class<Content<ObjectLike>>;
+    itemAddContent?: (item?: TItem) => Content<ObjectLike> | Class<Content<ObjectLike>> | IContentInstance<ObjectLike, IContent>;
 
     itemEditContent?: (item: TItem) => IContentInstance<ObjectLike, IContent>;
 
