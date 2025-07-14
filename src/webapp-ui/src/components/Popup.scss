@@ -65,4 +65,23 @@
             justify-content: end;
         }
     }
+
+
+    &.minimal {
+        padding: 0;
+
+        > .message {
+            padding: 0;
+        }
+
+        main {
+            padding: 0;
+            width: 100%;
+            overflow-y: hidden;
+        }
+
+        header {
+            display: none;
+        }
+    }
 }

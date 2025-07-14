@@ -29,6 +29,8 @@ export interface IPopupOptions extends IComponentOptions {
     hideOnClick?: boolean;
 
     bodyStyle?: ComponentStyle;
+
+    cleanOnClose?: boolean;
 }
 
 export class Popup extends Component<IPopupOptions> {
@@ -58,6 +60,7 @@ export class Popup extends Component<IPopupOptions> {
                 </div>
             </div>),
             visible: false,
+            cleanOnClose: true,
             ...options
         });
     }
@@ -107,6 +110,8 @@ export class Popup extends Component<IPopupOptions> {
         setTimeout(() => {
 
             if (this.context?.element && isMounted) {
+                if (this.cleanOnClose)
+                    this.body = undefined;
                 this.context.element.remove();
                 this.context.element = undefined;
             }
@@ -115,6 +120,8 @@ export class Popup extends Component<IPopupOptions> {
 
         return result;
     }
+
+    cleanOnClose: boolean;
 
     title: ViewNode;
 

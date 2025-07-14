@@ -236,9 +236,15 @@ export abstract class Component<
 
         if (webApp.debugMount)
             console.debug("unmount", getTypeName(this));
+
+        this.onUnmounted();
     }
 
     protected onMounted() {
+
+    }
+
+    protected onUnmounted() {
 
     }
 

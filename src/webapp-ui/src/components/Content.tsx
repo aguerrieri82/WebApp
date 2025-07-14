@@ -102,6 +102,7 @@ export class Content<
 
             if (!await this.onLoadAsync(args)) {
                 isValid = false;
+                await this.onCloseAsync();
                 return;
             }
 

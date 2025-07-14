@@ -24,6 +24,7 @@ interface IPickItemOptions<T> {
     cancelLabel?: LocalString;
     canCancel?: boolean;
     style?: ComponentStyle;
+    header?: ViewNode;
 }
 
 export async function pickItemAsync<T>(options: IPickItemOptions<T>) : Promise<T> {
@@ -46,6 +47,7 @@ export async function pickItemAsync<T>(options: IPickItemOptions<T>) : Promise<T
         name: "picker",
         actions: actions,
         body: <>
+            {options.header}
             {items.forEach(a => <div on-click={() => {
                 value = options.itemsSource.getValue(a);
                 popup.close();
