@@ -13,7 +13,8 @@ export enum MessageBoxButton {
     Cancel = 16,
     RetryCancel = Retry|Cancel,
     YesNo = Yes | No,
-    Close = 32
+    Close = 32,
+    Ignore = 64
 }
 
 type MessageBoxCustomActions = Record<string, {
@@ -51,7 +52,7 @@ class UserInteraction implements IUserInteraction {
             }
         }
         else {
-            for (const item of [MessageBoxButton.Ok, MessageBoxButton.Yes, MessageBoxButton.No, MessageBoxButton.Retry, MessageBoxButton.Cancel]) {
+            for (const item of [MessageBoxButton.Ok, MessageBoxButton.Yes, MessageBoxButton.No, MessageBoxButton.Retry, MessageBoxButton.Cancel, MessageBoxButton.Ignore]) {
                 if ((buttons & item) != 0) {
                     popup.actions.push({
                         text: formatText(MessageBoxButton[item].toLowerCase()) as string,
