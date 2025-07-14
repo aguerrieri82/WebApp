@@ -12,7 +12,7 @@ export interface IWebViewArgs extends IComponentOptions {
 export const WebViewTemplates: TemplateMap<WebView> = {
 
     Default: forModel(m => <iframe
-        on-load={ev => m.onFrameLoad(ev)}
+        on-load={(_, ev) => m.onFrameLoad(ev)}
         className={m.className}
         visible={m.visible}
         src={m.src} />
@@ -36,8 +36,11 @@ export class WebView extends Component<IWebViewArgs> {
 
         this._messageHandler = (event: MessageEvent) => {
             console.log(event);
-            if (event.data == "close")
+            if (event.data == "close") {
+                console.log(history);
                 this.onCloseRequest();
+            }
+                
         }
 
     }
@@ -66,9 +69,9 @@ export class WebView extends Component<IWebViewArgs> {
         
         try {
 
-            this._document = target.contentDocument;
+            this._document = target?.contentDocument;
 
-            this._window = target.contentWindow;
+            this._window = target?.contentWindow;
 
             console.log("Iframe loaded:", this._document?.title);
 

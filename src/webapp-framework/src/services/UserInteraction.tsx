@@ -33,6 +33,9 @@ class UserInteraction implements IUserInteraction {
 
     async messageBoxAsync(body: ViewNode, title: LocalString, buttons) {
 
+        if (typeof body == "string")
+            body = formatText(body);
+
         const popup = new Popup();
         popup.style = "message-box";
         popup.title = formatText(title);
@@ -73,11 +76,18 @@ class UserInteraction implements IUserInteraction {
 
     async confirmAsync(body: ViewNode, title: LocalString): Promise<boolean> {
 
+        if (typeof body == "string")
+            body = formatText(body);
+
         const result = await this.messageBoxAsync(body, title, MessageBoxButton.YesNo); 
+
         return result == MessageBoxButton.Yes;
     }
 
     async messageAsync(body: ViewNode, style: "info"|"error"|"success"|"warning", displayTimeMs = 2000) {
+
+        if (typeof body == "string")
+            body = formatText(body);
 
         Toaster.showAsync({
             content: body,
@@ -89,6 +99,9 @@ class UserInteraction implements IUserInteraction {
 
 
     async fullMessageAsync(body: ViewNode, style: "info" | "error" | "success" | "warning", actions: (MessageBoxButton|IAction)[]) {
+
+        if (typeof body == "string")
+            body = formatText(body);
 
         let icon;
         if (style == "success")

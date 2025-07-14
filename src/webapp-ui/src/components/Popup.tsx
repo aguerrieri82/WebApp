@@ -98,6 +98,9 @@ export class Popup extends Component<IPopupOptions> {
         this.visible = true;
 
         const onPopState = () => {
+
+            console.log("popup: onPopState");
+
             this.close();
         }
 
