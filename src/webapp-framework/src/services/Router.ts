@@ -405,7 +405,9 @@ export class Router {
 
         document.documentElement.dataset.transition = activeTrans;
 
-        const url = this.replaceUrl(entry.route as string, newArgs);
+        const query = document.location.search;
+
+        const url = this.replaceUrl(entry.route as string, newArgs) + query;
 
         const state = {
             url: url,
