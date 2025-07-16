@@ -439,6 +439,7 @@ export class Router {
         return location.pathname;
     }
 
+
     get canGoBack() {
         return this._activeIndex > 0;
     }
