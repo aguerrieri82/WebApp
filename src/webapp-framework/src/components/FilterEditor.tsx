@@ -190,7 +190,10 @@ export function itemsSearch<
         if ((modeClient && json != lastItemsFilterJson) ||
             modeSource || !items) {
 
-            items = await field.valuesSource.getItemsAsync(itemsFilter) as TItem[];
+            if (field.valuesSource)
+                items = await field.valuesSource?.getItemsAsync(itemsFilter) as TItem[];
+            else
+                items = [];
             lastItemsFilterJson = json;
         }
     }
