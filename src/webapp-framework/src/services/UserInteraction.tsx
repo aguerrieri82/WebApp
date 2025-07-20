@@ -140,7 +140,7 @@ class UserInteraction implements IUserInteraction {
 
             popup = new FloatingPanel({
                 style: [style, "full-message"],
-                body: forModel(() => <>
+                content: forModel(() => <>
                     {icon}
                     <div className="body">{body}</div>
                     <div className="actions">

@@ -26,14 +26,14 @@ export class ContextMenu extends FloatingPanel {
 
     addActions(...action: IAction[]) {
 
-        let newContent = this.body ?? [];
+        let newContent = this.content ?? [];
 
         if (!Array.isArray(newContent))
             newContent = [newContent];
 
         (newContent as ViewNode[]).push(...action.map(a => createAction(a, "text")));
 
-        this.body = newContent;
+        this.content = newContent;
     }
 
     protected override applyPanelPos(anchorEl: HTMLElement) {

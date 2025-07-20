@@ -91,7 +91,7 @@ export class AutoComplete<TItem, TValue, TFilter> extends Editor<TValue, IAutoCo
                     this.showSuggestions = false;
             },
 
-            body: forModel(this, m => <>
+            content: forModel(this, m => <>
                 {m.suggestions.forEach(i => <div on-click={() => m.selectItem(i, true)}>
                     {m.listItemView(i)}
                 </div>)

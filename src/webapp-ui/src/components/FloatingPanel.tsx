@@ -6,7 +6,7 @@ import "./FloatingPanel.scss";
 
 export interface IFloatingPanelOptions extends IComponentOptions {
 
-    body: ViewNode;
+    content: ViewNode;
 
     anchor?: ViewNode;
 
@@ -35,7 +35,7 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
 
             template: forModel<this>(m => <div className={m.className} visible={m.visible}>
                 <Class name="fixed" condition={m.isFixed} />
-                {m.body}
+                {m.content}
             </div>),
             visible: false,
             ...options
@@ -167,7 +167,7 @@ export class FloatingPanel extends Component<IFloatingPanelOptions> {
 
     isFixed: boolean;
 
-    body: ViewNode;
+    content: ViewNode;
 
     anchor: ViewNode | Node;
 
