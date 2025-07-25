@@ -118,6 +118,8 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
             this.editValue = [];
 
         this.editValue.push(item);  
+
+        this.onValueChanged(this.editToValue(this.editValue), undefined, "edit");
     }
 
     async pickItemAsync(): Promise<TItem> {
@@ -162,6 +164,8 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
 
                             res(editor.value);
 
+                            this.onValueChanged(this.editToValue(this.editValue), undefined, "edit");
+
                             return true;
                         }
                     }, {
@@ -175,6 +179,8 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
                 });
 
                 this._editPopup.showAsync();
+
+ 
             });
            
         }
@@ -186,21 +192,20 @@ export class ArrayEditor<TItem> extends CommitableEditor<TItem[], TItem[], IArra
 
             this.activeEditor = null;
 
+            this.onValueChanged(this.editToValue(this.editValue), undefined, "edit");
+
             return result;
         }
     }
 
-    override unmount() {
-        //this._editPopup?.unmount();
-        //this._editPopup = undefined;
-        super.unmount();
-    }
 
     deleteItem(item: TItem) {
 
         const index = this.editValue.indexOf(item); 
         if (index != -1)
             this.editValue.splice(index, 1);
+
+        this.onValueChanged(this.editToValue(this.editValue), undefined, "edit");
     }
 
     itemView(item: TItem) {
