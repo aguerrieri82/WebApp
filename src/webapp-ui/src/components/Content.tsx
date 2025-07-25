@@ -1,4 +1,4 @@
-﻿import { type Bindable, type IComponentOptions, Component, type TemplateMap, registerComponent } from "@eusoft/webapp-core";
+﻿import { type Bindable, type IComponentOptions, Component, type TemplateMap, registerComponent, cleanProxy } from "@eusoft/webapp-core";
 import { Class, forModel } from "@eusoft/webapp-jsx";
 import { type IContent, type IContentConstructor, type IContentInfo, type IContentInstance, type LoadState } from "../abstraction/IContent";
 import { type IFeature } from "../abstraction/IFeature";
@@ -42,7 +42,12 @@ export const ContentTemplates: TemplateMap<Content> = {
         </div>
         <footer>
             {m.actions?.forEach(a =>
-                <Action visible={!a.canExecute || a.canExecute({})} name={a.name} type={a.type} onExecuteAsync={a.executeAsync}>
+                <Action
+                    visible={!a.canExecute || a.canExecute({})}
+                    name={a.name}
+                    type={a.type}
+                    target={m}
+                    onExecuteAsync={a.executeAsync}>
                     {a.icon}
                     {formatText(a.text)}
                 </Action>

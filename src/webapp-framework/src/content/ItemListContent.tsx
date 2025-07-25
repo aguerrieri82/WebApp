@@ -376,6 +376,8 @@ export class ItemListContent<TItem, TFilter>
         });
     }
 
+    get curFilter() { return this._curFilter; }
+
     addLabel?: LocalString;
 
     builtInActions: IAction<TItem, IItemActionContext<TItem>>[];
