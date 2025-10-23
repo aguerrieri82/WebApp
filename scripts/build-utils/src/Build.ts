@@ -97,6 +97,7 @@ function copyFiles(src: string, dst: string, filter: (a: string) => boolean) {
 export function deleteAllContents(dirPath: string) {
 
     if (!fs.existsSync(dirPath)) {
+        return;
         throw new Error(`Directory "${dirPath}" does not exist.`);
     }
 

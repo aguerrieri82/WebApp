@@ -9,5 +9,6 @@ export async function cleanAsync() {
 
     const outPath = "../../dist/" + libName;
 
-    fs.rmSync(outPath, { recursive: true, force: true });
+    if (fs.existsSync(outPath))
+        fs.rmSync(outPath, { recursive: true, force: true });
 }
