@@ -97,51 +97,51 @@
 It has no virtual DOM, no special conventions, and doesn’t use hooks. 
 The core engine is a template builder that simplifies DOM construction 
 associated with a particular model through a fluent API.</p>
-<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">template</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@eusoft/webapp-core&quot;</span><span class="p">;</span>
+<pre class="highlight"><code class="language-javascript">
+import { template } from "@eusoft/webapp-core";
 
-<span class="kd">const</span><span class="w"> </span><span class="nx">myTemplate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">template</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t</span>
-<span class="w">    </span><span class="p">.</span><span class="nx">beginChild</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">).</span><span class="kd">class</span><span class="p">(</span><span class="s2">&quot;myClass&quot;</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="nx">beginChild</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">).</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;a span&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&quot;Text&quot;</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="nx">endChild</span><span class="p">()</span>
-<span class="w">        </span><span class="p">.</span><span class="nx">beginChild</span><span class="p">(</span><span class="s2">&quot;button&quot;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">ev</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Clicked!&quot;</span><span class="p">))</span>
-<span class="w">            </span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&quot;Click me&quot;</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="nx">endChild</span><span class="p">()</span>
-<span class="w">    </span><span class="p">.</span><span class="nx">endChild</span><span class="p">());</span>
-</code></pre></div>
+const myTemplate = template(t =&gt; t
+    .beginChild("div").class("myClass")
+        .beginChild("span").set("title", "a span")
+            .text("Text")
+        .endChild()
+        .beginChild("button").on("click", ev =&gt; console.log("Clicked!"))
+            .text("Click me")
+        .endChild()
+    .endChild());</code></pre>
 <p>that will produce</p>
-<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&quot;myClass&quot;</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">span</span> <span class="na">title</span><span class="o">=</span><span class="s">&quot;a span&quot;</span><span class="p">&gt;</span>Text<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">click</span><span class="o">=</span><span class="s">&quot;console.log(&quot;</span><span class="na">Clicked</span><span class="err">!&quot;)&quot;</span><span class="p">&gt;</span>Click me<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
-<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-html">&lt;div className="myClass"&gt;
+    &lt;span title="a span"&gt;Text&lt;/span&gt;
+    &lt;button click="console.log("Clicked!")"&gt;Click me&lt;/button&gt;
+&lt;/div&gt;</code></pre>
 <p>The template can be mounted using the <code>mount</code> function, 
 specifying the DOM element or selector and the template itself.</p>
-<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">mount</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@eusoft/webapp-core&quot;</span><span class="p">;</span>
+<pre class="highlight"><code class="language-typescript">import { mount } from "@eusoft/webapp-core";
 
-<span class="nx">mount</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">myTemplate</span><span class="p">);</span>
-<span class="nx">mount</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span><span class="w"> </span><span class="nx">myTemplate</span><span class="p">);</span>
-<span class="nx">mount</span><span class="p">(</span><span class="s2">&quot;#myRootElementId&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">myTemplate</span><span class="p">);</span>
-</code></pre></div>
+mount("body", myTemplate);
+mount(document.body, myTemplate);
+mount("#myRootElementId", myTemplate);
+</code></pre>
 <h2 id="model-binding">Model binding</h2>
 <p>A template can have a model associated.
 Once you have the model, you can create bind expression to associate
 a particular value for a template to a model</p>
-<p><div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">mount</span><span class="p">,</span><span class="w"> </span><span class="nx">template</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@eusoft/webapp-core&quot;</span><span class="p">;</span>
+<p><pre class="highlight"><code class="language-typescript">
+import { mount, template } from "@eusoft/webapp-core";
 
-<span class="kd">interface</span><span class="w"> </span><span class="nx">IMyModel</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
-<span class="p">}</span>
+interface IMyModel {
+    text: string;
+}
 
-<span class="kd">const</span><span class="w"> </span><span class="nx">myTemplate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">template</span><span class="o">&lt;</span><span class="nx">IMyModel</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t</span>
-<span class="w">    </span><span class="p">.</span><span class="nx">beginChild</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="nx">m</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">text</span><span class="p">).</span><span class="nx">endChild</span><span class="p">());</span>
+const myTemplate = template&lt;IMyModel&gt;(t =&gt; t
+    .beginChild("span").text(m =&gt; m.text).endChild());
 
-<span class="kd">const</span><span class="w"> </span><span class="nx">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">IMyModel</span><span class="p">;</span>
+const model = { } as IMyModel;
 
-<span class="nx">mount</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span><span class="w"> </span><span class="nx">myTemplate</span><span class="p">,</span><span class="w"> </span><span class="nx">model</span><span class="p">);</span>
+mount(document.body, myTemplate, model);
 
-<span class="nx">model</span><span class="p">.</span><span class="nx">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Hello word&quot;</span><span class="p">;</span>
-</code></pre></div>
+model.text = "Hello word";
+</code></pre>
 Any changes to a model property will be propagated to each binding expression that uses it. In this example, 
 the inner text of the span will reflect the value of the <code>text</code> property in the model</p>
 <h2 id="tracking-binding">Tracking binding</h2>
@@ -152,17 +152,17 @@ to make it observable and to provide a notification when the property changes.
 The original descriptor is preserved and called back as needed. 
 These observed properties are stored inside the special symbol <code>@props</code> within the object.</p>
 <p>In this scenario</p>
-<div class="highlight"><pre><span></span><code><span class="nx">model</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">model</span><span class="p">.</span><span class="nx">obj</span><span class="p">.</span><span class="nx">test</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">model.c</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">model.d</span><span class="p">;</span>
+<pre class="highlight"><code class="language-typescript">
+model =&gt; model.obj.test ? model.c : model.d;
 
-<span class="c1">// the old obj and obj.test would be untracked, new obj, obj.test, model.c tracked, and model.d untracked.</span>
-<span class="nx">model</span><span class="p">.</span><span class="nx">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">test</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="p">};</span>
+// the old obj and obj.test would be untracked, new obj, obj.test, model.c tracked, and model.d untracked.
+model.obj = { test: true };
 
-<span class="c1">//no effect, d is not tracked</span>
-<span class="nx">model</span><span class="p">.</span><span class="nx">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;new value&#39;</span><span class="p">;</span>
+//no effect, d is not tracked
+model.d = 'new value';
 
-<span class="c1">//model.c untracked and model.d tracked</span>
-<span class="nx">model</span><span class="p">.</span><span class="nx">obj</span><span class="p">.</span><span class="nx">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
-</code></pre></div>
+//model.c untracked and model.d tracked
+model.obj.test = false;</code></pre>
 <p>Only when the value of the binding expression really changes (has a new value different from the last one), 
 the template will be updated.</p>
 <h2 id="array-tracking">Array Tracking</h2>
@@ -178,64 +178,64 @@ create a proxy for the array.</p>
 A compiler is available to convert JSX code into the framework template builder syntax <code>@eusoft/webapp-compiler</code>.
 A plugin for Rollup or Vite is available to handle the compilation <code>@eusoft/webapp-compiler-rollup</code>.</p>
 <p>for example, the following JSX code:</p>
-<div class="highlight"><pre><span></span><code><span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">ConfirmBox</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">IConfirmBoxOptions</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<pre class="highlight"><code class="language-typescript">
+export function ConfirmBox(options: IConfirmBoxOptions) {
 
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">&quot;confirm-box&quot;</span><span class="o">&gt;</span>
-<span class="w">        </span><span class="p">{</span><span class="nx">options</span><span class="p">.</span><span class="nx">isSuccess</span><span class="w"> </span><span class="o">?</span>
-<span class="w">            </span><span class="o">&lt;</span><span class="nx">MaterialIcon</span><span class="w"> </span><span class="nx">name</span><span class="o">=</span><span class="s2">&quot;check_circle&quot;</span><span class="w"> </span><span class="nx">style</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="o">/&gt;</span><span class="w"> </span><span class="o">:</span>
-<span class="w">            </span><span class="o">&lt;</span><span class="nx">MaterialIcon</span><span class="w"> </span><span class="nx">name</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="w"> </span><span class="nx">style</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="w"> </span><span class="o">/&gt;</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">&quot;message&quot;</span><span class="o">&gt;</span>
-<span class="w">            </span><span class="o">&lt;</span><span class="nx">NodeView</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">options</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/NodeView&gt;</span>
-<span class="w">        </span><span class="o">&lt;</span><span class="err">/div&gt;</span>
-<span class="w">        </span><span class="p">{</span><span class="nx">options</span><span class="p">.</span><span class="nx">actions</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">&quot;actions&quot;</span><span class="o">&gt;</span>
-<span class="w">            </span><span class="p">{</span><span class="nx">options</span><span class="p">.</span><span class="nx">actions</span><span class="o">?</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">a</span><span class="w"> </span><span class="p">=&gt;</span>
-<span class="w">                </span><span class="o">&lt;</span><span class="nx">Action</span><span class="w"> </span><span class="nx">name</span><span class="o">=</span><span class="p">{</span><span class="nx">a</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="w"> </span><span class="nx">style</span><span class="o">=</span><span class="p">{[</span><span class="s2">&quot;action&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;text&quot;</span><span class="p">]}</span><span class="w"> </span><span class="kr">type</span><span class="o">=</span><span class="p">{</span><span class="nx">a</span><span class="p">.</span><span class="kr">type</span><span class="p">}</span><span class="w"> </span><span class="nx">onExecuteAsync</span><span class="o">=</span><span class="p">{</span><span class="nx">a</span><span class="p">.</span><span class="nx">executeAsync</span><span class="p">}</span><span class="o">&gt;</span>
-<span class="w">                    </span><span class="p">{</span><span class="nx">a</span><span class="p">.</span><span class="nx">icon</span><span class="p">}</span>
-<span class="w">                    </span><span class="p">{</span><span class="nx">formatText</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">text</span><span class="p">)}</span>
-<span class="w">                </span><span class="o">&lt;</span><span class="err">/Action&gt;</span>
-<span class="w">            </span><span class="p">)}</span>
-<span class="w">            </span><span class="o">&lt;</span><span class="err">/div&gt;</span>
-<span class="w">         </span><span class="p">}</span>
-<span class="w">    </span><span class="o">&lt;</span><span class="err">/div&gt;</span>
-<span class="p">}</span>
-</code></pre></div>
+    return &lt;div className="confirm-box"&gt;
+        {options.isSuccess ?
+            &lt;MaterialIcon name="check_circle" style="green"/&gt; :
+            &lt;MaterialIcon name="error" style="red" /&gt;
+        }
+        &lt;div className="message"&gt;
+            &lt;NodeView&gt;{options.message}&lt;/NodeView&gt;
+        &lt;/div&gt;
+        {options.actions &amp;&amp; &lt;div className="actions"&gt;
+            {options.actions?.forEach(a =&gt;
+                &lt;Action name={a.name} style={["action", "text"]} type={a.type} onExecuteAsync={a.executeAsync}&gt;
+                    {a.icon}
+                    {formatText(a.text)}
+                &lt;/Action&gt;
+            )}
+            &lt;/div&gt;
+         }
+    &lt;/div&gt;
+}</code></pre>
 <p>will be converted in</p>
-<div class="highlight"><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">ConfirmBox</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">template</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t</span>
-<span class="w">        </span><span class="p">.</span><span class="nx">beginChild</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">).</span><span class="kd">class</span><span class="p">(</span><span class="s2">&quot;confirm-box&quot;</span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="k">if</span><span class="p">(</span><span class="nx">Bind</span><span class="p">.</span><span class="nx">exp</span><span class="p">(</span><span class="nx">options</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">options</span><span class="p">.</span><span class="nx">isSuccess</span><span class="p">),</span><span class="w"> </span><span class="nx">template</span><span class="p">(</span><span class="nx">t2</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t2</span>
-<span class="w">                </span><span class="p">.</span><span class="nx">component</span><span class="p">(</span><span class="nx">MaterialIcon</span><span class="p">,</span><span class="w"> </span><span class="p">({</span>
-<span class="w">                    </span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;check_circle&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">                    </span><span class="s2">&quot;style&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;green&quot;</span><span class="p">}))),</span><span class="w"> </span><span class="nx">template</span><span class="p">(</span><span class="nx">t2</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t2</span>
-<span class="w">                </span><span class="p">.</span><span class="nx">component</span><span class="p">(</span><span class="nx">MaterialIcon</span><span class="p">,</span><span class="w"> </span><span class="p">({</span>
-<span class="w">                    </span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">                    </span><span class="s2">&quot;style&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;red&quot;</span><span class="p">})))</span>
-<span class="w">            </span><span class="p">)</span>
-<span class="w">            </span><span class="p">.</span><span class="nx">beginChild</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">).</span><span class="kd">class</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">)</span>
-<span class="w">                </span><span class="p">.</span><span class="nx">component</span><span class="p">(</span><span class="nx">NodeView</span><span class="p">,</span><span class="w"> </span><span class="p">({</span>
-<span class="w">                    </span><span class="s2">&quot;content&quot;</span><span class="o">:</span><span class="w"> </span><span class="nx">Bind</span><span class="p">.</span><span class="nx">exp</span><span class="p">(</span><span class="nx">options</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">options</span><span class="p">.</span><span class="nx">message</span><span class="p">)})).</span><span class="nx">endChild</span><span class="p">()</span>
-<span class="w">            </span><span class="p">.</span><span class="k">if</span><span class="p">(</span><span class="nx">Bind</span><span class="p">.</span><span class="nx">exp</span><span class="p">(</span><span class="nx">options</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">options</span><span class="p">.</span><span class="nx">actions</span><span class="p">),</span><span class="w"> </span><span class="nx">template</span><span class="p">(</span><span class="nx">t2</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t2</span>
-<span class="w">                </span><span class="p">.</span><span class="nx">beginChild</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">).</span><span class="kd">class</span><span class="p">(</span><span class="s2">&quot;actions&quot;</span><span class="p">)</span>
-<span class="w">                    </span><span class="p">.</span><span class="nx">foreach</span><span class="p">(</span><span class="nx">Bind</span><span class="p">.</span><span class="nx">exp</span><span class="p">(</span><span class="nx">options</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">options</span><span class="p">.</span><span class="nx">actions</span><span class="p">),</span><span class="w"> </span><span class="nx">template</span><span class="p">(</span><span class="nx">t5</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t5</span>
-<span class="w">                        </span><span class="p">.</span><span class="nx">component</span><span class="p">(</span><span class="nx">Action</span><span class="p">,</span><span class="w"> </span><span class="p">({</span>
-<span class="w">                            </span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="w"> </span><span class="nx">Bind</span><span class="p">.</span><span class="nx">exp</span><span class="p">(</span><span class="nx">a</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">a</span><span class="p">.</span><span class="nx">name</span><span class="p">),</span><span class="w"> </span>
-<span class="w">                            </span><span class="s2">&quot;style&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;text&quot;</span><span class="p">],</span><span class="w"> </span>
-<span class="w">                            </span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="w"> </span><span class="nx">Bind</span><span class="p">.</span><span class="nx">exp</span><span class="p">(</span><span class="nx">a</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">a</span><span class="p">.</span><span class="kr">type</span><span class="p">),</span><span class="w"> </span>
-<span class="w">                            </span><span class="s2">&quot;onExecuteAsync&quot;</span><span class="o">:</span><span class="w"> </span><span class="nx">Bind</span><span class="p">.</span><span class="nx">exp</span><span class="p">(</span><span class="nx">a</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">a</span><span class="p">.</span><span class="nx">executeAsync</span><span class="p">),</span><span class="w"> </span>
-<span class="w">                            </span><span class="s2">&quot;content&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                                </span><span class="nx">model</span><span class="o">:</span><span class="w"> </span><span class="kt">t5.model</span><span class="p">,</span>
-<span class="w">                                </span><span class="nx">template</span><span class="o">:</span><span class="w"> </span><span class="kt">template</span><span class="p">(</span><span class="nx">t6</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">t6</span>
-<span class="w">                                    </span><span class="p">.</span><span class="nx">content</span><span class="p">(</span><span class="nx">Bind</span><span class="p">.</span><span class="nx">exp</span><span class="p">(</span><span class="nx">a</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">a</span><span class="p">.</span><span class="nx">icon</span><span class="p">),</span><span class="w"> </span><span class="kc">false</span><span class="p">).</span><span class="nx">content</span><span class="p">(</span><span class="nx">Bind</span><span class="p">.</span><span class="nx">exp</span><span class="p">(</span><span class="nx">a</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">use</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">formatText</span><span class="p">)(</span><span class="nx">a</span><span class="p">.</span><span class="nx">text</span><span class="p">)),</span><span class="w"> </span><span class="kc">false</span><span class="p">))</span>
-<span class="w">                            </span><span class="p">}})))</span>
-<span class="w">                    </span><span class="p">)</span>
-<span class="w">                </span><span class="p">.</span><span class="nx">endChild</span><span class="p">()</span>
-<span class="w">                </span><span class="p">)</span>
-<span class="w">            </span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="nx">endChild</span><span class="p">()</span>
-<span class="w">    </span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-typescript">
+function ConfirmBox(options) {
+    return template(t =&gt; t
+        .beginChild("div").class("confirm-box")
+            .if(Bind.exp(options =&gt; options.isSuccess), template(t2 =&gt; t2
+                .component(MaterialIcon, ({
+                    "name": "check_circle", 
+                    "style": "green"}))), template(t2 =&gt; t2
+                .component(MaterialIcon, ({
+                    "name": "error", 
+                    "style": "red"})))
+            )
+            .beginChild("div").class("message")
+                .component(NodeView, ({
+                    "content": Bind.exp(options =&gt; options.message)})).endChild()
+            .if(Bind.exp(options =&gt; options.actions), template(t2 =&gt; t2
+                .beginChild("div").class("actions")
+                    .foreach(Bind.exp(options =&gt; options.actions), template(t5 =&gt; t5
+                        .component(Action, ({
+                            "name": Bind.exp(a =&gt; a.name), 
+                            "style": ["action", "text"], 
+                            "type": Bind.exp(a =&gt; a.type), 
+                            "onExecuteAsync": Bind.exp(a =&gt; a.executeAsync), 
+                            "content": {
+                                model: t5.model,
+                                template: template(t6 =&gt; t6
+                                    .content(Bind.exp(a =&gt; a.icon), false).content(Bind.exp(a =&gt; use(a, formatText)(a.text)), false))
+                            }})))
+                    )
+                .endChild()
+                )
+            )
+        .endChild()
+    );
+}</code></pre>
               
             </div>
           </div><footer>

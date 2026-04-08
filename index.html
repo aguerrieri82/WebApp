@@ -98,11 +98,11 @@
               
                 <h1 id="webapp">WebApp</h1>
 <h2 id="getting-started">Getting started</h2>
-<div class="highlight"><pre><span></span><code>import { mount } from &quot;@eusoft/webapp-core&quot;;
+<pre class="highlight"><code>import { mount } from "@eusoft/webapp-core";
 
-const root = document.querySelector(&quot;body&quot;);
+const root = document.querySelector("body");
 mount(root, &lt;div&gt;Hello word&lt;/div&gt;);
-</code></pre></div>
+</code></pre>
 <h2 id="setup">Setup</h2>
 <p>Install <code>@eusoft/webapp-core</code> and <code>@eusoft/webapp-jsx</code> packages
 using you favorite package manager.</p>
@@ -112,49 +112,47 @@ Webpack, is not supported anymore.</p>
 <p>if you are using vite, install the compiler package <code>@eusoft/webapp-compiler-rollup</code>
 as dev dependence. </p>
 <p>In <code>vite.config.js</code></p>
-<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="nx">webapp</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@eusoft/webapp-compiler-rollup&quot;</span>
+<pre class="highlight"><code class="language-javascript">import webapp from "@eusoft/webapp-compiler-rollup"
 
 
-<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">defineConfig</span><span class="p">({</span>
-<span class="w">    </span><span class="c1">//...</span>
-<span class="w">    </span><span class="nx">plugins</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="nx">webapp</span><span class="p">({</span>
-<span class="w">            </span><span class="c1">//... compiler options</span>
-<span class="w">        </span><span class="p">})</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nx">esbuild</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nx">jsx</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;preserve&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">});</span>
-</code></pre></div>
+export default defineConfig({
+    //...
+    plugins: [
+        webapp({
+            //... compiler options
+        })
+    ],
+    esbuild: {
+        jsx: "preserve"
+    }
+});</code></pre>
 <h3 id="rollup">Rollup</h3>
 <p>if you are using roolup, install the compiler package <code>@eusoft/webapp-compiler-rollup</code>
 as dev dependence, add the plugin to your rollup config file.</p>
 <p>in <code>rollup.config.js</code></p>
-<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="nx">webapp</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@eusoft/webapp-compiler-rollup&quot;</span>
+<pre class="highlight"><code class="language-javascript">import webapp from "@eusoft/webapp-compiler-rollup"
 
-<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="c1">//...</span>
-<span class="w">        </span><span class="nx">plugins</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="c1">// ... other plugins</span>
-<span class="w">            </span><span class="nx">webapp</span><span class="p">({</span>
-<span class="w">                </span><span class="c1">//compiler options</span>
-<span class="w">            </span><span class="p">}),</span><span class="w">      </span>
-<span class="w">        </span><span class="p">]</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">];</span>
-</code></pre></div>
+export default [
+    {
+        //...
+        plugins: [
+            // ... other plugins
+            webapp({
+                //compiler options
+            }),      
+        ]
+    }
+];</code></pre>
 <h3 id="typescript">Typescript</h3>
 <p>If you are using typescript, ensure tsconfig has <code>"jsx": "preserve"</code></p>
 <p>in <code>tsconfig.json</code></p>
-<div class="highlight"><pre><span></span><code>{
-  &quot;compilerOptions&quot;: {
-    &quot;jsx&quot;: &quot;preserve&quot;,
-    &quot;experimentalDecorators&quot;: true,
+<pre class="highlight"><code>{
+  "compilerOptions": {
+    "jsx": "preserve",
+    "experimentalDecorators": true,
   },
 }
-</code></pre></div>
+</code></pre>
               
             </div>
           </div><footer>
@@ -203,5 +201,5 @@ as dev dependence, add the plugin to your rollup config file.</p>
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-06-10 09:26:56.462149+00:00
+Build Date UTC : 2026-04-08 15:32:20.726979+00:00
 -->
