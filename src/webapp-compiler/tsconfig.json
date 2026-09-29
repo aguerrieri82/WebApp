@@ -4,12 +4,14 @@
     "noEmitOnError": false,
     "sourceMap": true,
     "target": "ESNext",
-    "module": "NodeNext",
+    "module": "ESNext",
     "declaration": true,
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "bundler",
     "noEmit": true,
     "forceConsistentCasingInFileNames": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "strict": false,
+    "rootDir": "src"
   },
   "buildOptions": {
     "incremental": true

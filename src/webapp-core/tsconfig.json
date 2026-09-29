@@ -7,13 +7,14 @@
     "target": "ESNext",
     "module": "ESNext",
     "declaration": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "noEmit": true,
+    "strict": false,
     "experimentalDecorators": true,
     "noImplicitOverride": true,
     "forceConsistentCasingInFileNames": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "rootDir": "src"
   },
-  "include": ["src"]
+  "include": [ "src" ]
 }
- 

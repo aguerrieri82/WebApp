@@ -1,7 +1,6 @@
 {
   "name": "build-utils",
   "version": "0.0.1",
-  "packageManager": "pnpm",
   "type": "module",
   "bin": "dist/index.js",
   "scripts": {
@@ -10,10 +9,10 @@
     "dist:dev": "node dist/index --dist --env:dev",
     "dist:prod": "node dist/index --dist --env:prod",
     "dist:pub": "node dist/index --dist --env:prod --publish --new",
-    "upgrade": "pnpm up -latest"
+    "upgrade": "pnpm update --latest"
   },
   "devDependencies": {
-    "@types/node": "22.15.23",
-    "typescript": "5.8.3"
+    "@types/node": "26.6.3",
+    "typescript": "7.0.2"
   }
 }

@@ -5,9 +5,10 @@
     "sourceMap": true,
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "noEmit": true,
     "jsx": "preserve",
+    "strict": false,
     "forceConsistentCasingInFileNames": true
   },
   "include": [

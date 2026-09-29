@@ -7,16 +7,18 @@
     "module": "ESNext",
     "declaration": true,
     "declarationDir": "types",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "noEmit": true,
     "jsx": "preserve",
+    "strict": false,
     "experimentalDecorators": true,
     "noImplicitOverride": true,
     "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "rootDir": "src"
 
   },
-  "include": ["src", "src/env.d.ts"]
+  "include": ["src"]
 }
  

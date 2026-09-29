@@ -1,10 +1,9 @@
-
 import path from "path";
 import fs from "fs";
 
 
 import { IPackage, colours, loadJson, logColor, pnpm, saveJson } from "./Common.js";
-import { spawnSync } from "child_process";
+import { execSync } from "child_process";
 import { mkdir } from "fs/promises";
 
 export interface IBuildOptions {
@@ -50,7 +49,7 @@ function processDeps(deps: Record<string, string>, isProd: boolean, isBoundle: b
 }
 
 export function createDistPackage(libPkg: IPackage, isProd: boolean, isBoundle: boolean) {
-    const result : IPackage = {
+    const result: IPackage = {
         name: libPkg.name,
         version: libPkg.version,
         author: libPkg.author,
@@ -67,7 +66,7 @@ export function createDistPackage(libPkg: IPackage, isProd: boolean, isBoundle: 
 function copyFiles(src: string, dst: string, filter: (a: string) => boolean) {
     function processDir(curSrc: string) {
 
-        const relDir = path.relative(src,curSrc);
+        const relDir = path.relative(src, curSrc);
         const curDst = path.join(dst, relDir);
 
         mkdir(curDst, { recursive: true });
@@ -76,7 +75,7 @@ function copyFiles(src: string, dst: string, filter: (a: string) => boolean) {
 
             const fullSrc = path.join(curSrc, file);
 
-            const isDir = fs.lstatSync(fullSrc).isDirectory() 
+            const isDir = fs.lstatSync(fullSrc).isDirectory();
 
             if (isDir)
                 processDir(fullSrc);
@@ -116,21 +115,20 @@ export function deleteAllContents(dirPath: string) {
 
 
 function tsc(outDir: string, isProd: boolean) {
-    const args = ["--outDir " + outDir, "--declarationDir " + outDir, "--noEmit false", "--declaration"];
-    if (isProd)
-        args.push("--removeComments", "--sourceMap false");  
+    let command = `tsc --outDir "${outDir}" --declarationDir "${outDir}" --noEmit false --declaration`;
 
-    spawnSync("tsc", args, {
-        shell: true,
-        stdio: "inherit",
+    if (isProd)
+        command += " --removeComments --sourceMap false";
+
+    execSync(command, {
+        stdio: "inherit"
     });
 }
 
 function rollup(isWatch: boolean) {
 
-    spawnSync("rollup", ["-c", isWatch ? "-w" : undefined], {
-        shell: true,
-        stdio: "inherit",
+    execSync(`rollup -c${isWatch ? " -w" : ""}`, {
+        stdio: "inherit"
     });
 }
 
@@ -149,7 +147,7 @@ export async function buildAsync(options: IBuildOptions) {
         const distPath = outPath;
 
         logColor(`Clean\n`, colours.fg.green);
-        deleteAllContents(path.resolve(distPath));    
+        deleteAllContents(path.resolve(distPath));
 
         if (options.isBundle) {
             logColor(`Boundle\n`, colours.fg.green);
@@ -199,5 +197,5 @@ export async function buildAsync(options: IBuildOptions) {
     catch (ex) {
         process.stderr.write(ex.toString());
     }
-  
+
 }

@@ -33,6 +33,7 @@ export abstract class Component<
     protected _subscriptions: ISubscription[];
     protected _binder: Binder<this>;
     protected _isCleaning: boolean;
+    protected _keepSubs: boolean;
 
     constructor() {
 
@@ -201,7 +202,7 @@ export abstract class Component<
 
         //TODO problem: if i unmoint a component and remount later i need to keep subs
 
-        if (this._subscriptions) {
+        if (this._subscriptions && !this._keepSubs) {
 
             if (webApp.debugClean)
                 console.debug("cleanSubscriptions", getTypeName(this));

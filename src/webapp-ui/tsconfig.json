@@ -5,16 +5,17 @@
     "sourceMap": true,
     "target": "ESNext",
     "module": "ESNext",
-    "lib": [ "ESNext", "DOM.AsyncIterable", "DOM.Iterable", "DOM" ],
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "noEmit": true,
     "declaration": true,
     "jsx": "preserve",
+    "strict": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitOverride": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "rootDir": "src"
 
   },
   "include": ["src"]

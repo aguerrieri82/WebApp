@@ -1,4 +1,4 @@
-import { spawnSync } from 'child_process';
+import { execFileSync, spawnSync } from 'child_process';
 import fs from 'fs';
 
 export interface IPackage {
@@ -84,13 +84,23 @@ export function pnpmExec(libPath: string, script: string) {
 
 export function pnpm(libPath: string, ...command: string[]) {
 
-    spawnSync("pnpm", command, {
-        cwd: libPath,
-        shell: true,
-        stdio: "inherit",
-        env: {
-            ...process.env,
-            CI: 'true'
-        }
-    });
+    if (process.platform == "win32")
+        execFileSync(process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", `pnpm ${command.join(" ")}`], {
+            cwd: libPath,
+            stdio: "inherit",
+            env: {
+                ...process.env,
+                CI: "true"
+            }
+        });
+    else
+        execFileSync("pnpm", command, {
+            cwd: libPath,
+            stdio: "inherit",
+            env: {
+                ...process.env,
+                CI: "true"
+            }
+        });
 }
+

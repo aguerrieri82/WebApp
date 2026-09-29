@@ -2,10 +2,13 @@
   "compilerOptions": {
     "noImplicitAny": true,
     "noEmitOnError": false,
-    "target": "ES2019",
+    "target": "ESNext",
     "module": "ESNext",
     "sourceMap": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "bundler",
+    "strict": false,
+    "rootDir": "src",
+    "types":["node"]
   },
   "compileOnSave": true,
   "include": ["src"]

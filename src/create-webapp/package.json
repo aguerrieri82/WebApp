@@ -1,7 +1,6 @@
 {
   "name": "@eusoft/create-webapp",
   "version": "0.0.46",
-  "packageManager": "pnpm",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
@@ -11,16 +10,16 @@
     "build:prod": "build-utils --env:prod --include:template",
     "lint:fix": "eslint ./src/**/*.ts* --fix",
     "install:pnpm": "pnpm install --fix-lockfile",
-    "upgrade": "pnpm up -latest"
+    "upgrade": "pnpm update --latest"
   },
   "keywords": [],
   "author": "Andrea Guerrieri",
   "dependencies": {
-    "open": "10.1.2"
+    "open": "11.0.4"
   },
   "devDependencies": {
-    "@types/node": "22.15.23",
+    "@types/node": "26.6.3",
     "build-utils": "link:../../scripts/build-utils",
-    "typescript": "5.8.3"
+    "typescript": "7.0.2"
   }
 }

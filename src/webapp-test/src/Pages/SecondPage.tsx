@@ -1,6 +1,6 @@
 import { Action, Content, IContentInfo } from "@eusoft/webapp-ui";
-import { Text, JsxNode, forModel, debug } from "@eusoft/webapp-jsx";
-import { Behavoir, Bind, Component, ITemplateContext, OptionsFor, TwoWays, declareComponent, template } from "@eusoft/webapp-core";
+import { Text, JsxNode, forModel } from "@eusoft/webapp-jsx";
+import { Behavoir, Bind, Component, ITemplateContext, TwoWays, declareComponent, template } from "@eusoft/webapp-core";
 import { router } from "@eusoft/webapp-framework";
 import { onChanged } from "@eusoft/webapp-core";
 import {  Style } from "../../../webapp-jsx/src";

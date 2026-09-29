@@ -73,7 +73,7 @@ type ElementProps<TModel, TElement> =
 type InputProps<TModel, TElement> =
     Omit< ElementProps<TModel, TElement>, "value"> &
     {
-        "value"?: BindValue<TModel, string|boolean>;
+        "value"?: BindValue<TModel, string|boolean|number>;
         "value-mode"?: InputValueMode;
         "value-pool"?: number;
     }

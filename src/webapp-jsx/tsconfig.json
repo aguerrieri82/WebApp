@@ -6,13 +6,15 @@
     "target": "ESNext",
     "module": "ESNext",
     "declaration": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "noEmit": true,
     "jsx": "preserve",
+    "strict": false,
     "noImplicitOverride": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "rootDir": "src"
 
   },
   "include": ["src"]

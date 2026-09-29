@@ -4,11 +4,12 @@
     "outDir": "dist",
     "sourceMap": true,
     "noEmitOnError": false,
-    "moduleResolution": "NodeNext",
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "strict": false,
+    "rootDir": "src",
+    "types": [ "node" ]
   },
   "compileOnSave": true,
   "include": [ "src" ]
 }
- 

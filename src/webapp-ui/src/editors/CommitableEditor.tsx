@@ -143,6 +143,11 @@ export abstract class CommitableEditor<
         return true; 
     }
 
+
+    get editState() {
+        return this._editState;
+    }
+
     error: ViewNode;
 
     isValid: boolean;

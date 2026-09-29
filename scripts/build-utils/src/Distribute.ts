@@ -1,5 +1,4 @@
 import path from "path";
-import { spawnSync } from 'child_process';
 import { IPackage, colours, loadJson, logColor, logTitle, pnpm, pnpmExec, saveJson } from './Common.js';
 
 

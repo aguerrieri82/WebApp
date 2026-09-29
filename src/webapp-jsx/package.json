@@ -1,7 +1,6 @@
 {
   "name": "@eusoft/webapp-jsx",
   "version": "0.0.74",
-  "packageManager": "pnpm",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "type": "module",
@@ -14,17 +13,17 @@
     "build:prod": "build-utils --env:prod",
     "lint:fix": "eslint ./src/**/*.ts* --fix",
     "install:pnpm": "pnpm install --fix-lockfile",
-    "upgrade": "pnpm up -latest"
+    "upgrade": "pnpm update --latest"
   },
   "keywords": [],
   "author": "Andrea Guerrieri",
   "devDependencies": {
-    "@typescript-eslint/parser": "8.33.0",
-    "typescript": "5.8.3",
+    "@typescript-eslint/parser": "8.71.0",
+    "typescript": "7.0.2",
     "build-utils": "link:..\\..\\scripts\\build-utils",
-    "typescript-eslint": "8.33.0",
-    "@eslint/js": "9.28.0",
-    "eslint-plugin-unused-imports": "4.1.4"
+    "typescript-eslint": "8.71.0",
+    "@eslint/js": "10.0.1",
+    "eslint-plugin-unused-imports": "4.4.1"
   },
   "dependencies": {
     "@eusoft/webapp-core": "link:../webapp-core/src"

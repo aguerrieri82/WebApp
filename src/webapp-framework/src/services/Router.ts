@@ -7,9 +7,9 @@ export type RouteAction<TArgs extends RouteArgs> = (args: TArgs, content?: unkno
 
 export type NavigationMode = "push" | "replace" | "history-or-push";
 
-interface IRounteEntry<TArgs extends RouteArgs>  {
+interface IRounteEntry<TArgs extends RouteArgs> {
 
-    route: string|RegExp;
+    route: string | RegExp;
 
     action: RouteAction<TArgs>;
 
@@ -71,28 +71,46 @@ export class Router {
 
         this._startHistoryLen = history.length - this._history.length - 1;
 
-    } 
+    }
 
     protected matchRoute(route: string, path: string) {
 
-        const paramNames = [];
-        const regex = new RegExp('^' + route.replace(/{([^}]+)}/g, (_, key) => {
+        let rootPath = this.rootPath || "";
+
+        if (rootPath && !rootPath.startsWith("/"))
+            rootPath = "/" + rootPath;
+
+        if (rootPath.endsWith("/"))
+            rootPath = rootPath.slice(0, -1);
+
+        if (rootPath) {
+            if (path == rootPath)
+                path = "/";
+            else if (path.startsWith(rootPath + "/"))
+                path = path.substring(rootPath.length);
+            else
+                return;
+        }
+
+        const paramNames: string[] = [];
+
+        const regex = new RegExp("^" + route.replace(/{([^}]+)}/g, (_, key) => {
             paramNames.push(key);
-            return '([^/]+)';
-        }) + '$');
+            return "([^/]+)";
+        }) + "$");
 
         const match = path.match(regex);
 
-        if (match) {
+        if (!match)
+            return;
 
-            const params = {};
+        const params: Record<string, string> = {};
 
-            paramNames.forEach((name, i) => {
-                params[name] = decodeURIComponent(match[i + 1]);
-            });
+        paramNames.forEach((name, i) => {
+            params[name] = decodeURIComponent(match[i + 1]);
+        });
 
-            return params;
-        }
+        return params;
     }
 
     startAsync() {
@@ -150,7 +168,7 @@ export class Router {
             const loadRes = await app.contentHost.loadContentAsync(page, args);
             if (loadRes !== true)
                 return loadRes;
-            
+
             document.title = formatText(page.title) as string;
 
             return true;
@@ -183,7 +201,7 @@ export class Router {
         }
     }
 
-    backAsync() { 
+    backAsync() {
         return new Promise<void>(res => {
             this._popResolves.push(res)
             console.log("back called");
@@ -232,12 +250,12 @@ export class Router {
             await app.contentHost.loadContentAsync(pageOrName, args);
 
             return pageOrName;
-        } 
+        }
 
         return await this.navigateEntryAsync(entry, args, mode, typeof pageOrName == "string" ? undefined : pageOrName);
     }
 
-    goToAsync(historyIndex: number) {   
+    goToAsync(historyIndex: number) {
 
         const delta = this._activeIndex - historyIndex;
         history.go(-delta);
@@ -309,7 +327,7 @@ export class Router {
             console.warn("HISTORY: pop without state");
             return;
         }
-            
+
         if (this._popResolves.length > 0) {
 
             console.log("HISTORY: popResolves");
@@ -362,14 +380,21 @@ export class Router {
 
             const matchArgs = this.matchRoute(entry.route as string, url);
 
-            if (matchArgs) 
+            if (matchArgs)
                 return await this.navigateEntryAsync(entry, matchArgs, "replace", null, "reload");
         }
     }
 
     protected replaceUrl(path: string, args: RouteArgs) {
 
-        return replaceArgs(path, args);
+        path = replaceArgs(path, args);
+
+        if (!this.rootPath)
+            return path;
+
+        const rootPath = "/" + this.rootPath.replace(/^\/+|\/+$/g, "");
+
+        return path == "/" ? rootPath + "/" : rootPath + (path.startsWith("/") ? path : "/" + path);
     }
 
     protected async navigateEntryAsync<TArgs extends ObjectLike>(entry: IRounteEntry<TArgs>, args?: TArgs, mode: NavigationMode = "push", content?: unknown, transition?: string) {
@@ -378,7 +403,7 @@ export class Router {
 
         if (mode == "history-or-push") {
             const history = this._history.find(a => a.entryIndex !== undefined && this._entries[a.entryIndex] == entry);
-            if (history) 
+            if (history)
                 return await this.goToAsync(history.historyIndex);
         }
 
@@ -416,7 +441,7 @@ export class Router {
             entryIndex: this._entries.indexOf(entry)
         } as IRouteState;
 
-        const jsonState = JSON.stringify(state); 
+        const jsonState = JSON.stringify(state);
 
         console.log(isReplace ? "HISTORY: replace" : "push", url);
 
@@ -435,16 +460,17 @@ export class Router {
 
     useTransition: boolean = true;
 
+    rootPath: string = "";
+
     get currentLocation() {
         return location.pathname;
     }
-
 
     get canGoBack() {
         return this._activeIndex > 0;
     }
 
-    get history() { return this._history  }
+    get history() { return this._history }
 
 }
 
